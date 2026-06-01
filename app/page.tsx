@@ -4,61 +4,66 @@ import Link from 'next/link'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-between px-6 py-12 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-between px-6 py-12 relative overflow-hidden" style={{ background: '#08080f' }}>
       {/* Background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-80 h-80 bg-purple-600/30 rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-pink-600/30 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.20) 0%, transparent 70%)' }} />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.18) 0%, transparent 70%)' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)' }} />
       </div>
 
-      {/* Top spacer */}
-      <div />
+      {/* Top badge */}
+      <div className="z-10">
+        <div className="px-4 py-2 rounded-full text-sm font-semibold" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', backdropFilter: 'blur(12px)', color: 'rgba(240,240,245,0.8)' }}>
+          ✨ Entre amis · En temps réel
+        </div>
+      </div>
 
       {/* Hero */}
-      <div className="flex flex-col items-center gap-6 z-10 text-center">
+      <div className="flex flex-col items-center gap-6 z-10 text-center animate-fade-up">
         {/* Logo */}
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 via-blue-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-purple-500/40">
-          <span className="text-3xl font-black tracking-tight">I</span>
+        <div className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 20px 60px rgba(168,85,247,0.4)' }}>
+          <span className="text-3xl font-black tracking-tight text-white">I</span>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <h1 className="text-6xl font-black tracking-tight">
-            <span className="gradient-text">Inside</span>
+        <div className="flex flex-col gap-3">
+          <h1 className="font-black tracking-tight" style={{ fontSize: '4.5rem', lineHeight: 1, background: 'linear-gradient(135deg, #a855f7, #3b82f6, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            Inside
           </h1>
-          <p className="text-white/60 text-lg leading-snug max-w-xs">
-            Crée des quiz privés avec tes amis.<br />
-            Découvre ce qu&apos;ils pensent vraiment.
+          <p className="font-semibold text-xl max-w-xs" style={{ color: 'rgba(240,240,245,0.75)' }}>
+            Découvre ce que ton groupe cache vraiment
+          </p>
+          <p className="text-sm max-w-xs mx-auto leading-relaxed" style={{ color: 'rgba(240,240,245,0.45)' }}>
+            Crée un quiz privé, invite tes amis et découvre les résultats en temps réel.
           </p>
         </div>
 
         {/* Emoji strip */}
-        <div className="flex gap-3 text-2xl">
+        <div className="flex gap-4 text-2xl">
           <span>🎭</span>
           <span>🔥</span>
-          <span>😈</span>
           <span>💬</span>
           <span>🎉</span>
         </div>
       </div>
 
       {/* CTA buttons */}
-      <div className="flex flex-col gap-4 w-full z-10">
+      <div className="flex flex-col gap-4 w-full z-10 animate-fade-up" style={{ animationDelay: '0.1s' }}>
         <Link
           href="/create"
-          className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 text-white font-bold text-lg text-center shadow-2xl shadow-purple-500/30 active:scale-95"
+          className="btn-primary text-lg font-bold active:scale-95"
         >
           ✨ Créer une salle
         </Link>
         <Link
           href="/join"
-          className="w-full py-5 rounded-2xl bg-white/10 backdrop-blur border border-white/20 text-white font-bold text-lg text-center active:scale-95"
+          className="btn-secondary py-5 text-lg active:scale-95"
         >
           🚪 Rejoindre une salle
         </Link>
 
-        <p className="text-center text-white/30 text-sm mt-2">
-          Pas de compte requis · 100% entre amis
+        <p className="text-center text-sm mt-1" style={{ color: 'rgba(240,240,245,0.30)' }}>
+          Sans compte · 100% privé · Gratuit
         </p>
       </div>
     </div>
