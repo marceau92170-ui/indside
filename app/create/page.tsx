@@ -103,45 +103,64 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-8 gap-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/" className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-lg">
-          ←
-        </Link>
-        <h1 className="text-2xl font-black">Créer une salle</h1>
+    <div className="min-h-screen flex flex-col px-6 py-8 gap-5 relative" style={{ background: '#08080f' }}>
+      {/* Background blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
       </div>
 
-      {/* Room name */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold text-white/60 uppercase tracking-wider">Nom de la salle</label>
+      {/* Header */}
+      <div className="relative z-10 flex items-center gap-4">
+        <Link
+          href="/"
+          className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
+        >
+          ←
+        </Link>
+        <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Créer une salle</h1>
+      </div>
+
+      {/* Section: Room name */}
+      <div className="relative z-10 card p-5 flex flex-col gap-3">
+        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+          🏠 Nom de la salle
+        </label>
         <input
           type="text"
           value={roomName}
           onChange={e => setRoomName(e.target.value)}
           placeholder="Ex : Soirée de Jean 🎉"
-          className="w-full py-4 px-5 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-white/30 text-lg font-medium focus:outline-none focus:border-purple-500/80 focus:bg-white/15"
+          className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
+          style={{
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}
         />
       </div>
 
-      {/* Image upload */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold text-white/60 uppercase tracking-wider">Image de fond</label>
+      {/* Section: Image upload */}
+      <div className="relative z-10 card p-5 flex flex-col gap-3">
+        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+          📸 Image de fond
+        </label>
         <button
           onClick={() => fileRef.current?.click()}
-          className="relative w-full h-40 rounded-2xl border-2 border-dashed border-white/20 overflow-hidden active:scale-95"
+          className="relative w-full h-44 rounded-2xl overflow-hidden active:scale-95"
+          style={{ border: '2px dashed rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.04)' }}
         >
           {imagePreview ? (
             <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
           ) : (
-            <div className="flex flex-col items-center justify-center h-full gap-2 text-white/40">
+            <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'rgba(240,240,245,0.35)' }}>
               <span className="text-4xl">🖼️</span>
-              <span className="text-sm font-medium">Appuie pour choisir une photo</span>
+              <span className="text-sm font-semibold">Appuie pour choisir une photo</span>
             </div>
           )}
           {imagePreview && (
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-              <span className="text-sm font-semibold bg-black/50 px-3 py-1 rounded-full">Changer</span>
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span className="text-sm font-bold bg-black/60 px-4 py-2 rounded-full text-white">Changer</span>
             </div>
           )}
         </button>
@@ -154,69 +173,75 @@ export default function CreatePage() {
         />
       </div>
 
-      {/* Questions */}
-      <div className="flex flex-col gap-3">
+      {/* Section: Questions */}
+      <div className="relative z-10 card p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-semibold text-white/60 uppercase tracking-wider">
-            Questions ({questions.filter(q => q.trim()).length})
+          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+            ❓ Questions ({questions.filter(q => q.trim()).length})
           </label>
-          <span className="text-xs text-white/40">Réponse : Oui / Non</span>
+          <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.90)', border: '1px solid rgba(168,85,247,0.25)' }}>
+            Oui / Non
+          </span>
         </div>
 
-        {questions.map((q, i) => (
-          <div key={i} className="flex gap-2 items-start">
-            <div className="flex-1 relative">
-              <span className="absolute left-4 top-4 text-white/30 font-bold text-sm">{i + 1}.</span>
+        <div className="flex flex-col gap-3">
+          {questions.map((q, i) => (
+            <div key={i} className="flex gap-2 items-center rounded-2xl p-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}>
+                {i + 1}
+              </span>
               <input
                 type="text"
                 value={q}
                 onChange={e => updateQuestion(i, e.target.value)}
                 placeholder={`Question ${i + 1}…`}
-                className="w-full py-4 pl-9 pr-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-purple-500/80 focus:bg-white/15"
+                className="flex-1 bg-transparent text-white placeholder:text-white/30 focus:outline-none font-medium py-1"
               />
+              {questions.length > 1 && (
+                <button
+                  onClick={() => removeQuestion(i)}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-lg active:scale-90 flex-shrink-0"
+                  style={{ background: 'rgba(239,68,68,0.20)', color: '#f87171' }}
+                >
+                  ×
+                </button>
+              )}
             </div>
-            {questions.length > 1 && (
-              <button
-                onClick={() => removeQuestion(i)}
-                className="w-12 h-12 rounded-2xl bg-red-500/20 text-red-400 flex items-center justify-center text-xl active:scale-90 flex-shrink-0 mt-0.5"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        ))}
+          ))}
 
-        <button
-          onClick={addQuestion}
-          className="w-full py-4 rounded-2xl border-2 border-dashed border-white/20 text-white/50 font-semibold active:scale-95 hover:border-white/40 hover:text-white/70"
-        >
-          + Ajouter une question
-        </button>
+          <button
+            onClick={addQuestion}
+            className="w-full py-4 rounded-2xl font-semibold active:scale-95"
+            style={{ border: '2px dashed rgba(255,255,255,0.18)', color: 'rgba(240,240,245,0.50)', background: 'rgba(255,255,255,0.02)' }}
+          >
+            + Ajouter une question
+          </button>
+        </div>
       </div>
 
       {/* Error */}
       {error && (
-        <div className="py-3 px-4 rounded-2xl bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-medium">
+        <div className="relative z-10 py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
           {error}
         </div>
       )}
 
       {/* Submit */}
-      <div className="pb-8 mt-auto">
+      <div className="relative z-10 pb-8 mt-2">
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 text-white font-bold text-lg shadow-2xl shadow-purple-500/30 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-primary text-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
-            <span className="flex items-center justify-center gap-2">
+            <>
               <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
               Création en cours…
-            </span>
-          ) : '🚀 Créer la salle'}
+            </>
+          ) : '🚀 Créer ma salle'}
         </button>
       </div>
     </div>

@@ -34,6 +34,13 @@ function getControversialQuestion(results: QuestionResult[]): QuestionResult | n
   })
 }
 
+const BADGES = [
+  { emoji: '🔥', label: 'Le plus aventurier' },
+  { emoji: '👑', label: 'Le plus imprévisible' },
+  { emoji: '😇', label: 'Le plus sage' },
+  { emoji: '🎭', label: 'Le plus mystérieux' },
+]
+
 export default function ResultsPage() {
   const params = useParams()
   const router = useRouter()
@@ -119,10 +126,16 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#08080f' }}>
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 animate-pulse" />
-          <p className="text-white/50">Calcul des résultats…</p>
+          <div
+            className="w-14 h-14 rounded-2xl animate-spin"
+            style={{
+              background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
+              boxShadow: '0 0 30px rgba(168,85,247,0.4)',
+            }}
+          />
+          <p style={{ color: 'rgba(240,240,245,0.50)' }}>Calcul des résultats…</p>
         </div>
       </div>
     )
@@ -133,51 +146,88 @@ export default function ResultsPage() {
   const totalAnswers = results.reduce((acc, r) => acc + r.total, 0)
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-8 gap-6 relative overflow-hidden">
-      {/* Background */}
+    <div className="min-h-screen flex flex-col px-6 py-8 gap-6 relative overflow-hidden" style={{ background: '#08080f' }}>
+      {/* Background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-80 h-80 bg-purple-600/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-pink-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.20) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute top-1/2 -left-40 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute -bottom-32 -right-16 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.18) 0%, transparent 70%)', filter: 'blur(60px)' }} />
       </div>
 
       {/* Header */}
       <div className="relative z-10 flex items-center gap-4">
-        <Link href={`/room/${code}`} className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-lg">
+        <Link
+          href={`/room/${code}`}
+          className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
+        >
           ←
         </Link>
         <div>
-          <h1 className="text-2xl font-black">{room?.name}</h1>
-          <p className="text-white/50 text-sm">Résultats en direct</p>
+          <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>{room?.name}</h1>
+          <p className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.45)' }}>Résultats</p>
         </div>
       </div>
 
-      {/* Stats header */}
+      {/* Stats row */}
       <div className="relative z-10 grid grid-cols-2 gap-3">
-        <div className="bg-white/10 rounded-2xl p-4 flex flex-col gap-1">
-          <span className="text-3xl font-black gradient-text">{participantCount}</span>
-          <span className="text-white/50 text-sm">Participant{participantCount > 1 ? 's' : ''}</span>
+        <div className="card p-5 flex flex-col gap-1">
+          <span
+            className="text-4xl font-black"
+            style={{ background: 'linear-gradient(135deg, #a855f7, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
+          >
+            {participantCount}
+          </span>
+          <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Participant{participantCount > 1 ? 's' : ''}</span>
         </div>
-        <div className="bg-white/10 rounded-2xl p-4 flex flex-col gap-1">
-          <span className="text-3xl font-black gradient-text">{totalAnswers}</span>
-          <span className="text-white/50 text-sm">Réponses</span>
+        <div className="card p-5 flex flex-col gap-1">
+          <span
+            className="text-4xl font-black"
+            style={{ background: 'linear-gradient(135deg, #a855f7, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
+          >
+            {totalAnswers}
+          </span>
+          <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Réponses</span>
         </div>
       </div>
 
       {/* Summary card */}
-      <div className="relative z-10 bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-500/30 rounded-3xl p-6">
-        <p className="text-lg font-black text-center leading-snug">{summary}</p>
+      <div
+        className="relative z-10 p-6 rounded-3xl"
+        style={{
+          background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(236,72,153,0.20))',
+          border: '1px solid rgba(168,85,247,0.30)',
+        }}
+      >
+        <p className="text-lg font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>{summary}</p>
+      </div>
+
+      {/* Badges section */}
+      <div className="relative z-10 flex flex-col gap-3">
+        <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>🏆 Badges</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {BADGES.map((badge, i) => (
+            <div key={i} className="card p-4 flex flex-col items-center gap-2 text-center">
+              <span className="text-3xl">{badge.emoji}</span>
+              <span className="text-sm font-bold" style={{ color: '#f0f0f5' }}>{badge.label}</span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.85)' }}>
+                Salle #{code}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Controversial question */}
       {controversial && controversial.total > 0 && (
-        <div className="relative z-10 bg-white/10 rounded-3xl p-5 border border-white/20">
-          <p className="text-xs text-yellow-400 font-bold uppercase tracking-wider mb-2">🔥 Question la plus controversée</p>
-          <p className="font-bold text-base mb-3 leading-snug">{controversial.question.text}</p>
+        <div className="relative z-10 card p-5">
+          <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#fbbf24' }}>🔥 Question la plus chaude</p>
+          <p className="font-bold text-base mb-4 leading-snug" style={{ color: '#f0f0f5' }}>{controversial.question.text}</p>
           <div className="flex gap-2 text-sm">
-            <span className="py-1 px-3 rounded-full bg-green-500/20 text-green-300 font-bold">
+            <span className="py-1.5 px-4 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>
               {controversial.yesPercent}% Oui
             </span>
-            <span className="py-1 px-3 rounded-full bg-red-500/20 text-red-300 font-bold">
+            <span className="py-1.5 px-4 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>
               {100 - controversial.yesPercent}% Non
             </span>
           </div>
@@ -186,56 +236,63 @@ export default function ResultsPage() {
 
       {/* Per-question results */}
       <div className="relative z-10 flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider">Toutes les questions</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>Toutes les questions</h2>
         {results.map((r, i) => (
-          <div key={r.question.id} className="bg-white/10 rounded-2xl p-5 border border-white/10">
+          <div key={r.question.id} className="card p-5">
             <div className="flex items-start justify-between gap-2 mb-4">
-              <p className="font-semibold leading-snug flex-1">{r.question.text}</p>
-              <span className="text-white/30 text-sm font-bold flex-shrink-0">{i + 1}</span>
+              <p className="font-semibold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{r.question.text}</p>
+              <span className="text-sm font-black flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(240,240,245,0.40)' }}>{i + 1}</span>
             </div>
 
             {r.total > 0 ? (
               <>
-                {/* Bar */}
-                <div className="w-full h-3 rounded-full overflow-hidden bg-white/10 mb-2">
+                <div className="w-full h-2.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(239,68,68,0.30)' }}>
                   <div
-                    className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-700"
-                    style={{ width: `${r.yesPercent}%` }}
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{ width: `${r.yesPercent}%`, background: 'linear-gradient(90deg, #10b981, #34d399)' }}
                   />
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-green-400 font-bold">✅ {r.yesPercent}% Oui ({r.yesCount})</span>
-                  <span className="text-red-400 font-bold">❌ {100 - r.yesPercent}% Non ({r.noCount})</span>
+                  <span className="font-bold" style={{ color: '#34d399' }}>✅ {r.yesPercent}% Oui ({r.yesCount})</span>
+                  <span className="font-bold" style={{ color: '#f87171' }}>❌ {100 - r.yesPercent}% Non ({r.noCount})</span>
                 </div>
               </>
             ) : (
-              <p className="text-white/30 text-sm">Aucune réponse pour l&apos;instant</p>
+              <p className="text-sm" style={{ color: 'rgba(240,240,245,0.30)' }}>Aucune réponse pour l&apos;instant</p>
             )}
           </div>
         ))}
       </div>
 
-      {/* Share */}
-      <div className="relative z-10 bg-white/10 rounded-2xl p-4 flex flex-col gap-3">
-        <p className="text-sm text-white/50 font-medium text-center">Invite plus d&apos;amis !</p>
+      {/* Share section */}
+      <div className="relative z-10 card p-5 flex flex-col gap-3">
+        <p className="text-sm font-semibold text-center" style={{ color: 'rgba(240,240,245,0.50)' }}>Invite plus d&apos;amis !</p>
         <div className="flex gap-2">
-          <div className="flex-1 py-3 px-4 rounded-xl bg-white/10 text-center font-black text-xl tracking-widest">
+          <div
+            className="flex-1 py-3 px-4 rounded-2xl text-center font-black text-xl tracking-widest"
+            style={{ background: 'rgba(255,255,255,0.08)', color: '#f0f0f5' }}
+          >
             {code}
           </div>
-          <button onClick={copyCode} className="px-4 rounded-xl bg-white/10 active:scale-95 text-xl">
+          <button
+            onClick={copyCode}
+            className="px-4 rounded-2xl text-xl active:scale-95"
+            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+          >
             📋
           </button>
         </div>
         <button
           onClick={shareRoom}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold active:scale-95"
+          className="w-full py-3 rounded-2xl text-white font-bold active:scale-95"
+          style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.30)' }}
         >
           🔗 Partager le lien
         </button>
       </div>
 
       <div className="relative z-10 pb-4 text-center">
-        <Link href="/" className="text-white/30 text-sm underline">
+        <Link href="/create" className="text-sm underline" style={{ color: 'rgba(240,240,245,0.35)' }}>
           Créer une nouvelle salle
         </Link>
       </div>
