@@ -3,54 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Inside — Prévisualisation v2</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>Inside — Prévisualisation</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #08080f; color: #f0f0f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  body { background: #08080f; color: #f0f0f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 36px 16px 60px; }
 
   .gradient-text { background: linear-gradient(135deg, #a855f7, #3b82f6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .card { background: rgba(255,255,255,0.06); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.10); border-radius: 1.5rem; }
-  .btn-primary { background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899); font-weight: 700; padding: 18px 24px; border-radius: 16px; box-shadow: 0 10px 40px rgba(168,85,247,0.30); color: #fff; text-align: center; display: block; width: 100%; border: none; cursor: pointer; font-size: 1.05rem; }
-  .btn-secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; color: #f0f0f5; text-align: center; display: block; width: 100%; font-weight: 600; padding: 18px; cursor: pointer; font-size: 1.05rem; }
+  .card { background: rgba(255,255,255,0.06); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.10); border-radius: 24px; }
+  .btn-grad { background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899); font-weight: 700; padding: 17px 24px; border-radius: 16px; box-shadow: 0 10px 40px rgba(168,85,247,0.30); color: #fff; text-align: center; width: 100%; border: none; cursor: pointer; font-size: 1.05rem; font-family: inherit; display: block; }
+  .btn-glass { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.13); border-radius: 16px; color: #f0f0f5; text-align: center; width: 100%; font-weight: 600; padding: 17px; cursor: pointer; font-size: 1.05rem; font-family: inherit; display: block; }
+  .btn-back { width: 40px; height: 40px; border-radius: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #f0f0f5; font-size: 1.1rem; cursor: pointer; font-family: inherit; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .blob { position: absolute; border-radius: 9999px; pointer-events: none; }
+  input, textarea { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); color: #f0f0f5; outline: none; font-family: inherit; border-radius: 14px; padding: 13px 16px; width: 100%; font-size: .95rem; }
+  input::placeholder { color: rgba(240,240,245,0.28); }
 
-  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
-  @keyframes appear { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+  .screen { display: none; width: 100%; min-height: 844px; flex-direction: column; position: relative; overflow: hidden; }
+  .screen.active { display: flex; }
+  .phone { width: 390px; min-height: 844px; position: relative; overflow: hidden; background: #08080f; border-radius: 44px; box-shadow: 0 40px 120px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.07); }
+
+  .nav { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; margin-bottom: 22px; }
+  .nav button { padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.07); color: rgba(240,240,245,0.65); cursor: pointer; font-size: 12.5px; font-weight: 600; font-family: inherit; transition: all .2s; }
+  .nav button.active, .nav button:hover { background: linear-gradient(135deg,#8b5cf6,#ec4899); color: #fff; border-color: transparent; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:1} }
+  @keyframes appear { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
   .fade-up { animation: fadeUp 0.45s ease-out both; }
   .pulse { animation: pulse 1.8s ease-in-out infinite; }
   .appear { animation: appear 0.3s ease-out both; }
 
-  input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); color: #f0f0f5; outline: none; font-family: inherit; }
-  input::placeholder { color: rgba(240,240,245,0.28); }
+  .progress-outer { height: 4px; background: rgba(255,255,255,0.12); border-radius: 99px; overflow: hidden; }
+  .progress-inner { height: 100%; background: linear-gradient(90deg,#a855f7,#ec4899); border-radius: 99px; }
+  .result-outer { height: 10px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+  .result-inner { height: 100%; background: linear-gradient(90deg,#10b981,#34d399); border-radius: 99px; }
 
-  .screen { display: none; width: 100%; min-height: 844px; flex-direction: column; }
-  .screen.active { display: flex; }
-
-  .phone { width: 390px; min-height: 844px; position: relative; overflow: hidden; background: #08080f; border-radius: 44px; box-shadow: 0 40px 120px rgba(0,0,0,0.9), 0 0 0 2px rgba(255,255,255,0.07); }
-  .progress-bar { height: 4px; background: rgba(255,255,255,0.12); border-radius: 99px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg,#a855f7,#ec4899); border-radius: 99px; transition: width .5s; }
-  .result-bar { height: 10px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
-
-  .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px; }
-  .nav button { padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.07); color: rgba(240,240,245,0.7); cursor: pointer; font-size: 13px; font-weight: 600; transition: all .2s; font-family: inherit; }
-  .nav button.active, .nav button:hover { background: linear-gradient(135deg,#8b5cf6,#ec4899); color:#fff; border-color:transparent; }
+  .label-sm { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: rgba(240,240,245,0.45); }
+  .muted { color: rgba(240,240,245,0.45); }
+  .pill-yes { padding: 4px 11px; border-radius: 999px; background: rgba(16,185,129,0.20); color: #6ee7b7; font-weight: 700; font-size: 12px; }
+  .pill-no  { padding: 4px 11px; border-radius: 999px; background: rgba(239,68,68,0.20); color: #fca5a5; font-weight: 700; font-size: 12px; }
 
   .avatar { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem; color: #fff; flex-shrink: 0; }
-  .avatar-sm { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; color: #fff; }
+  .online-dot { width: 9px; height: 9px; border-radius: 999px; background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.6); flex-shrink: 0; }
+
+  /* Scroll inside phone */
+  .scroll-area { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 18px; padding: 0 20px 40px; }
+  .scroll-area::-webkit-scrollbar { width: 3px; }
+  .scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 </style>
 </head>
-<body style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 16px 60px;min-height:100vh;background:radial-gradient(ellipse at 20% 20%,rgba(139,92,246,0.10) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(236,72,153,0.08) 0%,transparent 60%),#08080f;">
+<body style="background: radial-gradient(ellipse at 20% 20%, rgba(139,92,246,0.10) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(236,72,153,0.08) 0%, transparent 60%), #08080f;">
 
-  <h1 style="font-size:1.6rem;font-weight:900;margin-bottom:6px;color:rgba(240,240,245,0.85)">Prévisualisation — <span class="gradient-text">Inside</span></h1>
-  <p style="font-size:13px;color:rgba(240,240,245,0.30);margin-bottom:24px;">Navigue entre les 7 écrans</p>
+  <h2 style="font-size:1.5rem;font-weight:900;margin-bottom:6px;color:rgba(240,240,245,0.80);">Prévisualisation <span class="gradient-text">Inside</span></h2>
+  <p style="font-size:12px;color:rgba(240,240,245,0.28);margin-bottom:22px;">7 écrans — clique pour naviguer</p>
 
   <div class="nav">
     <button class="active" onclick="show('home')">🏠 Accueil</button>
     <button onclick="show('create')">✨ Créer</button>
     <button onclick="show('join')">🚪 Rejoindre</button>
-    <button onclick="show('waiting')">⏳ Salle d'attente</button>
+    <button onclick="show('waiting')">⏳ Attente</button>
     <button onclick="show('quiz')">🎯 Quiz</button>
     <button onclick="show('done')">🎉 Terminé</button>
     <button onclick="show('results')">📊 Résultats</button>
@@ -58,15 +68,15 @@
 
   <div class="phone">
 
-    <!-- ===== HOME ===== -->
-    <div id="screen-home" class="screen" style="padding:48px 24px 40px;justify-content:space-between;align-items:center;position:relative;overflow:hidden;">
+    <!-- ======== HOME ======== -->
+    <div id="screen-home" class="screen" style="padding: 48px 24px 40px; justify-content: space-between; align-items: center;">
       <div class="blob" style="width:420px;height:420px;top:-130px;left:-110px;background:radial-gradient(circle,rgba(139,92,246,0.22) 0%,transparent 70%);filter:blur(60px);"></div>
       <div class="blob" style="width:380px;height:380px;bottom:-110px;right:-90px;background:radial-gradient(circle,rgba(236,72,153,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
       <div class="blob" style="width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%);filter:blur(80px);"></div>
 
       <div style="z-index:1;">
-        <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);backdrop-filter:blur(14px);padding:9px 18px;border-radius:999px;font-size:13px;font-weight:600;color:rgba(240,240,245,0.75);display:inline-flex;align-items:center;gap:6px;">
-          ✨ <span>Entre amis · En temps réel</span>
+        <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);backdrop-filter:blur(14px);padding:9px 18px;border-radius:999px;font-size:13px;font-weight:600;color:rgba(240,240,245,0.75);display:inline-block;">
+          ✨ Entre amis · En temps réel
         </div>
       </div>
 
@@ -75,155 +85,191 @@
         <div style="display:flex;flex-direction:column;gap:12px;">
           <h1 style="font-size:4.5rem;font-weight:900;line-height:1;background:linear-gradient(135deg,#a855f7,#3b82f6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Inside</h1>
           <p style="font-size:1.15rem;font-weight:700;color:rgba(240,240,245,0.78);line-height:1.4;max-width:280px;">Découvre ce que ton groupe cache vraiment</p>
-          <p style="font-size:0.85rem;color:rgba(240,240,245,0.38);max-width:260px;line-height:1.6;margin:0 auto;">Crée un quiz privé, invite tes amis et découvre les résultats en temps réel.</p>
+          <p style="font-size:.85rem;color:rgba(240,240,245,0.38);max-width:260px;line-height:1.6;margin:0 auto;">Crée un quiz privé, invite tes amis et découvre les résultats en temps réel.</p>
         </div>
         <div style="display:flex;gap:14px;font-size:1.7rem;">🎭 🔥 💬 🎉</div>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:14px;width:100%;z-index:1;">
-        <button class="btn-primary" onclick="show('create')">✨ Créer une salle</button>
-        <button class="btn-secondary" onclick="show('join')">🚪 Rejoindre une salle</button>
+        <button class="btn-grad" onclick="show('create')">✨ Créer une salle</button>
+        <button class="btn-glass" onclick="show('join')">🚪 Rejoindre une salle</button>
         <p style="text-align:center;font-size:12px;color:rgba(240,240,245,0.25);margin-top:4px;">Sans compte · 100% privé · Gratuit</p>
       </div>
     </div>
 
-    <!-- ===== CREATE ===== -->
-    <div id="screen-create" class="screen" style="padding:32px 20px 40px;gap:18px;overflow-y:auto;position:relative;">
+    <!-- ======== CREATE ======== -->
+    <div id="screen-create" class="screen">
       <div class="blob" style="width:340px;height:340px;top:-80px;left:-70px;background:radial-gradient(circle,rgba(139,92,246,0.18) 0%,transparent 70%);filter:blur(50px);"></div>
       <div class="blob" style="width:300px;height:300px;bottom:-60px;right:-60px;background:radial-gradient(circle,rgba(236,72,153,0.15) 0%,transparent 70%);filter:blur(50px);"></div>
 
-      <div style="display:flex;align-items:center;gap:14px;z-index:1;">
-        <button onclick="show('home')" style="width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#f0f0f5;font-size:1.1rem;cursor:pointer;">←</button>
+      <div style="padding:32px 20px 16px;display:flex;align-items:center;gap:14px;z-index:1;">
+        <button class="btn-back" onclick="show('home')">←</button>
         <div>
           <h1 style="font-size:1.5rem;font-weight:900;">Créer une salle</h1>
           <p style="font-size:12px;color:rgba(240,240,245,0.40);">Configure ton quiz privé</p>
         </div>
       </div>
 
-      <div class="card" style="padding:20px;z-index:1;display:flex;flex-direction:column;gap:12px;">
-        <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.50);">🏠 Nom de la salle</label>
-        <input type="text" value="Soirée de Jean 🎉" style="width:100%;padding:14px 16px;border-radius:14px;font-size:1.05rem;font-weight:600;">
-      </div>
+      <div class="scroll-area" style="z-index:1;">
 
-      <div class="card" style="padding:20px;z-index:1;display:flex;flex-direction:column;gap:12px;">
-        <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.50);">👤 Ton pseudo</label>
-        <input type="text" value="Jean 😎" style="width:100%;padding:14px 16px;border-radius:14px;font-size:1.05rem;font-weight:600;">
-        <p style="font-size:11px;color:rgba(240,240,245,0.30);">Tu participeras aussi au quiz</p>
-      </div>
-
-      <div class="card" style="padding:20px;z-index:1;display:flex;flex-direction:column;gap:12px;">
-        <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.50);">📸 Image de fond</label>
-        <div style="width:100%;height:130px;border-radius:16px;background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(236,72,153,0.18));border:2px dashed rgba(255,255,255,0.15);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(240,240,245,0.40);cursor:pointer;">
-          <span style="font-size:2.2rem;">🖼️</span>
-          <span style="font-size:12px;font-weight:600;">Appuie pour choisir une photo</span>
+        <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <label class="label-sm">🏠 Nom de la salle</label>
+          <input type="text" value="Soirée de Jean 🎉" placeholder="Nom de la salle…">
         </div>
-      </div>
 
-      <div class="card" style="padding:20px;z-index:1;display:flex;flex-direction:column;gap:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.50);">❓ Questions (3)</label>
-          <span style="font-size:11px;color:rgba(240,240,245,0.30);padding:4px 10px;border-radius:8px;background:rgba(255,255,255,0.06);">Oui / Non</span>
+        <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <label class="label-sm">👤 Ton pseudo</label>
+          <input type="text" value="Jean 😎" placeholder="Ton prénom…">
+          <p style="font-size:11px;color:rgba(240,240,245,0.28);">Tu participeras aussi au quiz</p>
         </div>
-        ${['As-tu déjà séché un cours ?','As-tu déjà menti à un ami ?','As-tu déjà eu un crush secret ?'].map((q,i)=>`
-        <div style="display:flex;gap:10px;align-items:center;">
-          <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#ec4899);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">${i+1}</div>
-          <input type="text" value="${q}" style="flex:1;padding:11px 14px;border-radius:12px;font-size:0.88rem;">
-          <button style="width:32px;height:32px;border-radius:10px;background:rgba(239,68,68,0.15);border:none;color:#fca5a5;font-size:1.1rem;cursor:pointer;flex-shrink:0;">×</button>
-        </div>`).join('')}
-        <button style="width:100%;padding:13px;border-radius:14px;border:2px dashed rgba(255,255,255,0.14);background:transparent;color:rgba(240,240,245,0.40);font-weight:600;cursor:pointer;font-size:.9rem;font-family:inherit;">+ Ajouter une question</button>
-      </div>
 
-      <button class="btn-primary" style="z-index:1;" onclick="show('waiting')">🚀 Créer ma salle</button>
+        <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <label class="label-sm">📸 Image de fond</label>
+          <div style="width:100%;height:130px;border-radius:16px;background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(236,72,153,0.18));border:2px dashed rgba(255,255,255,0.15);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(240,240,245,0.40);cursor:pointer;">
+            <span style="font-size:2.2rem;">🖼️</span>
+            <span style="font-size:12px;font-weight:600;">Appuie pour choisir une photo</span>
+          </div>
+        </div>
+
+        <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="label-sm">❓ Questions (3)</span>
+            <span style="font-size:11px;color:rgba(240,240,245,0.30);padding:4px 10px;border-radius:8px;background:rgba(255,255,255,0.06);">Oui / Non</span>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#ec4899);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">1</div>
+            <input type="text" value="As-tu déjà séché un cours ?" style="flex:1;width:auto;">
+            <button style="width:32px;height:32px;border-radius:10px;background:rgba(239,68,68,0.15);border:none;color:#fca5a5;font-size:1.1rem;cursor:pointer;flex-shrink:0;">×</button>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#ec4899);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">2</div>
+            <input type="text" value="As-tu déjà menti à un ami ?" style="flex:1;width:auto;">
+            <button style="width:32px;height:32px;border-radius:10px;background:rgba(239,68,68,0.15);border:none;color:#fca5a5;font-size:1.1rem;cursor:pointer;flex-shrink:0;">×</button>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#ec4899);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">3</div>
+            <input type="text" value="As-tu déjà eu un crush secret ?" style="flex:1;width:auto;">
+            <button style="width:32px;height:32px;border-radius:10px;background:rgba(239,68,68,0.15);border:none;color:#fca5a5;font-size:1.1rem;cursor:pointer;flex-shrink:0;">×</button>
+          </div>
+
+          <button style="width:100%;padding:13px;border-radius:14px;border:2px dashed rgba(255,255,255,0.14);background:transparent;color:rgba(240,240,245,0.40);font-weight:600;cursor:pointer;font-size:.9rem;font-family:inherit;">+ Ajouter une question</button>
+        </div>
+
+        <button class="btn-grad" onclick="show('waiting')">🚀 Créer ma salle</button>
+      </div>
     </div>
 
-    <!-- ===== JOIN ===== -->
-    <div id="screen-join" class="screen" style="padding:32px 24px 40px;position:relative;overflow:hidden;">
+    <!-- ======== JOIN ======== -->
+    <div id="screen-join" class="screen" style="padding:32px 24px 40px;">
       <div class="blob" style="width:400px;height:400px;top:-120px;right:-80px;background:radial-gradient(circle,rgba(59,130,246,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
       <div class="blob" style="width:350px;height:350px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(139,92,246,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
 
       <div style="display:flex;align-items:center;gap:14px;z-index:1;margin-bottom:8px;">
-        <button onclick="show('home')" style="width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#f0f0f5;font-size:1.1rem;cursor:pointer;">←</button>
+        <button class="btn-back" onclick="show('home')">←</button>
         <h1 style="font-size:1.5rem;font-weight:900;">Rejoindre une salle</h1>
       </div>
 
-      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;z-index:1;padding:16px 0;">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;z-index:1;">
         <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:16px 0;">
           <div style="width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:3rem;box-shadow:0 20px 50px rgba(59,130,246,0.35);">🚪</div>
           <p style="text-align:center;color:rgba(240,240,245,0.48);font-size:.9rem;max-width:250px;line-height:1.5;">Entre le code partagé par ton ami pour rejoindre sa salle</p>
         </div>
 
         <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:10px;">
-          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.50);">Code de la salle</label>
-          <input type="text" value="AB12C3" style="width:100%;padding:18px;border-radius:14px;font-size:2rem;font-weight:900;letter-spacing:.3em;text-align:center;text-transform:uppercase;">
+          <label class="label-sm">Code de la salle</label>
+          <input type="text" value="AB12C3" style="font-size:2rem;font-weight:900;letter-spacing:.3em;text-align:center;text-transform:uppercase;padding:18px;">
         </div>
 
         <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:10px;">
-          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.50);">Ton pseudo</label>
-          <input type="text" value="Sarah 🌸" style="width:100%;padding:14px 16px;border-radius:14px;font-size:1.05rem;font-weight:600;">
+          <label class="label-sm">Ton pseudo</label>
+          <input type="text" value="Sarah 🌸" placeholder="Ton prénom…">
         </div>
 
         <button style="width:100%;padding:18px;border-radius:16px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border:none;color:#fff;font-weight:700;font-size:1.05rem;cursor:pointer;box-shadow:0 10px 40px rgba(59,130,246,0.28);font-family:inherit;" onclick="show('waiting')">Rejoindre →</button>
       </div>
     </div>
 
-    <!-- ===== WAITING ROOM ===== -->
-    <div id="screen-waiting" class="screen" style="position:relative;min-height:844px;">
-      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0533,#070d20,#1a082a);z-index:0;"></div>
-      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.50) 0%,rgba(0,0,0,0.20) 40%,rgba(0,0,0,0.70) 100%);z-index:1;"></div>
+    <!-- ======== WAITING ROOM ======== -->
+    <div id="screen-waiting" class="screen" style="min-height:844px;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0533,#070d20,#1a082a);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.50) 0%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.75) 100%);"></div>
       <div class="blob" style="width:350px;height:350px;top:5%;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(139,92,246,0.35) 0%,transparent 70%);filter:blur(70px);z-index:0;"></div>
 
-      <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:40px 20px 32px;gap:0;">
-        <!-- Header -->
-        <div style="text-align:center;margin-bottom:24px;">
-          <h1 style="font-size:1.8rem;font-weight:900;text-shadow:0 2px 12px rgba(0,0,0,0.6);">Soirée de Jean 🎉</h1>
-          <div style="display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:6px 16px;border-radius:999px;background:rgba(0,0,0,0.40);backdrop-filter:blur(12px);">
-            <span style="font-weight:900;letter-spacing:.15em;font-size:1.1rem;">AB12C3</span>
+      <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:40px 20px 32px;gap:16px;">
+
+        <div style="text-align:center;">
+          <h1 style="font-size:1.7rem;font-weight:900;text-shadow:0 2px 12px rgba(0,0,0,0.6);">Soirée de Jean 🎉</h1>
+          <div style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:7px 16px;border-radius:999px;background:rgba(0,0,0,0.45);backdrop-filter:blur(12px);">
+            <span style="font-weight:900;letter-spacing:.15em;font-size:1.05rem;">AB12C3</span>
             <button style="background:rgba(255,255,255,0.15);border:none;border-radius:8px;padding:3px 8px;color:#f0f0f5;font-size:11px;cursor:pointer;font-family:inherit;">📋 Copier</button>
           </div>
         </div>
 
-        <!-- Players -->
-        <div class="card" style="padding:20px;flex:1;display:flex;flex-direction:column;gap:16px;">
+        <div class="card" style="padding:18px;flex:1;display:flex;flex-direction:column;gap:14px;overflow-y:auto;">
           <div style="display:flex;align-items:center;justify-content:space-between;">
-            <p style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(240,240,245,0.50);">Joueurs connectés</p>
-            <div style="padding:4px 12px;border-radius:999px;background:linear-gradient(135deg,rgba(139,92,246,0.3),rgba(236,72,153,0.2));border:1px solid rgba(168,85,247,0.30);font-size:13px;font-weight:800;">4 / ?</div>
+            <span class="label-sm">Joueurs connectés</span>
+            <div style="padding:4px 12px;border-radius:999px;background:linear-gradient(135deg,rgba(139,92,246,0.3),rgba(236,72,153,0.2));border:1px solid rgba(168,85,247,0.30);font-size:13px;font-weight:800;">4</div>
           </div>
 
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            ${[
-              ['J','Jean 😎','linear-gradient(135deg,#8b5cf6,#ec4899)','Créateur',true],
-              ['S','Sarah 🌸','linear-gradient(135deg,#3b82f6,#06b6d4)','',false],
-              ['L','Lucas 🎮','linear-gradient(135deg,#10b981,#059669)','',false],
-              ['C','Camille ✨','linear-gradient(135deg,#f59e0b,#ef4444)','',false],
-            ].map(([letter,name,bg,tag,isHost],i)=>`
-            <div class="appear" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);animation-delay:${i*0.08}s;">
-              <div class="avatar" style="background:${bg};">${letter}</div>
-              <div style="flex:1;">
-                <div style="font-weight:700;font-size:.95rem;">${name}</div>
-                ${isHost ? '<div style="font-size:11px;color:rgba(168,85,247,0.9);font-weight:700;">👑 Créateur</div>' : '<div style="font-size:11px;color:rgba(240,240,245,0.35);">Participant</div>'}
-              </div>
-              <div style="width:8px;height:8px;border-radius:999px;background:#10b981;box-shadow:0 0 8px rgba(16,185,129,0.6);"></div>
-            </div>`).join('')}
-
-            <div style="padding:12px 14px;border-radius:16px;border:2px dashed rgba(255,255,255,0.10);display:flex;align-items:center;gap:12px;color:rgba(240,240,245,0.30);">
-              <div style="width:48px;height:48px;border-radius:16px;border:2px dashed rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">+</div>
-              <span style="font-size:.9rem;">En attente d'autres joueurs…</span>
+          <!-- Player 1 (host) -->
+          <div class="appear" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+            <div class="avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899);">J</div>
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:.95rem;">Jean 😎</div>
+              <div style="font-size:11px;color:rgba(168,85,247,0.9);font-weight:700;">👑 Créateur</div>
             </div>
+            <div class="online-dot"></div>
+          </div>
+
+          <!-- Player 2 -->
+          <div class="appear" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);animation-delay:.08s;">
+            <div class="avatar" style="background:linear-gradient(135deg,#3b82f6,#06b6d4);">S</div>
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:.95rem;">Sarah 🌸</div>
+              <div style="font-size:11px;color:rgba(240,240,245,0.35);">Participant</div>
+            </div>
+            <div class="online-dot"></div>
+          </div>
+
+          <!-- Player 3 -->
+          <div class="appear" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);animation-delay:.16s;">
+            <div class="avatar" style="background:linear-gradient(135deg,#10b981,#059669);">L</div>
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:.95rem;">Lucas 🎮</div>
+              <div style="font-size:11px;color:rgba(240,240,245,0.35);">Participant</div>
+            </div>
+            <div class="online-dot"></div>
+          </div>
+
+          <!-- Player 4 -->
+          <div class="appear" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);animation-delay:.24s;">
+            <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">C</div>
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:.95rem;">Camille ✨</div>
+              <div style="font-size:11px;color:rgba(240,240,245,0.35);">Participant</div>
+            </div>
+            <div class="online-dot"></div>
+          </div>
+
+          <!-- Waiting slot -->
+          <div style="padding:12px 14px;border-radius:16px;border:2px dashed rgba(255,255,255,0.10);display:flex;align-items:center;gap:12px;color:rgba(240,240,245,0.28);">
+            <div style="width:48px;height:48px;border-radius:16px;border:2px dashed rgba(255,255,255,0.14);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">+</div>
+            <span style="font-size:.88rem;">En attente d'autres joueurs…</span>
           </div>
         </div>
 
-        <!-- Bottom -->
-        <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
-          <button class="btn-primary" style="font-size:1.1rem;" onclick="show('quiz')">🚀 Lancer la partie</button>
-          <button style="width:100%;padding:14px;border-radius:16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);color:rgba(240,240,245,0.60);font-weight:600;cursor:pointer;font-size:.95rem;font-family:inherit;">🔗 Partager le lien</button>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <button class="btn-grad" style="font-size:1.1rem;" onclick="show('quiz')">🚀 Lancer la partie</button>
+          <button class="btn-glass" style="padding:13px;">🔗 Partager le lien</button>
         </div>
       </div>
     </div>
 
-    <!-- ===== QUIZ ===== -->
-    <div id="screen-quiz" class="screen" style="position:relative;min-height:844px;">
-      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0533,#070d20,#1a082a);z-index:0;"></div>
-      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.55),transparent 35%,rgba(0,0,0,0.80));z-index:1;"></div>
+    <!-- ======== QUIZ ======== -->
+    <div id="screen-quiz" class="screen" style="min-height:844px;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0533,#070d20,#1a082a);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.55),transparent 35%,rgba(0,0,0,0.80));"></div>
       <div class="blob" style="width:320px;height:320px;top:8%;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(139,92,246,0.38) 0%,transparent 70%);filter:blur(65px);z-index:0;"></div>
 
       <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:36px 20px 32px;gap:14px;">
@@ -235,8 +281,8 @@
           <div style="padding:7px 14px;border-radius:12px;background:rgba(0,0,0,0.45);backdrop-filter:blur(12px);font-weight:800;font-size:14px;">2 / 5</div>
         </div>
 
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:40%;"></div>
+        <div class="progress-outer">
+          <div class="progress-inner" style="width:40%;"></div>
         </div>
 
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;">
@@ -260,17 +306,17 @@
         <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
           <span style="font-size:12px;color:rgba(240,240,245,0.32);">Code :</span>
           <span style="font-weight:900;letter-spacing:.18em;color:rgba(240,240,245,0.65);font-size:13px;">AB12C3</span>
-          <span style="color:rgba(240,240,245,0.32);cursor:pointer;">📋</span>
+          <span style="color:rgba(240,240,245,0.32);cursor:pointer;font-size:13px;">📋</span>
         </div>
       </div>
     </div>
 
-    <!-- ===== DONE ===== -->
-    <div id="screen-done" class="screen" style="padding:40px 24px;align-items:center;justify-content:center;gap:24px;position:relative;overflow:hidden;">
+    <!-- ======== DONE ======== -->
+    <div id="screen-done" class="screen" style="padding:40px 24px;align-items:center;justify-content:center;gap:22px;">
       <div class="blob" style="width:420px;height:420px;top:-100px;left:-90px;background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);filter:blur(60px);"></div>
       <div class="blob" style="width:400px;height:400px;bottom:-100px;right:-90px;background:radial-gradient(circle,rgba(236,72,153,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
 
-      <div style="z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px;width:100%;">
+      <div style="z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;">
         <div style="font-size:4.5rem;line-height:1;">🎉</div>
         <div>
           <h2 style="font-size:2rem;font-weight:900;margin-bottom:8px;">C'est terminé !</h2>
@@ -283,151 +329,220 @@
             <div style="flex:1;padding:14px;border-radius:14px;background:rgba(255,255,255,0.08);text-align:center;font-weight:900;font-size:1.5rem;letter-spacing:.25em;">AB12C3</div>
             <button style="padding:0 16px;border-radius:14px;background:rgba(255,255,255,0.08);border:none;color:#f0f0f5;font-size:1.2rem;cursor:pointer;">📋</button>
           </div>
-          <button style="width:100%;padding:14px;border-radius:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#f0f0f5;font-weight:600;cursor:pointer;font-family:inherit;font-size:.95rem;">🔗 Partager le lien</button>
+          <button class="btn-glass" style="padding:13px;">🔗 Partager le lien</button>
         </div>
 
         <div style="width:100%;padding:14px 18px;border-radius:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:10px;height:10px;border-radius:999px;background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,0.6);" class="pulse"></div>
-            <span style="font-size:13px;color:rgba(240,240,245,0.55);">En attente des autres joueurs…</span>
+            <div style="width:9px;height:9px;border-radius:999px;background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,0.6);" class="pulse"></div>
+            <span style="font-size:13px;color:rgba(240,240,245,0.50);">En attente des autres joueurs…</span>
           </div>
-          <span style="font-size:13px;font-weight:700;color:rgba(240,240,245,0.40);">3/4</span>
+          <span style="font-size:13px;font-weight:700;color:rgba(240,240,245,0.38);">3/4</span>
         </div>
 
-        <button class="btn-primary" onclick="show('results')">🔍 Voir les résultats</button>
+        <button class="btn-grad" onclick="show('results')">🔍 Voir les résultats</button>
       </div>
     </div>
 
-    <!-- ===== RESULTS ===== -->
-    <div id="screen-results" class="screen" style="padding:32px 20px 48px;gap:18px;overflow-y:auto;position:relative;">
+    <!-- ======== RESULTS ======== -->
+    <div id="screen-results" class="screen">
       <div class="blob" style="width:360px;height:360px;top:-80px;right:-80px;background:radial-gradient(circle,rgba(139,92,246,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
       <div class="blob" style="width:300px;height:300px;bottom:-60px;left:-60px;background:radial-gradient(circle,rgba(236,72,153,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
 
-      <!-- Header -->
-      <div style="display:flex;align-items:center;gap:14px;z-index:1;">
-        <button onclick="show('done')" style="width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#f0f0f5;font-size:1.1rem;cursor:pointer;">←</button>
+      <div style="padding:32px 20px 16px;display:flex;align-items:center;gap:14px;z-index:1;flex-shrink:0;">
+        <button class="btn-back" onclick="show('done')">←</button>
         <div>
           <div style="font-size:1.4rem;font-weight:900;">Soirée de Jean 🎉</div>
           <div style="font-size:12px;color:rgba(240,240,245,0.40);font-weight:600;">Résultats finaux</div>
         </div>
       </div>
 
-      <!-- Group level card -->
-      <div style="padding:24px;border-radius:28px;background:linear-gradient(135deg,rgba(249,115,22,0.22),rgba(239,68,68,0.18));border:1px solid rgba(249,115,22,0.28);text-align:center;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px;">
-        <div style="font-size:3.5rem;line-height:1;">🔥</div>
+      <div class="scroll-area" style="z-index:1;">
+
+        <!-- Group level -->
+        <div style="padding:24px;border-radius:28px;background:linear-gradient(135deg,rgba(249,115,22,0.22),rgba(239,68,68,0.18));border:1px solid rgba(249,115,22,0.28);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <div style="font-size:3.5rem;line-height:1;">🔥</div>
+          <div>
+            <div style="font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fb923c,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Aventurier</div>
+            <div style="font-size:.9rem;color:rgba(240,240,245,0.55);margin-top:4px;">Toujours partant pour l'imprévu</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="card" style="padding:18px;">
+            <div style="font-size:2.6rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4</div>
+            <div style="font-size:12px;color:rgba(240,240,245,0.45);font-weight:600;margin-top:2px;">Participants</div>
+          </div>
+          <div class="card" style="padding:18px;">
+            <div style="font-size:2.6rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">20</div>
+            <div style="font-size:12px;color:rgba(240,240,245,0.45);font-weight:600;margin-top:2px;">Réponses</div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div style="padding:20px 22px;border-radius:24px;background:linear-gradient(135deg,rgba(139,92,246,0.22),rgba(236,72,153,0.18));border:1px solid rgba(168,85,247,0.28);">
+          <p style="font-size:1.05rem;font-weight:900;text-align:center;line-height:1.45;">Ce groupe ose. Respect. 🙌</p>
+        </div>
+
+        <!-- Controversial + Consensus -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="card" style="padding:16px;">
+            <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#fbbf24;margin-bottom:8px;">🔥 Controversée</p>
+            <p style="font-size:.82rem;font-weight:700;line-height:1.3;margin-bottom:10px;">As-tu déjà menti à un ami ?</p>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <span class="pill-yes">51% Oui</span>
+              <span class="pill-no">49% Non</span>
+            </div>
+          </div>
+          <div class="card" style="padding:16px;">
+            <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#34d399;margin-bottom:8px;">🤝 Consensus</p>
+            <p style="font-size:.82rem;font-weight:700;line-height:1.3;margin-bottom:10px;">As-tu déjà eu un crush secret ?</p>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;">
+              <span class="pill-yes">92% Oui</span>
+              <span class="pill-no">8% Non</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Badges -->
         <div>
-          <div style="font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fb923c,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Aventurier</div>
-          <div style="font-size:.9rem;color:rgba(240,240,245,0.55);margin-top:4px;">Toujours partant pour l'imprévu</div>
-        </div>
-      </div>
-
-      <!-- Stats -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;z-index:1;">
-        <div class="card" style="padding:18px;">
-          <div style="font-size:2.6rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4</div>
-          <div style="font-size:12px;color:rgba(240,240,245,0.45);font-weight:600;margin-top:2px;">Participants</div>
-        </div>
-        <div class="card" style="padding:18px;">
-          <div style="font-size:2.6rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">20</div>
-          <div style="font-size:12px;color:rgba(240,240,245,0.45);font-weight:600;margin-top:2px;">Réponses</div>
-        </div>
-      </div>
-
-      <!-- Summary -->
-      <div style="padding:20px 22px;border-radius:24px;background:linear-gradient(135deg,rgba(139,92,246,0.22),rgba(236,72,153,0.18));border:1px solid rgba(168,85,247,0.28);z-index:1;">
-        <p style="font-size:1.05rem;font-weight:900;text-align:center;line-height:1.45;">Ce groupe ose. Respect. 🙌</p>
-      </div>
-
-      <!-- 2 highlight cards -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;z-index:1;">
-        <div class="card" style="padding:16px;">
-          <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#fbbf24;margin-bottom:8px;">🔥 Controversée</p>
-          <p style="font-size:.82rem;font-weight:700;line-height:1.3;margin-bottom:10px;color:rgba(240,240,245,0.90);">As-tu déjà menti à un ami ?</p>
-          <div style="display:flex;gap:5px;flex-wrap:wrap;">
-            <span style="padding:3px 9px;border-radius:999px;background:rgba(16,185,129,0.20);color:#6ee7b7;font-weight:700;font-size:11px;">51% Oui</span>
-            <span style="padding:3px 9px;border-radius:999px;background:rgba(239,68,68,0.20);color:#fca5a5;font-weight:700;font-size:11px;">49% Non</span>
+          <div class="label-sm" style="margin-bottom:12px;">Badges du groupe</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="padding:16px 14px;border-radius:18px;background:rgba(239,68,68,0.13);border:1px solid rgba(239,68,68,0.22);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;">
+              <span style="font-size:2rem;">🔥</span>
+              <span style="font-size:12px;font-weight:800;">Le plus aventurier</span>
+              <span style="font-size:10px;color:rgba(240,240,245,0.38);line-height:1.3;">A répondu Oui le plus souvent</span>
+            </div>
+            <div style="padding:16px 14px;border-radius:18px;background:rgba(234,179,8,0.13);border:1px solid rgba(234,179,8,0.22);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;">
+              <span style="font-size:2rem;">👑</span>
+              <span style="font-size:12px;font-weight:800;">Le plus imprévisible</span>
+              <span style="font-size:10px;color:rgba(240,240,245,0.38);line-height:1.3;">Ses réponses surprennent</span>
+            </div>
+            <div style="padding:16px 14px;border-radius:18px;background:rgba(16,185,129,0.13);border:1px solid rgba(16,185,129,0.22);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;">
+              <span style="font-size:2rem;">😇</span>
+              <span style="font-size:12px;font-weight:800;">Le plus sage</span>
+              <span style="font-size:10px;color:rgba(240,240,245,0.38);line-height:1.3;">A répondu Non le plus souvent</span>
+            </div>
+            <div style="padding:16px 14px;border-radius:18px;background:rgba(139,92,246,0.13);border:1px solid rgba(139,92,246,0.22);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;">
+              <span style="font-size:2rem;">🎭</span>
+              <span style="font-size:12px;font-weight:800;">Le plus mystérieux</span>
+              <span style="font-size:10px;color:rgba(240,240,245,0.38);line-height:1.3;">Difficile à cerner</span>
+            </div>
           </div>
         </div>
-        <div class="card" style="padding:16px;">
-          <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#34d399;margin-bottom:8px;">🤝 Consensus</p>
-          <p style="font-size:.82rem;font-weight:700;line-height:1.3;margin-bottom:10px;color:rgba(240,240,245,0.90);">As-tu déjà eu un crush secret ?</p>
-          <div style="display:flex;gap:5px;flex-wrap:wrap;">
-            <span style="padding:3px 9px;border-radius:999px;background:rgba(16,185,129,0.20);color:#6ee7b7;font-weight:700;font-size:11px;">92% Oui</span>
-            <span style="padding:3px 9px;border-radius:999px;background:rgba(239,68,68,0.20);color:#fca5a5;font-weight:700;font-size:11px;">8% Non</span>
+
+        <!-- All questions -->
+        <div>
+          <div class="label-sm" style="margin-bottom:12px;">Toutes les questions</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <div class="card" style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;">
+                <p style="font-weight:600;font-size:.88rem;line-height:1.4;flex:1;">As-tu déjà séché un cours ?</p>
+                <span style="font-size:11px;color:rgba(240,240,245,0.28);font-weight:700;">1</span>
+              </div>
+              <div class="result-outer"><div class="result-inner" style="width:65%;"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;">
+                <span style="color:#6ee7b7;">✅ 65% Oui</span><span style="color:#fca5a5;">❌ 35% Non</span>
+              </div>
+            </div>
+
+            <div class="card" style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;">
+                <p style="font-weight:600;font-size:.88rem;line-height:1.4;flex:1;">As-tu déjà menti à un ami ?</p>
+                <span style="font-size:11px;color:rgba(240,240,245,0.28);font-weight:700;">2</span>
+              </div>
+              <div class="result-outer"><div class="result-inner" style="width:51%;"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;">
+                <span style="color:#6ee7b7;">✅ 51% Oui</span><span style="color:#fca5a5;">❌ 49% Non</span>
+              </div>
+            </div>
+
+            <div class="card" style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;">
+                <p style="font-weight:600;font-size:.88rem;line-height:1.4;flex:1;">As-tu déjà eu un crush secret ?</p>
+                <span style="font-size:11px;color:rgba(240,240,245,0.28);font-weight:700;">3</span>
+              </div>
+              <div class="result-outer"><div class="result-inner" style="width:92%;"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;">
+                <span style="color:#6ee7b7;">✅ 92% Oui</span><span style="color:#fca5a5;">❌ 8% Non</span>
+              </div>
+            </div>
+
+            <div class="card" style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;">
+                <p style="font-weight:600;font-size:.88rem;line-height:1.4;flex:1;">As-tu déjà pleuré devant un film ?</p>
+                <span style="font-size:11px;color:rgba(240,240,245,0.28);font-weight:700;">4</span>
+              </div>
+              <div class="result-outer"><div class="result-inner" style="width:78%;"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;">
+                <span style="color:#6ee7b7;">✅ 78% Oui</span><span style="color:#fca5a5;">❌ 22% Non</span>
+              </div>
+            </div>
+
+            <div class="card" style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;">
+                <p style="font-weight:600;font-size:.88rem;line-height:1.4;flex:1;">Tu penses être le préféré du groupe ?</p>
+                <span style="font-size:11px;color:rgba(240,240,245,0.28);font-weight:700;">5</span>
+              </div>
+              <div class="result-outer"><div class="result-inner" style="width:45%;"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;">
+                <span style="color:#6ee7b7;">✅ 45% Oui</span><span style="color:#fca5a5;">❌ 55% Non</span>
+              </div>
+            </div>
+
           </div>
         </div>
-      </div>
 
-      <!-- Badges -->
-      <div style="z-index:1;">
-        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.40);margin-bottom:12px;">Badges du groupe</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          ${[
-            ['🔥','Le plus aventurier','A répondu Oui le plus souvent','rgba(239,68,68,0.14)','rgba(239,68,68,0.22)'],
-            ['👑','Le plus imprévisible','Ses réponses surprennent','rgba(234,179,8,0.14)','rgba(234,179,8,0.22)'],
-            ['😇','Le plus sage','A répondu Non le plus souvent','rgba(16,185,129,0.14)','rgba(16,185,129,0.22)'],
-            ['🎭','Le plus mystérieux','Difficile à cerner','rgba(139,92,246,0.14)','rgba(139,92,246,0.22)'],
-          ].map(([em,label,desc,bg,border])=>`
-          <div style="padding:16px 14px;border-radius:18px;background:${bg};border:1px solid ${border};display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;">
-            <span style="font-size:2rem;">${em}</span>
-            <span style="font-size:12px;font-weight:800;color:rgba(240,240,245,0.88);line-height:1.3;">${label}</span>
-            <span style="font-size:10px;color:rgba(240,240,245,0.40);line-height:1.3;">${desc}</span>
-          </div>`).join('')}
+        <!-- Share -->
+        <div class="card" style="padding:18px;display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:13px;color:rgba(240,240,245,0.40);text-align:center;">Invite plus d'amis !</p>
+          <div style="display:flex;gap:10px;">
+            <div style="flex:1;padding:12px;border-radius:12px;background:rgba(255,255,255,0.08);text-align:center;font-weight:900;font-size:1.3rem;letter-spacing:.2em;">AB12C3</div>
+            <button style="padding:0 14px;border-radius:12px;background:rgba(255,255,255,0.08);border:none;color:#f0f0f5;font-size:1.1rem;cursor:pointer;">📋</button>
+          </div>
+          <button class="btn-grad">🔗 Partager le lien</button>
         </div>
-      </div>
 
-      <!-- Questions -->
-      <div style="z-index:1;display:flex;flex-direction:column;gap:10px;">
-        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.40);">Toutes les questions</div>
-        ${[
-          ["As-tu déjà séché un cours ?", 65],
-          ["As-tu déjà menti à un ami ?", 51],
-          ["As-tu déjà eu un crush secret ?", 92],
-          ["As-tu déjà pleuré devant un film ?", 78],
-          ["Tu penses être le préféré du groupe ?", 45],
-        ].map(([q,yes],i)=>`
-        <div class="card" style="padding:16px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;">
-            <p style="font-weight:600;font-size:.88rem;line-height:1.4;margin:0;flex:1;">${q}</p>
-            <span style="font-size:11px;color:rgba(240,240,245,0.28);font-weight:700;flex-shrink:0;">${i+1}</span>
-          </div>
-          <div class="result-bar" style="margin-bottom:8px;">
-            <div style="height:100%;width:${yes}%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:99px;"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;">
-            <span style="color:#6ee7b7;">✅ ${yes}% Oui</span>
-            <span style="color:#fca5a5;">❌ ${100-yes}% Non</span>
-          </div>
-        </div>`).join('')}
-      </div>
-
-      <!-- Share -->
-      <div class="card" style="padding:18px;z-index:1;display:flex;flex-direction:column;gap:12px;">
-        <p style="font-size:13px;color:rgba(240,240,245,0.40);text-align:center;margin:0;">Invite plus d'amis !</p>
-        <div style="display:flex;gap:10px;">
-          <div style="flex:1;padding:12px;border-radius:12px;background:rgba(255,255,255,0.08);text-align:center;font-weight:900;font-size:1.3rem;letter-spacing:.2em;">AB12C3</div>
-          <button style="padding:0 14px;border-radius:12px;background:rgba(255,255,255,0.08);border:none;color:#f0f0f5;font-size:1.1rem;cursor:pointer;">📋</button>
+        <div style="text-align:center;padding-bottom:8px;">
+          <a href="#" onclick="show('home');return false;" style="color:rgba(240,240,245,0.25);font-size:13px;text-decoration:none;">Créer une nouvelle salle</a>
         </div>
-        <button style="width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;">🔗 Partager le lien</button>
-      </div>
 
-      <div style="text-align:center;z-index:1;">
-        <a href="#" onclick="show('home')" style="color:rgba(240,240,245,0.25);font-size:13px;text-decoration:none;">Créer une nouvelle salle</a>
       </div>
     </div>
 
   </div><!-- /.phone -->
 
-  <p style="font-size:12px;color:rgba(240,240,245,0.18);margin-top:24px;">Prévisualisation statique — v2 avec salle d'attente & résultats complets</p>
+  <p style="font-size:11px;color:rgba(240,240,245,0.18);margin-top:20px;">Prévisualisation statique — Inside v2</p>
 
 <script>
-const labels = { home:'🏠 Accueil', create:'✨ Créer', join:'🚪 Rejoindre', waiting:'⏳ Salle d\'attente', quiz:'🎯 Quiz', done:'🎉 Terminé', results:'📊 Résultats' }
+const labels = {
+  home: '🏠 Accueil',
+  create: '✨ Créer',
+  join: '🚪 Rejoindre',
+  waiting: '⏳ Attente',
+  quiz: '🎯 Quiz',
+  done: '🎉 Terminé',
+  results: '📊 Résultats'
+}
+
 function show(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
   document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'))
-  document.getElementById('screen-' + name).classList.add('active')
-  document.querySelectorAll('.nav button').forEach(b => { if(b.textContent.trim() === labels[name]) b.classList.add('active') })
-  document.querySelector('.phone').scrollTop = 0
+  const screen = document.getElementById('screen-' + name)
+  if (screen) screen.classList.add('active')
+  document.querySelectorAll('.nav button').forEach(b => {
+    if (b.textContent.trim() === labels[name]) b.classList.add('active')
+  })
+  // scroll phone to top
+  const phone = document.querySelector('.phone')
+  if (phone) phone.scrollTop = 0
+  // scroll inner scroll-area to top
+  if (screen) {
+    const sa = screen.querySelector('.scroll-area')
+    if (sa) sa.scrollTop = 0
+  }
 }
 </script>
 </body>
