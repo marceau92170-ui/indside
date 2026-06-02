@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { generateCode } from '@/lib/game'
+import { TEMPLATES, getTemplateBySlug } from '@/lib/templates'
+import type { GameTemplate } from '@/lib/types'
 
-export default function CreatePage() {
+function CreatePageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const fileRef = useRef<HTMLInputElement>(null)
 
   const [roomName, setRoomName] = useState('')
@@ -15,25 +18,34 @@ export default function CreatePage() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [questions, setQuestions] = useState<string[]>([''])
+  const [pointsEnabled, setPointsEnabled] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [selectedTemplate, setSelectedTemplate] = useState<GameTemplate | null>(null)
+
+  useEffect(() => {
+    const slug = searchParams.get('template')
+    if (!slug) return
+    const tpl = getTemplateBySlug(slug)
+    if (!tpl) return
+    setSelectedTemplate(tpl)
+    if (tpl.slug !== 'creation-libre') {
+      setRoomName(tpl.name)
+      if (tpl.questions && tpl.questions.length > 0) {
+        setQuestions(tpl.questions)
+      }
+    }
+  }, [searchParams])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setImageFile(file)
-    const url = URL.createObjectURL(file)
-    setImagePreview(url)
+    setImagePreview(URL.createObjectURL(file))
   }
 
-  const addQuestion = () => {
-    setQuestions([...questions, ''])
-  }
-
-  const removeQuestion = (i: number) => {
-    setQuestions(questions.filter((_, idx) => idx !== i))
-  }
-
+  const addQuestion = () => setQuestions([...questions, ''])
+  const removeQuestion = (i: number) => setQuestions(questions.filter((_, idx) => idx !== i))
   const updateQuestion = (i: number, val: string) => {
     const updated = [...questions]
     updated[i] = val
@@ -50,7 +62,6 @@ export default function CreatePage() {
     setError('')
 
     try {
-      // Upload image to Supabase Storage if provided
       let imageUrl: string | null = null
       if (imageFile) {
         const ext = imageFile.name.split('.').pop()
@@ -64,10 +75,8 @@ export default function CreatePage() {
         }
       }
 
-      // Generate unique code
       const code = generateCode()
 
-      // Insert room
       const { data: room, error: roomError } = await supabase
         .from('rooms')
         .insert({
@@ -76,38 +85,33 @@ export default function CreatePage() {
           image_url: imageUrl,
           status: 'waiting',
           created_by: nickname.trim(),
+          template_id: null,
+          points_enabled: pointsEnabled,
         })
         .select()
         .single()
 
       if (roomError || !room) throw new Error(roomError?.message || 'Failed to create room')
 
-      // Insert questions
       const questionRows = validQuestions.map((text, i) => ({
         room_id: room.id,
         text,
         type: 'yes_no' as const,
+        points: 10,
         order_index: i,
       }))
       const { error: qError } = await supabase.from('questions').insert(questionRows)
       if (qError) throw new Error(qError.message)
 
-      // Insert creator as host player
       const { data: player, error: playerError } = await supabase
         .from('players')
-        .insert({
-          room_id: room.id,
-          nickname: nickname.trim(),
-          is_host: true,
-        })
+        .insert({ room_id: room.id, nickname: nickname.trim(), is_host: true })
         .select()
         .single()
 
       if (playerError || !player) throw new Error(playerError?.message || 'Failed to create player')
 
-      // Save player id to localStorage
       localStorage.setItem(`inside_player_${code}`, player.id)
-
       router.push(`/room/${code}`)
     } catch (err) {
       console.error(err)
@@ -137,7 +141,24 @@ export default function CreatePage() {
         <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Créer une salle</h1>
       </div>
 
-      {/* Section: Room name */}
+      {/* Template banner */}
+      {selectedTemplate && selectedTemplate.slug !== 'creation-libre' && (
+        <div
+          className="relative z-10 p-4 rounded-2xl flex items-center gap-3"
+          style={{
+            background: `linear-gradient(135deg, ${selectedTemplate.color_from}30, ${selectedTemplate.color_to}25)`,
+            border: `1px solid ${selectedTemplate.color_from}40`,
+          }}
+        >
+          <span style={{ fontSize: '2rem' }}>{selectedTemplate.emoji}</span>
+          <div>
+            <div className="font-bold" style={{ color: '#f0f0f5' }}>{selectedTemplate.name}</div>
+            <div className="text-xs font-medium" style={{ color: 'rgba(240,240,245,0.50)' }}>Modèle pré-rempli · modifiable</div>
+          </div>
+        </div>
+      )}
+
+      {/* Room name */}
       <div className="relative z-10 card p-5 flex flex-col gap-3">
         <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
           🏠 Nom de la salle
@@ -148,14 +169,27 @@ export default function CreatePage() {
           onChange={e => setRoomName(e.target.value)}
           placeholder="Ex : Soirée de Jean 🎉"
           className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
-          style={{
-            background: 'rgba(255,255,255,0.08)',
-            border: '1px solid rgba(255,255,255,0.12)',
-          }}
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
         />
       </div>
 
-      {/* Section: Image upload */}
+      {/* Nickname */}
+      <div className="relative z-10 card p-5 flex flex-col gap-3">
+        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+          🎭 Ton pseudo (tu participeras aussi)
+        </label>
+        <input
+          type="text"
+          value={nickname}
+          onChange={e => setNickname(e.target.value)}
+          placeholder="Ton prénom…"
+          maxLength={20}
+          className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+        />
+      </div>
+
+      {/* Image upload */}
       <div className="relative z-10 card p-5 flex flex-col gap-3">
         <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
           📸 Image de fond
@@ -179,16 +213,44 @@ export default function CreatePage() {
             </div>
           )}
         </button>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleImageChange}
-        />
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
       </div>
 
-      {/* Section: Questions */}
+      {/* Points toggle */}
+      <div className="relative z-10 card p-5 flex items-center justify-between gap-4">
+        <div>
+          <div className="font-bold" style={{ color: '#f0f0f5' }}>🏆 Système de points</div>
+          <div className="text-xs mt-1" style={{ color: 'rgba(240,240,245,0.45)' }}>Active le classement et les scores</div>
+        </div>
+        <button
+          onClick={() => setPointsEnabled(!pointsEnabled)}
+          style={{
+            width: '52px',
+            height: '30px',
+            borderRadius: '9999px',
+            background: pointsEnabled ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'rgba(255,255,255,0.12)',
+            border: 'none',
+            cursor: 'pointer',
+            position: 'relative',
+            transition: 'background .2s',
+            flexShrink: 0,
+          }}
+        >
+          <span style={{
+            position: 'absolute',
+            top: '3px',
+            left: pointsEnabled ? '25px' : '3px',
+            width: '24px',
+            height: '24px',
+            borderRadius: '9999px',
+            background: '#fff',
+            transition: 'left .2s',
+            display: 'block',
+          }} />
+        </button>
+      </div>
+
+      {/* Questions */}
       <div className="relative z-10 card p-5 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
@@ -234,25 +296,6 @@ export default function CreatePage() {
         </div>
       </div>
 
-      {/* Section: Nickname */}
-      <div className="relative z-10 card p-5 flex flex-col gap-3">
-        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-          🎭 Ton pseudo (tu participeras aussi)
-        </label>
-        <input
-          type="text"
-          value={nickname}
-          onChange={e => setNickname(e.target.value)}
-          placeholder="Ton prénom…"
-          maxLength={20}
-          className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
-          style={{
-            background: 'rgba(255,255,255,0.08)',
-            border: '1px solid rgba(255,255,255,0.12)',
-          }}
-        />
-      </div>
-
       {/* Error */}
       {error && (
         <div className="relative z-10 py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
@@ -279,5 +322,17 @@ export default function CreatePage() {
         </button>
       </div>
     </div>
+  )
+}
+
+export default function CreatePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#08080f' }}>
+        <div className="w-14 h-14 rounded-2xl animate-spin" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)' }} />
+      </div>
+    }>
+      <CreatePageInner />
+    </Suspense>
   )
 }

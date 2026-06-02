@@ -11,8 +11,9 @@ import {
   getConsensusQuestion,
   GROUP_LEVEL_INFO,
   BADGES,
+  calculateScores,
 } from '@/lib/game'
-import type { Room, Question, QuestionResult } from '@/lib/types'
+import type { Room, Question, QuestionResult, Player, Answer, PlayerScore } from '@/lib/types'
 
 export default function ResultsPage() {
   const params = useParams()
@@ -23,8 +24,9 @@ export default function ResultsPage() {
   const [results, setResults] = useState<QuestionResult[]>([])
   const [participantCount, setParticipantCount] = useState(0)
   const [loading, setLoading] = useState(true)
-  const roomIdRef = useRef<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [leaderboard, setLeaderboard] = useState<PlayerScore[]>([])
+  const roomIdRef = useRef<string | null>(null)
 
   const loadResults = useCallback(async () => {
     const { data: roomData, error: roomError } = await supabase
@@ -40,12 +42,13 @@ export default function ResultsPage() {
     setRoom(roomData)
     roomIdRef.current = roomData.id
 
-    // Fetch player count
-    const { count: pCount } = await supabase
+    // Fetch players
+    const { data: playersData } = await supabase
       .from('players')
-      .select('*', { count: 'exact', head: true })
+      .select('*')
       .eq('room_id', roomData.id)
-    setParticipantCount(pCount ?? 0)
+    const players: Player[] = playersData ?? []
+    setParticipantCount(players.length)
 
     // Fetch questions
     const { data: qs } = await supabase
@@ -55,15 +58,16 @@ export default function ResultsPage() {
       .order('order_index', { ascending: true })
     const questions: Question[] = qs ?? []
 
-    // Fetch all answers for these questions
+    // Fetch all answers
     const questionIds = questions.map(q => q.id)
-    const { data: answers } = questionIds.length > 0
+    const { data: answersData } = questionIds.length > 0
       ? await supabase.from('answers').select('*').in('question_id', questionIds)
       : { data: [] }
+    const answers: Answer[] = answersData ?? []
 
     // Build results
     const questionResults: QuestionResult[] = questions.map(q => {
-      const qAnswers = (answers ?? []).filter(a => a.question_id === q.id)
+      const qAnswers = answers.filter(a => a.question_id === q.id)
       const yesCount = qAnswers.filter(a => a.value === true).length
       const noCount = qAnswers.filter(a => a.value === false).length
       const total = qAnswers.length
@@ -72,6 +76,10 @@ export default function ResultsPage() {
     })
     setResults(questionResults)
 
+    // Calculate leaderboard
+    const scores = calculateScores(players, questions, answers, roomData.points_enabled)
+    setLeaderboard(scores)
+
     setLoading(false)
   }, [code, router])
 
@@ -79,24 +87,15 @@ export default function ResultsPage() {
     loadResults()
   }, [loadResults])
 
-  // Realtime: reload on new answers
   useEffect(() => {
     if (!roomIdRef.current) return
     const roomId = roomIdRef.current
-
     const channel = supabase.channel(`results-${roomId}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'answers',
-      }, () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'answers' }, () => {
         loadResults()
       })
       .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
+    return () => { supabase.removeChannel(channel) }
   }, [room?.id, loadResults])
 
   const copyCode = async () => {
@@ -122,10 +121,7 @@ export default function ResultsPage() {
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-14 h-14 rounded-2xl animate-spin"
-            style={{
-              background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
-              boxShadow: '0 0 30px rgba(168,85,247,0.4)',
-            }}
+            style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 0 30px rgba(168,85,247,0.4)' }}
           />
           <p style={{ color: 'rgba(240,240,245,0.50)' }}>Calcul des résultats…</p>
         </div>
@@ -139,6 +135,12 @@ export default function ResultsPage() {
   const controversial = getControversialQuestion(results)
   const consensus = getConsensusQuestion(results)
   const totalAnswers = results.reduce((acc, r) => acc + r.total, 0)
+
+  const rankColors = [
+    { bg: 'linear-gradient(135deg, #f59e0b, #fbbf24)', text: '#78350f' },
+    { bg: 'linear-gradient(135deg, #9ca3af, #d1d5db)', text: '#374151' },
+    { bg: 'linear-gradient(135deg, #b45309, #d97706)', text: '#fff' },
+  ]
 
   return (
     <div className="min-h-screen flex flex-col px-6 py-8 gap-6 relative overflow-hidden" style={{ background: '#08080f' }}>
@@ -168,8 +170,8 @@ export default function ResultsPage() {
       <div
         className="relative z-10 p-8 rounded-3xl flex flex-col items-center gap-3 text-center"
         style={{
-          background: levelInfo.color,
-          border: '1px solid rgba(255,255,255,0.15)',
+          background: `linear-gradient(135deg, ${levelInfo.colorFrom}30, ${levelInfo.colorTo}25)`,
+          border: `1px solid ${levelInfo.colorFrom}40`,
           backdropFilter: 'blur(12px)',
         }}
       >
@@ -183,19 +185,13 @@ export default function ResultsPage() {
       {/* Stats row */}
       <div className="relative z-10 grid grid-cols-2 gap-3">
         <div className="card p-5 flex flex-col gap-1">
-          <span
-            className="text-4xl font-black"
-            style={{ background: 'linear-gradient(135deg, #a855f7, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
-          >
+          <span className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #a855f7, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             {participantCount}
           </span>
           <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Participant{participantCount > 1 ? 's' : ''}</span>
         </div>
         <div className="card p-5 flex flex-col gap-1">
-          <span
-            className="text-4xl font-black"
-            style={{ background: 'linear-gradient(135deg, #a855f7, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
-          >
+          <span className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #a855f7, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             {totalAnswers}
           </span>
           <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Réponses</span>
@@ -205,15 +201,12 @@ export default function ResultsPage() {
       {/* Summary card */}
       <div
         className="relative z-10 p-6 rounded-3xl"
-        style={{
-          background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(236,72,153,0.20))',
-          border: '1px solid rgba(168,85,247,0.30)',
-        }}
+        style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(236,72,153,0.20))', border: '1px solid rgba(168,85,247,0.30)' }}
       >
         <p className="text-lg font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>{summary}</p>
       </div>
 
-      {/* Highlight cards: controversial + consensus */}
+      {/* Highlight cards */}
       {(controversial || consensus) && (
         <div className="relative z-10 grid grid-cols-2 gap-3">
           {controversial && controversial.total > 0 && (
@@ -221,12 +214,8 @@ export default function ResultsPage() {
               <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#fbbf24' }}>🔥 La plus controversée</p>
               <p className="text-sm font-bold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{controversial.question.text}</p>
               <div className="flex gap-1 text-xs flex-wrap">
-                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>
-                  {controversial.yesPercent}% Oui
-                </span>
-                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>
-                  {100 - controversial.yesPercent}% Non
-                </span>
+                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>{controversial.yesPercent}% Oui</span>
+                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>{100 - controversial.yesPercent}% Non</span>
               </div>
             </div>
           )}
@@ -235,21 +224,17 @@ export default function ResultsPage() {
               <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#60a5fa' }}>🤝 Le plus de consensus</p>
               <p className="text-sm font-bold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{consensus.question.text}</p>
               <div className="flex gap-1 text-xs flex-wrap">
-                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>
-                  {consensus.yesPercent}% Oui
-                </span>
-                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>
-                  {100 - consensus.yesPercent}% Non
-                </span>
+                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>{consensus.yesPercent}% Oui</span>
+                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>{100 - consensus.yesPercent}% Non</span>
               </div>
             </div>
           )}
         </div>
       )}
 
-      {/* Badges section */}
+      {/* Badges */}
       <div className="relative z-10 flex flex-col gap-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>🏆 Badges</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>🏅 Badges</h2>
         <div className="grid grid-cols-2 gap-3">
           {BADGES.map((badge, i) => (
             <div key={i} className="card p-4 flex flex-col items-center gap-2 text-center">
@@ -261,6 +246,49 @@ export default function ResultsPage() {
         </div>
       </div>
 
+      {/* Leaderboard */}
+      {room?.points_enabled && leaderboard.length > 0 && (
+        <div className="relative z-10 flex flex-col gap-3">
+          <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>🏆 Classement</h2>
+          <div className="flex flex-col gap-2">
+            {leaderboard.map((entry) => {
+              const rankStyle = entry.rank <= 3 ? rankColors[entry.rank - 1] : null
+              return (
+                <div
+                  key={entry.player.id}
+                  className="card p-4 flex items-center gap-3"
+                >
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '12px',
+                      background: rankStyle ? rankStyle.bg : 'rgba(255,255,255,0.08)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 900,
+                      fontSize: '.9rem',
+                      color: rankStyle ? rankStyle.text : 'rgba(240,240,245,0.40)',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {entry.rank === 1 ? '👑' : entry.rank}
+                  </div>
+                  <div className="flex-1 font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</div>
+                  <div
+                    className="text-sm font-black px-3 py-1 rounded-full"
+                    style={{ background: 'rgba(168,85,247,0.18)', color: '#c084fc' }}
+                  >
+                    {entry.points} pts
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Per-question results */}
       <div className="relative z-10 flex flex-col gap-3">
         <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>Toutes les questions</h2>
@@ -270,14 +298,10 @@ export default function ResultsPage() {
               <p className="font-semibold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{r.question.text}</p>
               <span className="text-sm font-black flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(240,240,245,0.40)' }}>{i + 1}</span>
             </div>
-
             {r.total > 0 ? (
               <>
                 <div className="w-full h-2.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(239,68,68,0.30)' }}>
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{ width: `${r.yesPercent}%`, background: 'linear-gradient(90deg, #10b981, #34d399)' }}
-                  />
+                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${r.yesPercent}%`, background: 'linear-gradient(90deg, #10b981, #34d399)' }} />
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="font-bold" style={{ color: '#34d399' }}>✅ {r.yesPercent}% Oui ({r.yesCount})</span>
@@ -295,25 +319,14 @@ export default function ResultsPage() {
       <div className="relative z-10 card p-5 flex flex-col gap-3">
         <p className="text-sm font-semibold text-center" style={{ color: 'rgba(240,240,245,0.50)' }}>Invite plus d&apos;amis !</p>
         <div className="flex gap-2">
-          <div
-            className="flex-1 py-3 px-4 rounded-2xl text-center font-black text-xl tracking-widest"
-            style={{ background: 'rgba(255,255,255,0.08)', color: '#f0f0f5' }}
-          >
+          <div className="flex-1 py-3 px-4 rounded-2xl text-center font-black text-xl tracking-widest" style={{ background: 'rgba(255,255,255,0.08)', color: '#f0f0f5' }}>
             {code}
           </div>
-          <button
-            onClick={copyCode}
-            className="px-4 rounded-2xl text-xl active:scale-95"
-            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
-          >
+          <button onClick={copyCode} className="px-4 rounded-2xl text-xl active:scale-95" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
             {copied ? '✅' : '📋'}
           </button>
         </div>
-        <button
-          onClick={shareRoom}
-          className="w-full py-3 rounded-2xl text-white font-bold active:scale-95"
-          style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.30)' }}
-        >
+        <button onClick={shareRoom} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.30)' }}>
           🔗 Partager le lien
         </button>
       </div>

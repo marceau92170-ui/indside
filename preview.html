@@ -69,31 +69,69 @@
   <div class="phone">
 
     <!-- ======== HOME ======== -->
-    <div id="screen-home" class="screen" style="padding: 48px 24px 40px; justify-content: space-between; align-items: center;">
-      <div class="blob" style="width:420px;height:420px;top:-130px;left:-110px;background:radial-gradient(circle,rgba(139,92,246,0.22) 0%,transparent 70%);filter:blur(60px);"></div>
-      <div class="blob" style="width:380px;height:380px;bottom:-110px;right:-90px;background:radial-gradient(circle,rgba(236,72,153,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
-      <div class="blob" style="width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%);filter:blur(80px);"></div>
+    <div id="screen-home" class="screen" style="padding: 48px 20px 40px; flex-direction: column; gap: 28px;">
+      <div class="blob" style="width:400px;height:400px;top:-120px;left:-100px;background:radial-gradient(circle,rgba(139,92,246,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
+      <div class="blob" style="width:380px;height:380px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(236,72,153,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
 
-      <div style="z-index:1;">
-        <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.11);backdrop-filter:blur(14px);padding:9px 18px;border-radius:999px;font-size:13px;font-weight:600;color:rgba(240,240,245,0.75);display:inline-block;">
-          ✨ Entre amis · En temps réel
+      <!-- Hero -->
+      <div style="z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;">
+        <div style="width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#8b5cf6,#a855f7,#ec4899);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:900;color:white;box-shadow:0 20px 50px rgba(168,85,247,0.45);">I</div>
+        <div>
+          <h1 style="font-size:3.8rem;font-weight:900;line-height:1;background:linear-gradient(135deg,#a855f7,#3b82f6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0;">Inside</h1>
+          <p style="font-size:1rem;font-weight:700;color:rgba(240,240,245,0.70);margin-top:8px;">La plateforme de jeux sociaux privés</p>
+          <p style="font-size:.82rem;color:rgba(240,240,245,0.38);margin-top:6px;line-height:1.6;max-width:260px;margin:8px auto 0;">Crée une expérience unique pour ton groupe en moins de 3 minutes.</p>
         </div>
       </div>
 
-      <div class="fade-up" style="z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:22px;">
-        <div style="width:84px;height:84px;border-radius:26px;background:linear-gradient(135deg,#8b5cf6,#a855f7,#ec4899);display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900;color:white;box-shadow:0 24px 64px rgba(168,85,247,0.50);">I</div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <h1 style="font-size:4.5rem;font-weight:900;line-height:1;background:linear-gradient(135deg,#a855f7,#3b82f6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Inside</h1>
-          <p style="font-size:1.15rem;font-weight:700;color:rgba(240,240,245,0.78);line-height:1.4;max-width:280px;">Découvre ce que ton groupe cache vraiment</p>
-          <p style="font-size:.85rem;color:rgba(240,240,245,0.38);max-width:260px;line-height:1.6;margin:0 auto;">Crée un quiz privé, invite tes amis et découvre les résultats en temps réel.</p>
+      <!-- Templates grid -->
+      <div style="z-index:1;display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(240,240,245,0.45);">Jeux prêts à jouer</span>
+          <span style="font-size:12px;color:rgba(240,240,245,0.30);">6 modèles</span>
         </div>
-        <div style="display:flex;gap:14px;font-size:1.7rem;">🎭 🔥 💬 🎉</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(245,158,11,0.14),rgba(239,68,68,0.10));border:1px solid rgba(245,158,11,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;">
+            <span style="font-size:1.8rem;line-height:1;">🎂</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Anniversaire</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Célèbre avec style et découvre ce que tes amis pensent</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">8 questions</div>
+          </div>
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(139,92,246,0.14),rgba(236,72,153,0.10));border:1px solid rgba(139,92,246,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;">
+            <span style="font-size:1.8rem;line-height:1;">🤣</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Soirée entre amis</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Des questions hilarantes pour une soirée inoubliable</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">10 questions</div>
+          </div>
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(6,182,212,0.14),rgba(59,130,246,0.10));border:1px solid rgba(6,182,212,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;">
+            <span style="font-size:1.8rem;line-height:1;">🕵️</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Qui est le plus…</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Votez pour savoir qui dans le groupe est le plus…</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">8 questions</div>
+          </div>
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(239,68,68,0.14),rgba(249,115,22,0.10));border:1px solid rgba(239,68,68,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;">
+            <span style="font-size:1.8rem;line-height:1;">🔥</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Questions gênantes</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Pour les groupes qui n'ont peur de rien.</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">10 questions</div>
+          </div>
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(16,185,129,0.14),rgba(6,182,212,0.10));border:1px solid rgba(16,185,129,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;">
+            <span style="font-size:1.8rem;line-height:1;">🎓</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Étudiants</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Parfait pour une promo ou une coloc</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">8 questions</div>
+          </div>
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(99,102,241,0.14),rgba(168,85,247,0.10));border:1px solid rgba(99,102,241,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;">
+            <span style="font-size:1.8rem;line-height:1;">✏️</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Création libre</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Crée ton propre jeu de A à Z</div>
+          </div>
+        </div>
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:14px;width:100%;z-index:1;">
-        <button class="btn-grad" onclick="show('create')">✨ Créer une salle</button>
+      <!-- Join button -->
+      <div style="z-index:1;display:flex;flex-direction:column;gap:10px;margin-top:auto;">
         <button class="btn-glass" onclick="show('join')">🚪 Rejoindre une salle</button>
-        <p style="text-align:center;font-size:12px;color:rgba(240,240,245,0.25);margin-top:4px;">Sans compte · 100% privé · Gratuit</p>
+        <p style="text-align:center;font-size:11px;color:rgba(240,240,245,0.22);">Sans compte · 100% privé · Gratuit</p>
       </div>
     </div>
 
