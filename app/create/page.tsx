@@ -3,12 +3,15 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
+import { generateCode } from '@/lib/game'
 
 export default function CreatePage() {
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
 
   const [roomName, setRoomName] = useState('')
+  const [nickname, setNickname] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [questions, setQuestions] = useState<string[]>([''])
@@ -40,42 +43,72 @@ export default function CreatePage() {
   const handleSubmit = async () => {
     const validQuestions = questions.filter(q => q.trim())
     if (!roomName.trim()) return setError('Donne un nom à ta salle 😅')
+    if (!nickname.trim()) return setError('Choisis un pseudo pour participer !')
     if (validQuestions.length === 0) return setError('Ajoute au moins une question !')
 
     setLoading(true)
     setError('')
 
     try {
+      // Upload image to Supabase Storage if provided
       let imageUrl: string | null = null
-
       if (imageFile) {
-        const formData = new FormData()
-        formData.append('file', imageFile)
-        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
-        if (uploadRes.ok) {
-          const uploadData = await uploadRes.json()
-          imageUrl = uploadData.url
+        const ext = imageFile.name.split('.').pop()
+        const path = `rooms/${Date.now()}.${ext}`
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(path, imageFile)
+        if (!uploadError && uploadData) {
+          const { data: urlData } = supabase.storage.from('images').getPublicUrl(uploadData.path)
+          imageUrl = urlData.publicUrl
         }
       }
 
-      const roomRes = await fetch('/api/rooms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: roomName.trim(), image_url: imageUrl }),
-      })
+      // Generate unique code
+      const code = generateCode()
 
-      if (!roomRes.ok) throw new Error('Failed to create room')
-      const room = await roomRes.json()
+      // Insert room
+      const { data: room, error: roomError } = await supabase
+        .from('rooms')
+        .insert({
+          code,
+          name: roomName.trim(),
+          image_url: imageUrl,
+          status: 'waiting',
+          created_by: nickname.trim(),
+        })
+        .select()
+        .single()
 
-      const qRes = await fetch('/api/questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room_id: room.id, questions: validQuestions }),
-      })
+      if (roomError || !room) throw new Error(roomError?.message || 'Failed to create room')
 
-      if (!qRes.ok) throw new Error('Failed to create questions')
+      // Insert questions
+      const questionRows = validQuestions.map((text, i) => ({
+        room_id: room.id,
+        text,
+        type: 'yes_no' as const,
+        order_index: i,
+      }))
+      const { error: qError } = await supabase.from('questions').insert(questionRows)
+      if (qError) throw new Error(qError.message)
 
-      router.push(`/room/${room.code}?host=true`)
+      // Insert creator as host player
+      const { data: player, error: playerError } = await supabase
+        .from('players')
+        .insert({
+          room_id: room.id,
+          nickname: nickname.trim(),
+          is_host: true,
+        })
+        .select()
+        .single()
+
+      if (playerError || !player) throw new Error(playerError?.message || 'Failed to create player')
+
+      // Save player id to localStorage
+      localStorage.setItem(`inside_player_${code}`, player.id)
+
+      router.push(`/room/${code}`)
     } catch (err) {
       console.error(err)
       setError('Une erreur est survenue. Vérifie ta connexion.')
@@ -199,6 +232,25 @@ export default function CreatePage() {
             + Ajouter une question
           </button>
         </div>
+      </div>
+
+      {/* Section: Nickname */}
+      <div className="relative z-10 card p-5 flex flex-col gap-3">
+        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+          🎭 Ton pseudo (tu participeras aussi)
+        </label>
+        <input
+          type="text"
+          value={nickname}
+          onChange={e => setNickname(e.target.value)}
+          placeholder="Ton prénom…"
+          maxLength={20}
+          className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
+          style={{
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}
+        />
       </div>
 
       {/* Error */}
