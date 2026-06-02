@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Inside — Prévisualisation</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { background: #08080f; color: #f0f0f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #a855f7, #3b82f6, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 1.5rem;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899);
+    font-weight: 700; padding: 1.1rem 1.5rem; border-radius: 1rem;
+    box-shadow: 0 10px 40px rgba(168,85,247,0.30); color: #fff;
+    text-align: center; display: block; width: 100%; border: none; cursor: pointer; font-size: 1.1rem;
+  }
+  .btn-secondary {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 1rem; color: #f0f0f5; text-align: center; display: block;
+    width: 100%; font-weight: 600; padding: 1.1rem; cursor: pointer; font-size: 1.1rem;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .animate-fade-up { animation: fadeUp 0.4s ease-out both; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; }
+
+  /* Layout */
+  .phone {
+    width: 390px; min-height: 844px; position: relative; overflow: hidden;
+    background: #08080f; border-radius: 44px;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.08);
+  }
+  .screen { display: none; width: 100%; min-height: 844px; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* Nav pills */
+  .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px; }
+  .nav button {
+    padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.07); color: rgba(240,240,245,0.7); cursor: pointer;
+    font-size: 13px; font-weight: 600; transition: all 0.2s;
+  }
+  .nav button.active, .nav button:hover {
+    background: linear-gradient(135deg,#8b5cf6,#ec4899); color: #fff; border-color: transparent;
+  }
+
+  input[type=text] {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+    color: #f0f0f5; outline: none; font-family: inherit;
+  }
+  input::placeholder { color: rgba(240,240,245,0.30); }
+
+  /* Progress bar */
+  .progress-bar { height: 4px; background: rgba(255,255,255,0.12); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,#a855f7,#ec4899); border-radius: 99px; transition: width 0.5s; }
+
+  /* Results bar */
+  .result-bar { height: 10px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+  .result-yes { height: 100%; background: linear-gradient(90deg,#10b981,#34d399); border-radius: 99px; }
+
+  /* Blobs */
+  .blob { position: absolute; border-radius: 9999px; pointer-events: none; }
+</style>
+</head>
+<body class="flex flex-col items-center justify-start py-10 px-4 min-h-screen" style="background: radial-gradient(ellipse at 20% 20%, rgba(139,92,246,0.12) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(236,72,153,0.10) 0%, transparent 60%), #08080f;">
+
+  <h1 class="text-2xl font-black mb-2" style="color:rgba(240,240,245,0.8)">Prévisualisation — <span class="gradient-text">Inside</span></h1>
+  <p class="text-sm mb-6" style="color:rgba(240,240,245,0.35)">Clique sur les pages pour naviguer</p>
+
+  <div class="nav">
+    <button class="active" onclick="show('home')">🏠 Accueil</button>
+    <button onclick="show('create')">✨ Créer</button>
+    <button onclick="show('join')">🚪 Rejoindre</button>
+    <button onclick="show('quiz')">🎯 Quiz</button>
+    <button onclick="show('done')">🎉 Terminé</button>
+    <button onclick="show('results')">📊 Résultats</button>
+  </div>
+
+  <div class="phone">
+
+    <!-- ========== HOME ========== -->
+    <div id="screen-home" class="screen active" style="padding: 48px 24px 40px; justify-content: space-between; align-items: center;">
+      <div class="blob" style="width:380px;height:380px;top:-120px;left:-100px;background:radial-gradient(circle,rgba(139,92,246,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
+      <div class="blob" style="width:350px;height:350px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(236,72,153,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
+      <div class="blob" style="width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(59,130,246,0.12) 0%,transparent 70%);filter:blur(80px);"></div>
+
+      <div style="z-index:1;">
+        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);backdrop-filter:blur(12px);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;color:rgba(240,240,245,0.8);display:inline-block;">
+          ✨ Entre amis · En temps réel
+        </div>
+      </div>
+
+      <div class="animate-fade-up" style="z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;">
+        <div style="width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#8b5cf6,#a855f7,#ec4899);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:white;box-shadow:0 20px 60px rgba(168,85,247,0.45);">I</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <h1 style="font-size:4.2rem;font-weight:900;line-height:1;background:linear-gradient(135deg,#a855f7,#3b82f6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0;">Inside</h1>
+          <p style="font-size:1.2rem;font-weight:600;color:rgba(240,240,245,0.75);margin:0;">Découvre ce que ton groupe<br>cache vraiment</p>
+          <p style="font-size:0.85rem;color:rgba(240,240,245,0.40);max-width:260px;line-height:1.5;margin:0 auto;">Crée un quiz privé, invite tes amis et découvre les résultats en temps réel.</p>
+        </div>
+        <div style="display:flex;gap:14px;font-size:1.6rem;">🎭 🔥 💬 🎉</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;width:100%;z-index:1;">
+        <button class="btn-primary" onclick="show('create')">✨ Créer une salle</button>
+        <button class="btn-secondary" onclick="show('join')">🚪 Rejoindre une salle</button>
+        <p style="text-align:center;font-size:12px;color:rgba(240,240,245,0.28);margin:4px 0 0;">Sans compte · 100% privé · Gratuit</p>
+      </div>
+    </div>
+
+    <!-- ========== CREATE ========== -->
+    <div id="screen-create" class="screen" style="padding: 32px 20px 40px; gap: 20px; overflow-y: auto;">
+      <div class="blob" style="width:320px;height:320px;top:-80px;left:-60px;background:radial-gradient(circle,rgba(139,92,246,0.18) 0%,transparent 70%);filter:blur(50px);"></div>
+      <div class="blob" style="width:300px;height:300px;bottom:-60px;right:-60px;background:radial-gradient(circle,rgba(236,72,153,0.15) 0%,transparent 70%);filter:blur(50px);"></div>
+
+      <div style="display:flex;align-items:center;gap:14px;z-index:1;">
+        <button onclick="show('home')" style="width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#f0f0f5;font-size:1.1rem;cursor:pointer;backdrop-filter:blur(12px);">←</button>
+        <h1 style="font-size:1.5rem;font-weight:900;margin:0;">Créer une salle</h1>
+      </div>
+
+      <div class="card" style="padding:20px;z-index:1;display:flex;flex-direction:column;gap:12px;">
+        <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(240,240,245,0.55);">🏠 Nom de la salle</label>
+        <input type="text" value="Soirée de Jean 🎉" style="width:100%;padding:14px 16px;border-radius:14px;font-size:1.05rem;font-weight:600;">
+      </div>
+
+      <div class="card" style="padding:20px;z-index:1;display:flex;flex-direction:column;gap:12px;">
+        <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(240,240,245,0.55);">📸 Image de fond</label>
+        <div style="width:100%;height:140px;border-radius:16px;background:linear-gradient(135deg,rgba(139,92,246,0.3),rgba(236,72,153,0.2));border:2px dashed rgba(255,255,255,0.15);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:rgba(240,240,245,0.45);">
+          <span style="font-size:2.5rem;">🖼️</span>
+          <span style="font-size:13px;font-weight:600;">Appuie pour choisir une photo</span>
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px;z-index:1;display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(240,240,245,0.55);">❓ Questions (3)</label>
+          <span style="font-size:11px;color:rgba(240,240,245,0.35);">Oui / Non</span>
+        </div>
+        ${[
+          'Tu as déjà menti à tes parents ?',
+          'Tu penses être le préféré du groupe ?',
+          'Tu ferais un câlin à un inconnu pour 50€ ?'
+        ].map((q, i) => `
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#ec4899);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">${i+1}</div>
+          <input type="text" value="${q}" style="flex:1;padding:12px 14px;border-radius:12px;font-size:0.9rem;">
+        </div>`).join('')}
+        <button style="width:100%;padding:14px;border-radius:14px;border:2px dashed rgba(255,255,255,0.15);background:transparent;color:rgba(240,240,245,0.45);font-weight:600;cursor:pointer;font-size:0.95rem;">+ Ajouter une question</button>
+      </div>
+
+      <button class="btn-primary" style="z-index:1;" onclick="show('quiz')">🚀 Créer ma salle</button>
+    </div>
+
+    <!-- ========== JOIN ========== -->
+    <div id="screen-join" class="screen" style="padding: 32px 24px 40px; gap: 0;">
+      <div class="blob" style="width:400px;height:400px;top:-120px;right:-80px;background:radial-gradient(circle,rgba(59,130,246,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
+      <div class="blob" style="width:350px;height:350px;bottom:-100px;left:-80px;background:radial-gradient(circle,rgba(139,92,246,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
+
+      <div style="display:flex;align-items:center;gap:14px;z-index:1;margin-bottom:8px;">
+        <button onclick="show('home')" style="width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#f0f0f5;font-size:1.1rem;cursor:pointer;backdrop-filter:blur(12px);">←</button>
+        <h1 style="font-size:1.5rem;font-weight:900;margin:0;">Rejoindre une salle</h1>
+      </div>
+
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;z-index:1;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 0;">
+          <div style="width:88px;height:88px;border-radius:24px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:3rem;box-shadow:0 20px 50px rgba(59,130,246,0.35);">🚪</div>
+          <p style="text-align:center;color:rgba(240,240,245,0.50);font-size:0.95rem;max-width:260px;">Entre le code partagé par ton ami pour rejoindre sa salle</p>
+        </div>
+
+        <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:10px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(240,240,245,0.55);">Code de la salle</label>
+          <input type="text" value="AB12C3" style="width:100%;padding:18px;border-radius:14px;font-size:2rem;font-weight:900;letter-spacing:0.3em;text-align:center;text-transform:uppercase;">
+        </div>
+
+        <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:10px;">
+          <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(240,240,245,0.55);">Ton pseudo</label>
+          <input type="text" value="Sarah 🌸" style="width:100%;padding:14px 16px;border-radius:14px;font-size:1.05rem;font-weight:600;">
+        </div>
+
+        <button style="width:100%;padding:18px;border-radius:16px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border:none;color:#fff;font-weight:700;font-size:1.1rem;cursor:pointer;box-shadow:0 10px 40px rgba(59,130,246,0.30);" onclick="show('quiz')">Rejoindre →</button>
+      </div>
+    </div>
+
+    <!-- ========== QUIZ ========== -->
+    <div id="screen-quiz" class="screen" style="position:relative;min-height:844px;">
+      <!-- BG image simulation -->
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0533,#0a1628,#1a0a2e);z-index:0;"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.55),transparent 40%,rgba(0,0,0,0.75));z-index:1;"></div>
+      <div class="blob" style="width:300px;height:300px;top:10%;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(139,92,246,0.40) 0%,transparent 70%);filter:blur(60px);z-index:0;"></div>
+
+      <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:36px 20px 32px;gap:16px;">
+        <!-- Top bar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:1.2rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,0.5);">Soirée de Jean 🎉</div>
+            <div style="font-size:13px;color:rgba(240,240,245,0.65);">👥 4 participants</div>
+          </div>
+          <div style="padding:6px 14px;border-radius:12px;background:rgba(0,0,0,0.45);backdrop-filter:blur(12px);font-weight:700;font-size:14px;">2 / 5</div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:40%;"></div>
+        </div>
+
+        <!-- Question card -->
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+          <div style="width:100%;background:rgba(10,6,30,0.55);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,0.15);border-radius:28px;padding:32px 24px;text-align:center;">
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(240,240,245,0.45);margin:0 0 16px;">Question 2</p>
+            <p style="font-size:1.5rem;font-weight:900;line-height:1.3;margin:0;">Tu penses être le préféré du groupe ? 😏</p>
+          </div>
+
+          <!-- Answer buttons -->
+          <div style="display:flex;gap:12px;width:100%;">
+            <button style="flex:1;padding:24px 12px;border-radius:24px;background:linear-gradient(135deg,#ef4444,#f43f5e);border:none;color:#fff;font-weight:900;font-size:1.2rem;cursor:pointer;box-shadow:0 12px 40px rgba(239,68,68,0.40);display:flex;flex-direction:column;align-items:center;gap:6px;">
+              <span style="font-size:2rem;">❌</span>
+              <span>Non</span>
+            </button>
+            <button style="flex:1;padding:24px 12px;border-radius:24px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;font-weight:900;font-size:1.2rem;cursor:pointer;box-shadow:0 12px 40px rgba(16,185,129,0.40);display:flex;flex-direction:column;align-items:center;gap:6px;" onclick="show('done')">
+              <span style="font-size:2rem;">✅</span>
+              <span>Oui</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Code -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <span style="font-size:12px;color:rgba(240,240,245,0.35);">Code :</span>
+          <span style="font-weight:900;letter-spacing:0.2em;color:rgba(240,240,245,0.70);font-size:14px;">AB12C3</span>
+          <span style="font-size:13px;color:rgba(240,240,245,0.35);">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== DONE ========== -->
+    <div id="screen-done" class="screen" style="padding:40px 24px;align-items:center;justify-content:center;gap:24px;position:relative;overflow:hidden;">
+      <div class="blob" style="width:400px;height:400px;top:-100px;left:-80px;background:radial-gradient(circle,rgba(139,92,246,0.25) 0%,transparent 70%);filter:blur(60px);"></div>
+      <div class="blob" style="width:400px;height:400px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(236,72,153,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
+
+      <div style="z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;">
+        <div style="font-size:4rem;line-height:1;">🎉</div>
+        <div>
+          <h2 style="font-size:2rem;font-weight:900;margin:0 0 8px;">C'est terminé !</h2>
+          <p style="color:rgba(240,240,245,0.50);margin:0;font-size:1.05rem;">Tu as répondu à toutes les questions</p>
+        </div>
+
+        <div class="card" style="padding:20px;width:100%;display:flex;flex-direction:column;gap:12px;">
+          <p style="font-size:13px;color:rgba(240,240,245,0.45);margin:0;text-align:center;">Invite tes amis à rejoindre</p>
+          <div style="display:flex;gap:10px;">
+            <div style="flex:1;padding:14px;border-radius:14px;background:rgba(255,255,255,0.08);text-align:center;font-weight:900;font-size:1.5rem;letter-spacing:0.25em;">AB12C3</div>
+            <button style="padding:0 16px;border-radius:14px;background:rgba(255,255,255,0.08);border:none;color:#f0f0f5;font-size:1.2rem;cursor:pointer;">📋</button>
+          </div>
+          <button style="width:100%;padding:14px;border-radius:14px;background:rgba(255,255,255,0.08);border:none;color:#f0f0f5;font-weight:600;cursor:pointer;font-size:0.95rem;">🔗 Partager le lien</button>
+        </div>
+
+        <button class="btn-primary" onclick="show('results')">🔍 Voir les résultats</button>
+      </div>
+    </div>
+
+    <!-- ========== RESULTS ========== -->
+    <div id="screen-results" class="screen" style="padding:32px 20px 40px;gap:18px;overflow-y:auto;position:relative;">
+      <div class="blob" style="width:360px;height:360px;top:-80px;right:-80px;background:radial-gradient(circle,rgba(139,92,246,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
+      <div class="blob" style="width:300px;height:300px;bottom:-80px;left:-60px;background:radial-gradient(circle,rgba(236,72,153,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:14px;z-index:1;">
+        <button onclick="show('done')" style="width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#f0f0f5;font-size:1.1rem;cursor:pointer;backdrop-filter:blur(12px);">←</button>
+        <div>
+          <div style="font-size:1.4rem;font-weight:900;">Soirée de Jean 🎉</div>
+          <div style="font-size:12px;color:rgba(240,240,245,0.45);font-weight:600;">Résultats</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;z-index:1;">
+        <div class="card" style="padding:18px;">
+          <div style="font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">6</div>
+          <div style="font-size:13px;color:rgba(240,240,245,0.50);font-weight:600;">Participants</div>
+        </div>
+        <div class="card" style="padding:18px;">
+          <div style="font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">27</div>
+          <div style="font-size:13px;color:rgba(240,240,245,0.50);font-weight:600;">Réponses</div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div style="padding:20px;border-radius:24px;background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(236,72,153,0.20));border:1px solid rgba(168,85,247,0.30);z-index:1;">
+        <p style="font-size:1.1rem;font-weight:900;text-align:center;margin:0;line-height:1.4;">Ce groupe est clairement un peu chaotique 😈</p>
+      </div>
+
+      <!-- Badges -->
+      <div style="z-index:1;">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(240,240,245,0.45);margin-bottom:12px;">Badges du groupe</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          ${[
+            ['🔥','Le plus aventurier','rgba(239,68,68,0.15)','rgba(239,68,68,0.25)'],
+            ['👑','Le plus imprévisible','rgba(234,179,8,0.15)','rgba(234,179,8,0.25)'],
+            ['😇','Le plus sage','rgba(16,185,129,0.15)','rgba(16,185,129,0.25)'],
+            ['🎭','Le plus mystérieux','rgba(139,92,246,0.15)','rgba(139,92,246,0.25)']
+          ].map(([em,label,bg,border]) => `
+          <div style="padding:16px;border-radius:18px;background:${bg};border:1px solid ${border};display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;">
+            <span style="font-size:2rem;">${em}</span>
+            <span style="font-size:12px;font-weight:700;color:rgba(240,240,245,0.80);line-height:1.3;">${label}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- Controversial -->
+      <div class="card" style="padding:18px;z-index:1;">
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fbbf24;margin:0 0 10px;">🔥 Question la plus controversée</p>
+        <p style="font-weight:700;font-size:1rem;margin:0 0 12px;line-height:1.4;">Tu penses être le préféré du groupe ? 😏</p>
+        <div style="display:flex;gap:8px;">
+          <span style="padding:5px 12px;border-radius:999px;background:rgba(16,185,129,0.20);color:#6ee7b7;font-weight:700;font-size:13px;">51% Oui</span>
+          <span style="padding:5px 12px;border-radius:999px;background:rgba(239,68,68,0.20);color:#fca5a5;font-weight:700;font-size:13px;">49% Non</span>
+        </div>
+      </div>
+
+      <!-- Questions -->
+      <div style="z-index:1;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(240,240,245,0.45);">Toutes les questions</div>
+        ${[
+          ['Tu as déjà menti à tes parents ?', 78],
+          ['Tu penses être le préféré du groupe ?', 51],
+          ["Tu ferais un câlin à un inconnu pour 50€ ?", 63],
+          ['Tu as déjà pleuré devant un film Disney ?', 85],
+          ["Tu penses que quelqu'un dans le groupe a un crush sur toi ?", 34],
+        ].map(([q, yes], i) => `
+        <div class="card" style="padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:12px;">
+            <p style="font-weight:600;font-size:0.9rem;line-height:1.4;margin:0;flex:1;">${q}</p>
+            <span style="font-size:12px;color:rgba(240,240,245,0.30);font-weight:700;flex-shrink:0;">${i+1}</span>
+          </div>
+          <div class="result-bar" style="margin-bottom:8px;">
+            <div class="result-yes" style="width:${yes}%;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;">
+            <span style="color:#6ee7b7;">✅ ${yes}% Oui</span>
+            <span style="color:#fca5a5;">❌ ${100-yes}% Non</span>
+          </div>
+        </div>`).join('')}
+      </div>
+
+      <!-- Share -->
+      <div class="card" style="padding:18px;z-index:1;display:flex;flex-direction:column;gap:12px;">
+        <p style="font-size:13px;color:rgba(240,240,245,0.45);text-align:center;margin:0;">Invite plus d'amis !</p>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;padding:12px;border-radius:12px;background:rgba(255,255,255,0.08);text-align:center;font-weight:900;font-size:1.3rem;letter-spacing:0.2em;">AB12C3</div>
+          <button style="padding:0 14px;border-radius:12px;background:rgba(255,255,255,0.08);border:none;color:#f0f0f5;font-size:1.1rem;cursor:pointer;">📋</button>
+        </div>
+        <button style="width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border:none;color:#fff;font-weight:700;cursor:pointer;">🔗 Partager le lien</button>
+      </div>
+
+      <div style="text-align:center;z-index:1;">
+        <a href="#" onclick="show('home')" style="color:rgba(240,240,245,0.28);font-size:13px;">Créer une nouvelle salle</a>
+      </div>
+    </div>
+
+  </div><!-- end .phone -->
+
+  <p class="text-xs mt-8" style="color:rgba(240,240,245,0.20);">Prévisualisation statique — design fidèle à l'application réelle</p>
+
+<script>
+function show(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  const labels = { home:'🏠 Accueil', create:'✨ Créer', join:'🚪 Rejoindre', quiz:'🎯 Quiz', done:'🎉 Terminé', results:'📊 Résultats' };
+  document.querySelectorAll('.nav button').forEach(b => { if (b.textContent.trim() === labels[name]) b.classList.add('active'); });
+  document.querySelector('.phone').scrollTop = 0;
+}
+</script>
+</body>
+</html>
