@@ -1,0 +1,231 @@
+'use client'
+
+import { useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+
+export default function CreatePage() {
+  const router = useRouter()
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const [roomName, setRoomName] = useState('')
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [questions, setQuestions] = useState<string[]>([''])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImageFile(file)
+    const url = URL.createObjectURL(file)
+    setImagePreview(url)
+  }
+
+  const addQuestion = () => {
+    setQuestions([...questions, ''])
+  }
+
+  const removeQuestion = (i: number) => {
+    setQuestions(questions.filter((_, idx) => idx !== i))
+  }
+
+  const updateQuestion = (i: number, val: string) => {
+    const updated = [...questions]
+    updated[i] = val
+    setQuestions(updated)
+  }
+
+  const handleSubmit = async () => {
+    const validQuestions = questions.filter(q => q.trim())
+    if (!roomName.trim()) return setError('Donne un nom à ta salle 😅')
+    if (validQuestions.length === 0) return setError('Ajoute au moins une question !')
+
+    setLoading(true)
+    setError('')
+
+    try {
+      let imageUrl: string | null = null
+
+      if (imageFile) {
+        const formData = new FormData()
+        formData.append('file', imageFile)
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json()
+          imageUrl = uploadData.url
+        }
+      }
+
+      const roomRes = await fetch('/api/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: roomName.trim(), image_url: imageUrl }),
+      })
+
+      if (!roomRes.ok) throw new Error('Failed to create room')
+      const room = await roomRes.json()
+
+      const qRes = await fetch('/api/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room_id: room.id, questions: validQuestions }),
+      })
+
+      if (!qRes.ok) throw new Error('Failed to create questions')
+
+      router.push(`/room/${room.code}?host=true`)
+    } catch (err) {
+      console.error(err)
+      setError('Une erreur est survenue. Vérifie ta connexion.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col px-6 py-8 gap-5 relative" style={{ background: '#08080f' }}>
+      {/* Background blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+      </div>
+
+      {/* Header */}
+      <div className="relative z-10 flex items-center gap-4">
+        <Link
+          href="/"
+          className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
+        >
+          ←
+        </Link>
+        <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Créer une salle</h1>
+      </div>
+
+      {/* Section: Room name */}
+      <div className="relative z-10 card p-5 flex flex-col gap-3">
+        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+          🏠 Nom de la salle
+        </label>
+        <input
+          type="text"
+          value={roomName}
+          onChange={e => setRoomName(e.target.value)}
+          placeholder="Ex : Soirée de Jean 🎉"
+          className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
+          style={{
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}
+        />
+      </div>
+
+      {/* Section: Image upload */}
+      <div className="relative z-10 card p-5 flex flex-col gap-3">
+        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+          📸 Image de fond
+        </label>
+        <button
+          onClick={() => fileRef.current?.click()}
+          className="relative w-full h-44 rounded-2xl overflow-hidden active:scale-95"
+          style={{ border: '2px dashed rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.04)' }}
+        >
+          {imagePreview ? (
+            <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'rgba(240,240,245,0.35)' }}>
+              <span className="text-4xl">🖼️</span>
+              <span className="text-sm font-semibold">Appuie pour choisir une photo</span>
+            </div>
+          )}
+          {imagePreview && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span className="text-sm font-bold bg-black/60 px-4 py-2 rounded-full text-white">Changer</span>
+            </div>
+          )}
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageChange}
+        />
+      </div>
+
+      {/* Section: Questions */}
+      <div className="relative z-10 card p-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+            ❓ Questions ({questions.filter(q => q.trim()).length})
+          </label>
+          <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.90)', border: '1px solid rgba(168,85,247,0.25)' }}>
+            Oui / Non
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {questions.map((q, i) => (
+            <div key={i} className="flex gap-2 items-center rounded-2xl p-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}>
+                {i + 1}
+              </span>
+              <input
+                type="text"
+                value={q}
+                onChange={e => updateQuestion(i, e.target.value)}
+                placeholder={`Question ${i + 1}…`}
+                className="flex-1 bg-transparent text-white placeholder:text-white/30 focus:outline-none font-medium py-1"
+              />
+              {questions.length > 1 && (
+                <button
+                  onClick={() => removeQuestion(i)}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-lg active:scale-90 flex-shrink-0"
+                  style={{ background: 'rgba(239,68,68,0.20)', color: '#f87171' }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ))}
+
+          <button
+            onClick={addQuestion}
+            className="w-full py-4 rounded-2xl font-semibold active:scale-95"
+            style={{ border: '2px dashed rgba(255,255,255,0.18)', color: 'rgba(240,240,245,0.50)', background: 'rgba(255,255,255,0.02)' }}
+          >
+            + Ajouter une question
+          </button>
+        </div>
+      </div>
+
+      {/* Error */}
+      {error && (
+        <div className="relative z-10 py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
+          {error}
+        </div>
+      )}
+
+      {/* Submit */}
+      <div className="relative z-10 pb-8 mt-2">
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="btn-primary text-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <>
+              <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+              Création en cours…
+            </>
+          ) : '🚀 Créer ma salle'}
+        </button>
+      </div>
+    </div>
+  )
+}
