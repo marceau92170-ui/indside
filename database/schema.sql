@@ -92,3 +92,8 @@ ALTER PUBLICATION supabase_realtime ADD TABLE players;
 ALTER PUBLICATION supabase_realtime ADD TABLE answers;
 ALTER PUBLICATION supabase_realtime ADD TABLE rooms;
 ALTER PUBLICATION supabase_realtime ADD TABLE scores;
+
+-- Migration: sync game flow
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS current_question_index INT DEFAULT 0;
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS question_phase TEXT DEFAULT 'answering';
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS question_started_at TIMESTAMPTZ;

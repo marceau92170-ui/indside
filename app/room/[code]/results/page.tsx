@@ -22,6 +22,7 @@ export default function ResultsPage() {
 
   const [room, setRoom] = useState<Room | null>(null)
   const [results, setResults] = useState<QuestionResult[]>([])
+  const [questions, setQuestions] = useState<Question[]>([])
   const [participantCount, setParticipantCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
@@ -57,6 +58,7 @@ export default function ResultsPage() {
       .eq('room_id', roomData.id)
       .order('order_index', { ascending: true })
     const questions: Question[] = qs ?? []
+    setQuestions(questions)
 
     // Fetch all answers
     const questionIds = questions.map(q => q.id)
@@ -328,6 +330,61 @@ export default function ResultsPage() {
         </div>
         <button onClick={shareRoom} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.30)' }}>
           🔗 Partager le lien
+        </button>
+      </div>
+
+      {/* Share card (screenshot-ready) */}
+      <div
+        className="relative z-10 p-1 rounded-3xl"
+        style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)' }}
+      >
+        <div
+          className="rounded-[22px] p-6 flex flex-col gap-4"
+          style={{ background: 'rgba(14,12,30,0.95)', backdropFilter: 'blur(20px)' }}
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🎮</span>
+            <div>
+              <p className="font-black text-lg leading-tight" style={{ color: '#f0f0f5' }}>Inside — {room?.name}</p>
+              <p className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.55)' }}>
+                {levelInfo.emoji} {levelInfo.label}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-4 text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.60)' }}>
+            <span>👥 {participantCount} joueur{participantCount > 1 ? 's' : ''}</span>
+            <span>❓ {results.length} questions</span>
+          </div>
+          {leaderboard.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              {leaderboard.slice(0, 3).map((entry, i) => {
+                const medals = ['🥇', '🥈', '🥉']
+                return (
+                  <div key={entry.player.id} className="flex items-center gap-2">
+                    <span>{medals[i]}</span>
+                    <span className="font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</span>
+                    {room?.points_enabled && (
+                      <span className="text-xs font-semibold ml-auto" style={{ color: 'rgba(168,85,247,0.90)' }}>{entry.points} pts</span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Replay button */}
+      <div className="relative z-10">
+        <button
+          onClick={() => {
+            localStorage.setItem('inside_replay_questions', JSON.stringify(questions.map(q => q.text)))
+            router.push('/create?replay=1')
+          }}
+          className="w-full py-4 rounded-2xl text-white font-bold active:scale-95"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', color: '#f0f0f5' }}
+        >
+          🔁 Rejouer avec les mêmes questions
         </button>
       </div>
 

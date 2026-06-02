@@ -25,14 +25,30 @@ function CreatePageInner() {
 
   useEffect(() => {
     const slug = searchParams.get('template')
-    if (!slug) return
-    const tpl = getTemplateBySlug(slug)
-    if (!tpl) return
-    setSelectedTemplate(tpl)
-    if (tpl.slug !== 'creation-libre') {
-      setRoomName(tpl.name)
-      if (tpl.questions && tpl.questions.length > 0) {
-        setQuestions(tpl.questions)
+    if (slug) {
+      const tpl = getTemplateBySlug(slug)
+      if (tpl) {
+        setSelectedTemplate(tpl)
+        if (tpl.slug !== 'creation-libre') {
+          setRoomName(tpl.name)
+          if (tpl.questions && tpl.questions.length > 0) {
+            setQuestions(tpl.questions)
+          }
+        }
+      }
+    }
+
+    const replay = searchParams.get('replay')
+    if (replay === '1') {
+      const stored = localStorage.getItem('inside_replay_questions')
+      if (stored) {
+        try {
+          const qs = JSON.parse(stored)
+          if (Array.isArray(qs) && qs.length > 0) {
+            setQuestions(qs)
+            localStorage.removeItem('inside_replay_questions')
+          }
+        } catch {}
       }
     }
   }, [searchParams])

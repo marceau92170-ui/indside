@@ -8,6 +8,9 @@ export interface Room {
   template_id: string | null
   points_enabled: boolean
   created_at: string
+  current_question_index: number
+  question_phase: 'answering' | 'revealing'
+  question_started_at: string | null
 }
 
 export interface Question {
