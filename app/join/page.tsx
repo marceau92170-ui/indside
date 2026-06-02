@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { supabase } from '@/lib/supabase'
 
 function JoinForm() {
   const router = useRouter()
@@ -23,25 +24,44 @@ function JoinForm() {
     setError('')
 
     try {
-      const roomRes = await fetch(`/api/rooms/${code.toUpperCase().trim()}`)
-      if (!roomRes.ok) {
+      const upperCode = code.toUpperCase().trim()
+
+      // Fetch room by code
+      const { data: room, error: roomError } = await supabase
+        .from('rooms')
+        .select('*')
+        .eq('code', upperCode)
+        .single()
+
+      if (roomError || !room) {
         setError('Salle introuvable. Vérifie le code 🤔')
         setLoading(false)
         return
       }
-      const room = await roomRes.json()
 
-      const userRes = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room_id: room.id, nickname: nickname.trim() }),
-      })
+      if (room.status === 'finished') {
+        setError('Cette salle est déjà terminée 😅')
+        setLoading(false)
+        return
+      }
 
-      if (!userRes.ok) throw new Error('Failed to create user')
-      const user = await userRes.json()
+      // Insert player
+      const { data: player, error: playerError } = await supabase
+        .from('players')
+        .insert({
+          room_id: room.id,
+          nickname: nickname.trim(),
+          is_host: false,
+        })
+        .select()
+        .single()
 
-      localStorage.setItem(`inside_user_${code.toUpperCase().trim()}`, user.id)
-      router.push(`/room/${code.toUpperCase().trim()}`)
+      if (playerError || !player) throw new Error(playerError?.message || 'Failed to create player')
+
+      // Save player id to localStorage
+      localStorage.setItem(`inside_player_${upperCode}`, player.id)
+
+      router.push(`/room/${upperCode}`)
     } catch (err) {
       console.error(err)
       setError('Une erreur est survenue.')

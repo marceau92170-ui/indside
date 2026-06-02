@@ -3,42 +3,16 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import type { Room, Question } from '@/lib/types'
-
-interface QuestionResult {
-  question: Question
-  yesCount: number
-  noCount: number
-  total: number
-  yesPercent: number
-}
-
-function getSummary(results: QuestionResult[]): string {
-  if (results.length === 0) return 'Pas encore de résultats 🤔'
-  const avgYes = results.reduce((acc, r) => acc + r.yesPercent, 0) / results.length
-
-  if (avgYes > 80) return 'Ce groupe est une bande de OUI-OUI absolus 😂'
-  if (avgYes > 60) return 'Plutôt positifs dans l\'ensemble… suspects 🧐'
-  if (avgYes >= 40 && avgYes <= 60) return 'Ce groupe est clairement un peu chaotique 😈'
-  if (avgYes > 20) return 'Sacré groupe de rebelles ! On aime 🔥'
-  return 'Un groupe de NON-NON… ou juste honnêtes 😅'
-}
-
-function getControversialQuestion(results: QuestionResult[]): QuestionResult | null {
-  if (!results.length) return null
-  return results.reduce((most, r) => {
-    const distMost = Math.abs(most.yesPercent - 50)
-    const distR = Math.abs(r.yesPercent - 50)
-    return distR < distMost ? r : most
-  })
-}
-
-const BADGES = [
-  { emoji: '🔥', label: 'Le plus aventurier' },
-  { emoji: '👑', label: 'Le plus imprévisible' },
-  { emoji: '😇', label: 'Le plus sage' },
-  { emoji: '🎭', label: 'Le plus mystérieux' },
-]
+import { supabase } from '@/lib/supabase'
+import {
+  getGroupLevel,
+  getGroupSummary,
+  getControversialQuestion,
+  getConsensusQuestion,
+  GROUP_LEVEL_INFO,
+  BADGES,
+} from '@/lib/game'
+import type { Room, Question, QuestionResult } from '@/lib/types'
 
 export default function ResultsPage() {
   const params = useParams()
@@ -50,56 +24,53 @@ export default function ResultsPage() {
   const [participantCount, setParticipantCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const roomIdRef = useRef<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   const loadResults = useCallback(async () => {
-    const roomRes = await fetch(`/api/rooms/${code}`)
-    if (!roomRes.ok) {
+    const { data: roomData, error: roomError } = await supabase
+      .from('rooms')
+      .select('*')
+      .eq('code', code)
+      .single()
+
+    if (roomError || !roomData) {
       router.push('/')
       return
     }
-    const roomData: Room = await roomRes.json()
     setRoom(roomData)
     roomIdRef.current = roomData.id
 
-    const countRes = await fetch(`/api/users/count/${roomData.id}`)
-    if (countRes.ok) {
-      const { count } = await countRes.json()
-      setParticipantCount(count)
-    }
+    // Fetch player count
+    const { count: pCount } = await supabase
+      .from('players')
+      .select('*', { count: 'exact', head: true })
+      .eq('room_id', roomData.id)
+    setParticipantCount(pCount ?? 0)
 
-    const resultsRes = await fetch(`/api/results/${roomData.id}`)
-    if (resultsRes.ok) {
-      const apiResults = await resultsRes.json()
-      // Transform API results to QuestionResult shape
-      // We need the question object — fetch questions too
-      const qRes = await fetch(`/api/questions/${roomData.id}`)
-      const questions: Question[] = qRes.ok ? await qRes.json() : []
-      const qMap = new Map(questions.map(q => [q.id, q]))
+    // Fetch questions
+    const { data: qs } = await supabase
+      .from('questions')
+      .select('*')
+      .eq('room_id', roomData.id)
+      .order('order_index', { ascending: true })
+    const questions: Question[] = qs ?? []
 
-      const questionResults: QuestionResult[] = apiResults.map((r: {
-        question_id: string
-        question_text: string
-        yes_count: number
-        no_count: number
-        total: number
-      }) => {
-        const question = qMap.get(r.question_id) ?? {
-          id: r.question_id,
-          room_id: roomData.id,
-          text: r.question_text,
-          order_index: 0,
-        }
-        const yesPercent = r.total > 0 ? Math.round((r.yes_count / r.total) * 100) : 0
-        return {
-          question,
-          yesCount: r.yes_count,
-          noCount: r.no_count,
-          total: r.total,
-          yesPercent,
-        }
-      })
-      setResults(questionResults)
-    }
+    // Fetch all answers for these questions
+    const questionIds = questions.map(q => q.id)
+    const { data: answers } = questionIds.length > 0
+      ? await supabase.from('answers').select('*').in('question_id', questionIds)
+      : { data: [] }
+
+    // Build results
+    const questionResults: QuestionResult[] = questions.map(q => {
+      const qAnswers = (answers ?? []).filter(a => a.question_id === q.id)
+      const yesCount = qAnswers.filter(a => a.value === true).length
+      const noCount = qAnswers.filter(a => a.value === false).length
+      const total = qAnswers.length
+      const yesPercent = total > 0 ? Math.round((yesCount / total) * 100) : 0
+      return { question: q, yesCount, noCount, total, yesPercent }
+    })
+    setResults(questionResults)
 
     setLoading(false)
   }, [code, router])
@@ -108,47 +79,30 @@ export default function ResultsPage() {
     loadResults()
   }, [loadResults])
 
-  // Poll every 8s
+  // Realtime: reload on new answers
   useEffect(() => {
-    const id = setInterval(async () => {
-      if (!roomIdRef.current) return
-      const [countRes, resultsRes, qRes] = await Promise.all([
-        fetch(`/api/users/count/${roomIdRef.current}`),
-        fetch(`/api/results/${roomIdRef.current}`),
-        fetch(`/api/questions/${roomIdRef.current}`),
-      ])
-      if (countRes.ok) {
-        const { count } = await countRes.json()
-        setParticipantCount(count)
-      }
-      if (resultsRes.ok && qRes.ok) {
-        const apiResults = await resultsRes.json()
-        const questions: Question[] = await qRes.json()
-        const qMap = new Map(questions.map((q: Question) => [q.id, q]))
-        const questionResults: QuestionResult[] = apiResults.map((r: {
-          question_id: string
-          question_text: string
-          yes_count: number
-          no_count: number
-          total: number
-        }) => {
-          const question = qMap.get(r.question_id) ?? {
-            id: r.question_id,
-            room_id: roomIdRef.current!,
-            text: r.question_text,
-            order_index: 0,
-          }
-          const yesPercent = r.total > 0 ? Math.round((r.yes_count / r.total) * 100) : 0
-          return { question, yesCount: r.yes_count, noCount: r.no_count, total: r.total, yesPercent }
-        })
-        setResults(questionResults)
-      }
-    }, 8000)
-    return () => clearInterval(id)
-  }, [])
+    if (!roomIdRef.current) return
+    const roomId = roomIdRef.current
+
+    const channel = supabase.channel(`results-${roomId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'answers',
+      }, () => {
+        loadResults()
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [room?.id, loadResults])
 
   const copyCode = async () => {
     await navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   const shareRoom = async () => {
@@ -157,6 +111,8 @@ export default function ResultsPage() {
       await navigator.share({ title: `Inside — ${room?.name}`, url })
     } else {
       await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     }
   }
 
@@ -177,8 +133,11 @@ export default function ResultsPage() {
     )
   }
 
+  const groupLevel = getGroupLevel(results)
+  const levelInfo = GROUP_LEVEL_INFO[groupLevel]
+  const summary = getGroupSummary(results)
   const controversial = getControversialQuestion(results)
-  const summary = getSummary(results)
+  const consensus = getConsensusQuestion(results)
   const totalAnswers = results.reduce((acc, r) => acc + r.total, 0)
 
   return (
@@ -202,6 +161,22 @@ export default function ResultsPage() {
         <div>
           <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>{room?.name}</h1>
           <p className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.45)' }}>Résultats</p>
+        </div>
+      </div>
+
+      {/* Group level card */}
+      <div
+        className="relative z-10 p-8 rounded-3xl flex flex-col items-center gap-3 text-center"
+        style={{
+          background: levelInfo.color,
+          border: '1px solid rgba(255,255,255,0.15)',
+          backdropFilter: 'blur(12px)',
+        }}
+      >
+        <span style={{ fontSize: '4rem' }}>{levelInfo.emoji}</span>
+        <div>
+          <h2 className="text-3xl font-black" style={{ color: '#f0f0f5' }}>{levelInfo.label}</h2>
+          <p className="text-base mt-1" style={{ color: 'rgba(240,240,245,0.70)' }}>{levelInfo.description}</p>
         </div>
       </div>
 
@@ -238,6 +213,40 @@ export default function ResultsPage() {
         <p className="text-lg font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>{summary}</p>
       </div>
 
+      {/* Highlight cards: controversial + consensus */}
+      {(controversial || consensus) && (
+        <div className="relative z-10 grid grid-cols-2 gap-3">
+          {controversial && controversial.total > 0 && (
+            <div className="card p-4 flex flex-col gap-2">
+              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#fbbf24' }}>🔥 La plus controversée</p>
+              <p className="text-sm font-bold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{controversial.question.text}</p>
+              <div className="flex gap-1 text-xs flex-wrap">
+                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>
+                  {controversial.yesPercent}% Oui
+                </span>
+                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>
+                  {100 - controversial.yesPercent}% Non
+                </span>
+              </div>
+            </div>
+          )}
+          {consensus && consensus.total > 0 && (
+            <div className="card p-4 flex flex-col gap-2">
+              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#60a5fa' }}>🤝 Le plus de consensus</p>
+              <p className="text-sm font-bold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{consensus.question.text}</p>
+              <div className="flex gap-1 text-xs flex-wrap">
+                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>
+                  {consensus.yesPercent}% Oui
+                </span>
+                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>
+                  {100 - consensus.yesPercent}% Non
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Badges section */}
       <div className="relative z-10 flex flex-col gap-3">
         <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>🏆 Badges</h2>
@@ -246,29 +255,11 @@ export default function ResultsPage() {
             <div key={i} className="card p-4 flex flex-col items-center gap-2 text-center">
               <span className="text-3xl">{badge.emoji}</span>
               <span className="text-sm font-bold" style={{ color: '#f0f0f5' }}>{badge.label}</span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.85)' }}>
-                Salle #{code}
-              </span>
+              <span className="text-xs font-medium" style={{ color: 'rgba(240,240,245,0.45)' }}>{badge.description}</span>
             </div>
           ))}
         </div>
       </div>
-
-      {/* Controversial question */}
-      {controversial && controversial.total > 0 && (
-        <div className="relative z-10 card p-5">
-          <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#fbbf24' }}>🔥 Question la plus chaude</p>
-          <p className="font-bold text-base mb-4 leading-snug" style={{ color: '#f0f0f5' }}>{controversial.question.text}</p>
-          <div className="flex gap-2 text-sm">
-            <span className="py-1.5 px-4 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>
-              {controversial.yesPercent}% Oui
-            </span>
-            <span className="py-1.5 px-4 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>
-              {100 - controversial.yesPercent}% Non
-            </span>
-          </div>
-        </div>
-      )}
 
       {/* Per-question results */}
       <div className="relative z-10 flex flex-col gap-3">
@@ -315,7 +306,7 @@ export default function ResultsPage() {
             className="px-4 rounded-2xl text-xl active:scale-95"
             style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
           >
-            📋
+            {copied ? '✅' : '📋'}
           </button>
         </div>
         <button
