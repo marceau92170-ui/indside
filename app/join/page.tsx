@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 import { Suspense } from 'react'
 
 function JoinForm() {
@@ -24,25 +23,22 @@ function JoinForm() {
     setError('')
 
     try {
-      const { data: room, error: roomError } = await supabase
-        .from('rooms')
-        .select('id')
-        .eq('code', code.toUpperCase().trim())
-        .single()
-
-      if (roomError || !room) {
+      const roomRes = await fetch(`/api/rooms/${code.toUpperCase().trim()}`)
+      if (!roomRes.ok) {
         setError('Salle introuvable. Vérifie le code 🤔')
         setLoading(false)
         return
       }
+      const room = await roomRes.json()
 
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .insert({ room_id: room.id, nickname: nickname.trim() })
-        .select()
-        .single()
+      const userRes = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room_id: room.id, nickname: nickname.trim() }),
+      })
 
-      if (userError) throw userError
+      if (!userRes.ok) throw new Error('Failed to create user')
+      const user = await userRes.json()
 
       localStorage.setItem(`inside_user_${code.toUpperCase().trim()}`, user.id)
       router.push(`/room/${code.toUpperCase().trim()}`)

@@ -3,16 +3,6 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-
-function generateCode(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  let code = ''
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)]
-  }
-  return code
-}
 
 export default function CreatePage() {
   const router = useRouter()
@@ -59,44 +49,36 @@ export default function CreatePage() {
       let imageUrl: string | null = null
 
       if (imageFile) {
-        const ext = imageFile.name.split('.').pop()
-        const path = `rooms/${Date.now()}.${ext}`
-        const { error: uploadError } = await supabase.storage
-          .from('images')
-          .upload(path, imageFile, { upsert: true })
-
-        if (!uploadError) {
-          const { data } = supabase.storage.from('images').getPublicUrl(path)
-          imageUrl = data.publicUrl
+        const formData = new FormData()
+        formData.append('file', imageFile)
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json()
+          imageUrl = uploadData.url
         }
       }
 
-      const code = generateCode()
+      const roomRes = await fetch('/api/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: roomName.trim(), image_url: imageUrl }),
+      })
 
-      const { data: room, error: roomError } = await supabase
-        .from('rooms')
-        .insert({ code, name: roomName.trim(), image_url: imageUrl })
-        .select()
-        .single()
+      if (!roomRes.ok) throw new Error('Failed to create room')
+      const room = await roomRes.json()
 
-      if (roomError) throw roomError
+      const qRes = await fetch('/api/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room_id: room.id, questions: validQuestions }),
+      })
 
-      const questionsToInsert = validQuestions.map((text, i) => ({
-        room_id: room.id,
-        text,
-        order_index: i,
-      }))
+      if (!qRes.ok) throw new Error('Failed to create questions')
 
-      const { error: qError } = await supabase
-        .from('questions')
-        .insert(questionsToInsert)
-
-      if (qError) throw qError
-
-      router.push(`/room/${code}?host=true`)
+      router.push(`/room/${room.code}?host=true`)
     } catch (err) {
       console.error(err)
-      setError('Une erreur est survenue. Vérifie ta connexion Supabase.')
+      setError('Une erreur est survenue. Vérifie ta connexion.')
     } finally {
       setLoading(false)
     }

@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 import type { Room, Question } from '@/lib/types'
 
 interface QuestionResult {
@@ -50,48 +49,58 @@ export default function ResultsPage() {
   const [results, setResults] = useState<QuestionResult[]>([])
   const [participantCount, setParticipantCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const roomIdRef = useRef<string | null>(null)
 
   const loadResults = useCallback(async () => {
-    const { data: roomData } = await supabase
-      .from('rooms')
-      .select('*')
-      .eq('code', code)
-      .single()
-
-    if (!roomData) {
+    const roomRes = await fetch(`/api/rooms/${code}`)
+    if (!roomRes.ok) {
       router.push('/')
       return
     }
+    const roomData: Room = await roomRes.json()
     setRoom(roomData)
+    roomIdRef.current = roomData.id
 
-    const { data: qs } = await supabase
-      .from('questions')
-      .select('*')
-      .eq('room_id', roomData.id)
-      .order('order_index')
-
-    const { count: pCount } = await supabase
-      .from('users')
-      .select('*', { count: 'exact', head: true })
-      .eq('room_id', roomData.id)
-    setParticipantCount(pCount || 0)
-
-    const questionResults: QuestionResult[] = []
-    for (const q of (qs || [])) {
-      const { data: answers } = await supabase
-        .from('answers')
-        .select('value')
-        .eq('question_id', q.id)
-
-      const total = answers?.length || 0
-      const yesCount = answers?.filter(a => a.value === true).length || 0
-      const noCount = total - yesCount
-      const yesPercent = total > 0 ? Math.round((yesCount / total) * 100) : 0
-
-      questionResults.push({ question: q, yesCount, noCount, total, yesPercent })
+    const countRes = await fetch(`/api/users/count/${roomData.id}`)
+    if (countRes.ok) {
+      const { count } = await countRes.json()
+      setParticipantCount(count)
     }
 
-    setResults(questionResults)
+    const resultsRes = await fetch(`/api/results/${roomData.id}`)
+    if (resultsRes.ok) {
+      const apiResults = await resultsRes.json()
+      // Transform API results to QuestionResult shape
+      // We need the question object — fetch questions too
+      const qRes = await fetch(`/api/questions/${roomData.id}`)
+      const questions: Question[] = qRes.ok ? await qRes.json() : []
+      const qMap = new Map(questions.map(q => [q.id, q]))
+
+      const questionResults: QuestionResult[] = apiResults.map((r: {
+        question_id: string
+        question_text: string
+        yes_count: number
+        no_count: number
+        total: number
+      }) => {
+        const question = qMap.get(r.question_id) ?? {
+          id: r.question_id,
+          room_id: roomData.id,
+          text: r.question_text,
+          order_index: 0,
+        }
+        const yesPercent = r.total > 0 ? Math.round((r.yes_count / r.total) * 100) : 0
+        return {
+          question,
+          yesCount: r.yes_count,
+          noCount: r.no_count,
+          total: r.total,
+          yesPercent,
+        }
+      })
+      setResults(questionResults)
+    }
+
     setLoading(false)
   }, [code, router])
 
@@ -99,17 +108,44 @@ export default function ResultsPage() {
     loadResults()
   }, [loadResults])
 
-  // Realtime refresh
+  // Poll every 8s
   useEffect(() => {
-    if (!room) return
-    const channel = supabase
-      .channel(`results-${room.id}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'answers' }, () => {
-        loadResults()
-      })
-      .subscribe()
-    return () => { supabase.removeChannel(channel) }
-  }, [room, loadResults])
+    const id = setInterval(async () => {
+      if (!roomIdRef.current) return
+      const [countRes, resultsRes, qRes] = await Promise.all([
+        fetch(`/api/users/count/${roomIdRef.current}`),
+        fetch(`/api/results/${roomIdRef.current}`),
+        fetch(`/api/questions/${roomIdRef.current}`),
+      ])
+      if (countRes.ok) {
+        const { count } = await countRes.json()
+        setParticipantCount(count)
+      }
+      if (resultsRes.ok && qRes.ok) {
+        const apiResults = await resultsRes.json()
+        const questions: Question[] = await qRes.json()
+        const qMap = new Map(questions.map((q: Question) => [q.id, q]))
+        const questionResults: QuestionResult[] = apiResults.map((r: {
+          question_id: string
+          question_text: string
+          yes_count: number
+          no_count: number
+          total: number
+        }) => {
+          const question = qMap.get(r.question_id) ?? {
+            id: r.question_id,
+            room_id: roomIdRef.current!,
+            text: r.question_text,
+            order_index: 0,
+          }
+          const yesPercent = r.total > 0 ? Math.round((r.yes_count / r.total) * 100) : 0
+          return { question, yesCount: r.yes_count, noCount: r.no_count, total: r.total, yesPercent }
+        })
+        setResults(questionResults)
+      }
+    }, 8000)
+    return () => clearInterval(id)
+  }, [])
 
   const copyCode = async () => {
     await navigator.clipboard.writeText(code)

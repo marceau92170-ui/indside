@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 import type { Room, Question } from '@/lib/types'
 import { Suspense } from 'react'
 
@@ -25,58 +24,46 @@ function RoomContent() {
   const [showNicknamePrompt, setShowNicknamePrompt] = useState(false)
   const [nickname, setNickname] = useState('')
   const [joining, setJoining] = useState(false)
+  const roomIdRef = useRef<string | null>(null)
 
   const loadRoom = useCallback(async () => {
-    const { data: roomData } = await supabase
-      .from('rooms')
-      .select('*')
-      .eq('code', code)
-      .single()
-
-    if (!roomData) {
+    const roomRes = await fetch(`/api/rooms/${code}`)
+    if (!roomRes.ok) {
       router.push('/?error=notfound')
       return
     }
-
+    const roomData: Room = await roomRes.json()
     setRoom(roomData)
+    roomIdRef.current = roomData.id
 
-    const { data: qs } = await supabase
-      .from('questions')
-      .select('*')
-      .eq('room_id', roomData.id)
-      .order('order_index')
-
-    setQuestions(qs || [])
+    const qRes = await fetch(`/api/questions/${roomData.id}`)
+    const qs: Question[] = qRes.ok ? await qRes.json() : []
+    setQuestions(qs)
 
     // Check if user already exists
     const storedUserId = localStorage.getItem(`inside_user_${code}`)
     if (storedUserId) {
       setUserId(storedUserId)
-      // Check how many questions already answered
-      const { data: existingAnswers } = await supabase
-        .from('answers')
-        .select('id')
-        .eq('user_id', storedUserId)
-      if (existingAnswers && existingAnswers.length >= (qs || []).length && (qs || []).length > 0) {
+      const answersRes = await fetch(`/api/answers/user/${storedUserId}`)
+      const existingAnswers = answersRes.ok ? await answersRes.json() : []
+      if (existingAnswers.length >= qs.length && qs.length > 0) {
         setDone(true)
       } else {
-        setCurrentIndex(existingAnswers?.length || 0)
+        setCurrentIndex(existingAnswers.length || 0)
       }
     } else if (isHost) {
-      // Host created the room — ask for their nickname too
       setShowNicknamePrompt(true)
     } else {
-      // Not joined yet, redirect to join
       router.push(`/join?code=${code}`)
       return
     }
 
     // Load participant count
-    const { count } = await supabase
-      .from('users')
-      .select('*', { count: 'exact', head: true })
-      .eq('room_id', roomData.id)
-    setParticipantCount(count || 0)
+    const countRes = await fetch(`/api/users/count/${roomData.id}`)
+    if (countRes.ok) {
+      const { count } = await countRes.json()
+      setParticipantCount(count)
+    }
 
     setLoading(false)
   }, [code, isHost, router])
@@ -85,31 +72,34 @@ function RoomContent() {
     loadRoom()
   }, [loadRoom])
 
-  // Realtime subscription for participant count
+  // Poll participant count every 5s
   useEffect(() => {
-    if (!room) return
-    const channel = supabase
-      .channel(`room-${room.id}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'users', filter: `room_id=eq.${room.id}` }, () => {
-        setParticipantCount(prev => prev + 1)
-      })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'answers' }, () => {
-        setAnsweredCount(prev => prev + 1)
-      })
-      .subscribe()
+    const id = setInterval(async () => {
+      if (!roomIdRef.current) return
+      const res = await fetch(`/api/users/count/${roomIdRef.current}`)
+      if (res.ok) {
+        const { count } = await res.json()
+        setParticipantCount(count)
+      }
+    }, 5000)
+    return () => clearInterval(id)
+  }, [])
 
-    return () => { supabase.removeChannel(channel) }
-  }, [room])
+  // Suppress unused warning
+  void answeredCount
 
   const handleAnswer = async (value: boolean) => {
     if (!userId || !questions[currentIndex] || submitting) return
     setSubmitting(true)
 
-    const { error } = await supabase
-      .from('answers')
-      .insert({ user_id: userId, question_id: questions[currentIndex].id, value })
+    const res = await fetch('/api/answers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, question_id: questions[currentIndex].id, value }),
+    })
 
-    if (!error) {
+    if (res.ok) {
+      setAnsweredCount(prev => prev + 1)
       if (currentIndex + 1 >= questions.length) {
         setDone(true)
       } else {
@@ -122,12 +112,13 @@ function RoomContent() {
   const handleHostJoin = async () => {
     if (!nickname.trim() || !room) return
     setJoining(true)
-    const { data: user, error } = await supabase
-      .from('users')
-      .insert({ room_id: room.id, nickname: nickname.trim() })
-      .select()
-      .single()
-    if (!error && user) {
+    const res = await fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room_id: room.id, nickname: nickname.trim() }),
+    })
+    if (res.ok) {
+      const user = await res.json()
       localStorage.setItem(`inside_user_${code}`, user.id)
       setUserId(user.id)
       setParticipantCount(prev => prev + 1)
