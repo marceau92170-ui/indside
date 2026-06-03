@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
+import { getDoubleQuestionIndex } from '@/lib/game'
 import type { Room, Question, Player } from '@/lib/types'
 
 const AVATAR_COLORS = [
@@ -52,6 +53,16 @@ function RoomContent() {
   const [floatingReactions, setFloatingReactions] = useState<FloatingReaction[]>([])
   const reactionCounterRef = useRef(0)
 
+  // Countdown overlay
+  const [countdown, setCountdown] = useState<number | null>(null)
+
+  // Floating pts bonus
+  const [showPtsBonus, setShowPtsBonus] = useState<string | null>(null)
+
+  // Track my answer for current question
+  const [myAnswer, setMyAnswer] = useState<boolean | null>(null)
+  const myAnswerRef = useRef<boolean | null>(null)
+
   // Refs
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const reactionsChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
@@ -71,6 +82,7 @@ function RoomContent() {
   useEffect(() => { isHostRef.current = isHost }, [isHost])
   useEffect(() => { answeredPlayerIdsRef.current = answeredPlayerIds }, [answeredPlayerIds])
   useEffect(() => { playersRef.current = players }, [players])
+  useEffect(() => { myAnswerRef.current = myAnswer }, [myAnswer])
 
   const loadRoom = useCallback(async () => {
     const { data: roomData, error: roomError } = await supabase
@@ -238,6 +250,42 @@ function RoomContent() {
           answeredPlayerIdsRef.current = new Set()
           setRevealCounts({ yes: 0, no: 0 })
           hasAutoRevealedRef.current = false
+          setMyAnswer(null)
+          myAnswerRef.current = null
+          setShowPtsBonus(null)
+        }
+
+        // Countdown when game starts (waiting → playing, index=0)
+        if (prev && prev.status === 'waiting' && updated.status === 'playing' && updated.current_question_index === 0 && updated.question_phase === 'answering') {
+          setCountdown(3)
+        }
+
+        // Calculate pts bonus when phase switches to revealing
+        if (prev && prev.question_phase === 'answering' && updated.question_phase === 'revealing') {
+          const myAns = myAnswerRef.current
+          if (myAns !== null) {
+            // We'll show pts after a short delay; the exact majority is in revealCounts
+            // Use setTimeout to let revealCounts update
+            setTimeout(() => {
+              setRevealCounts(rc => {
+                const totalVotes = rc.yes + rc.no
+                const majorityIsYes = rc.yes >= rc.no
+                const inMajority = myAns === majorityIsYes
+                const qs = questionsRef.current
+                const currentRoom = roomRef.current
+                const idx = currentRoom?.current_question_index ?? 0
+                const doubleIdx = getDoubleQuestionIndex(qs)
+                const isDouble = idx === doubleIdx
+                const bonus = inMajority ? (isDouble ? 25 : 5) : 0
+                const total = 1 + bonus
+                if (totalVotes > 0) {
+                  setShowPtsBonus(`+${total} pts`)
+                  setTimeout(() => setShowPtsBonus(null), 2500)
+                }
+                return rc
+              })
+            }, 600)
+          }
         }
 
         setRoom(updated)
@@ -300,6 +348,17 @@ function RoomContent() {
     return () => { supabase.removeChannel(rChannel) }
   }, [room?.id])
 
+  // Countdown effect
+  useEffect(() => {
+    if (countdown === null) return
+    if (countdown <= 0) {
+      setCountdown(null)
+      return
+    }
+    const timer = setTimeout(() => setCountdown(c => (c !== null ? c - 1 : null)), 1000)
+    return () => clearTimeout(timer)
+  }, [countdown])
+
   const sendReaction = async (emoji: string) => {
     if (!reactionsChannelRef.current) return
     await reactionsChannelRef.current.send({
@@ -329,6 +388,8 @@ function RoomContent() {
 
     setSubmitting(true)
     setHasAnsweredCurrent(true)
+    setMyAnswer(value)
+    myAnswerRef.current = value
 
     const { error } = await supabase.from('answers').insert({
       player_id: pid,
@@ -338,6 +399,8 @@ function RoomContent() {
 
     if (error) {
       setHasAnsweredCurrent(false)
+      setMyAnswer(null)
+      myAnswerRef.current = null
     }
     setSubmitting(false)
   }
@@ -511,8 +574,42 @@ function RoomContent() {
         ? 'linear-gradient(90deg, #f59e0b, #ef4444)'
         : 'linear-gradient(90deg, #ef4444, #e11d48)'
 
+    const doubleIndex = getDoubleQuestionIndex(questions)
+    const isDoubleQuestion = currentIndex === doubleIndex
+
     return (
       <div className="min-h-screen flex flex-col relative overflow-hidden">
+        {/* Countdown overlay */}
+        {countdown !== null && (
+          <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center" style={{ background: 'rgba(8,8,15,0.92)', backdropFilter: 'blur(8px)' }}>
+            <style>{`
+              @keyframes countPulse {
+                0% { transform: scale(0.6); opacity: 0; }
+                30% { transform: scale(1.15); opacity: 1; }
+                80% { transform: scale(1); opacity: 1; }
+                100% { transform: scale(0.9); opacity: 0; }
+              }
+            `}</style>
+            <div
+              key={countdown}
+              style={{
+                fontSize: '10rem',
+                fontWeight: 900,
+                lineHeight: 1,
+                background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                filter: 'drop-shadow(0 0 40px rgba(168,85,247,0.6))',
+                animation: 'countPulse 0.9s ease-out forwards',
+              }}
+            >
+              {countdown}
+            </div>
+            <p style={{ color: 'rgba(240,240,245,0.60)', fontWeight: 700, fontSize: '1.2rem', marginTop: '24px', letterSpacing: '.05em' }}>Prépare-toi !</p>
+          </div>
+        )}
+
         {/* Floating reactions */}
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
           {floatingReactions.map(r => (
@@ -529,6 +626,25 @@ function RoomContent() {
               {r.emoji}
             </div>
           ))}
+          {/* Floating pts bonus */}
+          {showPtsBonus && (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '50%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontSize: '2rem',
+                fontWeight: 900,
+                color: '#fbbf24',
+                textShadow: '0 0 20px rgba(251,191,36,0.7)',
+                animation: 'floatUp 2.5s ease-out forwards',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {showPtsBonus}
+            </div>
+          )}
         </div>
 
         <style>{`
@@ -570,6 +686,16 @@ function RoomContent() {
           {/* ── ANSWERING PHASE ── */}
           {room.question_phase === 'answering' && (
             <>
+              {/* Double bonus banner */}
+              {isDoubleQuestion && (
+                <div
+                  className="w-full py-3 px-5 rounded-2xl flex items-center justify-center gap-2 text-sm font-black"
+                  style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(251,191,36,0.15))', border: '1px solid rgba(245,158,11,0.40)', color: '#fbbf24' }}
+                >
+                  🎰 Question Double Bonus — ×5 points !
+                </div>
+              )}
+
               {/* Timer bar */}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)' }}>

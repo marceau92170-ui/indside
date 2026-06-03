@@ -55,6 +55,7 @@ export const TEMPLATES: GameTemplate[] = [
     color_from: '#06b6d4',
     color_to: '#3b82f6',
     question_count: 8,
+    is_premium: true,
     questions: [
       'Penses-tu être la personne la plus drôle du groupe ?',
       'Penses-tu être la personne la plus courageuse du groupe ?',
@@ -76,6 +77,7 @@ export const TEMPLATES: GameTemplate[] = [
     color_from: '#ef4444',
     color_to: '#f97316',
     question_count: 10,
+    is_premium: true,
     questions: [
       'As-tu déjà menti à un proche pour éviter une situation gênante ?',
       'As-tu déjà eu des sentiments pour un(e) ex de quelqu\'un du groupe ?',
@@ -99,6 +101,7 @@ export const TEMPLATES: GameTemplate[] = [
     color_from: '#10b981',
     color_to: '#06b6d4',
     question_count: 8,
+    is_premium: true,
     questions: [
       'As-tu déjà séché un cours magistral ?',
       'As-tu déjà rendu un devoir en retard ?',
@@ -120,6 +123,7 @@ export const TEMPLATES: GameTemplate[] = [
     color_from: '#3b82f6',
     color_to: '#8b5cf6',
     question_count: 8,
+    is_premium: true,
     questions: [
       'As-tu déjà raté un avion ou un train ?',
       'As-tu déjà perdu tes bagages en voyage ?',
@@ -129,6 +133,28 @@ export const TEMPLATES: GameTemplate[] = [
       'As-tu déjà eu une aventure romantique lors d\'un voyage ?',
       'Peux-tu dormir n\'importe où (avion, bus, sol) ?',
       'As-tu déjà dépensé tout ton budget voyage en un jour ?',
+    ],
+  },
+  {
+    id: 'tpl-couples',
+    slug: 'couples',
+    name: 'Couples & Crush',
+    emoji: '💘',
+    description: 'Pour les soirées romantiques ou pour découvrir les secrets de cœur du groupe',
+    category: 'Romance',
+    color_from: '#ec4899',
+    color_to: '#f43f5e',
+    question_count: 8,
+    is_premium: true,
+    questions: [
+      'As-tu déjà eu le coup de foudre ?',
+      'As-tu déjà envoyé un message à quelqu\'un en étant amoureux(se) ?',
+      'As-tu déjà gardé des sentiments secrets plus d\'un an ?',
+      'As-tu déjà eu un crush sur quelqu\'un inaccessible ?',
+      'Penses-tu croire encore au grand amour ?',
+      'As-tu déjà mis fin à une relation par message ?',
+      'As-tu déjà jalousé le/la partenaire d\'un(e) ami(e) ?',
+      'Serais-tu prêt(e) à tout plaquer pour quelqu\'un ?',
     ],
   },
   {

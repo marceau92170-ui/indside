@@ -1,8 +1,24 @@
 'use client'
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { TEMPLATES } from '@/lib/templates'
+import type { GameTemplate } from '@/lib/types'
 
 export default function HomePage() {
+  const router = useRouter()
+  const [showPremiumModal, setShowPremiumModal] = useState(false)
+  const [selectedPremiumTemplate, setSelectedPremiumTemplate] = useState<GameTemplate | null>(null)
+
+  const handleTemplateClick = (t: GameTemplate) => {
+    if (t.is_premium) {
+      setSelectedPremiumTemplate(t)
+      setShowPremiumModal(true)
+    } else {
+      router.push(`/create?template=${t.slug}`)
+    }
+  }
+
   return (
     <div style={{ background: '#08080f', minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '48px 20px 40px', gap: '32px', position: 'relative', overflow: 'hidden' }}>
       {/* blobs */}
@@ -30,16 +46,28 @@ export default function HomePage() {
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
           {TEMPLATES.map(t => (
-            <Link key={t.id} href={`/create?template=${t.slug}`} style={{ textDecoration:'none', borderRadius:'20px', overflow:'hidden', background:`linear-gradient(135deg, ${t.color_from}22, ${t.color_to}18)`, border:`1px solid ${t.color_from}30`, padding:'18px 14px', display:'flex', flexDirection:'column', gap:'8px', cursor:'pointer' }}>
+            <div
+              key={t.id}
+              onClick={() => handleTemplateClick(t)}
+              style={{ textDecoration:'none', borderRadius:'20px', overflow:'hidden', background:`linear-gradient(135deg, ${t.color_from}22, ${t.color_to}18)`, border:`1px solid ${t.color_from}30`, padding:'18px 14px', display:'flex', flexDirection:'column', gap:'8px', cursor:'pointer', position:'relative' }}
+            >
+              {t.is_premium && (
+                <div style={{ position:'absolute', top:'10px', right:'10px', background:'linear-gradient(135deg,#f59e0b,#a855f7)', borderRadius:'8px', padding:'3px 7px', fontSize:'10px', fontWeight:800, color:'#fff', letterSpacing:'.04em' }}>
+                  Inside+
+                </div>
+              )}
               <span style={{ fontSize:'2rem', lineHeight:1 }}>{t.emoji}</span>
               <div>
-                <div style={{ fontWeight:800, fontSize:'.95rem', color:'#f0f0f5' }}>{t.name}</div>
+                <div style={{ fontWeight:800, fontSize:'.95rem', color:'#f0f0f5', display:'flex', alignItems:'center', gap:'6px' }}>
+                  {t.name}
+                  {t.is_premium && <span style={{ fontSize:'0.85rem' }}>🔒</span>}
+                </div>
                 <div style={{ fontSize:'.75rem', color:'rgba(240,240,245,0.45)', marginTop:'3px', lineHeight:1.4 }}>{t.description}</div>
               </div>
               {t.question_count > 0 && (
                 <div style={{ fontSize:'11px', fontWeight:700, color:'rgba(240,240,245,0.40)', marginTop:'4px' }}>{t.question_count} questions</div>
               )}
-            </Link>
+            </div>
           ))}
         </div>
       </div>
@@ -51,6 +79,64 @@ export default function HomePage() {
         </Link>
         <p style={{ textAlign:'center', fontSize:'11px', color:'rgba(240,240,245,0.22)', margin:0 }}>Sans compte · 100% privé · Gratuit</p>
       </div>
+
+      {/* Premium Modal */}
+      {showPremiumModal && selectedPremiumTemplate && (
+        <div
+          style={{ position:'fixed', inset:0, zIndex:100, display:'flex', flexDirection:'column', justifyContent:'flex-end' }}
+          onClick={() => setShowPremiumModal(false)}
+        >
+          <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.65)', backdropFilter:'blur(6px)' }} />
+          <div
+            style={{ position:'relative', zIndex:1, background:'linear-gradient(180deg,rgba(18,12,40,0.98),rgba(10,8,24,0.99))', borderRadius:'28px 28px 0 0', padding:'28px 24px 48px', display:'flex', flexDirection:'column', gap:'20px', border:'1px solid rgba(255,255,255,0.10)', borderBottom:'none' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Handle */}
+            <div style={{ width:'44px', height:'4px', borderRadius:'99px', background:'rgba(255,255,255,0.20)', margin:'0 auto -8px' }} />
+
+            {/* Header */}
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'10px', textAlign:'center' }}>
+              <div style={{ fontSize:'3rem', lineHeight:1 }}>{selectedPremiumTemplate.emoji}</div>
+              <div>
+                <div style={{ fontWeight:900, fontSize:'1.3rem', color:'#f0f0f5' }}>{selectedPremiumTemplate.name}</div>
+                <div style={{ fontWeight:700, fontSize:'0.85rem', background:'linear-gradient(135deg,#f59e0b,#a855f7)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', marginTop:'2px' }}>✨ Inside+</div>
+              </div>
+              <p style={{ fontSize:'.88rem', color:'rgba(240,240,245,0.55)', lineHeight:1.5 }}>Ce jeu fait partie d&apos;Inside+</p>
+            </div>
+
+            {/* Benefits */}
+            <div style={{ background:'rgba(255,255,255,0.05)', borderRadius:'16px', padding:'16px 18px', display:'flex', flexDirection:'column', gap:'10px' }}>
+              {[
+                'Templates exclusifs illimités',
+                'Questions sans limite',
+                'Thèmes et personnalisation',
+                'Sans pub, pour toujours',
+              ].map((benefit, i) => (
+                <div key={i} style={{ display:'flex', alignItems:'center', gap:'10px', fontSize:'.9rem', color:'rgba(240,240,245,0.80)' }}>
+                  <span style={{ color:'#a855f7', fontWeight:700 }}>✦</span>
+                  {benefit}
+                </div>
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+              <button
+                onClick={() => { alert('Bientôt disponible !') }}
+                style={{ width:'100%', padding:'17px', borderRadius:'16px', background:'linear-gradient(135deg,#8b5cf6,#a855f7,#ec4899)', border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', cursor:'pointer', fontFamily:'inherit', boxShadow:'0 10px 40px rgba(168,85,247,0.35)', opacity:0.7 }}
+              >
+                Obtenir Inside+ 🚀 — Bientôt disponible
+              </button>
+              <button
+                onClick={() => { setShowPremiumModal(false); router.push('/create') }}
+                style={{ width:'100%', padding:'15px', borderRadius:'16px', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.12)', color:'rgba(240,240,245,0.70)', fontWeight:600, fontSize:'.95rem', cursor:'pointer', fontFamily:'inherit' }}
+              >
+                Jouer quand même (version limitée)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -69,6 +69,7 @@ export interface GameTemplate {
   color_from: string
   color_to: string
   question_count: number
+  is_premium?: boolean
   questions?: string[]
 }
 

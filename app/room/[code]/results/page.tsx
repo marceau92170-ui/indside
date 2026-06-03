@@ -28,6 +28,8 @@ export default function ResultsPage() {
   const [copied, setCopied] = useState(false)
   const [leaderboard, setLeaderboard] = useState<PlayerScore[]>([])
   const roomIdRef = useRef<string | null>(null)
+  const [podiumStep, setPodiumStep] = useState(0)
+  const [showTipJar, setShowTipJar] = useState(false)
 
   const loadResults = useCallback(async () => {
     const { data: roomData, error: roomError } = await supabase
@@ -83,6 +85,17 @@ export default function ResultsPage() {
     setLeaderboard(scores)
 
     setLoading(false)
+
+    // Start podium animation
+    let step = 0
+    const podiumInterval = setInterval(() => {
+      step += 1
+      setPodiumStep(step)
+      if (step >= 3) clearInterval(podiumInterval)
+    }, 1200)
+
+    // Show tip jar after 4 seconds
+    setTimeout(() => setShowTipJar(true), 4000)
   }, [code, router])
 
   useEffect(() => {
@@ -248,45 +261,167 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      {/* Leaderboard */}
+      {/* Podium + Leaderboard */}
       {room?.points_enabled && leaderboard.length > 0 && (
-        <div className="relative z-10 flex flex-col gap-3">
+        <div className="relative z-10 flex flex-col gap-4">
           <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>🏆 Classement</h2>
-          <div className="flex flex-col gap-2">
-            {leaderboard.map((entry) => {
-              const rankStyle = entry.rank <= 3 ? rankColors[entry.rank - 1] : null
-              return (
-                <div
-                  key={entry.player.id}
-                  className="card p-4 flex items-center gap-3"
+
+          {/* Podium animation */}
+          {podiumStep === 0 && (
+            <div className="flex flex-col items-center gap-3 py-6">
+              <div className="animate-spin w-8 h-8 rounded-xl" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }} />
+              <p style={{ color: 'rgba(240,240,245,0.45)', fontSize: '.9rem' }}>Calcul en cours…</p>
+            </div>
+          )}
+
+          {podiumStep >= 1 && leaderboard.length >= 3 && (
+            <div
+              style={{
+                transition: 'opacity 0.6s ease, transform 0.6s ease',
+                opacity: podiumStep >= 1 ? 1 : 0,
+                transform: podiumStep >= 1 ? 'translateY(0)' : 'translateY(40px)',
+                padding: '14px 16px',
+                borderRadius: '20px',
+                background: 'rgba(156,163,175,0.12)',
+                border: '1px solid rgba(156,163,175,0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <span style={{ fontSize: '1.6rem' }}>🥉</span>
+              <div style={{ flex: 1, fontWeight: 700, color: '#f0f0f5' }}>{leaderboard[2]?.player.nickname}</div>
+              <div style={{ fontWeight: 900, fontSize: '.85rem', color: '#9ca3af' }}>{leaderboard[2]?.points} pts</div>
+            </div>
+          )}
+
+          {podiumStep >= 2 && leaderboard.length >= 2 && (
+            <div
+              style={{
+                transition: 'opacity 0.6s ease, transform 0.6s ease',
+                opacity: podiumStep >= 2 ? 1 : 0,
+                transform: podiumStep >= 2 ? 'translateY(0)' : 'translateY(40px)',
+                padding: '16px 18px',
+                borderRadius: '22px',
+                background: 'linear-gradient(135deg, rgba(156,163,175,0.18), rgba(209,213,219,0.12))',
+                border: '1px solid rgba(209,213,219,0.30)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <span style={{ fontSize: '1.8rem' }}>🥈</span>
+              <div style={{ flex: 1, fontWeight: 700, color: '#f0f0f5' }}>{leaderboard[1]?.player.nickname}</div>
+              <div style={{ fontWeight: 900, fontSize: '.9rem', color: '#d1d5db' }}>{leaderboard[1]?.points} pts</div>
+            </div>
+          )}
+
+          {podiumStep >= 3 && leaderboard.length >= 1 && (
+            <div
+              style={{
+                transition: 'opacity 0.6s ease, transform 0.6s ease',
+                opacity: podiumStep >= 3 ? 1 : 0,
+                transform: podiumStep >= 3 ? 'translateY(0)' : 'translateY(40px)',
+                padding: '22px 20px',
+                borderRadius: '24px',
+                background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(251,191,36,0.15))',
+                border: '1px solid rgba(245,158,11,0.45)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                boxShadow: '0 8px 32px rgba(245,158,11,0.20)',
+              }}
+            >
+              <span style={{ fontSize: '2.2rem' }}>👑</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 900, fontSize: '1.15rem', color: '#f0f0f5' }}>{leaderboard[0]?.player.nickname}</div>
+                <div style={{ fontSize: '.8rem', color: 'rgba(240,240,245,0.50)', marginTop: '2px' }}>🎉 Gagnant !</div>
+              </div>
+              <div style={{ fontWeight: 900, fontSize: '1.1rem', color: '#fbbf24' }}>{leaderboard[0]?.points} pts</div>
+            </div>
+          )}
+
+          {/* Full leaderboard list */}
+          {podiumStep >= 3 && (
+            <div className="flex flex-col gap-2">
+              {leaderboard.map((entry) => {
+                const rankStyle = entry.rank <= 3 ? rankColors[entry.rank - 1] : null
+                return (
+                  <div
+                    key={entry.player.id}
+                    className="card p-4 flex items-center gap-3"
+                  >
+                    <div
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '12px',
+                        background: rankStyle ? rankStyle.bg : 'rgba(255,255,255,0.08)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 900,
+                        fontSize: '.9rem',
+                        color: rankStyle ? rankStyle.text : 'rgba(240,240,245,0.40)',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {entry.rank === 1 ? '👑' : entry.rank}
+                    </div>
+                    <div className="flex-1 font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</div>
+                    <div
+                      className="text-sm font-black px-3 py-1 rounded-full"
+                      style={{ background: 'rgba(168,85,247,0.18)', color: '#c084fc' }}
+                    >
+                      {entry.points} pts
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tip Jar Modal */}
+      {showTipJar && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}
+          onClick={() => setShowTipJar(false)}
+        >
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }} />
+          <div
+            style={{ position: 'relative', zIndex: 1, background: 'linear-gradient(180deg,rgba(18,12,40,0.98),rgba(10,8,24,0.99))', borderRadius: '28px 28px 0 0', padding: '28px 24px 48px', display: 'flex', flexDirection: 'column', gap: '18px', border: '1px solid rgba(255,255,255,0.10)', borderBottom: 'none' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ width: '44px', height: '4px', borderRadius: '99px', background: 'rgba(255,255,255,0.20)', margin: '0 auto -6px' }} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🎉</div>
+              <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#f0f0f5' }}>Vous avez kiffé ?</div>
+              <p style={{ fontSize: '.88rem', color: 'rgba(240,240,245,0.50)', marginTop: '6px', lineHeight: 1.5 }}>Inside reste gratuit grâce à votre soutien</p>
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {[
+                { label: '1€', emoji: '☕' },
+                { label: '3€', emoji: '🍕' },
+                { label: '5€', emoji: '🥂' },
+              ].map(({ label, emoji }) => (
+                <button
+                  key={label}
+                  onClick={() => alert('Bientôt disponible !')}
+                  style={{ flex: 1, padding: '16px 8px', borderRadius: '16px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', color: '#f0f0f5', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
                 >
-                  <div
-                    style={{
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '12px',
-                      background: rankStyle ? rankStyle.bg : 'rgba(255,255,255,0.08)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 900,
-                      fontSize: '.9rem',
-                      color: rankStyle ? rankStyle.text : 'rgba(240,240,245,0.40)',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {entry.rank === 1 ? '👑' : entry.rank}
-                  </div>
-                  <div className="flex-1 font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</div>
-                  <div
-                    className="text-sm font-black px-3 py-1 rounded-full"
-                    style={{ background: 'rgba(168,85,247,0.18)', color: '#c084fc' }}
-                  >
-                    {entry.points} pts
-                  </div>
-                </div>
-              )
-            })}
+                  <span style={{ fontSize: '1.5rem' }}>{emoji}</span>
+                  <span style={{ fontSize: '.85rem' }}>{label}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setShowTipJar(false)}
+              style={{ background: 'none', border: 'none', color: 'rgba(240,240,245,0.35)', fontSize: '.9rem', cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'underline' }}
+            >
+              Non merci
+            </button>
           </div>
         </div>
       )}

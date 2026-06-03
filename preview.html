@@ -54,7 +54,7 @@
 <body style="background: radial-gradient(ellipse at 20% 20%, rgba(139,92,246,0.10) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(236,72,153,0.08) 0%, transparent 60%), #08080f;">
 
   <h2 style="font-size:1.5rem;font-weight:900;margin-bottom:6px;color:rgba(240,240,245,0.80);">Prévisualisation <span class="gradient-text">Inside</span></h2>
-  <p style="font-size:12px;color:rgba(240,240,245,0.28);margin-bottom:22px;">7 écrans — clique pour naviguer</p>
+  <p style="font-size:12px;color:rgba(240,240,245,0.28);margin-bottom:22px;">14 écrans — clique pour naviguer</p>
 
   <div class="nav">
     <button class="active" onclick="show('home')">🏠 Accueil</button>
@@ -64,6 +64,13 @@
     <button onclick="show('quiz')">🎯 Quiz</button>
     <button onclick="show('done')">🎉 Terminé</button>
     <button onclick="show('results')">📊 Résultats</button>
+    <button onclick="show('countdown')">⏱️ Compte à rebours</button>
+    <button onclick="show('double')">🎰 Question Double</button>
+    <button onclick="show('reveal-pts')">💫 Révélation +pts</button>
+    <button onclick="show('podium')">🏆 Podium</button>
+    <button onclick="show('tipjar')">🎁 Tip Jar</button>
+    <button onclick="show('home-premium')">🔒 Accueil Premium</button>
+    <button onclick="show('inside-plus')">✨ Inside+ Modal</button>
   </div>
 
   <div class="phone">
@@ -550,6 +557,385 @@
       </div>
     </div>
 
+    <!-- ======== COUNTDOWN ======== -->
+    <div id="screen-countdown" class="screen" style="min-height:844px;align-items:center;justify-content:center;">
+      <div style="position:absolute;inset:0;background:#08080f;"></div>
+      <div class="blob" style="width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(139,92,246,0.35) 0%,transparent 65%);filter:blur(80px);z-index:0;"></div>
+
+      <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:24px;">
+        <div style="font-size:11rem;font-weight:900;line-height:1;background:linear-gradient(135deg,#8b5cf6,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 60px rgba(168,85,247,0.60));">3</div>
+        <p style="font-size:1.3rem;font-weight:700;color:rgba(240,240,245,0.60);letter-spacing:.06em;">Prépare-toi !</p>
+      </div>
+    </div>
+
+    <!-- ======== DOUBLE QUESTION ======== -->
+    <div id="screen-double" class="screen" style="min-height:844px;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0533,#070d20,#1a082a);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.55),transparent 35%,rgba(0,0,0,0.80));"></div>
+      <div class="blob" style="width:320px;height:320px;top:8%;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(139,92,246,0.38) 0%,transparent 70%);filter:blur(65px);z-index:0;"></div>
+
+      <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:36px 20px 32px;gap:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:1.2rem;font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,0.5);">Soirée de Jean 🎉</div>
+            <div style="font-size:12px;color:rgba(240,240,245,0.60);margin-top:2px;">👥 4 joueurs</div>
+          </div>
+          <div style="padding:7px 14px;border-radius:12px;background:rgba(0,0,0,0.45);backdrop-filter:blur(12px);font-weight:800;font-size:14px;">3 / 5</div>
+        </div>
+
+        <div class="progress-outer">
+          <div class="progress-inner" style="width:60%;"></div>
+        </div>
+
+        <!-- Double Bonus Banner -->
+        <div style="width:100%;padding:12px 18px;border-radius:18px;background:linear-gradient(135deg,rgba(245,158,11,0.25),rgba(251,191,36,0.15));border:1px solid rgba(245,158,11,0.40);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;font-size:.95rem;color:#fbbf24;">
+          🎰 Question Double Bonus — ×5 points !
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+          <div style="width:100%;background:rgba(8,4,22,0.60);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(245,158,11,0.30);border-radius:28px;padding:32px 24px;text-align:center;box-shadow:0 0 40px rgba(245,158,11,0.12);">
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,158,11,0.70);margin-bottom:16px;">Question 3 · Double Bonus</p>
+            <p style="font-size:1.45rem;font-weight:900;line-height:1.35;">As-tu déjà eu un crush secret sur quelqu'un dans ce groupe ? 🤫</p>
+          </div>
+
+          <div style="display:flex;gap:14px;width:100%;">
+            <button style="flex:1;padding:26px 12px;border-radius:26px;background:linear-gradient(135deg,#ef4444,#f43f5e);border:none;color:#fff;font-weight:900;font-size:1.2rem;cursor:pointer;box-shadow:0 14px 44px rgba(239,68,68,0.42);display:flex;flex-direction:column;align-items:center;gap:8px;font-family:inherit;">
+              <span style="font-size:2.2rem;">❌</span>
+              <span>Non</span>
+            </button>
+            <button style="flex:1;padding:26px 12px;border-radius:26px;background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;font-weight:900;font-size:1.2rem;cursor:pointer;box-shadow:0 14px 44px rgba(16,185,129,0.42);display:flex;flex-direction:column;align-items:center;gap:8px;font-family:inherit;">
+              <span style="font-size:2.2rem;">✅</span>
+              <span>Oui</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== REVEAL WITH +PTS ======== -->
+    <div id="screen-reveal-pts" class="screen" style="min-height:844px;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0533,#070d20,#1a082a);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.55),transparent 35%,rgba(0,0,0,0.80));"></div>
+
+      <div style="position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:36px 20px 32px;gap:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:1.2rem;font-weight:900;">Soirée de Jean 🎉</div>
+          <div style="padding:7px 14px;border-radius:12px;background:rgba(0,0,0,0.45);backdrop-filter:blur(12px);font-weight:800;font-size:14px;">3 / 5</div>
+        </div>
+
+        <div class="progress-outer"><div class="progress-inner" style="width:60%;"></div></div>
+
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;">
+
+          <!-- Question reminder -->
+          <div style="width:100%;background:rgba(8,4,22,0.60);backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,0.18);border-radius:28px;padding:22px 20px;text-align:center;">
+            <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(240,240,245,0.42);margin-bottom:10px;">Résultat — Question 3</p>
+            <p style="font-size:1.2rem;font-weight:900;line-height:1.35;">As-tu déjà eu un crush secret sur quelqu'un dans ce groupe ? 🤫</p>
+          </div>
+
+          <!-- Bars -->
+          <div style="width:100%;background:rgba(0,0,0,0.45);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-weight:900;color:#34d399;font-size:1.1rem;">✅ Oui</span>
+                <span style="font-weight:900;font-size:1.4rem;color:#34d399;">78%</span>
+              </div>
+              <div style="height:12px;background:rgba(255,255,255,0.10);border-radius:99px;overflow:hidden;">
+                <div style="height:100%;width:78%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:99px;"></div>
+              </div>
+              <p style="font-size:12px;color:rgba(240,240,245,0.40);margin-top:5px;">3 joueurs</p>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-weight:900;color:#f87171;font-size:1.1rem;">❌ Non</span>
+                <span style="font-weight:900;font-size:1.4rem;color:#f87171;">22%</span>
+              </div>
+              <div style="height:12px;background:rgba(255,255,255,0.10);border-radius:99px;overflow:hidden;">
+                <div style="height:100%;width:22%;background:linear-gradient(90deg,#ef4444,#f87171);border-radius:99px;"></div>
+              </div>
+              <p style="font-size:12px;color:rgba(240,240,245,0.40);margin-top:5px;">1 joueur</p>
+            </div>
+          </div>
+
+          <!-- Floating +pts (static in preview) -->
+          <div style="width:100%;display:flex;justify-content:center;padding:8px 0;">
+            <div style="font-size:2rem;font-weight:900;color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,0.70);letter-spacing:.03em;">+6 pts !</div>
+          </div>
+
+          <!-- Reactions -->
+          <div style="width:100%;background:rgba(0,0,0,0.35);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.10);border-radius:18px;padding:14px;">
+            <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(240,240,245,0.38);text-align:center;margin-bottom:10px;">Réagis !</p>
+            <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+              <button style="font-size:1.5rem;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.07);border:none;cursor:pointer;">😂</button>
+              <button style="font-size:1.5rem;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.07);border:none;cursor:pointer;">🔥</button>
+              <button style="font-size:1.5rem;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.07);border:none;cursor:pointer;">😳</button>
+              <button style="font-size:1.5rem;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.07);border:none;cursor:pointer;">💀</button>
+              <button style="font-size:1.5rem;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.07);border:none;cursor:pointer;">🤯</button>
+              <button style="font-size:1.5rem;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.07);border:none;cursor:pointer;">👀</button>
+            </div>
+          </div>
+
+          <button onclick="show('results')" style="width:100%;padding:18px;border-radius:18px;background:linear-gradient(135deg,#8b5cf6,#a855f7,#ec4899);border:none;color:#fff;font-weight:900;font-size:1.1rem;cursor:pointer;font-family:inherit;box-shadow:0 12px 40px rgba(168,85,247,0.40);">➡️ Suivant</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== PODIUM ======== -->
+    <div id="screen-podium" class="screen">
+      <div class="blob" style="width:360px;height:360px;top:-80px;right:-80px;background:radial-gradient(circle,rgba(245,158,11,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
+      <div class="blob" style="width:300px;height:300px;bottom:-60px;left:-60px;background:radial-gradient(circle,rgba(139,92,246,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
+
+      <div style="padding:32px 20px 16px;display:flex;align-items:center;gap:14px;z-index:1;flex-shrink:0;">
+        <button class="btn-back" onclick="show('results')">←</button>
+        <div>
+          <div style="font-size:1.4rem;font-weight:900;">Soirée de Jean 🎉</div>
+          <div style="font-size:12px;color:rgba(240,240,245,0.40);font-weight:600;">Classement final</div>
+        </div>
+      </div>
+
+      <div class="scroll-area" style="z-index:1;">
+
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div class="label-sm" style="margin-bottom:10px;">🏆 Classement</div>
+
+          <!-- 3rd place -->
+          <div class="appear" style="padding:14px 16px;border-radius:20px;background:rgba(156,163,175,0.12);border:1px solid rgba(156,163,175,0.25);display:flex;align-items:center;gap:12px;animation-delay:.0s;">
+            <span style="font-size:1.6rem;">🥉</span>
+            <div style="flex:1;font-weight:700;font-size:.95rem;">Lucas 🎮</div>
+            <div style="font-weight:900;font-size:.85rem;color:#9ca3af;">42 pts</div>
+          </div>
+
+          <!-- 2nd place -->
+          <div class="appear" style="padding:16px 18px;border-radius:22px;background:linear-gradient(135deg,rgba(156,163,175,0.18),rgba(209,213,219,0.12));border:1px solid rgba(209,213,219,0.30);display:flex;align-items:center;gap:12px;margin-top:6px;animation-delay:.4s;">
+            <span style="font-size:1.8rem;">🥈</span>
+            <div style="flex:1;font-weight:700;font-size:.95rem;">Sarah 🌸</div>
+            <div style="font-weight:900;font-size:.9rem;color:#d1d5db;">54 pts</div>
+          </div>
+
+          <!-- 1st place -->
+          <div class="appear" style="padding:22px 20px;border-radius:24px;background:linear-gradient(135deg,rgba(245,158,11,0.25),rgba(251,191,36,0.15));border:1px solid rgba(245,158,11,0.45);display:flex;align-items:center;gap:14px;margin-top:8px;box-shadow:0 8px 32px rgba(245,158,11,0.20);animation-delay:.8s;">
+            <span style="font-size:2.2rem;">👑</span>
+            <div style="flex:1;">
+              <div style="font-weight:900;font-size:1.15rem;">Jean 😎</div>
+              <div style="font-size:.8rem;color:rgba(240,240,245,0.50);margin-top:2px;">🎉 Gagnant !</div>
+            </div>
+            <div style="font-weight:900;font-size:1.1rem;color:#fbbf24;">68 pts</div>
+          </div>
+
+          <!-- Confetti -->
+          <div style="text-align:center;font-size:2rem;margin-top:8px;letter-spacing:.15em;">🎊 🎉 ✨ 🎈 🎊</div>
+        </div>
+
+        <!-- Full leaderboard -->
+        <div>
+          <div class="label-sm" style="margin-bottom:10px;">Tous les joueurs</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">👑</div>
+              <div style="flex:1;font-weight:700;">Jean 😎</div>
+              <div style="font-size:12px;font-weight:900;padding:4px 10px;border-radius:99px;background:rgba(168,85,247,0.18);color:#c084fc;">68 pts</div>
+            </div>
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#9ca3af,#d1d5db);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#374151;flex-shrink:0;">2</div>
+              <div style="flex:1;font-weight:700;">Sarah 🌸</div>
+              <div style="font-size:12px;font-weight:900;padding:4px 10px;border-radius:99px;background:rgba(168,85,247,0.18);color:#c084fc;">54 pts</div>
+            </div>
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#b45309,#d97706);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#fff;flex-shrink:0;">3</div>
+              <div style="flex:1;font-weight:700;">Lucas 🎮</div>
+              <div style="font-size:12px;font-weight:900;padding:4px 10px;border-radius:99px;background:rgba(168,85,247,0.18);color:#c084fc;">42 pts</div>
+            </div>
+            <div class="card" style="padding:14px;display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:rgba(240,240,245,0.40);flex-shrink:0;">4</div>
+              <div style="flex:1;font-weight:700;">Camille ✨</div>
+              <div style="font-size:12px;font-weight:900;padding:4px 10px;border-radius:99px;background:rgba(168,85,247,0.18);color:#c084fc;">31 pts</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======== TIP JAR ======== -->
+    <div id="screen-tipjar" class="screen">
+      <div class="blob" style="width:360px;height:360px;top:-80px;right:-80px;background:radial-gradient(circle,rgba(139,92,246,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
+
+      <div style="padding:32px 20px 16px;display:flex;align-items:center;gap:14px;z-index:1;flex-shrink:0;">
+        <button class="btn-back" onclick="show('results')">←</button>
+        <div>
+          <div style="font-size:1.4rem;font-weight:900;">Soirée de Jean 🎉</div>
+          <div style="font-size:12px;color:rgba(240,240,245,0.40);font-weight:600;">Résultats finaux</div>
+        </div>
+      </div>
+
+      <!-- Results partially visible -->
+      <div style="flex:1;padding:0 20px;z-index:1;overflow:hidden;opacity:.4;pointer-events:none;">
+        <div style="padding:24px;border-radius:28px;background:linear-gradient(135deg,rgba(249,115,22,0.22),rgba(239,68,68,0.18));border:1px solid rgba(249,115,22,0.28);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <div style="font-size:3.5rem;line-height:1;">🔥</div>
+          <div style="font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fb923c,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Aventurier</div>
+        </div>
+      </div>
+
+      <!-- Bottom sheet modal -->
+      <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(18,12,40,0.98),rgba(10,8,24,0.99));border-radius:28px 28px 0 0;padding:28px 24px 40px;display:flex;flex-direction:column;gap:18px;border-top:1px solid rgba(255,255,255,0.10);">
+        <div style="width:44px;height:4px;border-radius:99px;background:rgba(255,255,255,0.20);margin:0 auto -6px;"></div>
+
+        <div style="text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:8px;">🎉</div>
+          <div style="font-weight:900;font-size:1.2rem;color:#f0f0f5;">Vous avez kiffé ?</div>
+          <p style="font-size:.88rem;color:rgba(240,240,245,0.50);margin-top:6px;line-height:1.5;">Inside reste gratuit grâce à votre soutien</p>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;padding:16px 8px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <span style="font-size:1.5rem;">☕</span>
+            <span style="font-weight:700;font-size:.85rem;">1€</span>
+          </div>
+          <div style="flex:1;padding:16px 8px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <span style="font-size:1.5rem;">🍕</span>
+            <span style="font-weight:700;font-size:.85rem;">3€</span>
+          </div>
+          <div style="flex:1;padding:16px 8px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
+            <span style="font-size:1.5rem;">🥂</span>
+            <span style="font-weight:700;font-size:.85rem;">5€</span>
+          </div>
+        </div>
+
+        <div style="text-align:center;">
+          <span style="color:rgba(240,240,245,0.35);font-size:.9rem;text-decoration:underline;cursor:pointer;" onclick="show('results')">Non merci</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== HOME WITH PREMIUM LOCKS ======== -->
+    <div id="screen-home-premium" class="screen" style="padding: 48px 20px 40px; flex-direction: column; gap: 28px;">
+      <div class="blob" style="width:400px;height:400px;top:-120px;left:-100px;background:radial-gradient(circle,rgba(139,92,246,0.20) 0%,transparent 70%);filter:blur(60px);"></div>
+      <div class="blob" style="width:380px;height:380px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(236,72,153,0.18) 0%,transparent 70%);filter:blur(60px);"></div>
+
+      <!-- Hero -->
+      <div style="z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;">
+        <div style="width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#8b5cf6,#a855f7,#ec4899);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:900;color:white;box-shadow:0 20px 50px rgba(168,85,247,0.45);">I</div>
+        <div>
+          <h1 style="font-size:3.8rem;font-weight:900;line-height:1;background:linear-gradient(135deg,#a855f7,#3b82f6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0;">Inside</h1>
+          <p style="font-size:1rem;font-weight:700;color:rgba(240,240,245,0.70);margin-top:8px;">La plateforme de jeux sociaux privés</p>
+        </div>
+      </div>
+
+      <!-- Templates grid with premium locks -->
+      <div style="z-index:1;display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(240,240,245,0.45);">Jeux prêts à jouer</span>
+          <span style="font-size:12px;color:rgba(240,240,245,0.30);">8 modèles</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+          <!-- Free: Anniversaire -->
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(245,158,11,0.14),rgba(239,68,68,0.10));border:1px solid rgba(245,158,11,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;position:relative;">
+            <span style="font-size:1.8rem;line-height:1;">🎂</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Anniversaire</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Célèbre avec style et découvre…</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">8 questions</div>
+          </div>
+
+          <!-- Free: Soirée amis -->
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(139,92,246,0.14),rgba(236,72,153,0.10));border:1px solid rgba(139,92,246,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;position:relative;">
+            <span style="font-size:1.8rem;line-height:1;">🤣</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Soirée entre amis</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Des questions hilarantes…</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">10 questions</div>
+          </div>
+
+          <!-- Premium: Qui est le plus -->
+          <div onclick="show('inside-plus')" style="border-radius:18px;background:linear-gradient(135deg,rgba(6,182,212,0.14),rgba(59,130,246,0.10));border:1px solid rgba(6,182,212,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;position:relative;">
+            <div style="position:absolute;top:9px;right:9px;background:linear-gradient(135deg,#f59e0b,#a855f7);border-radius:7px;padding:3px 7px;font-size:9px;font-weight:800;color:#fff;letter-spacing:.04em;">Inside+</div>
+            <span style="font-size:1.8rem;line-height:1;">🕵️</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;display:flex;align-items:center;gap:5px;">Qui est le plus… <span style="font-size:.8rem;">🔒</span></div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Votez pour savoir qui…</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">8 questions</div>
+          </div>
+
+          <!-- Premium: Questions gênantes -->
+          <div onclick="show('inside-plus')" style="border-radius:18px;background:linear-gradient(135deg,rgba(239,68,68,0.14),rgba(249,115,22,0.10));border:1px solid rgba(239,68,68,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;position:relative;">
+            <div style="position:absolute;top:9px;right:9px;background:linear-gradient(135deg,#f59e0b,#a855f7);border-radius:7px;padding:3px 7px;font-size:9px;font-weight:800;color:#fff;letter-spacing:.04em;">Inside+</div>
+            <span style="font-size:1.8rem;line-height:1;">🔥</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;display:flex;align-items:center;gap:5px;">Questions gênantes <span style="font-size:.8rem;">🔒</span></div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Pour les groupes qui n'ont peur de rien.</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">10 questions</div>
+          </div>
+
+          <!-- Premium: Couples & Crush -->
+          <div onclick="show('inside-plus')" style="border-radius:18px;background:linear-gradient(135deg,rgba(236,72,153,0.14),rgba(244,63,94,0.10));border:1px solid rgba(236,72,153,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;position:relative;">
+            <div style="position:absolute;top:9px;right:9px;background:linear-gradient(135deg,#f59e0b,#a855f7);border-radius:7px;padding:3px 7px;font-size:9px;font-weight:800;color:#fff;letter-spacing:.04em;">Inside+</div>
+            <span style="font-size:1.8rem;line-height:1;">💘</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;display:flex;align-items:center;gap:5px;">Couples &amp; Crush <span style="font-size:.8rem;">🔒</span></div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Pour les soirées romantiques…</div>
+            <div style="font-size:11px;font-weight:700;color:rgba(240,240,245,0.38);">8 questions</div>
+          </div>
+
+          <!-- Free: Création libre -->
+          <div onclick="show('create')" style="border-radius:18px;background:linear-gradient(135deg,rgba(99,102,241,0.14),rgba(168,85,247,0.10));border:1px solid rgba(99,102,241,0.20);padding:16px 13px;display:flex;flex-direction:column;gap:7px;cursor:pointer;position:relative;">
+            <span style="font-size:1.8rem;line-height:1;">✏️</span>
+            <div style="font-weight:800;font-size:.9rem;color:#f0f0f5;">Création libre</div>
+            <div style="font-size:.72rem;color:rgba(240,240,245,0.42);line-height:1.4;">Crée ton propre jeu de A à Z</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Join button -->
+      <div style="z-index:1;display:flex;flex-direction:column;gap:10px;margin-top:auto;">
+        <button class="btn-glass" onclick="show('join')">🚪 Rejoindre une salle</button>
+        <p style="text-align:center;font-size:11px;color:rgba(240,240,245,0.22);">Sans compte · 100% privé · Gratuit</p>
+      </div>
+    </div>
+
+    <!-- ======== INSIDE+ MODAL ======== -->
+    <div id="screen-inside-plus" class="screen" style="padding:0;position:relative;">
+      <!-- Blurred background (home page) -->
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1e1b4b,#0c1a3d,#2d0a2e);filter:blur(2px);opacity:.6;"></div>
+
+      <!-- Modal sheet -->
+      <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;background:linear-gradient(180deg,rgba(18,12,40,0.99),rgba(8,6,20,1.00));border-radius:28px 28px 0 0;padding:28px 24px 48px;display:flex;flex-direction:column;gap:20px;border-top:1px solid rgba(255,255,255,0.10);">
+        <div style="width:44px;height:4px;border-radius:99px;background:rgba(255,255,255,0.20);margin:0 auto -8px;"></div>
+
+        <!-- Header -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;">
+          <div style="font-size:3rem;line-height:1;">🔥</div>
+          <div>
+            <div style="font-weight:900;font-size:1.3rem;color:#f0f0f5;">Questions gênantes</div>
+            <div style="font-weight:700;font-size:.85rem;background:linear-gradient(135deg,#f59e0b,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:2px;">✨ Inside+</div>
+          </div>
+          <p style="font-size:.88rem;color:rgba(240,240,245,0.55);line-height:1.5;">Ce jeu fait partie d'Inside+</p>
+        </div>
+
+        <!-- Benefits -->
+        <div style="background:rgba(255,255,255,0.05);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;color:rgba(240,240,245,0.80);">
+            <span style="color:#a855f7;font-weight:700;">✦</span> Templates exclusifs illimités
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;color:rgba(240,240,245,0.80);">
+            <span style="color:#a855f7;font-weight:700;">✦</span> Questions sans limite
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;color:rgba(240,240,245,0.80);">
+            <span style="color:#a855f7;font-weight:700;">✦</span> Thèmes et personnalisation
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:.9rem;color:rgba(240,240,245,0.80);">
+            <span style="color:#a855f7;font-weight:700;">✦</span> Sans pub, pour toujours
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button onclick="show('home-premium')" style="width:100%;padding:17px;border-radius:16px;background:linear-gradient(135deg,#8b5cf6,#a855f7,#ec4899);border:none;color:#fff;font-weight:700;font-size:1.05rem;cursor:pointer;font-family:inherit;opacity:.65;">
+            Obtenir Inside+ 🚀 — Bientôt disponible
+          </button>
+          <button onclick="show('create')" style="width:100%;padding:15px;border-radius:16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(240,240,245,0.70);font-weight:600;font-size:.95rem;cursor:pointer;font-family:inherit;">
+            Jouer quand même (version limitée)
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /.phone -->
 
   <p style="font-size:11px;color:rgba(240,240,245,0.18);margin-top:20px;">Prévisualisation statique — Inside v2</p>
@@ -562,8 +948,17 @@ const labels = {
   waiting: '⏳ Attente',
   quiz: '🎯 Quiz',
   done: '🎉 Terminé',
-  results: '📊 Résultats'
+  results: '📊 Résultats',
+  countdown: '⏱️ Compte à rebours',
+  double: '🎰 Question Double',
+  'reveal-pts': '💫 Révélation +pts',
+  podium: '🏆 Podium',
+  tipjar: '🎁 Tip Jar',
+  'home-premium': '🔒 Accueil Premium',
+  'inside-plus': '✨ Inside+ Modal'
 }
+
+window.addEventListener('DOMContentLoaded', function() { show('home') })
 
 function show(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
