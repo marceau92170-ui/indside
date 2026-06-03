@@ -7,6 +7,8 @@ import { supabase } from '@/lib/supabase'
 import { getDoubleQuestionIndex } from '@/lib/game'
 import { playDing, playCountdownBeep, playWhoosh, playReveal, startAmbientMusic, stopAmbientMusic, setMusicVolume } from '@/lib/sound'
 import type { Room, Question, Player } from '@/lib/types'
+import NoxComment from '@/components/NoxComment'
+import { getRevealComment } from '@/lib/nox'
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -565,10 +567,10 @@ export default function GamePage() {
           <>
             {isDoubleQuestion && (
               <div
-                className="w-full py-3 px-5 rounded-2xl flex items-center justify-center gap-2 text-sm font-black"
+                className="w-full py-3 px-5 rounded-2xl flex items-center justify-center gap-2"
                 style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(251,191,36,0.15))', border: '1px solid rgba(245,158,11,0.40)', color: '#fbbf24' }}
               >
-                🎰 Question Double Bonus — ×5 points !
+                <span style={{ fontWeight: 900, fontSize: '2rem' }}>×5</span>
               </div>
             )}
 
@@ -601,10 +603,7 @@ export default function GamePage() {
                     className="w-full p-8 rounded-3xl"
                     style={{ background: 'rgba(0,0,0,0.50)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)' }}
                   >
-                    <p className="text-xs font-bold uppercase tracking-widest mb-5 text-center" style={{ color: 'rgba(240,240,245,0.50)' }}>
-                      Question {currentIndex + 1}
-                    </p>
-                    <p className="text-2xl font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>
+                    <p className="font-black text-center leading-snug" style={{ color: '#f0f0f5', fontSize: '1.5rem' }}>
                       {question?.text}
                     </p>
                   </div>
@@ -614,9 +613,6 @@ export default function GamePage() {
                       className="w-full p-4 rounded-2xl"
                       style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.10)' }}
                     >
-                      <p className="text-xs font-bold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,240,245,0.40)' }}>
-                        {answeredPlayerIds.size}/{players.length} ont répondu
-                      </p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         {players.map((p, i) => {
                           const answered = answeredPlayerIds.has(p.id)
@@ -626,7 +622,7 @@ export default function GamePage() {
                                 className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white relative"
                                 style={{
                                   background: AVATAR_COLORS[i % AVATAR_COLORS.length],
-                                  opacity: answered ? 1 : 0.5,
+                                  opacity: answered ? 1 : 0.45,
                                 }}
                               >
                                 {p.nickname.charAt(0).toUpperCase()}
@@ -634,20 +630,6 @@ export default function GamePage() {
                                   {answered ? '✅' : '⏳'}
                                 </span>
                               </div>
-                              <span
-                                className="text-xs font-medium"
-                                style={{
-                                  color: 'rgba(240,240,245,0.55)',
-                                  maxWidth: '44px',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                  display: 'block',
-                                  textAlign: 'center',
-                                }}
-                              >
-                                {p.nickname}
-                              </span>
                             </div>
                           )
                         })}
@@ -693,9 +675,18 @@ export default function GamePage() {
                   </div>
 
                   {hasAnsweredCurrent && (
-                    <p className="text-center text-sm font-semibold animate-pulse" style={{ color: 'rgba(240,240,245,0.55)' }}>
-                      En attente des autres joueurs…
-                    </p>
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                      style={{
+                        fontSize: '3rem',
+                        lineHeight: 1,
+                        textAlign: 'center',
+                      }}
+                    >
+                      ✓
+                    </motion.div>
                   )}
                 </motion.div>
               </AnimatePresence>
@@ -710,13 +701,16 @@ export default function GamePage() {
               className="w-full p-6 rounded-3xl"
               style={{ background: 'rgba(0,0,0,0.50)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)' }}
             >
-              <p className="text-xs font-bold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,240,245,0.50)' }}>
-                Résultat — Question {currentIndex + 1}
-              </p>
-              <p className="text-xl font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>
+              <p className="font-black text-center leading-snug" style={{ color: '#f0f0f5', fontSize: '1.5rem' }}>
                 {question?.text}
               </p>
             </div>
+
+            <NoxComment
+              comment={getRevealComment(yesPercent)}
+              emotion={yesPercent >= 80 || yesPercent <= 20 ? 'proud' : yesPercent >= 60 || yesPercent <= 40 ? 'intrigued' : 'surprised'}
+              size={56}
+            />
 
             <div
               className="w-full p-6 rounded-3xl flex flex-col gap-5"

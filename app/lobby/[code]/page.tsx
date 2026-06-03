@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import type { Room, Player } from '@/lib/types'
+import NoxComment from '@/components/NoxComment'
+import { getNoxComment } from '@/lib/nox'
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -25,6 +27,7 @@ export default function LobbyPage() {
   const [isHost, setIsHost] = useState(false)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [noxComment] = useState(() => getNoxComment('lobby'))
 
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const roomRef = useRef<Room | null>(null)
@@ -201,7 +204,6 @@ export default function LobbyPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qrUrl} alt="QR Code" width={150} height={150} style={{ display: 'block', borderRadius: '8px' }} />
           </div>
-          <p className="text-xs font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Scanner pour rejoindre</p>
         </div>
 
         {/* Players list */}
@@ -209,9 +211,11 @@ export default function LobbyPage() {
           className="flex-1 flex flex-col gap-4 rounded-3xl p-6"
           style={{ background: 'rgba(0,0,0,0.40)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.12)' }}
         >
-          <p className="text-sm font-bold uppercase tracking-widest text-center" style={{ color: 'rgba(240,240,245,0.55)' }}>
-            {players.length} joueur{players.length > 1 ? 's' : ''} connecté{players.length > 1 ? 's' : ''}
-          </p>
+          {players.length >= 2 && (
+            <div className="flex justify-center mb-2">
+              <NoxComment comment={noxComment} emotion="intrigued" size={56} />
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-4">
             {players.map((p, i) => (
               <div key={p.id} className="flex flex-col items-center gap-2">
@@ -227,11 +231,6 @@ export default function LobbyPage() {
               </div>
             ))}
           </div>
-          {players.length === 0 && (
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-center" style={{ color: 'rgba(240,240,245,0.35)' }}>En attente de joueurs…</p>
-            </div>
-          )}
         </div>
 
         {/* Bottom actions */}
@@ -244,7 +243,7 @@ export default function LobbyPage() {
                 className="w-full py-5 rounded-2xl text-white font-black text-xl disabled:opacity-50 flex items-center justify-center gap-3"
                 style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 12px 40px rgba(168,85,247,0.45)' }}
               >
-                🚀 Lancer la partie
+                Commencer
               </button>
             </motion.div>
           ) : (
@@ -252,7 +251,7 @@ export default function LobbyPage() {
               className="w-full py-5 rounded-2xl text-center font-semibold"
               style={{ background: 'rgba(0,0,0,0.40)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(240,240,245,0.55)' }}
             >
-              <span className="animate-pulse">En attente du créateur pour lancer…</span>
+              <span className="animate-pulse" style={{ color: 'rgba(240,240,245,0.45)' }}>⏳</span>
             </div>
           )}
           <div className="flex items-center gap-2">
