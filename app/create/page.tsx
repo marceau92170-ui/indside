@@ -8,6 +8,8 @@ import { supabase } from '@/lib/supabase'
 import { generateCode } from '@/lib/game'
 import { TEMPLATES, getTemplateBySlug } from '@/lib/templates'
 import type { GameTemplate } from '@/lib/types'
+import { canAddQuestion, canCreateRoom, getUserToken } from '@/lib/subscription'
+import PremiumGate from '@/components/PremiumGate'
 
 function ChoiceScreen() {
   return (
@@ -112,6 +114,8 @@ function CreateForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [selectedTemplate, setSelectedTemplate] = useState<GameTemplate | null>(null)
+  const [showPremiumGate, setShowPremiumGate] = useState(false)
+  const [premiumGateReason, setPremiumGateReason] = useState('')
 
   useEffect(() => {
     const slug = searchParams.get('template')
@@ -150,7 +154,15 @@ function CreateForm() {
     setImagePreview(URL.createObjectURL(file))
   }
 
-  const addQuestion = () => setQuestions([...questions, ''])
+  const addQuestion = async () => {
+    const check = await canAddQuestion(questions.length)
+    if (!check.allowed) {
+      setPremiumGateReason('La version gratuite est limitée à 15 questions par salle.')
+      setShowPremiumGate(true)
+      return
+    }
+    setQuestions([...questions, ''])
+  }
   const removeQuestion = (i: number) => setQuestions(questions.filter((_, idx) => idx !== i))
   const updateQuestion = (i: number, val: string) => {
     const updated = [...questions]
@@ -168,6 +180,13 @@ function CreateForm() {
     setError('')
 
     try {
+      const roomCheck = await canCreateRoom()
+      if (!roomCheck.allowed) {
+        setLoading(false)
+        setPremiumGateReason(roomCheck.reason || 'Limite de salles actives atteinte.')
+        setShowPremiumGate(true)
+        return
+      }
       let imageUrl: string | null = null
       if (imageFile) {
         const ext = imageFile.name.split('.').pop()
@@ -436,6 +455,12 @@ function CreateForm() {
           </motion.div>
         </div>
       </div>
+      {showPremiumGate && (
+        <PremiumGate
+          reason={premiumGateReason}
+          onClose={() => setShowPremiumGate(false)}
+        />
+      )}
     </motion.div>
   )
 }

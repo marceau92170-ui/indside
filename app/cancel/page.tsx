@@ -28,9 +28,9 @@ export default function CancelPage() {
 
         <div className="w-full flex flex-col gap-3">
           <button
-            onClick={() => router.push('/checkout')}
+            onClick={() => router.push('/pricing')}
             className="w-full py-4 rounded-2xl text-white font-black text-lg"
-            style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 12px 40px rgba(168,85,247,0.40)' }}
+            style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 12px 40px rgba(245,158,11,0.40)' }}
           >
             Réessayer
           </button>

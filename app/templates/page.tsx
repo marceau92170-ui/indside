@@ -5,19 +5,27 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { TEMPLATES } from '@/lib/templates'
+import { getUserPlan } from '@/lib/subscription'
+import PremiumGate from '@/components/PremiumGate'
 
 export default function TemplatesPage() {
   const router = useRouter()
-  const [isPremium, setIsPremium] = useState(false)
+  const [userPlan, setUserPlan] = useState<'free' | 'premium'>('free')
+  const [showPremiumGate, setShowPremiumGate] = useState(false)
   const displayTemplates = TEMPLATES.filter(t => t.slug !== 'creation-libre')
 
   useEffect(() => {
-    setIsPremium(localStorage.getItem('inside_premium') === 'true')
+    // Check localStorage first for instant response, then verify with DB
+    const cached = localStorage.getItem('inside_premium') === 'true'
+    if (cached) setUserPlan('premium')
+    getUserPlan().then(plan => setUserPlan(plan))
   }, [])
+
+  const isPremium = userPlan === 'premium'
 
   const handleTemplateClick = (t: typeof displayTemplates[0]) => {
     if (t.is_premium && !isPremium) {
-      router.push('/pricing')
+      setShowPremiumGate(true)
     } else {
       router.push(`/create?template=${t.slug}`)
     }
@@ -47,7 +55,7 @@ export default function TemplatesPage() {
             href="/pricing"
             style={{
               padding: '6px 14px', borderRadius: '12px', fontSize: '12px', fontWeight: 800,
-              background: 'linear-gradient(135deg, #f59e0b, #a855f7)', color: '#fff', textDecoration: 'none',
+              background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', textDecoration: 'none',
             }}
           >
             Inside+
@@ -77,24 +85,34 @@ export default function TemplatesPage() {
               position: 'relative', overflow: 'hidden',
               opacity: t.is_premium && !isPremium ? 0.75 : 1,
             }}>
-              {t.is_premium && (
-                <div
-                  onClick={e => { e.stopPropagation(); router.push('/pricing') }}
-                  style={{
-                    position: 'absolute', top: '10px', right: '12px',
-                    background: 'linear-gradient(135deg, #f59e0b, #a855f7)',
+              {t.is_premium && !isPremium && (
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end',
+                  padding: '10px 12px',
+                  pointerEvents: 'none',
+                }}>
+                  <div style={{
+                    background: 'linear-gradient(135deg, #f59e0b, #f97316)',
                     borderRadius: '7px', padding: '2px 8px', fontSize: '10px', fontWeight: 800, color: '#fff',
-                    cursor: 'pointer',
-                  }}
-                >
+                  }}>
+                    🔒 Inside+
+                  </div>
+                </div>
+              )}
+              {t.is_premium && isPremium && (
+                <div style={{
+                  position: 'absolute', top: '10px', right: '12px',
+                  background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+                  borderRadius: '7px', padding: '2px 8px', fontSize: '10px', fontWeight: 800, color: '#fff',
+                }}>
                   Inside+
                 </div>
               )}
               <span style={{ fontSize: '2.2rem', lineHeight: 1, flexShrink: 0 }}>{t.emoji}</span>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#f0f0f5', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#f0f0f5' }}>
                   {t.name}
-                  {t.is_premium && !isPremium && <span style={{ fontSize: '.85rem' }}>🔒</span>}
                 </div>
                 <div style={{ fontSize: '.82rem', color: 'rgba(240,240,245,0.50)', marginTop: '3px', lineHeight: 1.4 }}>{t.description}</div>
                 {t.question_count > 0 && (
@@ -109,12 +127,19 @@ export default function TemplatesPage() {
 
       {!isPremium && (
         <div
-          style={{ zIndex: 1, padding: '20px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.10))', border: '1px solid rgba(139,92,246,0.25)', textAlign: 'center', cursor: 'pointer' }}
+          style={{ zIndex: 1, padding: '20px', borderRadius: '22px', background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(249,115,22,0.10))', border: '1px solid rgba(245,158,11,0.25)', textAlign: 'center', cursor: 'pointer' }}
           onClick={() => router.push('/pricing')}
         >
           <p style={{ fontWeight: 700, color: '#f0f0f5', marginBottom: '4px' }}>Débloquer tous les templates</p>
-          <p style={{ fontSize: '.85rem', color: 'rgba(240,240,245,0.50)' }}>Inside+ à partir de 3,99€/mois →</p>
+          <p style={{ fontSize: '.85rem', color: 'rgba(240,240,245,0.50)' }}>Inside+ à partir de 4,99€/mois →</p>
         </div>
+      )}
+
+      {showPremiumGate && (
+        <PremiumGate
+          reason="Ce template est réservé aux abonnés Inside+."
+          onClose={() => setShowPremiumGate(false)}
+        />
       )}
     </motion.div>
   )
