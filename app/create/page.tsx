@@ -3,12 +3,102 @@
 import { useState, useRef, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { generateCode } from '@/lib/game'
 import { TEMPLATES, getTemplateBySlug } from '@/lib/templates'
 import type { GameTemplate } from '@/lib/types'
 
-function CreatePageInner() {
+function ChoiceScreen() {
+  return (
+    <motion.div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '48px 24px',
+        gap: '24px',
+        background: '#08080f',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35 }}
+    >
+      {/* blobs */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: '-80px', right: '-60px', width: '300px', height: '300px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+        <div style={{ position: 'absolute', bottom: '-80px', left: '-40px', width: '280px', height: '280px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+      </div>
+
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', zIndex: 1 }}>
+        <Link
+          href="/"
+          style={{
+            width: '40px', height: '40px', borderRadius: '14px',
+            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#f0f0f5', textDecoration: 'none', fontSize: '1.1rem',
+            flexShrink: 0,
+          }}
+        >←</Link>
+        <div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#f0f0f5', margin: 0 }}>Créer une expérience</h1>
+          <p style={{ fontSize: '12px', color: 'rgba(240,240,245,0.40)', marginTop: '2px' }}>Choisis comment tu veux jouer</p>
+        </div>
+      </div>
+
+      {/* Two cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1, justifyContent: 'center', zIndex: 1 }}>
+
+        {/* Template option */}
+        <motion.div whileTap={{ scale: 0.98 }}>
+          <Link href="/templates" style={{ textDecoration: 'none', display: 'block' }}>
+            <div style={{
+              padding: '28px 24px', borderRadius: '24px',
+              background: 'linear-gradient(135deg, rgba(139,92,246,0.18), rgba(168,85,247,0.10))',
+              border: '1px solid rgba(139,92,246,0.30)',
+              display: 'flex', flexDirection: 'column', gap: '10px',
+            }}>
+              <span style={{ fontSize: '2.5rem' }}>📚</span>
+              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#f0f0f5' }}>Utiliser un modèle</div>
+              <p style={{ fontSize: '.92rem', color: 'rgba(240,240,245,0.55)', lineHeight: 1.5, margin: 0 }}>
+                Choisis parmi nos jeux prêts à jouer. Questions déjà rédigées.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(168,85,247,0.85)' }}>
+                  {TEMPLATES.filter(t => t.slug !== 'creation-libre').length} modèles disponibles →
+                </span>
+              </div>
+            </div>
+          </Link>
+        </motion.div>
+
+        {/* Free creation option */}
+        <motion.div whileTap={{ scale: 0.98 }}>
+          <Link href="/create?free=1" style={{ textDecoration: 'none', display: 'block' }}>
+            <div style={{
+              padding: '28px 24px', borderRadius: '24px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              display: 'flex', flexDirection: 'column', gap: '10px',
+            }}>
+              <span style={{ fontSize: '2.5rem' }}>🎨</span>
+              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#f0f0f5' }}>Création libre</div>
+              <p style={{ fontSize: '.92rem', color: 'rgba(240,240,245,0.55)', lineHeight: 1.5, margin: 0 }}>
+                Crée ton propre quiz de A à Z avec tes propres questions.
+              </p>
+            </div>
+          </Link>
+        </motion.div>
+      </div>
+    </motion.div>
+  )
+}
+
+function CreateForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -138,207 +228,227 @@ function CreatePageInner() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-8 gap-5 relative" style={{ background: '#08080f' }}>
-      {/* Background blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-        <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-      </div>
-
-      {/* Header */}
-      <div className="relative z-10 flex items-center gap-4">
-        <Link
-          href="/"
-          className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
-        >
-          ←
-        </Link>
-        <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Créer une salle</h1>
-      </div>
-
-      {/* Template banner */}
-      {selectedTemplate && selectedTemplate.slug !== 'creation-libre' && (
-        <div
-          className="relative z-10 p-4 rounded-2xl flex items-center gap-3"
-          style={{
-            background: `linear-gradient(135deg, ${selectedTemplate.color_from}30, ${selectedTemplate.color_to}25)`,
-            border: `1px solid ${selectedTemplate.color_from}40`,
-          }}
-        >
-          <span style={{ fontSize: '2rem' }}>{selectedTemplate.emoji}</span>
-          <div>
-            <div className="font-bold" style={{ color: '#f0f0f5' }}>{selectedTemplate.name}</div>
-            <div className="text-xs font-medium" style={{ color: 'rgba(240,240,245,0.50)' }}>Modèle pré-rempli · modifiable</div>
-          </div>
-        </div>
-      )}
-
-      {/* Room name */}
-      <div className="relative z-10 card p-5 flex flex-col gap-3">
-        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-          🏠 Nom de la salle
-        </label>
-        <input
-          type="text"
-          value={roomName}
-          onChange={e => setRoomName(e.target.value)}
-          placeholder="Ex : Soirée de Jean 🎉"
-          className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
-        />
-      </div>
-
-      {/* Nickname */}
-      <div className="relative z-10 card p-5 flex flex-col gap-3">
-        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-          🎭 Ton pseudo (tu participeras aussi)
-        </label>
-        <input
-          type="text"
-          value={nickname}
-          onChange={e => setNickname(e.target.value)}
-          placeholder="Ton prénom…"
-          maxLength={20}
-          className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
-        />
-      </div>
-
-      {/* Image upload */}
-      <div className="relative z-10 card p-5 flex flex-col gap-3">
-        <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-          📸 Image de fond
-        </label>
-        <button
-          onClick={() => fileRef.current?.click()}
-          className="relative w-full h-44 rounded-2xl overflow-hidden active:scale-95"
-          style={{ border: '2px dashed rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.04)' }}
-        >
-          {imagePreview ? (
-            <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'rgba(240,240,245,0.35)' }}>
-              <span className="text-4xl">🖼️</span>
-              <span className="text-sm font-semibold">Appuie pour choisir une photo</span>
-            </div>
-          )}
-          {imagePreview && (
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-              <span className="text-sm font-bold bg-black/60 px-4 py-2 rounded-full text-white">Changer</span>
-            </div>
-          )}
-        </button>
-        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-      </div>
-
-      {/* Points toggle */}
-      <div className="relative z-10 card p-5 flex items-center justify-between gap-4">
-        <div>
-          <div className="font-bold" style={{ color: '#f0f0f5' }}>🏆 Système de points</div>
-          <div className="text-xs mt-1" style={{ color: 'rgba(240,240,245,0.45)' }}>Active le classement et les scores</div>
-        </div>
-        <button
-          onClick={() => setPointsEnabled(!pointsEnabled)}
-          style={{
-            width: '52px',
-            height: '30px',
-            borderRadius: '9999px',
-            background: pointsEnabled ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'rgba(255,255,255,0.12)',
-            border: 'none',
-            cursor: 'pointer',
-            position: 'relative',
-            transition: 'background .2s',
-            flexShrink: 0,
-          }}
-        >
-          <span style={{
-            position: 'absolute',
-            top: '3px',
-            left: pointsEnabled ? '25px' : '3px',
-            width: '24px',
-            height: '24px',
-            borderRadius: '9999px',
-            background: '#fff',
-            transition: 'left .2s',
-            display: 'block',
-          }} />
-        </button>
-      </div>
-
-      {/* Questions */}
-      <div className="relative z-10 card p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-            ❓ Questions ({questions.filter(q => q.trim()).length})
-          </label>
-          <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.90)', border: '1px solid rgba(168,85,247,0.25)' }}>
-            Oui / Non
-          </span>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="min-h-screen flex flex-col px-6 py-8 gap-5 relative" style={{ background: '#08080f' }}>
+        {/* Background blobs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+          <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
         </div>
 
-        <div className="flex flex-col gap-3">
-          {questions.map((q, i) => (
-            <div key={i} className="flex gap-2 items-center rounded-2xl p-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}>
-                {i + 1}
-              </span>
-              <input
-                type="text"
-                value={q}
-                onChange={e => updateQuestion(i, e.target.value)}
-                placeholder={`Question ${i + 1}…`}
-                className="flex-1 bg-transparent text-white placeholder:text-white/30 focus:outline-none font-medium py-1"
-              />
-              {questions.length > 1 && (
-                <button
-                  onClick={() => removeQuestion(i)}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center text-lg active:scale-90 flex-shrink-0"
-                  style={{ background: 'rgba(239,68,68,0.20)', color: '#f87171' }}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          ))}
-
-          <button
-            onClick={addQuestion}
-            className="w-full py-4 rounded-2xl font-semibold active:scale-95"
-            style={{ border: '2px dashed rgba(255,255,255,0.18)', color: 'rgba(240,240,245,0.50)', background: 'rgba(255,255,255,0.02)' }}
+        {/* Header */}
+        <div className="relative z-10 flex items-center gap-4">
+          <Link
+            href="/create"
+            className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold"
+            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
           >
-            + Ajouter une question
+            ←
+          </Link>
+          <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Créer une salle</h1>
+        </div>
+
+        {/* Template banner */}
+        {selectedTemplate && selectedTemplate.slug !== 'creation-libre' && (
+          <div
+            className="relative z-10 p-4 rounded-2xl flex items-center gap-3"
+            style={{
+              background: `linear-gradient(135deg, ${selectedTemplate.color_from}30, ${selectedTemplate.color_to}25)`,
+              border: `1px solid ${selectedTemplate.color_from}40`,
+            }}
+          >
+            <span style={{ fontSize: '2rem' }}>{selectedTemplate.emoji}</span>
+            <div>
+              <div className="font-bold" style={{ color: '#f0f0f5' }}>{selectedTemplate.name}</div>
+              <div className="text-xs font-medium" style={{ color: 'rgba(240,240,245,0.50)' }}>Modèle pré-rempli · modifiable</div>
+            </div>
+          </div>
+        )}
+
+        {/* Room name */}
+        <div className="relative z-10 card p-5 flex flex-col gap-3">
+          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+            🏠 Nom de la salle
+          </label>
+          <input
+            type="text"
+            value={roomName}
+            onChange={e => setRoomName(e.target.value)}
+            placeholder="Ex : Soirée de Jean 🎉"
+            className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
+            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+          />
+        </div>
+
+        {/* Nickname */}
+        <div className="relative z-10 card p-5 flex flex-col gap-3">
+          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+            🎭 Ton pseudo (tu participeras aussi)
+          </label>
+          <input
+            type="text"
+            value={nickname}
+            onChange={e => setNickname(e.target.value)}
+            placeholder="Ton prénom…"
+            maxLength={20}
+            className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
+            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+          />
+        </div>
+
+        {/* Image upload */}
+        <div className="relative z-10 card p-5 flex flex-col gap-3">
+          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+            📸 Image de fond
+          </label>
+          <button
+            onClick={() => fileRef.current?.click()}
+            className="relative w-full h-44 rounded-2xl overflow-hidden active:scale-95"
+            style={{ border: '2px dashed rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.04)' }}
+          >
+            {imagePreview ? (
+              <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'rgba(240,240,245,0.35)' }}>
+                <span className="text-4xl">🖼️</span>
+                <span className="text-sm font-semibold">Appuie pour choisir une photo</span>
+              </div>
+            )}
+            {imagePreview && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <span className="text-sm font-bold bg-black/60 px-4 py-2 rounded-full text-white">Changer</span>
+              </div>
+            )}
+          </button>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+        </div>
+
+        {/* Points toggle */}
+        <div className="relative z-10 card p-5 flex items-center justify-between gap-4">
+          <div>
+            <div className="font-bold" style={{ color: '#f0f0f5' }}>🏆 Système de points</div>
+            <div className="text-xs mt-1" style={{ color: 'rgba(240,240,245,0.45)' }}>Active le classement et les scores</div>
+          </div>
+          <button
+            onClick={() => setPointsEnabled(!pointsEnabled)}
+            style={{
+              width: '52px',
+              height: '30px',
+              borderRadius: '9999px',
+              background: pointsEnabled ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'rgba(255,255,255,0.12)',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative',
+              transition: 'background .2s',
+              flexShrink: 0,
+            }}
+          >
+            <span style={{
+              position: 'absolute',
+              top: '3px',
+              left: pointsEnabled ? '25px' : '3px',
+              width: '24px',
+              height: '24px',
+              borderRadius: '9999px',
+              background: '#fff',
+              transition: 'left .2s',
+              display: 'block',
+            }} />
           </button>
         </div>
-      </div>
 
-      {/* Error */}
-      {error && (
-        <div className="relative z-10 py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
-          {error}
+        {/* Questions */}
+        <div className="relative z-10 card p-5 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
+              ❓ Questions ({questions.filter(q => q.trim()).length})
+            </label>
+            <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.90)', border: '1px solid rgba(168,85,247,0.25)' }}>
+              Oui / Non
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {questions.map((q, i) => (
+              <div key={i} className="flex gap-2 items-center rounded-2xl p-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}>
+                  {i + 1}
+                </span>
+                <input
+                  type="text"
+                  value={q}
+                  onChange={e => updateQuestion(i, e.target.value)}
+                  placeholder={`Question ${i + 1}…`}
+                  className="flex-1 bg-transparent text-white placeholder:text-white/30 focus:outline-none font-medium py-1"
+                />
+                {questions.length > 1 && (
+                  <button
+                    onClick={() => removeQuestion(i)}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-lg active:scale-90 flex-shrink-0"
+                    style={{ background: 'rgba(239,68,68,0.20)', color: '#f87171' }}
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+
+            <button
+              onClick={addQuestion}
+              className="w-full py-4 rounded-2xl font-semibold active:scale-95"
+              style={{ border: '2px dashed rgba(255,255,255,0.18)', color: 'rgba(240,240,245,0.50)', background: 'rgba(255,255,255,0.02)' }}
+            >
+              + Ajouter une question
+            </button>
+          </div>
         </div>
-      )}
 
-      {/* Submit */}
-      <div className="relative z-10 pb-8 mt-2">
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="btn-primary text-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {loading ? (
-            <>
-              <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-              </svg>
-              Création en cours…
-            </>
-          ) : '🚀 Créer ma salle'}
-        </button>
+        {/* Error */}
+        {error && (
+          <div className="relative z-10 py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
+            {error}
+          </div>
+        )}
+
+        {/* Submit */}
+        <div className="relative z-10 pb-8 mt-2">
+          <motion.div whileTap={{ scale: 0.97 }}>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="btn-primary text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{ width: '100%' }}
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Création en cours…
+                </>
+              ) : '🚀 Créer ma salle'}
+            </button>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
+}
+
+function CreatePageInner() {
+  const searchParams = useSearchParams()
+  const hasParams = searchParams.get('template') || searchParams.get('free') || searchParams.get('replay')
+
+  if (!hasParams) {
+    return <ChoiceScreen />
+  }
+
+  return <CreateForm />
 }
 
 export default function CreatePage() {

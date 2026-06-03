@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { toPng } from 'html-to-image'
 import { supabase } from '@/lib/supabase'
 import { playFanfare } from '@/lib/sound'
@@ -225,7 +226,10 @@ export default function ResultsPage() {
       </div>
 
       {/* Group level card */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         className="relative z-10 p-8 rounded-3xl flex flex-col items-center gap-3 text-center"
         style={{
           background: `linear-gradient(135deg, ${levelInfo.colorFrom}30, ${levelInfo.colorTo}25)`,
@@ -238,7 +242,7 @@ export default function ResultsPage() {
           <h2 className="text-3xl font-black" style={{ color: '#f0f0f5' }}>{levelInfo.label}</h2>
           <p className="text-base mt-1" style={{ color: 'rgba(240,240,245,0.70)' }}>{levelInfo.description}</p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats row */}
       <div className="relative z-10 grid grid-cols-2 gap-3">
@@ -387,11 +391,14 @@ export default function ResultsPage() {
           {/* Full leaderboard list */}
           {podiumStep >= 3 && (
             <div className="flex flex-col gap-2">
-              {leaderboard.map((entry) => {
+              {leaderboard.map((entry, idx) => {
                 const rankStyle = entry.rank <= 3 ? rankColors[entry.rank - 1] : null
                 return (
-                  <div
+                  <motion.div
                     key={entry.player.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: idx * 0.08, ease: 'easeOut' }}
                     className="card p-4 flex items-center gap-3"
                   >
                     <div
@@ -418,7 +425,7 @@ export default function ResultsPage() {
                     >
                       {entry.points} pts
                     </div>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>
@@ -473,7 +480,13 @@ export default function ResultsPage() {
       <div className="relative z-10 flex flex-col gap-3">
         <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>Toutes les questions</h2>
         {results.map((r, i) => (
-          <div key={r.question.id} className="card p-5">
+          <motion.div
+            key={r.question.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.08, ease: 'easeOut' }}
+            className="card p-5"
+          >
             <div className="flex items-start justify-between gap-2 mb-4">
               <p className="font-semibold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{r.question.text}</p>
               <span className="text-sm font-black flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(240,240,245,0.40)' }}>{i + 1}</span>
@@ -481,7 +494,13 @@ export default function ResultsPage() {
             {r.total > 0 ? (
               <>
                 <div className="w-full h-2.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(239,68,68,0.30)' }}>
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${r.yesPercent}%`, background: 'linear-gradient(90deg, #10b981, #34d399)' }} />
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: 'linear-gradient(90deg, #10b981, #34d399)' }}
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${r.yesPercent}%` }}
+                    transition={{ duration: 0.8, delay: i * 0.1, ease: 'easeOut' }}
+                  />
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="font-bold" style={{ color: '#34d399' }}>✅ {r.yesPercent}% Oui ({r.yesCount})</span>
@@ -491,7 +510,7 @@ export default function ResultsPage() {
             ) : (
               <p className="text-sm" style={{ color: 'rgba(240,240,245,0.30)' }}>Aucune réponse pour l&apos;instant</p>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
 

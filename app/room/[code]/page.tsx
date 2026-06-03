@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { getDoubleQuestionIndex } from '@/lib/game'
 import { playDing, playCountdownBeep, playWhoosh, playReveal, startAmbientMusic, stopAmbientMusic, setMusicVolume } from '@/lib/sound'
@@ -553,14 +554,16 @@ function RoomContent() {
           {/* Bottom actions */}
           <div className="flex flex-col gap-3">
             {isHost ? (
-              <button
-                onClick={launchGame}
-                disabled={players.length < 1}
-                className="w-full py-5 rounded-2xl text-white font-black text-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 12px 40px rgba(168,85,247,0.45)' }}
-              >
-                🚀 Lancer la partie
-              </button>
+              <motion.div whileTap={{ scale: 0.97 }}>
+                <button
+                  onClick={launchGame}
+                  disabled={players.length < 1}
+                  className="w-full py-5 rounded-2xl text-white font-black text-xl disabled:opacity-50 flex items-center justify-center gap-3"
+                  style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 12px 40px rgba(168,85,247,0.45)' }}
+                >
+                  🚀 Lancer la partie
+                </button>
+              </motion.div>
             ) : (
               <div
                 className="w-full py-5 rounded-2xl text-center font-semibold"
@@ -755,105 +758,124 @@ function RoomContent() {
                 </div>
               </div>
 
-              {/* Question card */}
+              {/* Question card with AnimatePresence for slide transition */}
               <div className="flex-1 flex flex-col items-center justify-center gap-6">
-                <div
-                  className="w-full p-8 rounded-3xl"
-                  style={{ background: 'rgba(0,0,0,0.50)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)' }}
-                >
-                  <p className="text-xs font-bold uppercase tracking-widest mb-5 text-center" style={{ color: 'rgba(240,240,245,0.50)' }}>
-                    Question {currentIndex + 1}
-                  </p>
-                  <p className="text-2xl font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>
-                    {question?.text}
-                  </p>
-                </div>
-
-                {/* Who answered grid */}
-                {players.length > 0 && (
-                  <div
-                    className="w-full p-4 rounded-2xl"
-                    style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.10)' }}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`question-${currentIndex}`}
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -30 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', width: '100%' }}
                   >
-                    <p className="text-xs font-bold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,240,245,0.40)' }}>
-                      {answeredPlayerIds.size}/{players.length} ont répondu
-                    </p>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {players.map((p, i) => {
-                        const answered = answeredPlayerIds.has(p.id)
-                        return (
-                          <div key={p.id} className="flex flex-col items-center gap-1">
-                            <div
-                              className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white relative"
-                              style={{
-                                background: AVATAR_COLORS[i % AVATAR_COLORS.length],
-                                opacity: answered ? 1 : 0.5,
-                              }}
-                            >
-                              {p.nickname.charAt(0).toUpperCase()}
-                              <span
-                                className="absolute -bottom-1 -right-1"
-                                style={{ fontSize: '0.7rem' }}
-                              >
-                                {answered ? '✅' : '⏳'}
-                              </span>
-                            </div>
-                            <span
-                              className="text-xs font-medium"
-                              style={{
-                                color: 'rgba(240,240,245,0.55)',
-                                maxWidth: '44px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                display: 'block',
-                                textAlign: 'center',
-                              }}
-                            >
-                              {p.nickname}
-                            </span>
-                          </div>
-                        )
-                      })}
+                    <div
+                      className="w-full p-8 rounded-3xl"
+                      style={{ background: 'rgba(0,0,0,0.50)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)' }}
+                    >
+                      <p className="text-xs font-bold uppercase tracking-widest mb-5 text-center" style={{ color: 'rgba(240,240,245,0.50)' }}>
+                        Question {currentIndex + 1}
+                      </p>
+                      <p className="text-2xl font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>
+                        {question?.text}
+                      </p>
                     </div>
-                  </div>
-                )}
 
-                {/* Answer buttons */}
-                <div className="flex gap-4 w-full">
-                  <button
-                    onClick={() => handleAnswer(false)}
-                    disabled={submitting || hasAnsweredCurrent}
-                    className="flex-1 py-7 rounded-3xl text-white font-black text-xl active:scale-95 flex flex-col items-center gap-2"
-                    style={{
-                      background: hasAnsweredCurrent ? 'rgba(239,68,68,0.35)' : 'linear-gradient(135deg, #ef4444, #e11d48)',
-                      boxShadow: hasAnsweredCurrent ? 'none' : '0 16px 40px rgba(239,68,68,0.40)',
-                      opacity: hasAnsweredCurrent ? 0.6 : 1,
-                    }}
-                  >
-                    <span className="text-3xl">❌</span>
-                    <span>Non</span>
-                  </button>
-                  <button
-                    onClick={() => handleAnswer(true)}
-                    disabled={submitting || hasAnsweredCurrent}
-                    className="flex-1 py-7 rounded-3xl text-white font-black text-xl active:scale-95 flex flex-col items-center gap-2"
-                    style={{
-                      background: hasAnsweredCurrent ? 'rgba(16,185,129,0.35)' : 'linear-gradient(135deg, #10b981, #22c55e)',
-                      boxShadow: hasAnsweredCurrent ? 'none' : '0 16px 40px rgba(16,185,129,0.40)',
-                      opacity: hasAnsweredCurrent ? 0.6 : 1,
-                    }}
-                  >
-                    <span className="text-3xl">✅</span>
-                    <span>Oui</span>
-                  </button>
-                </div>
+                    {/* Who answered grid */}
+                    {players.length > 0 && (
+                      <div
+                        className="w-full p-4 rounded-2xl"
+                        style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.10)' }}
+                      >
+                        <p className="text-xs font-bold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,240,245,0.40)' }}>
+                          {answeredPlayerIds.size}/{players.length} ont répondu
+                        </p>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {players.map((p, i) => {
+                            const answered = answeredPlayerIds.has(p.id)
+                            return (
+                              <div key={p.id} className="flex flex-col items-center gap-1">
+                                <div
+                                  className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white relative"
+                                  style={{
+                                    background: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                                    opacity: answered ? 1 : 0.5,
+                                  }}
+                                >
+                                  {p.nickname.charAt(0).toUpperCase()}
+                                  <span
+                                    className="absolute -bottom-1 -right-1"
+                                    style={{ fontSize: '0.7rem' }}
+                                  >
+                                    {answered ? '✅' : '⏳'}
+                                  </span>
+                                </div>
+                                <span
+                                  className="text-xs font-medium"
+                                  style={{
+                                    color: 'rgba(240,240,245,0.55)',
+                                    maxWidth: '44px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    display: 'block',
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  {p.nickname}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
 
-                {hasAnsweredCurrent && (
-                  <p className="text-center text-sm font-semibold animate-pulse" style={{ color: 'rgba(240,240,245,0.55)' }}>
-                    En attente des autres joueurs…
-                  </p>
-                )}
+                    {/* Answer buttons */}
+                    <div className="flex gap-4 w-full">
+                      <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ duration: 0.1 }}
+                        onClick={() => handleAnswer(false)}
+                        disabled={submitting || hasAnsweredCurrent}
+                        className="flex-1 py-7 rounded-3xl text-white font-black text-xl flex flex-col items-center gap-2"
+                        style={{
+                          background: hasAnsweredCurrent ? 'rgba(239,68,68,0.35)' : 'linear-gradient(135deg, #ef4444, #e11d48)',
+                          boxShadow: hasAnsweredCurrent ? 'none' : '0 16px 40px rgba(239,68,68,0.40)',
+                          opacity: hasAnsweredCurrent ? 0.6 : 1,
+                          border: 'none',
+                          cursor: hasAnsweredCurrent ? 'default' : 'pointer',
+                        }}
+                      >
+                        <span className="text-3xl">❌</span>
+                        <span>Non</span>
+                      </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ duration: 0.1 }}
+                        onClick={() => handleAnswer(true)}
+                        disabled={submitting || hasAnsweredCurrent}
+                        className="flex-1 py-7 rounded-3xl text-white font-black text-xl flex flex-col items-center gap-2"
+                        style={{
+                          background: hasAnsweredCurrent ? 'rgba(16,185,129,0.35)' : 'linear-gradient(135deg, #10b981, #22c55e)',
+                          boxShadow: hasAnsweredCurrent ? 'none' : '0 16px 40px rgba(16,185,129,0.40)',
+                          opacity: hasAnsweredCurrent ? 0.6 : 1,
+                          border: 'none',
+                          cursor: hasAnsweredCurrent ? 'default' : 'pointer',
+                        }}
+                      >
+                        <span className="text-3xl">✅</span>
+                        <span>Oui</span>
+                      </motion.button>
+                    </div>
+
+                    {hasAnsweredCurrent && (
+                      <p className="text-center text-sm font-semibold animate-pulse" style={{ color: 'rgba(240,240,245,0.55)' }}>
+                        En attente des autres joueurs…
+                      </p>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </>
           )}
