@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getDoubleQuestionIndex } from '@/lib/game'
+import { playDing, playCountdownBeep, playWhoosh, playReveal, startAmbientMusic, stopAmbientMusic, setMusicVolume } from '@/lib/sound'
 import type { Room, Question, Player } from '@/lib/types'
 
 const AVATAR_COLORS = [
@@ -62,6 +63,9 @@ function RoomContent() {
   // Track my answer for current question
   const [myAnswer, setMyAnswer] = useState<boolean | null>(null)
   const myAnswerRef = useRef<boolean | null>(null)
+
+  // Music toggle
+  const [musicOn, setMusicOn] = useState(true)
 
   // Refs
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
@@ -172,6 +176,20 @@ function RoomContent() {
     loadRoom()
   }, [loadRoom])
 
+  // Start ambient music when game is playing
+  useEffect(() => {
+    if (room?.status === 'playing') {
+      startAmbientMusic()
+    }
+  }, [room?.status])
+
+  // Stop music on unmount
+  useEffect(() => {
+    return () => {
+      stopAmbientMusic()
+    }
+  }, [])
+
   // Timer
   useEffect(() => {
     if (!room || room.status !== 'playing' || room.question_phase !== 'answering') {
@@ -243,7 +261,7 @@ function RoomContent() {
         const updated = payload.new as Room
         const prev = roomRef.current
 
-        // Question changed → reset local state
+        // Question changed → reset local state + play whoosh
         if (prev && updated.current_question_index !== prev.current_question_index) {
           setHasAnsweredCurrent(false)
           setAnsweredPlayerIds(new Set())
@@ -253,11 +271,17 @@ function RoomContent() {
           setMyAnswer(null)
           myAnswerRef.current = null
           setShowPtsBonus(null)
+          playWhoosh()
         }
 
         // Countdown when game starts (waiting → playing, index=0)
         if (prev && prev.status === 'waiting' && updated.status === 'playing' && updated.current_question_index === 0 && updated.question_phase === 'answering') {
           setCountdown(3)
+        }
+
+        // Play reveal sound when phase switches to revealing
+        if (prev && prev.question_phase === 'answering' && updated.question_phase === 'revealing') {
+          playReveal()
         }
 
         // Calculate pts bonus when phase switches to revealing
@@ -348,13 +372,14 @@ function RoomContent() {
     return () => { supabase.removeChannel(rChannel) }
   }, [room?.id])
 
-  // Countdown effect
+  // Countdown effect — play beep on each tick
   useEffect(() => {
     if (countdown === null) return
     if (countdown <= 0) {
       setCountdown(null)
       return
     }
+    playCountdownBeep(countdown === 1)
     const timer = setTimeout(() => setCountdown(c => (c !== null ? c - 1 : null)), 1000)
     return () => clearTimeout(timer)
   }, [countdown])
@@ -401,6 +426,8 @@ function RoomContent() {
       setHasAnsweredCurrent(false)
       setMyAnswer(null)
       myAnswerRef.current = null
+    } else {
+      playDing()
     }
     setSubmitting(false)
   }
@@ -579,6 +606,22 @@ function RoomContent() {
 
     return (
       <div className="min-h-screen flex flex-col relative overflow-hidden">
+        {/* Music toggle button */}
+        <button
+          onClick={() => {
+            const next = !musicOn
+            setMusicOn(next)
+            setMusicVolume(next ? 0.06 : 0)
+          }}
+          style={{
+            position: 'fixed', top: '16px', right: '16px', zIndex: 50,
+            background: 'rgba(0,0,0,0.50)', border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '12px', padding: '8px 12px', color: 'white', cursor: 'pointer',
+          }}
+        >
+          {musicOn ? '🔊' : '🔇'}
+        </button>
+
         {/* Countdown overlay */}
         {countdown !== null && (
           <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center" style={{ background: 'rgba(8,8,15,0.92)', backdropFilter: 'blur(8px)' }}>

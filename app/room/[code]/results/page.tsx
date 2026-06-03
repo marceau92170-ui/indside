@@ -3,7 +3,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { toPng } from 'html-to-image'
 import { supabase } from '@/lib/supabase'
+import { playFanfare } from '@/lib/sound'
 import {
   getGroupLevel,
   getGroupSummary,
@@ -30,6 +32,7 @@ export default function ResultsPage() {
   const roomIdRef = useRef<string | null>(null)
   const [podiumStep, setPodiumStep] = useState(0)
   const [showTipJar, setShowTipJar] = useState(false)
+  const shareCardRef = useRef<HTMLDivElement>(null)
 
   const loadResults = useCallback(async () => {
     const { data: roomData, error: roomError } = await supabase
@@ -102,6 +105,13 @@ export default function ResultsPage() {
     loadResults()
   }, [loadResults])
 
+  // Play fanfare when 1st place is revealed (podiumStep === 3)
+  useEffect(() => {
+    if (podiumStep === 3) {
+      playFanfare()
+    }
+  }, [podiumStep])
+
   useEffect(() => {
     if (!roomIdRef.current) return
     const roomId = roomIdRef.current
@@ -127,6 +137,39 @@ export default function ResultsPage() {
       await navigator.clipboard.writeText(url)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const downloadResultsImage = async () => {
+    if (!shareCardRef.current) return
+    try {
+      const dataUrl = await toPng(shareCardRef.current, {
+        backgroundColor: '#1a0a2e',
+        pixelRatio: 2,
+      })
+      const link = document.createElement('a')
+      link.download = `inside-${code}-resultats.png`
+      link.href = dataUrl
+      link.click()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const shareResultsImage = async () => {
+    if (!shareCardRef.current) return
+    try {
+      const dataUrl = await toPng(shareCardRef.current, { backgroundColor: '#1a0a2e', pixelRatio: 2 })
+      const blob = await (await fetch(dataUrl)).blob()
+      const file = new File([blob], 'inside-resultats.png', { type: 'image/png' })
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: `Inside — ${room?.name}` })
+      } else {
+        downloadResultsImage()
+      }
+    } catch (e) {
+      console.error(e)
+      downloadResultsImage()
     }
   }
 
@@ -470,6 +513,7 @@ export default function ResultsPage() {
 
       {/* Share card (screenshot-ready) */}
       <div
+        ref={shareCardRef}
         className="relative z-10 p-1 rounded-3xl"
         style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)' }}
       >
@@ -507,6 +551,24 @@ export default function ResultsPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Image export buttons */}
+      <div className="relative z-10 flex flex-col gap-2">
+        <button
+          onClick={downloadResultsImage}
+          className="w-full py-3 rounded-2xl font-bold active:scale-95"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}
+        >
+          📸 Sauvegarder en image
+        </button>
+        <button
+          onClick={shareResultsImage}
+          className="w-full py-3 rounded-2xl font-bold active:scale-95"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}
+        >
+          🔗 Partager
+        </button>
       </div>
 
       {/* Replay button */}

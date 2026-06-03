@@ -1,0 +1,13 @@
+{
+  "name": "Inside — Jeux sociaux privés",
+  "short_name": "Inside",
+  "description": "La plateforme de jeux sociaux privés entre amis",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08080f",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
