@@ -61,7 +61,7 @@ function JoinForm() {
       // Save player id to localStorage
       localStorage.setItem(`inside_player_${upperCode}`, player.id)
 
-      router.push(`/room/${upperCode}`)
+      router.push(`/lobby/${upperCode}`)
     } catch (err) {
       console.error(err)
       setError('Une erreur est survenue.')

@@ -218,7 +218,7 @@ function CreateForm() {
       if (playerError || !player) throw new Error(playerError?.message || 'Failed to create player')
 
       localStorage.setItem(`inside_player_${code}`, player.id)
-      router.push(`/room/${code}`)
+      router.push(`/lobby/${code}`)
     } catch (err) {
       console.error(err)
       setError('Une erreur est survenue. Vérifie ta connexion.')

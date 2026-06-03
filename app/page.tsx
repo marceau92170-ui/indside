@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
 const SplashScreen = dynamic(() => import('@/components/SplashScreen'), { ssr: false })
 
 export default function HomePage() {
+  const router = useRouter()
   const [splashDone, setSplashDone] = useState(false)
   const [showSplash, setShowSplash] = useState(false)
 
@@ -47,6 +49,32 @@ export default function HomePage() {
         animate={{ opacity: splashDone ? 1 : 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
       >
+        {/* Top nav icons */}
+        <div style={{ position: 'absolute', top: '20px', right: '20px', display: 'flex', gap: '8px', zIndex: 2 }}>
+          <button
+            onClick={() => router.push('/settings')}
+            style={{
+              width: '40px', height: '40px', borderRadius: '14px',
+              background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.1rem', cursor: 'pointer',
+            }}
+          >
+            ⚙️
+          </button>
+          <button
+            onClick={() => router.push('/profile')}
+            style={{
+              width: '40px', height: '40px', borderRadius: '14px',
+              background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.1rem', cursor: 'pointer',
+            }}
+          >
+            👤
+          </button>
+        </div>
+
         {/* Background glow */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '400px', height: '400px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(60px)' }} />
