@@ -87,36 +87,17 @@ function JoinForm() {
         >
           ←
         </Link>
-        <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Rejoindre une salle</h1>
+        <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Rejoindre</h1>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center gap-6 relative z-10">
-        {/* Illustration */}
-        <div className="flex flex-col items-center gap-4 py-6">
-          <div
-            className="w-24 h-24 rounded-3xl flex items-center justify-center text-5xl"
-            style={{
-              background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-              boxShadow: '0 20px 50px rgba(59,130,246,0.35)',
-            }}
-          >
-            🚪
-          </div>
-          <p className="text-center text-base max-w-xs" style={{ color: 'rgba(240,240,245,0.50)' }}>
-            Entre le code partagé par ton ami pour rejoindre sa salle
-          </p>
-        </div>
-
+      <div className="flex-1 flex flex-col justify-center gap-5 relative z-10">
         {/* Code input */}
-        <div className="card p-5 flex flex-col gap-3">
-          <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>
-            Code de la salle
-          </label>
+        <div className="card p-5">
           <input
             type="text"
             value={code}
             onChange={e => setCode(e.target.value.toUpperCase().slice(0, 6))}
-            placeholder="EX: AB1234"
+            placeholder="CODE"
             maxLength={6}
             className="w-full py-5 px-5 rounded-2xl text-white placeholder:text-white/25 text-3xl font-black tracking-[0.3em] text-center focus:outline-none uppercase"
             style={{
@@ -127,15 +108,12 @@ function JoinForm() {
         </div>
 
         {/* Nickname input */}
-        <div className="card p-5 flex flex-col gap-3">
-          <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>
-            Ton pseudo
-          </label>
+        <div className="card p-5">
           <input
             type="text"
             value={nickname}
             onChange={e => setNickname(e.target.value)}
-            placeholder="Ex : Sarah 🌸"
+            placeholder="Ton prénom"
             maxLength={20}
             className="w-full py-4 px-5 rounded-2xl text-white placeholder:text-white/25 text-lg font-semibold focus:outline-none"
             style={{
@@ -170,7 +148,7 @@ function JoinForm() {
               </svg>
               Connexion…
             </>
-          ) : 'Rejoindre →'}
+          ) : 'Entrer'}
         </button>
       </div>
     </div>

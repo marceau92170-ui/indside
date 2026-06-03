@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import Nox from '@/components/Nox'
 
 const SplashScreen = dynamic(() => import('@/components/SplashScreen'), { ssr: false })
 
@@ -109,10 +110,17 @@ export default function HomePage() {
             }}>
               Inside
             </h1>
-            <p style={{ fontSize: '1rem', fontWeight: 500, color: 'rgba(240,240,245,0.55)', marginTop: '10px', lineHeight: 1.5, maxWidth: '260px' }}>
-              Crée des expériences uniques avec tes amis.
+            <p style={{ fontSize: '1rem', fontWeight: 600, color: 'rgba(240,240,245,0.55)', marginTop: '10px', lineHeight: 1.5 }}>
+              Entre amis.
             </p>
           </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: splashDone ? 1 : 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Nox emotion="curious" size={60} animate />
+          </motion.div>
         </motion.div>
 
         {/* Buttons */}
@@ -129,9 +137,9 @@ export default function HomePage() {
                 background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
                 boxShadow: '0 12px 40px rgba(139,92,246,0.35)',
                 fontWeight: 800, fontSize: '1.1rem', color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <span>✨</span> Créer une expérience
+                Créer
               </div>
             </Link>
           </motion.div>
@@ -143,22 +151,13 @@ export default function HomePage() {
                 background: 'rgba(255,255,255,0.07)',
                 border: '1px solid rgba(255,255,255,0.12)',
                 fontWeight: 700, fontSize: '1.05rem', color: 'rgba(240,240,245,0.85)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <span>🚪</span> Rejoindre une salle
+                Rejoindre
               </div>
             </Link>
           </motion.div>
         </motion.div>
-
-        <motion.p
-          style={{ fontSize: '11px', color: 'rgba(240,240,245,0.22)', marginTop: '32px', zIndex: 1 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: splashDone ? 1 : 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          Sans compte · 100% privé · Gratuit
-        </motion.p>
       </motion.div>
     </>
   )
