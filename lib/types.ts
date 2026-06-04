@@ -28,6 +28,7 @@ export interface Player {
   nickname: string
   is_host: boolean
   created_at: string
+  avatar_url?: string | null
 }
 
 export interface Answer {

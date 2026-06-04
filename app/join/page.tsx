@@ -1,10 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
+
+async function compressToBase64(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = 80
+        canvas.height = 80
+        const ctx = canvas.getContext('2d')!
+        // crop to square from center
+        const size = Math.min(img.width, img.height)
+        const x = (img.width - size) / 2
+        const y = (img.height - size) / 2
+        ctx.drawImage(img, x, y, size, size, 0, 0, 80, 80)
+        resolve(canvas.toDataURL('image/jpeg', 0.75))
+      }
+      img.src = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  })
+}
 
 function JoinForm() {
   const router = useRouter()
@@ -15,6 +38,17 @@ function JoinForm() {
   const [nickname, setNickname] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [avatarBase64, setAvatarBase64] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const compressed = await compressToBase64(file)
+    setAvatarBase64(compressed)
+    // Reset input so same file can be re-selected
+    e.target.value = ''
+  }
 
   const handleJoin = async () => {
     if (!code.trim()) return setError('Entre le code de la salle')
@@ -52,6 +86,7 @@ function JoinForm() {
           room_id: room.id,
           nickname: nickname.trim(),
           is_host: false,
+          avatar_url: avatarBase64 || null,
         })
         .select()
         .single()
@@ -120,6 +155,80 @@ function JoinForm() {
               background: 'rgba(255,255,255,0.08)',
               border: '1px solid rgba(255,255,255,0.14)',
             }}
+          />
+        </div>
+
+        {/* Avatar upload */}
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-xs font-semibold" style={{ color: 'rgba(240,240,245,0.45)' }}>Photo (optionnel)</p>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                background: avatarBase64 ? 'transparent' : 'rgba(20,16,36,0.85)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(139,92,246,0.40)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                overflow: 'hidden',
+                padding: 0,
+              }}
+            >
+              {avatarBase64 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={avatarBase64}
+                  alt="Aperçu"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                />
+              ) : (
+                <>
+                  <span style={{ fontSize: '1.8rem', lineHeight: 1 }}>📷</span>
+                  <span style={{ color: 'rgba(240,240,245,0.55)', fontSize: '0.72rem', fontWeight: 600, marginTop: '4px' }}>Photo</span>
+                </>
+              )}
+            </button>
+            {avatarBase64 && (
+              <button
+                type="button"
+                onClick={() => setAvatarBase64(null)}
+                style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-4px',
+                  width: '22px',
+                  height: '22px',
+                  borderRadius: '50%',
+                  background: 'rgba(239,68,68,0.85)',
+                  border: '1.5px solid rgba(0,0,0,0.5)',
+                  color: '#fff',
+                  fontSize: '0.75rem',
+                  fontWeight: 900,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  lineHeight: 1,
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="user"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
           />
         </div>
 

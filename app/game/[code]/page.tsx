@@ -705,13 +705,18 @@ export default function GamePage() {
                           return (
                             <div key={p.id} className="flex flex-col items-center gap-1">
                               <div
-                                className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white relative"
+                                className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white relative overflow-hidden"
                                 style={{
-                                  background: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                                  background: p.avatar_url ? 'transparent' : AVATAR_COLORS[i % AVATAR_COLORS.length],
                                   opacity: answered ? 1 : 0.45,
                                 }}
                               >
-                                {p.nickname.charAt(0).toUpperCase()}
+                                {p.avatar_url ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img src={p.avatar_url} alt={p.nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                  p.nickname.charAt(0).toUpperCase()
+                                )}
                                 <span className="absolute -bottom-1 -right-1" style={{ fontSize: '0.7rem' }}>
                                   {answered ? '✅' : '⏳'}
                                 </span>

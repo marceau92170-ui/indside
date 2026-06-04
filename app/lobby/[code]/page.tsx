@@ -230,10 +230,15 @@ export default function LobbyPage() {
             {players.map((p, i) => (
               <div key={p.id} className="flex flex-col items-center gap-2">
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black text-white"
-                  style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length], boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black text-white overflow-hidden"
+                  style={{ background: p.avatar_url ? 'transparent' : AVATAR_COLORS[i % AVATAR_COLORS.length], boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}
                 >
-                  {p.nickname.charAt(0).toUpperCase()}
+                  {p.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.avatar_url} alt={p.nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    p.nickname.charAt(0).toUpperCase()
+                  )}
                 </div>
                 <span className="text-xs font-semibold text-center truncate w-full text-center" style={{ color: 'rgba(240,240,245,0.80)' }}>
                   {p.nickname}{p.is_host ? ' 👑' : ''}
