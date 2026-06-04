@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { toPng } from 'html-to-image'
 import { supabase } from '@/lib/supabase'
-import { playFanfare } from '@/lib/sound'
+import { playFanfare, playClick } from '@/lib/sound'
 import {
   getGroupLevel,
   getGroupSummary,
@@ -506,7 +506,7 @@ export default function ResultsPage() {
             {copied ? '✅' : '📋'}
           </button>
         </div>
-        <button onClick={shareRoom} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.30)' }}>
+        <button onClick={() => { playClick(); shareRoom() }} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.30)' }}>
           🔗 Partager le lien
         </button>
       </div>
@@ -575,6 +575,7 @@ export default function ResultsPage() {
       <div className="relative z-10">
         <button
           onClick={() => {
+            playClick()
             localStorage.setItem('inside_replay_questions', JSON.stringify(questions.map(q => q.text)))
             router.push('/create?replay=1')
           }}

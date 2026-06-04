@@ -3,13 +3,14 @@
 import { useState, useRef, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { generateCode } from '@/lib/game'
 import { TEMPLATES, getTemplateBySlug } from '@/lib/templates'
 import type { GameTemplate } from '@/lib/types'
-import { canAddQuestion, canCreateRoom, getUserToken } from '@/lib/subscription'
+import { canAddQuestion, canCreateRoom } from '@/lib/subscription'
 import PremiumGate from '@/components/PremiumGate'
+import { playClick, playSuccess } from '@/lib/sound'
 
 function ChoiceScreen() {
   return (
@@ -100,11 +101,35 @@ function ChoiceScreen() {
   )
 }
 
+function StepDots({ step }: { step: number }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+      {[1, 2, 3].map(s => (
+        <div
+          key={s}
+          style={{
+            width: s === step ? '24px' : '8px',
+            height: '8px',
+            borderRadius: '9999px',
+            background: s === step
+              ? 'linear-gradient(135deg, #8b5cf6, #ec4899)'
+              : s < step
+                ? 'rgba(168,85,247,0.50)'
+                : 'rgba(255,255,255,0.18)',
+            transition: 'all 0.25s ease',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 function CreateForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const fileRef = useRef<HTMLInputElement>(null)
 
+  const [step, setStep] = useState(1)
   const [roomName, setRoomName] = useState('')
   const [nickname, setNickname] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -116,6 +141,7 @@ function CreateForm() {
   const [selectedTemplate, setSelectedTemplate] = useState<GameTemplate | null>(null)
   const [showPremiumGate, setShowPremiumGate] = useState(false)
   const [premiumGateReason, setPremiumGateReason] = useState('')
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const slug = searchParams.get('template')
@@ -161,9 +187,14 @@ function CreateForm() {
       setShowPremiumGate(true)
       return
     }
+    playClick()
     setQuestions([...questions, ''])
+    setEditingIndex(questions.length)
   }
-  const removeQuestion = (i: number) => setQuestions(questions.filter((_, idx) => idx !== i))
+  const removeQuestion = (i: number) => {
+    setQuestions(questions.filter((_, idx) => idx !== i))
+    if (editingIndex === i) setEditingIndex(null)
+  }
   const updateQuestion = (i: number, val: string) => {
     const updated = [...questions]
     updated[i] = val
@@ -237,6 +268,7 @@ function CreateForm() {
       if (playerError || !player) throw new Error(playerError?.message || 'Failed to create player')
 
       localStorage.setItem(`inside_player_${code}`, player.id)
+      playSuccess()
       router.push(`/lobby/${code}`)
     } catch (err) {
       console.error(err)
@@ -246,222 +278,338 @@ function CreateForm() {
     }
   }
 
+  const goToStep2 = () => {
+    if (!roomName.trim()) { setError('Donne un nom à ta salle 😅'); return }
+    if (!nickname.trim()) { setError('Choisis un pseudo pour participer !'); return }
+    setError('')
+    playClick()
+    setStep(2)
+  }
+
+  const goToStep3 = () => {
+    const valid = questions.filter(q => q.trim())
+    if (valid.length === 0) { setError('Ajoute au moins une question !'); return }
+    setError('')
+    playClick()
+    setStep(3)
+  }
+
+  const bgBlobs = (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+      <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+    </div>
+  )
+
+  const inputStyle: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    borderRadius: '16px',
+    padding: '16px 20px',
+    color: '#f0f0f5',
+    fontSize: '1.1rem',
+    fontWeight: 600,
+    width: '100%',
+    outline: 'none',
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="min-h-screen flex flex-col px-6 py-8 gap-5 relative" style={{ background: '#08080f' }}>
-        {/* Background blobs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-          <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-        </div>
+    <div className="min-h-screen flex flex-col px-6 py-8 gap-5 relative" style={{ background: '#08080f' }}>
+      {bgBlobs}
 
-        {/* Header */}
-        <div className="relative z-10 flex items-center gap-4">
-          <Link
-            href="/create"
-            className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold"
-            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
-          >
-            ←
-          </Link>
-          <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Créer une salle</h1>
-        </div>
-
-        {/* Template banner */}
-        {selectedTemplate && selectedTemplate.slug !== 'creation-libre' && (
-          <div
-            className="relative z-10 p-4 rounded-2xl flex items-center gap-3"
-            style={{
-              background: `linear-gradient(135deg, ${selectedTemplate.color_from}30, ${selectedTemplate.color_to}25)`,
-              border: `1px solid ${selectedTemplate.color_from}40`,
-            }}
-          >
-            <span style={{ fontSize: '2rem' }}>{selectedTemplate.emoji}</span>
-            <div>
-              <div className="font-bold" style={{ color: '#f0f0f5' }}>{selectedTemplate.name}</div>
-              <div className="text-xs font-medium" style={{ color: 'rgba(240,240,245,0.50)' }}>Modèle pré-rempli · modifiable</div>
-            </div>
-          </div>
-        )}
-
-        {/* Room name */}
-        <div className="relative z-10 card p-5 flex flex-col gap-3">
-          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-            🏠 Nom de la salle
-          </label>
-          <input
-            type="text"
-            value={roomName}
-            onChange={e => setRoomName(e.target.value)}
-            placeholder="Ex : Soirée de Jean 🎉"
-            className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
-            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
-          />
-        </div>
-
-        {/* Nickname */}
-        <div className="relative z-10 card p-5 flex flex-col gap-3">
-          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-            🎭 Ton pseudo (tu participeras aussi)
-          </label>
-          <input
-            type="text"
-            value={nickname}
-            onChange={e => setNickname(e.target.value)}
-            placeholder="Ton prénom…"
-            maxLength={20}
-            className="w-full py-4 px-5 rounded-2xl text-white text-lg font-medium focus:outline-none"
-            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
-          />
-        </div>
-
-        {/* Image upload */}
-        <div className="relative z-10 card p-5 flex flex-col gap-3">
-          <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-            📸 Image de fond
-          </label>
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="relative w-full h-44 rounded-2xl overflow-hidden active:scale-95"
-            style={{ border: '2px dashed rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.04)' }}
-          >
-            {imagePreview ? (
-              <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'rgba(240,240,245,0.35)' }}>
-                <span className="text-4xl">🖼️</span>
-                <span className="text-sm font-semibold">Appuie pour choisir une photo</span>
-              </div>
-            )}
-            {imagePreview && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <span className="text-sm font-bold bg-black/60 px-4 py-2 rounded-full text-white">Changer</span>
-              </div>
-            )}
-          </button>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-        </div>
-
-        {/* Points toggle */}
-        <div className="relative z-10 card p-5 flex items-center justify-between gap-4">
-          <div>
-            <div className="font-bold" style={{ color: '#f0f0f5' }}>🏆 Système de points</div>
-            <div className="text-xs mt-1" style={{ color: 'rgba(240,240,245,0.45)' }}>Active le classement et les scores</div>
-          </div>
-          <button
-            onClick={() => setPointsEnabled(!pointsEnabled)}
-            style={{
-              width: '52px',
-              height: '30px',
-              borderRadius: '9999px',
-              background: pointsEnabled ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'rgba(255,255,255,0.12)',
-              border: 'none',
-              cursor: 'pointer',
-              position: 'relative',
-              transition: 'background .2s',
-              flexShrink: 0,
-            }}
-          >
-            <span style={{
-              position: 'absolute',
-              top: '3px',
-              left: pointsEnabled ? '25px' : '3px',
-              width: '24px',
-              height: '24px',
-              borderRadius: '9999px',
-              background: '#fff',
-              transition: 'left .2s',
-              display: 'block',
-            }} />
-          </button>
-        </div>
-
-        {/* Questions */}
-        <div className="relative z-10 card p-5 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.55)' }}>
-              ❓ Questions ({questions.filter(q => q.trim()).length})
-            </label>
-            <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.90)', border: '1px solid rgba(168,85,247,0.25)' }}>
-              Oui / Non
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            {questions.map((q, i) => (
-              <div key={i} className="flex gap-2 items-center rounded-2xl p-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}>
-                  {i + 1}
-                </span>
-                <input
-                  type="text"
-                  value={q}
-                  onChange={e => updateQuestion(i, e.target.value)}
-                  placeholder={`Question ${i + 1}…`}
-                  className="flex-1 bg-transparent text-white placeholder:text-white/30 focus:outline-none font-medium py-1"
-                />
-                {questions.length > 1 && (
-                  <button
-                    onClick={() => removeQuestion(i)}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-lg active:scale-90 flex-shrink-0"
-                    style={{ background: 'rgba(239,68,68,0.20)', color: '#f87171' }}
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-            ))}
-
-            <button
-              onClick={addQuestion}
-              className="w-full py-4 rounded-2xl font-semibold active:scale-95"
-              style={{ border: '2px dashed rgba(255,255,255,0.18)', color: 'rgba(240,240,245,0.50)', background: 'rgba(255,255,255,0.02)' }}
-            >
-              + Ajouter une question
-            </button>
-          </div>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div className="relative z-10 py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
-            {error}
-          </div>
-        )}
-
-        {/* Submit */}
-        <div className="relative z-10 pb-8 mt-2">
-          <motion.div whileTap={{ scale: 0.97 }}>
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="btn-primary text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              style={{ width: '100%' }}
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                  Création en cours…
-                </>
-              ) : '🚀 Créer ma salle'}
-            </button>
-          </motion.div>
-        </div>
+      {/* Step dots */}
+      <div className="relative z-10 pt-2">
+        <StepDots step={step} />
       </div>
+
+      <AnimatePresence mode="wait">
+        {/* STEP 1 — Identity */}
+        {step === 1 && (
+          <motion.div
+            key={1}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.25 }}
+            className="relative z-10 flex flex-col gap-5 flex-1"
+          >
+            <div>
+              <h1 className="text-3xl font-black" style={{ color: '#f0f0f5' }}>Créer</h1>
+              <p className="text-sm mt-1" style={{ color: 'rgba(240,240,245,0.45)' }}>Commence par l&apos;essentiel</p>
+            </div>
+
+            {selectedTemplate && selectedTemplate.slug !== 'creation-libre' && (
+              <div
+                className="p-4 rounded-2xl flex items-center gap-3"
+                style={{
+                  background: `linear-gradient(135deg, ${selectedTemplate.color_from}30, ${selectedTemplate.color_to}25)`,
+                  border: `1px solid ${selectedTemplate.color_from}40`,
+                }}
+              >
+                <span style={{ fontSize: '2rem' }}>{selectedTemplate.emoji}</span>
+                <div>
+                  <div className="font-bold" style={{ color: '#f0f0f5' }}>{selectedTemplate.name}</div>
+                  <div className="text-xs font-medium" style={{ color: 'rgba(240,240,245,0.50)' }}>Modèle pré-rempli · modifiable</div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>🏠 Nom de la salle</label>
+              <input
+                type="text"
+                value={roomName}
+                onChange={e => setRoomName(e.target.value)}
+                placeholder="Nom de la salle"
+                style={inputStyle}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>🎭 Ton pseudo</label>
+              <input
+                type="text"
+                value={nickname}
+                onChange={e => setNickname(e.target.value)}
+                placeholder="Ton prénom"
+                maxLength={20}
+                style={inputStyle}
+              />
+            </div>
+
+            {error && (
+              <div className="py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
+                {error}
+              </div>
+            )}
+
+            <div className="flex gap-3 mt-auto pb-4">
+              <Link
+                href="/"
+                className="flex-1 py-4 rounded-2xl font-bold text-center"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5', textDecoration: 'none' }}
+              >
+                ←
+              </Link>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={goToStep2}
+                className="flex-[3] py-4 rounded-2xl font-black text-white text-lg"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
+              >
+                Continuer →
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* STEP 2 — Questions */}
+        {step === 2 && (
+          <motion.div
+            key={2}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.25 }}
+            className="relative z-10 flex flex-col gap-5 flex-1"
+          >
+            <div>
+              <p className="text-sm font-semibold" style={{ color: 'rgba(168,85,247,0.80)' }}>{roomName}</p>
+              <h2 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Questions</h2>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="font-semibold" style={{ color: 'rgba(240,240,245,0.60)' }}>
+                {questions.filter(q => q.trim()).length} question{questions.filter(q => q.trim()).length !== 1 ? 's' : ''}
+              </span>
+              <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.90)', border: '1px solid rgba(168,85,247,0.25)' }}>
+                max 15 · Oui / Non
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              {questions.map((q, i) => (
+                <div key={i}>
+                  <div
+                    className="flex gap-2 items-center rounded-2xl p-3 cursor-pointer"
+                    style={{ background: editingIndex === i ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.05)', border: editingIndex === i ? '1px solid rgba(139,92,246,0.35)' : '1px solid rgba(255,255,255,0.08)' }}
+                    onClick={() => setEditingIndex(editingIndex === i ? null : i)}
+                  >
+                    <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}>
+                      {i + 1}
+                    </span>
+                    <span className="flex-1 font-medium" style={{ color: q.trim() ? '#f0f0f5' : 'rgba(240,240,245,0.30)' }}>
+                      {q.trim() || `Question ${i + 1}…`}
+                    </span>
+                    {questions.length > 1 && (
+                      <button
+                        onClick={e => { e.stopPropagation(); removeQuestion(i) }}
+                        className="w-8 h-8 rounded-xl flex items-center justify-center text-lg active:scale-90 flex-shrink-0"
+                        style={{ background: 'rgba(239,68,68,0.20)', color: '#f87171' }}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                  {editingIndex === i && (
+                    <div className="mt-2 px-1">
+                      <input
+                        type="text"
+                        value={q}
+                        onChange={e => updateQuestion(i, e.target.value)}
+                        placeholder={`Question ${i + 1}…`}
+                        autoFocus
+                        style={{ ...inputStyle, fontSize: '1rem' }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <button
+                onClick={addQuestion}
+                className="w-full py-4 rounded-2xl font-semibold active:scale-95"
+                style={{ border: '2px dashed rgba(255,255,255,0.18)', color: 'rgba(240,240,245,0.50)', background: 'rgba(255,255,255,0.02)' }}
+              >
+                + Ajouter une question
+              </button>
+            </div>
+
+            {error && (
+              <div className="py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
+                {error}
+              </div>
+            )}
+
+            <div className="flex gap-3 pb-4">
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => { setError(''); setStep(1) }}
+                className="flex-1 py-4 rounded-2xl font-bold"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}
+              >
+                ←
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={goToStep3}
+                className="flex-[3] py-4 rounded-2xl font-black text-white text-lg"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
+              >
+                Continuer →
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* STEP 3 — Settings */}
+        {step === 3 && (
+          <motion.div
+            key={3}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.25 }}
+            className="relative z-10 flex flex-col gap-5 flex-1"
+          >
+            <div>
+              <p className="text-sm font-semibold" style={{ color: 'rgba(168,85,247,0.80)' }}>{roomName}</p>
+              <h2 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Paramètres</h2>
+            </div>
+
+            {/* Points toggle */}
+            <div className="p-5 rounded-2xl flex items-center justify-between gap-4" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}>
+              <div>
+                <div className="font-bold" style={{ color: '#f0f0f5' }}>🏆 Système de points</div>
+                <div className="text-xs mt-1" style={{ color: 'rgba(240,240,245,0.45)' }}>Active le classement et les scores</div>
+              </div>
+              <button
+                onClick={() => setPointsEnabled(!pointsEnabled)}
+                style={{
+                  width: '52px', height: '30px', borderRadius: '9999px',
+                  background: pointsEnabled ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'rgba(255,255,255,0.12)',
+                  border: 'none', cursor: 'pointer', position: 'relative', transition: 'background .2s', flexShrink: 0,
+                }}
+              >
+                <span style={{
+                  position: 'absolute', top: '3px',
+                  left: pointsEnabled ? '25px' : '3px',
+                  width: '24px', height: '24px', borderRadius: '9999px',
+                  background: '#fff', transition: 'left .2s', display: 'block',
+                }} />
+              </button>
+            </div>
+
+            {/* Image upload */}
+            <div className="flex flex-col gap-3">
+              <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>📸 Image de fond (optionnel)</label>
+              <button
+                onClick={() => fileRef.current?.click()}
+                className="relative w-full h-36 rounded-2xl overflow-hidden active:scale-95"
+                style={{ border: '2px dashed rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.04)' }}
+              >
+                {imagePreview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'rgba(240,240,245,0.35)' }}>
+                    <span className="text-3xl">🖼️</span>
+                    <span className="text-sm font-semibold">Appuie pour choisir une photo</span>
+                  </div>
+                )}
+                {imagePreview && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <span className="text-sm font-bold bg-black/60 px-4 py-2 rounded-full text-white">Changer</span>
+                  </div>
+                )}
+              </button>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+            </div>
+
+            {error && (
+              <div className="py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
+                {error}
+              </div>
+            )}
+
+            <div className="flex gap-3 pb-8">
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => { setError(''); setStep(2) }}
+                className="flex-1 py-4 rounded-2xl font-bold"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}
+              >
+                ←
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={handleSubmit}
+                disabled={loading}
+                className="flex-[3] py-4 rounded-2xl font-black text-white text-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                    Création…
+                  </>
+                ) : '🚀 Créer'}
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {showPremiumGate && (
         <PremiumGate
           reason={premiumGateReason}
           onClose={() => setShowPremiumGate(false)}
         />
       )}
-    </motion.div>
+    </div>
   )
 }
 

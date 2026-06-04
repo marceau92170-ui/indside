@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { playClick, stopAmbientMusic } from '@/lib/sound'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -12,13 +13,25 @@ export default function SettingsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   useEffect(() => {
-    const sound = localStorage.getItem('inside_sound_enabled')
-    setSoundEnabled(sound === null ? true : sound === 'true')
-    const music = localStorage.getItem('inside_music_enabled')
-    setMusicEnabled(music === null ? true : music === 'true')
+    setSoundEnabled(localStorage.getItem('inside_sound_enabled') !== 'false')
+    setMusicEnabled(localStorage.getItem('inside_music_enabled') !== 'false')
     const notifs = localStorage.getItem('inside_notifications_enabled')
     setNotificationsEnabled(notifs === 'true')
   }, [])
+
+  const toggleSound = () => {
+    const next = !soundEnabled
+    localStorage.setItem('inside_sound_enabled', next ? 'true' : 'false')
+    setSoundEnabled(next)
+    if (next) playClick()
+  }
+
+  const toggleMusic = () => {
+    const next = !musicEnabled
+    localStorage.setItem('inside_music_enabled', next ? 'true' : 'false')
+    setMusicEnabled(next)
+    if (!next) stopAmbientMusic()
+  }
 
   const toggle = (key: string, value: boolean, setter: (v: boolean) => void) => {
     setter(value)
@@ -26,8 +39,18 @@ export default function SettingsPage() {
   }
 
   const deleteData = () => {
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('inside_'))
-    keys.forEach(k => localStorage.removeItem(k))
+    const keysToDelete = [
+      'inside_splash_seen',
+      'inside_user_token',
+      'inside_games_played',
+      'inside_premium',
+      'inside_sound_enabled',
+      'inside_music_enabled',
+      'inside_replay_questions',
+    ]
+    // Also delete any player-specific keys
+    const allKeys = Object.keys(localStorage).filter(k => k.startsWith('inside_player_'))
+    ;[...keysToDelete, ...allKeys].forEach(k => localStorage.removeItem(k))
     setShowDeleteConfirm(false)
     router.push('/')
   }
@@ -43,7 +66,7 @@ export default function SettingsPage() {
     label: string
     description?: string
     value: boolean
-    onChange: (v: boolean) => void
+    onChange: () => void
   }) => (
     <div
       className="flex items-center justify-between p-5 rounded-2xl"
@@ -57,7 +80,7 @@ export default function SettingsPage() {
         </div>
       </div>
       <button
-        onClick={() => onChange(!value)}
+        onClick={onChange}
         style={{
           width: '52px',
           height: '30px',
@@ -111,14 +134,14 @@ export default function SettingsPage() {
           label="Sons"
           description="Effets sonores du jeu"
           value={soundEnabled}
-          onChange={v => toggle('inside_sound_enabled', v, setSoundEnabled)}
+          onChange={toggleSound}
         />
         <ToggleRow
           emoji="🎵"
           label="Musique"
           description="Musique d'ambiance"
           value={musicEnabled}
-          onChange={v => toggle('inside_music_enabled', v, setMusicEnabled)}
+          onChange={toggleMusic}
         />
       </div>
 
@@ -130,7 +153,7 @@ export default function SettingsPage() {
           label="Notifications"
           description="Alertes de jeu"
           value={notificationsEnabled}
-          onChange={v => toggle('inside_notifications_enabled', v, setNotificationsEnabled)}
+          onChange={() => toggle('inside_notifications_enabled', !notificationsEnabled, setNotificationsEnabled)}
         />
       </div>
 

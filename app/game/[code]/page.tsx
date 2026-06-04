@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { getDoubleQuestionIndex } from '@/lib/game'
-import { playDing, playCountdownBeep, playWhoosh, playReveal, startAmbientMusic, stopAmbientMusic, setMusicVolume } from '@/lib/sound'
+import { playDing, playCountdownBeep, playWhoosh, playReveal, playClick, startAmbientMusic, stopAmbientMusic, setMusicVolume } from '@/lib/sound'
 import type { Room, Question, Player } from '@/lib/types'
 import NoxComment from '@/components/NoxComment'
 import { getRevealComment } from '@/lib/nox'
@@ -448,6 +448,7 @@ export default function GamePage() {
           const next = !musicOn
           setMusicOn(next)
           setMusicVolume(next ? 0.06 : 0)
+          playClick()
         }}
         style={{
           position: 'fixed', top: '16px', right: '16px', zIndex: 50,
@@ -641,7 +642,7 @@ export default function GamePage() {
                     <motion.button
                       whileTap={{ scale: 0.96 }}
                       transition={{ duration: 0.1 }}
-                      onClick={() => handleAnswer(false)}
+                      onClick={() => { if (!hasAnsweredCurrent && !submitting) playClick(); handleAnswer(false) }}
                       disabled={submitting || hasAnsweredCurrent}
                       className="flex-1 py-7 rounded-3xl text-white font-black text-xl flex flex-col items-center gap-2"
                       style={{
@@ -658,7 +659,7 @@ export default function GamePage() {
                     <motion.button
                       whileTap={{ scale: 0.96 }}
                       transition={{ duration: 0.1 }}
-                      onClick={() => handleAnswer(true)}
+                      onClick={() => { if (!hasAnsweredCurrent && !submitting) playClick(); handleAnswer(true) }}
                       disabled={submitting || hasAnsweredCurrent}
                       className="flex-1 py-7 rounded-3xl text-white font-black text-xl flex flex-col items-center gap-2"
                       style={{
@@ -758,7 +759,7 @@ export default function GamePage() {
                 {REACTION_EMOJIS.map(emoji => (
                   <button
                     key={emoji}
-                    onClick={() => sendReaction(emoji)}
+                    onClick={() => { playClick(); sendReaction(emoji) }}
                     className="text-2xl active:scale-75 transition-transform"
                     style={{ lineHeight: 1, padding: '8px', borderRadius: '12px', background: 'rgba(255,255,255,0.07)' }}
                   >

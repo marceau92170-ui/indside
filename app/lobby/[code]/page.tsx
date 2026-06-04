@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import type { Room, Player } from '@/lib/types'
+import { playClick, playSuccess } from '@/lib/sound'
 import NoxComment from '@/components/NoxComment'
 import { getNoxComment } from '@/lib/nox'
 
@@ -28,6 +29,7 @@ export default function LobbyPage() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [noxComment] = useState(() => getNoxComment('lobby'))
+  const [launchError, setLaunchError] = useState('')
 
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const roomRef = useRef<Room | null>(null)
@@ -125,6 +127,13 @@ export default function LobbyPage() {
 
   const launchGame = async () => {
     if (!room) return
+    if (players.length < 2) {
+      setLaunchError('Invite au moins un autre joueur')
+      setTimeout(() => setLaunchError(''), 3000)
+      return
+    }
+    setLaunchError('')
+    playSuccess()
     await supabase.from('rooms').update({
       status: 'playing',
       current_question_index: 0,
@@ -135,6 +144,7 @@ export default function LobbyPage() {
   }
 
   const copyCode = async () => {
+    playClick()
     await navigator.clipboard.writeText(code)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -235,12 +245,16 @@ export default function LobbyPage() {
 
         {/* Bottom actions */}
         <div className="flex flex-col gap-3">
+          {launchError && (
+            <div className="py-3 px-4 rounded-2xl text-sm font-semibold text-center" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
+              {launchError}
+            </div>
+          )}
           {isHost ? (
             <motion.div whileTap={{ scale: 0.97 }}>
               <button
                 onClick={launchGame}
-                disabled={players.length < 1}
-                className="w-full py-5 rounded-2xl text-white font-black text-xl disabled:opacity-50 flex items-center justify-center gap-3"
+                className="w-full py-5 rounded-2xl text-white font-black text-xl flex items-center justify-center gap-3"
                 style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 12px 40px rgba(168,85,247,0.45)' }}
               >
                 Commencer
