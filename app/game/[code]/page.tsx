@@ -924,14 +924,23 @@ export default function GamePage() {
               className="w-full p-4 rounded-2xl"
               style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.10)' }}
             >
-              <p className="text-xs font-bold uppercase tracking-widest mb-3 text-center" style={{ color: 'rgba(240,240,245,0.40)' }}>Réagis !</p>
-              <div className="flex justify-center gap-3 flex-wrap">
+              <div className="flex justify-center gap-2 flex-wrap">
                 {REACTION_EMOJIS.map(emoji => (
                   <button
                     key={emoji}
                     onClick={() => { playClick(); sendReaction(emoji) }}
-                    className="text-2xl active:scale-75 transition-transform"
-                    style={{ lineHeight: 1, padding: '8px', borderRadius: '12px', background: 'rgba(255,255,255,0.07)' }}
+                    style={{
+                      width: '52px', height: '52px', borderRadius: '9999px',
+                      background: 'rgba(255,255,255,0.06)',
+                      border: '1px solid rgba(255,255,255,0.10)',
+                      fontSize: '1.6rem', lineHeight: 1,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', transition: 'transform 0.1s, background 0.1s',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}
+                    onPointerDown={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.82)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.14)' }}
+                    onPointerUp={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)' }}
+                    onPointerLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)' }}
                   >
                     {emoji}
                   </button>
