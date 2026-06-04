@@ -134,7 +134,7 @@ function CreateForm() {
   const [nickname, setNickname] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [questions, setQuestions] = useState<string[]>([''])
+  const [questions, setQuestions] = useState<Array<{ text: string; type: 'yes_no' | 'text_answer' }>>([{ text: '', type: 'yes_no' }])
   const [pointsEnabled, setPointsEnabled] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -152,7 +152,7 @@ function CreateForm() {
         if (tpl.slug !== 'creation-libre') {
           setRoomName(tpl.name)
           if (tpl.questions && tpl.questions.length > 0) {
-            setQuestions(tpl.questions)
+            setQuestions(tpl.questions.map(t => ({ text: t, type: 'yes_no' as const })))
           }
         }
       }
@@ -165,7 +165,11 @@ function CreateForm() {
         try {
           const qs = JSON.parse(stored)
           if (Array.isArray(qs) && qs.length > 0) {
-            setQuestions(qs)
+            // support both legacy string[] and new object[]
+            const normalized = qs.map((q: string | { text: string; type: 'yes_no' | 'text_answer' }) =>
+              typeof q === 'string' ? { text: q, type: 'yes_no' as const } : q
+            )
+            setQuestions(normalized)
             localStorage.removeItem('inside_replay_questions')
           }
         } catch {}
@@ -188,7 +192,7 @@ function CreateForm() {
       return
     }
     playClick()
-    setQuestions([...questions, ''])
+    setQuestions([...questions, { text: '', type: 'yes_no' }])
     setEditingIndex(questions.length)
   }
   const removeQuestion = (i: number) => {
@@ -197,12 +201,17 @@ function CreateForm() {
   }
   const updateQuestion = (i: number, val: string) => {
     const updated = [...questions]
-    updated[i] = val
+    updated[i] = { ...updated[i], text: val }
+    setQuestions(updated)
+  }
+  const toggleQuestionType = (i: number) => {
+    const updated = [...questions]
+    updated[i] = { ...updated[i], type: updated[i].type === 'yes_no' ? 'text_answer' : 'yes_no' }
     setQuestions(updated)
   }
 
   const handleSubmit = async () => {
-    const validQuestions = questions.filter(q => q.trim())
+    const validQuestions = questions.filter(q => q.text.trim())
     if (!roomName.trim()) return setError('Donne un nom à ta salle 😅')
     if (!nickname.trim()) return setError('Choisis un pseudo pour participer !')
     if (validQuestions.length === 0) return setError('Ajoute au moins une question !')
@@ -249,10 +258,10 @@ function CreateForm() {
 
       if (roomError || !room) throw new Error(roomError?.message || 'Failed to create room')
 
-      const questionRows = validQuestions.map((text, i) => ({
+      const questionRows = validQuestions.map((q, i) => ({
         room_id: room.id,
-        text,
-        type: 'yes_no' as const,
+        text: q.text.trim(),
+        type: q.type,
         points: 10,
         order_index: i,
       }))
@@ -268,6 +277,9 @@ function CreateForm() {
       if (playerError || !player) throw new Error(playerError?.message || 'Failed to create player')
 
       localStorage.setItem(`inside_player_${code}`, player.id)
+      if (imagePreview) {
+        localStorage.setItem(`inside_bg_${code}`, imagePreview)
+      }
       playSuccess()
       router.push(`/lobby/${code}`)
     } catch (err) {
@@ -287,7 +299,7 @@ function CreateForm() {
   }
 
   const goToStep3 = () => {
-    const valid = questions.filter(q => q.trim())
+    const valid = questions.filter(q => q.text.trim())
     if (valid.length === 0) { setError('Ajoute au moins une question !'); return }
     setError('')
     playClick()
@@ -420,7 +432,7 @@ function CreateForm() {
 
             <div className="flex items-center justify-between">
               <span className="font-semibold" style={{ color: 'rgba(240,240,245,0.60)' }}>
-                {questions.filter(q => q.trim()).length} question{questions.filter(q => q.trim()).length !== 1 ? 's' : ''}
+                {questions.filter(q => q.text.trim()).length} question{questions.filter(q => q.text.trim()).length !== 1 ? 's' : ''}
               </span>
               <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.90)', border: '1px solid rgba(168,85,247,0.25)' }}>
                 max 15 · Oui / Non
@@ -438,9 +450,20 @@ function CreateForm() {
                     <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}>
                       {i + 1}
                     </span>
-                    <span className="flex-1 font-medium" style={{ color: q.trim() ? '#f0f0f5' : 'rgba(240,240,245,0.30)' }}>
-                      {q.trim() || `Question ${i + 1}…`}
+                    <span className="flex-1 font-medium" style={{ color: q.text.trim() ? '#f0f0f5' : 'rgba(240,240,245,0.30)' }}>
+                      {q.text.trim() || `Question ${i + 1}…`}
                     </span>
+                    <button
+                      onClick={e => { e.stopPropagation(); toggleQuestionType(i) }}
+                      className="flex-shrink-0 px-2 py-1 rounded-full text-xs font-bold active:scale-90"
+                      style={{
+                        background: q.type === 'yes_no' ? 'rgba(16,185,129,0.15)' : 'rgba(139,92,246,0.15)',
+                        border: q.type === 'yes_no' ? '1px solid rgba(16,185,129,0.30)' : '1px solid rgba(139,92,246,0.30)',
+                        color: q.type === 'yes_no' ? '#34d399' : '#a78bfa',
+                      }}
+                    >
+                      {q.type === 'yes_no' ? 'Oui/Non' : 'Texte'}
+                    </button>
                     {questions.length > 1 && (
                       <button
                         onClick={e => { e.stopPropagation(); removeQuestion(i) }}
@@ -455,7 +478,7 @@ function CreateForm() {
                     <div className="mt-2 px-1">
                       <input
                         type="text"
-                        value={q}
+                        value={q.text}
                         onChange={e => updateQuestion(i, e.target.value)}
                         placeholder={`Question ${i + 1}…`}
                         autoFocus

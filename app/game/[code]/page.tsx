@@ -52,6 +52,11 @@ export default function GamePage() {
   const [myAnswer, setMyAnswer] = useState<boolean | null>(null)
   const myAnswerRef = useRef<boolean | null>(null)
   const [musicOn, setMusicOn] = useState(true)
+  const [bgFallback, setBgFallback] = useState<string | null>(null)
+  const [textAnswer, setTextAnswer] = useState('')
+  const [textAnswerSubmitted, setTextAnswerSubmitted] = useState(false)
+  const [revealTextAnswers, setRevealTextAnswers] = useState<Array<{ nickname: string; text_value: string }>>([])
+  const textAnswerRef = useRef('')
 
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const reactionsChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
@@ -136,7 +141,7 @@ export default function GamePage() {
       if (currentQ) {
         const { data: existingAnswers } = await supabase
           .from('answers')
-          .select('player_id, value')
+          .select('player_id, value, text_value')
           .eq('question_id', currentQ.id)
 
         if (existingAnswers) {
@@ -146,16 +151,34 @@ export default function GamePage() {
 
           if (ids.has(storedPlayerId)) {
             setHasAnsweredCurrent(true)
+            if (currentQ.type === 'text_answer') setTextAnswerSubmitted(true)
           }
 
           if (roomData.question_phase === 'revealing') {
-            const yes = existingAnswers.filter((a: { value: boolean }) => a.value).length
-            const no = existingAnswers.filter((a: { value: boolean }) => !a.value).length
-            setRevealCounts({ yes, no })
+            if (currentQ.type === 'yes_no') {
+              const yes = existingAnswers.filter((a: { value: boolean | null }) => a.value === true).length
+              const no = existingAnswers.filter((a: { value: boolean | null }) => a.value === false).length
+              setRevealCounts({ yes, no })
+            } else if (currentQ.type === 'text_answer') {
+              // Fetch player nicknames for text answers
+              const textAnswersWithNames = await Promise.all(
+                existingAnswers
+                  .filter((a: { text_value: string | null }) => a.text_value)
+                  .map(async (a: { player_id: string; text_value: string | null }) => {
+                    const pl = (playersData ?? []).find((p: Player) => p.id === a.player_id)
+                    return { nickname: pl?.nickname ?? '?', text_value: a.text_value ?? '' }
+                  })
+              )
+              setRevealTextAnswers(textAnswersWithNames)
+            }
           }
         }
       }
     }
+
+    // Fallback background from localStorage
+    const localBg = localStorage.getItem(`inside_bg_${code}`)
+    if (localBg) setBgFallback(localBg)
 
     setLoading(false)
   }, [code, router])
@@ -216,6 +239,23 @@ export default function GamePage() {
     await supabase.from('rooms').update({ question_phase: 'revealing' }).eq('id', r.id)
   }
 
+  // Fetch text answers when entering reveal phase for text_answer questions
+  const fetchTextAnswers = useCallback(async (questionId: string) => {
+    const { data: answers } = await supabase
+      .from('answers')
+      .select('player_id, text_value')
+      .eq('question_id', questionId)
+      .not('text_value', 'is', null)
+
+    if (!answers) return
+    const pls = playersRef.current
+    const result = answers.map((a: { player_id: string; text_value: string | null }) => {
+      const pl = pls.find(p => p.id === a.player_id)
+      return { nickname: pl?.nickname ?? '?', text_value: a.text_value ?? '' }
+    })
+    setRevealTextAnswers(result)
+  }, [])
+
   useEffect(() => {
     if (!room) return
 
@@ -251,6 +291,10 @@ export default function GamePage() {
           setMyAnswer(null)
           myAnswerRef.current = null
           setShowPtsBonus(null)
+          setTextAnswer('')
+          textAnswerRef.current = ''
+          setTextAnswerSubmitted(false)
+          setRevealTextAnswers([])
           playWhoosh()
         }
 
@@ -263,27 +307,32 @@ export default function GamePage() {
         }
 
         if (prev && prev.question_phase === 'answering' && updated.question_phase === 'revealing') {
-          const myAns = myAnswerRef.current
-          if (myAns !== null) {
-            setTimeout(() => {
-              setRevealCounts(rc => {
-                const totalVotes = rc.yes + rc.no
-                const majorityIsYes = rc.yes >= rc.no
-                const inMajority = myAns === majorityIsYes
-                const qs = questionsRef.current
-                const currentRoom = roomRef.current
-                const idx = currentRoom?.current_question_index ?? 0
-                const doubleIdx = getDoubleQuestionIndex(qs)
-                const isDouble = idx === doubleIdx
-                const bonus = inMajority ? (isDouble ? 25 : 5) : 0
-                const total = 1 + bonus
-                if (totalVotes > 0) {
-                  setShowPtsBonus(`+${total} pts`)
-                  setTimeout(() => setShowPtsBonus(null), 2500)
-                }
-                return rc
-              })
-            }, 600)
+          const qs = questionsRef.current
+          const idx = updated.current_question_index ?? 0
+          const q = qs[idx]
+
+          if (q?.type === 'text_answer') {
+            fetchTextAnswers(q.id)
+          } else {
+            const myAns = myAnswerRef.current
+            if (myAns !== null) {
+              setTimeout(() => {
+                setRevealCounts(rc => {
+                  const totalVotes = rc.yes + rc.no
+                  const majorityIsYes = rc.yes >= rc.no
+                  const inMajority = myAns === majorityIsYes
+                  const doubleIdx = getDoubleQuestionIndex(qs)
+                  const isDouble = idx === doubleIdx
+                  const bonus = inMajority ? (isDouble ? 25 : 5) : 0
+                  const total = 1 + bonus
+                  if (totalVotes > 0) {
+                    setShowPtsBonus(`+${total} pts`)
+                    setTimeout(() => setShowPtsBonus(null), 2500)
+                  }
+                  return rc
+                })
+              }, 600)
+            }
           }
         }
 
@@ -299,7 +348,7 @@ export default function GamePage() {
         schema: 'public',
         table: 'answers',
       }, (payload) => {
-        const answer = payload.new as { player_id: string; question_id: string; value: boolean }
+        const answer = payload.new as { player_id: string; question_id: string; value: boolean | null; text_value: string | null }
         const currentQs = questionsRef.current
         const currentRoom = roomRef.current
         if (!currentRoom) return
@@ -313,16 +362,19 @@ export default function GamePage() {
           return next
         })
 
-        setRevealCounts(prev => ({
-          yes: prev.yes + (answer.value ? 1 : 0),
-          no: prev.no + (!answer.value ? 1 : 0),
-        }))
+        // Only count yes/no for yes_no questions
+        if (currentQ.type === 'yes_no') {
+          setRevealCounts(prev => ({
+            yes: prev.yes + (answer.value === true ? 1 : 0),
+            no: prev.no + (answer.value === false ? 1 : 0),
+          }))
+        }
       })
       .subscribe()
 
     channelRef.current = channel
     return () => { supabase.removeChannel(channel) }
-  }, [room?.id, code, router])
+  }, [room?.id, code, router, fetchTextAnswers])
 
   useEffect(() => {
     if (!room) return
@@ -382,12 +434,42 @@ export default function GamePage() {
       player_id: pid,
       question_id: currentQ.id,
       value,
+      text_value: null,
     })
 
     if (error) {
       setHasAnsweredCurrent(false)
       setMyAnswer(null)
       myAnswerRef.current = null
+    } else {
+      playDing()
+    }
+    setSubmitting(false)
+  }
+
+  const handleTextAnswer = async () => {
+    const r = roomRef.current
+    const pid = playerIdRef.current
+    const txt = textAnswer.trim()
+    if (!pid || !r || submitting || textAnswerSubmitted || !txt) return
+    const qs = questionsRef.current
+    const currentQ = qs[r.current_question_index ?? 0]
+    if (!currentQ) return
+
+    setSubmitting(true)
+    setHasAnsweredCurrent(true)
+    setTextAnswerSubmitted(true)
+
+    const { error } = await supabase.from('answers').insert({
+      player_id: pid,
+      question_id: currentQ.id,
+      value: null,
+      text_value: txt,
+    })
+
+    if (error) {
+      setHasAnsweredCurrent(false)
+      setTextAnswerSubmitted(false)
     } else {
       playDing()
     }
@@ -426,6 +508,7 @@ export default function GamePage() {
 
   const currentIndex = room.current_question_index ?? 0
   const question = questions[currentIndex]
+  const isTextAnswerQuestion = question?.type === 'text_answer'
   const progress = questions.length > 0 ? ((currentIndex + 1) / questions.length) * 100 : 0
   const totalReveal = revealCounts.yes + revealCounts.no
   const yesPercent = totalReveal > 0 ? Math.round((revealCounts.yes / totalReveal) * 100) : 50
@@ -439,6 +522,8 @@ export default function GamePage() {
 
   const doubleIndex = getDoubleQuestionIndex(questions)
   const isDoubleQuestion = currentIndex === doubleIndex
+
+  const effectiveBg = room.image_url || bgFallback
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
@@ -534,10 +619,10 @@ export default function GamePage() {
         }
       `}</style>
 
-      {room.image_url ? (
+      {effectiveBg ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={room.image_url} alt="background" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={effectiveBg} alt="background" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.60) 0%, transparent 40%, rgba(0,0,0,0.80) 100%)' }} />
         </>
       ) : (
@@ -638,56 +723,110 @@ export default function GamePage() {
                     </div>
                   )}
 
-                  <div className="flex gap-4 w-full">
-                    <motion.button
-                      whileTap={{ scale: 0.96 }}
-                      transition={{ duration: 0.1 }}
-                      onClick={() => { if (!hasAnsweredCurrent && !submitting) playClick(); handleAnswer(false) }}
-                      disabled={submitting || hasAnsweredCurrent}
-                      className="flex-1 py-7 rounded-3xl text-white font-black text-xl flex flex-col items-center gap-2"
-                      style={{
-                        background: hasAnsweredCurrent ? 'rgba(239,68,68,0.35)' : 'linear-gradient(135deg, #ef4444, #e11d48)',
-                        boxShadow: hasAnsweredCurrent ? 'none' : '0 16px 40px rgba(239,68,68,0.40)',
-                        opacity: hasAnsweredCurrent ? 0.6 : 1,
-                        border: 'none',
-                        cursor: hasAnsweredCurrent ? 'default' : 'pointer',
-                      }}
-                    >
-                      <span className="text-3xl">❌</span>
-                      <span>Non</span>
-                    </motion.button>
-                    <motion.button
-                      whileTap={{ scale: 0.96 }}
-                      transition={{ duration: 0.1 }}
-                      onClick={() => { if (!hasAnsweredCurrent && !submitting) playClick(); handleAnswer(true) }}
-                      disabled={submitting || hasAnsweredCurrent}
-                      className="flex-1 py-7 rounded-3xl text-white font-black text-xl flex flex-col items-center gap-2"
-                      style={{
-                        background: hasAnsweredCurrent ? 'rgba(16,185,129,0.35)' : 'linear-gradient(135deg, #10b981, #22c55e)',
-                        boxShadow: hasAnsweredCurrent ? 'none' : '0 16px 40px rgba(16,185,129,0.40)',
-                        opacity: hasAnsweredCurrent ? 0.6 : 1,
-                        border: 'none',
-                        cursor: hasAnsweredCurrent ? 'default' : 'pointer',
-                      }}
-                    >
-                      <span className="text-3xl">✅</span>
-                      <span>Oui</span>
-                    </motion.button>
-                  </div>
-
-                  {hasAnsweredCurrent && (
-                    <motion.div
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                      style={{
-                        fontSize: '3rem',
-                        lineHeight: 1,
-                        textAlign: 'center',
-                      }}
-                    >
-                      ✓
-                    </motion.div>
+                  {/* Text answer input */}
+                  {isTextAnswerQuestion ? (
+                    <div className="w-full flex flex-col gap-3">
+                      <input
+                        type="text"
+                        value={textAnswer}
+                        onChange={e => {
+                          setTextAnswer(e.target.value)
+                          textAnswerRef.current = e.target.value
+                        }}
+                        onKeyDown={e => { if (e.key === 'Enter') handleTextAnswer() }}
+                        placeholder="Ta réponse…"
+                        disabled={textAnswerSubmitted || submitting}
+                        style={{
+                          background: 'rgba(255,255,255,0.10)',
+                          border: textAnswerSubmitted ? '2px solid rgba(139,92,246,0.60)' : '2px solid rgba(255,255,255,0.20)',
+                          borderRadius: '20px',
+                          padding: '20px 24px',
+                          color: '#f0f0f5',
+                          fontSize: '1.2rem',
+                          fontWeight: 700,
+                          width: '100%',
+                          outline: 'none',
+                          backdropFilter: 'blur(12px)',
+                          opacity: textAnswerSubmitted ? 0.7 : 1,
+                        }}
+                      />
+                      <motion.button
+                        whileTap={{ scale: 0.97 }}
+                        onClick={handleTextAnswer}
+                        disabled={textAnswerSubmitted || submitting || !textAnswer.trim()}
+                        style={{
+                          width: '100%',
+                          padding: '20px',
+                          borderRadius: '20px',
+                          fontWeight: 900,
+                          fontSize: '1.2rem',
+                          color: '#fff',
+                          background: textAnswerSubmitted ? 'rgba(139,92,246,0.30)' : 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
+                          border: textAnswerSubmitted ? '2px solid rgba(139,92,246,0.50)' : 'none',
+                          boxShadow: textAnswerSubmitted ? 'none' : '0 8px 30px rgba(168,85,247,0.35)',
+                          cursor: textAnswerSubmitted ? 'default' : 'pointer',
+                          opacity: (!textAnswer.trim() && !textAnswerSubmitted) ? 0.5 : 1,
+                        }}
+                      >
+                        {textAnswerSubmitted ? 'Réponse envoyée ✓' : 'Envoyer'}
+                      </motion.button>
+                    </div>
+                  ) : (
+                    /* Yes/No buttons */
+                    <div className="flex gap-4 w-full">
+                      <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ duration: 0.1 }}
+                        onClick={() => { if (!hasAnsweredCurrent && !submitting) { playClick(); handleAnswer(false) } }}
+                        disabled={submitting || hasAnsweredCurrent}
+                        className="flex-1 flex items-center justify-center"
+                        style={{
+                          padding: '32px 20px',
+                          borderRadius: '20px',
+                          fontSize: '1.8rem',
+                          fontWeight: 900,
+                          color: '#f87171',
+                          background: hasAnsweredCurrent && myAnswer === false
+                            ? 'rgba(239,68,68,0.25)'
+                            : 'rgba(239,68,68,0.12)',
+                          border: hasAnsweredCurrent && myAnswer === false
+                            ? '2px solid rgba(239,68,68,0.70)'
+                            : '2px solid rgba(239,68,68,0.25)',
+                          backdropFilter: 'blur(12px)',
+                          WebkitBackdropFilter: 'blur(12px)',
+                          cursor: hasAnsweredCurrent ? 'default' : 'pointer',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        Non
+                      </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ duration: 0.1 }}
+                        onClick={() => { if (!hasAnsweredCurrent && !submitting) { playClick(); handleAnswer(true) } }}
+                        disabled={submitting || hasAnsweredCurrent}
+                        className="flex-1 flex items-center justify-center"
+                        style={{
+                          padding: '32px 20px',
+                          borderRadius: '20px',
+                          fontSize: '1.8rem',
+                          fontWeight: 900,
+                          color: '#34d399',
+                          background: hasAnsweredCurrent && myAnswer === true
+                            ? 'rgba(16,185,129,0.25)'
+                            : 'rgba(16,185,129,0.12)',
+                          border: hasAnsweredCurrent && myAnswer === true
+                            ? '2px solid rgba(16,185,129,0.70)'
+                            : '2px solid rgba(16,185,129,0.25)',
+                          backdropFilter: 'blur(12px)',
+                          WebkitBackdropFilter: 'blur(12px)',
+                          cursor: hasAnsweredCurrent ? 'default' : 'pointer',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        Oui
+                      </motion.button>
+                    </div>
                   )}
                 </motion.div>
               </AnimatePresence>
@@ -707,48 +846,79 @@ export default function GamePage() {
               </p>
             </div>
 
-            <NoxComment
-              comment={getRevealComment(yesPercent)}
-              emotion={yesPercent >= 80 || yesPercent <= 20 ? 'proud' : yesPercent >= 60 || yesPercent <= 40 ? 'intrigued' : 'surprised'}
-              size={56}
-            />
-
-            <div
-              className="w-full p-6 rounded-3xl flex flex-col gap-5"
-              style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.12)' }}
-            >
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-black text-lg" style={{ color: '#34d399' }}>✅ Oui</span>
-                  <span className="font-black text-2xl" style={{ color: '#34d399' }}>{yesPercent}%</span>
-                </div>
-                <div className="w-full h-5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
-                  <div
-                    className="h-full rounded-full transition-all duration-1000"
-                    style={{ width: `${yesPercent}%`, background: 'linear-gradient(90deg, #10b981, #34d399)' }}
-                  />
-                </div>
-                <p className="text-sm" style={{ color: 'rgba(240,240,245,0.45)' }}>
-                  {revealCounts.yes} joueur{revealCounts.yes !== 1 ? 's' : ''}
-                </p>
+            {isTextAnswerQuestion ? (
+              /* Text answer reveal */
+              <div
+                className="w-full p-6 rounded-3xl flex flex-col gap-4"
+                style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.12)' }}
+              >
+                <p className="text-xs font-bold uppercase tracking-widest text-center" style={{ color: 'rgba(240,240,245,0.40)' }}>Réponses</p>
+                {revealTextAnswers.length === 0 ? (
+                  <p className="text-center" style={{ color: 'rgba(240,240,245,0.45)', fontSize: '0.9rem' }}>Aucune réponse…</p>
+                ) : (
+                  revealTextAnswers.map((item, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        padding: '14px 18px',
+                        borderRadius: '16px',
+                        background: 'rgba(255,255,255,0.07)',
+                        border: '1px solid rgba(255,255,255,0.10)',
+                      }}
+                    >
+                      <p style={{ color: 'rgba(240,240,245,0.55)', fontSize: '0.78rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '.05em' }}>{item.nickname}</p>
+                      <p style={{ color: '#f0f0f5', fontWeight: 700, fontSize: '1.05rem' }}>{item.text_value}</p>
+                    </div>
+                  ))
+                )}
               </div>
+            ) : (
+              /* Yes/No reveal */
+              <>
+                <NoxComment
+                  comment={getRevealComment(yesPercent)}
+                  emotion={yesPercent >= 80 || yesPercent <= 20 ? 'proud' : yesPercent >= 60 || yesPercent <= 40 ? 'intrigued' : 'surprised'}
+                  size={56}
+                />
 
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-black text-lg" style={{ color: '#f87171' }}>❌ Non</span>
-                  <span className="font-black text-2xl" style={{ color: '#f87171' }}>{noPercent}%</span>
+                <div
+                  className="w-full p-6 rounded-3xl flex flex-col gap-5"
+                  style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.12)' }}
+                >
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-black text-lg" style={{ color: '#34d399' }}>Oui</span>
+                      <span className="font-black text-2xl" style={{ color: '#34d399' }}>{yesPercent}%</span>
+                    </div>
+                    <div className="w-full h-5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
+                      <div
+                        className="h-full rounded-full transition-all duration-1000"
+                        style={{ width: `${yesPercent}%`, background: 'linear-gradient(90deg, #10b981, #34d399)' }}
+                      />
+                    </div>
+                    <p className="text-sm" style={{ color: 'rgba(240,240,245,0.45)' }}>
+                      {revealCounts.yes} joueur{revealCounts.yes !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-black text-lg" style={{ color: '#f87171' }}>Non</span>
+                      <span className="font-black text-2xl" style={{ color: '#f87171' }}>{noPercent}%</span>
+                    </div>
+                    <div className="w-full h-5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
+                      <div
+                        className="h-full rounded-full transition-all duration-1000"
+                        style={{ width: `${noPercent}%`, background: 'linear-gradient(90deg, #ef4444, #f87171)' }}
+                      />
+                    </div>
+                    <p className="text-sm" style={{ color: 'rgba(240,240,245,0.45)' }}>
+                      {revealCounts.no} joueur{revealCounts.no !== 1 ? 's' : ''}
+                    </p>
+                  </div>
                 </div>
-                <div className="w-full h-5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
-                  <div
-                    className="h-full rounded-full transition-all duration-1000"
-                    style={{ width: `${noPercent}%`, background: 'linear-gradient(90deg, #ef4444, #f87171)' }}
-                  />
-                </div>
-                <p className="text-sm" style={{ color: 'rgba(240,240,245,0.45)' }}>
-                  {revealCounts.no} joueur{revealCounts.no !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
+              </>
+            )}
 
             <div
               className="w-full p-4 rounded-2xl"

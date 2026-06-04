@@ -34,7 +34,8 @@ export interface Answer {
   id: string
   player_id: string
   question_id: string
-  value: boolean
+  value: boolean | null
+  text_value: string | null
   created_at: string
 }
 
