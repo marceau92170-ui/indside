@@ -7,7 +7,18 @@ function getCtx(): AudioContext {
   return _ctx
 }
 
+function isSoundEnabled(): boolean {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem('inside_sound_enabled') !== 'false'
+}
+
+function isMusicEnabled(): boolean {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem('inside_music_enabled') !== 'false'
+}
+
 export function playDing() {
+  if (!isSoundEnabled()) return
   const ctx = getCtx()
   const osc = ctx.createOscillator()
   const gain = ctx.createGain()
@@ -21,6 +32,7 @@ export function playDing() {
 }
 
 export function playCountdownBeep(isLast: boolean) {
+  if (!isSoundEnabled()) return
   const ctx = getCtx()
   const osc = ctx.createOscillator()
   const gain = ctx.createGain()
@@ -32,6 +44,7 @@ export function playCountdownBeep(isLast: boolean) {
 }
 
 export function playWhoosh() {
+  if (!isSoundEnabled()) return
   const ctx = getCtx()
   const bufferSize = ctx.sampleRate * 0.4
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
@@ -51,6 +64,7 @@ export function playWhoosh() {
 }
 
 export function playFanfare() {
+  if (!isSoundEnabled()) return
   const ctx = getCtx()
   const notes = [523.25, 659.25, 783.99, 1046.5] // C5 E5 G5 C6
   notes.forEach((freq, i) => {
@@ -68,6 +82,7 @@ export function playFanfare() {
 }
 
 export function playReveal() {
+  if (!isSoundEnabled()) return
   const ctx = getCtx()
   // Ascending two-note reveal sound
   const freqs = [440, 660]
@@ -84,10 +99,43 @@ export function playReveal() {
   })
 }
 
+// NEW: short UI click feedback (very subtle, 60ms)
+export function playClick() {
+  if (!isSoundEnabled()) return
+  const ctx = getCtx()
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.connect(gain); gain.connect(ctx.destination)
+  osc.type = 'sine'
+  osc.frequency.value = 440
+  gain.gain.setValueAtTime(0.08, ctx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06)
+  osc.start(); osc.stop(ctx.currentTime + 0.06)
+}
+
+// NEW: positive validation (double ding, higher)
+export function playSuccess() {
+  if (!isSoundEnabled()) return
+  const ctx = getCtx()
+  const notes = [880, 1100]
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain); gain.connect(ctx.destination)
+    osc.type = 'sine'
+    osc.frequency.value = freq
+    const t = ctx.currentTime + i * 0.1
+    gain.gain.setValueAtTime(0.18, t)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35)
+    osc.start(t); osc.stop(t + 0.35)
+  })
+}
+
 let _musicGain: GainNode | null = null
 let _musicRunning = false
 
 export function startAmbientMusic(volume = 0.06) {
+  if (!isMusicEnabled()) return
   if (_musicRunning) return
   _musicRunning = true
   const ctx = getCtx()
