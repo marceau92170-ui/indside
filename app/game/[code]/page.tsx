@@ -20,7 +20,7 @@ const AVATAR_COLORS = [
   'linear-gradient(135deg, #06b6d4, #8b5cf6)',
 ]
 
-const REACTION_EMOJIS = ['😂', '🔥', '😳', '💀', '🤯', '👀']
+const REACTION_EMOJIS = ['😭', '🔥', '💀', '🫠', '🤌', '👏']
 const QUESTION_DURATION = 30
 
 interface FloatingReaction {
@@ -782,58 +782,50 @@ export default function GamePage() {
                     </div>
                   ) : (
                     /* Yes/No buttons */
-                    <div className="flex gap-4 w-full">
+                    <div className="flex gap-3 w-full">
                       <motion.button
-                        whileTap={{ scale: 0.96 }}
-                        transition={{ duration: 0.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ duration: 0.08 }}
                         onClick={() => { if (!hasAnsweredCurrent && !submitting) { playClick(); handleAnswer(false) } }}
                         disabled={submitting || hasAnsweredCurrent}
-                        className="flex-1 flex items-center justify-center"
+                        className="flex-1 flex flex-col items-center justify-center gap-1"
                         style={{
-                          padding: '32px 20px',
-                          borderRadius: '20px',
-                          fontSize: '1.8rem',
-                          fontWeight: 900,
-                          color: '#f87171',
+                          padding: '28px 12px',
+                          borderRadius: '24px',
                           background: hasAnsweredCurrent && myAnswer === false
-                            ? 'rgba(239,68,68,0.25)'
-                            : 'rgba(239,68,68,0.12)',
+                            ? 'rgba(239,68,68,0.18)' : 'rgba(255,255,255,0.05)',
                           border: hasAnsweredCurrent && myAnswer === false
-                            ? '2px solid rgba(239,68,68,0.70)'
-                            : '2px solid rgba(239,68,68,0.25)',
-                          backdropFilter: 'blur(12px)',
-                          WebkitBackdropFilter: 'blur(12px)',
+                            ? '1.5px solid rgba(239,68,68,0.55)' : '1.5px solid rgba(255,255,255,0.10)',
+                          backdropFilter: 'blur(16px)',
+                          WebkitBackdropFilter: 'blur(16px)',
                           cursor: hasAnsweredCurrent ? 'default' : 'pointer',
-                          transition: 'all 0.2s ease',
+                          transition: 'all 0.18s ease',
                         }}
                       >
-                        Non
+                        <span style={{ fontSize: '2rem', lineHeight: 1 }}>✕</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: hasAnsweredCurrent && myAnswer === false ? '#f87171' : 'rgba(240,240,245,0.55)', letterSpacing: '.04em' }}>Non</span>
                       </motion.button>
                       <motion.button
-                        whileTap={{ scale: 0.96 }}
-                        transition={{ duration: 0.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ duration: 0.08 }}
                         onClick={() => { if (!hasAnsweredCurrent && !submitting) { playClick(); handleAnswer(true) } }}
                         disabled={submitting || hasAnsweredCurrent}
-                        className="flex-1 flex items-center justify-center"
+                        className="flex-1 flex flex-col items-center justify-center gap-1"
                         style={{
-                          padding: '32px 20px',
-                          borderRadius: '20px',
-                          fontSize: '1.8rem',
-                          fontWeight: 900,
-                          color: '#34d399',
+                          padding: '28px 12px',
+                          borderRadius: '24px',
                           background: hasAnsweredCurrent && myAnswer === true
-                            ? 'rgba(16,185,129,0.25)'
-                            : 'rgba(16,185,129,0.12)',
+                            ? 'rgba(16,185,129,0.18)' : 'rgba(255,255,255,0.05)',
                           border: hasAnsweredCurrent && myAnswer === true
-                            ? '2px solid rgba(16,185,129,0.70)'
-                            : '2px solid rgba(16,185,129,0.25)',
-                          backdropFilter: 'blur(12px)',
-                          WebkitBackdropFilter: 'blur(12px)',
+                            ? '1.5px solid rgba(16,185,129,0.55)' : '1.5px solid rgba(255,255,255,0.10)',
+                          backdropFilter: 'blur(16px)',
+                          WebkitBackdropFilter: 'blur(16px)',
                           cursor: hasAnsweredCurrent ? 'default' : 'pointer',
-                          transition: 'all 0.2s ease',
+                          transition: 'all 0.18s ease',
                         }}
                       >
-                        Oui
+                        <span style={{ fontSize: '2rem', lineHeight: 1 }}>○</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: hasAnsweredCurrent && myAnswer === true ? '#34d399' : 'rgba(240,240,245,0.55)', letterSpacing: '.04em' }}>Oui</span>
                       </motion.button>
                     </div>
                   )}
@@ -929,32 +921,27 @@ export default function GamePage() {
               </>
             )}
 
-            <div
-              className="w-full p-4 rounded-2xl"
-              style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.10)' }}
-            >
-              <div className="flex justify-center gap-2 flex-wrap">
-                {REACTION_EMOJIS.map(emoji => (
-                  <button
-                    key={emoji}
-                    onClick={() => { playClick(); sendReaction(emoji) }}
-                    style={{
-                      width: '52px', height: '52px', borderRadius: '9999px',
-                      background: 'rgba(255,255,255,0.06)',
-                      border: '1px solid rgba(255,255,255,0.10)',
-                      fontSize: '1.6rem', lineHeight: 1,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      cursor: 'pointer', transition: 'transform 0.1s, background 0.1s',
-                      WebkitTapHighlightColor: 'transparent',
-                    }}
-                    onPointerDown={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.82)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.14)' }}
-                    onPointerUp={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)' }}
-                    onPointerLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)' }}
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
+            <div className="flex justify-center gap-1 flex-wrap px-2">
+              {REACTION_EMOJIS.map(emoji => (
+                <button
+                  key={emoji}
+                  onClick={() => { playClick(); sendReaction(emoji) }}
+                  style={{
+                    width: '48px', height: '48px', borderRadius: '9999px',
+                    background: 'transparent', border: 'none',
+                    fontSize: '1.7rem', lineHeight: 1,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer',
+                    WebkitTapHighlightColor: 'transparent',
+                    transition: 'transform 0.08s',
+                  }}
+                  onPointerDown={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.72)' }}
+                  onPointerUp={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+                  onPointerLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+                >
+                  {emoji}
+                </button>
+              ))}
             </div>
 
             {isHost && (
