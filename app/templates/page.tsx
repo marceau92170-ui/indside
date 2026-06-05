@@ -17,6 +17,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   'Étudiant': 'Campus',
   'Voyage': 'Aventure',
   'Romance': 'Romance',
+  'Adulte': '🔞 Adulte',
 }
 
 export default function TemplatesPage() {
