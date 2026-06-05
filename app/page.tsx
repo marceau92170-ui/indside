@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Nox from '@/components/Nox'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
+import { Settings, User } from 'lucide-react'
 
 const SplashScreen = dynamic(() => import('@/components/SplashScreen'), { ssr: false })
 
@@ -66,7 +67,7 @@ export default function HomePage() {
               fontSize: '1.1rem', cursor: 'pointer',
             }}
           >
-            ⚙️
+            <Settings size={18} />
           </button>
           <button
             onClick={() => router.push('/profile')}
@@ -77,7 +78,7 @@ export default function HomePage() {
               fontSize: '1.1rem', cursor: 'pointer',
             }}
           >
-            👤
+            <User size={18} />
           </button>
         </div>
 

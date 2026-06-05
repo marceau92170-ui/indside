@@ -9,6 +9,7 @@ import { playClick, playSuccess } from '@/lib/sound'
 import NoxComment from '@/components/NoxComment'
 import { getNoxComment } from '@/lib/nox'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
+import { Users, Copy, Share2, Check } from 'lucide-react'
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -205,7 +206,7 @@ export default function LobbyPage() {
             style={{ background: 'rgba(0,0,0,0.50)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.20)' }}
           >
             <span className="font-black tracking-[0.25em] text-lg" style={{ color: '#f0f0f5' }}>{code}</span>
-            <span className="text-base">{copied ? '✅' : '📋'}</span>
+            {copied ? <Check size={16} /> : <Copy size={16} />}
           </button>
         </div>
 
@@ -245,7 +246,7 @@ export default function LobbyPage() {
                   )}
                 </div>
                 <span className="text-xs font-semibold text-center truncate w-full text-center" style={{ color: 'rgba(240,240,245,0.80)' }}>
-                  {p.nickname}{p.is_host ? ' 👑' : ''}
+                  {p.nickname}
                 </span>
               </div>
             ))}
@@ -274,18 +275,18 @@ export default function LobbyPage() {
               className="w-full py-5 rounded-2xl text-center font-semibold"
               style={{ background: 'rgba(0,0,0,0.40)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(240,240,245,0.55)' }}
             >
-              <span className="animate-pulse" style={{ color: 'rgba(240,240,245,0.45)' }}>⏳</span>
+              <span className="animate-pulse" style={{ color: 'rgba(240,240,245,0.45)' }}>En attente…</span>
             </div>
           )}
           <div className="flex items-center gap-2">
             <div className="flex-1 py-3 px-4 rounded-2xl text-center font-black tracking-widest" style={{ background: 'rgba(0,0,0,0.40)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(240,240,245,0.75)' }}>
               {code}
             </div>
-            <button onClick={copyCode} className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl active:scale-95" style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.14)' }}>
-              {copied ? '✅' : '📋'}
+            <button onClick={copyCode} className="w-12 h-12 rounded-2xl flex items-center justify-center active:scale-95" style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.14)', color: '#f0f0f5' }}>
+              {copied ? <Check size={18} /> : <Copy size={18} />}
             </button>
-            <button onClick={shareRoom} className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl active:scale-95" style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.14)' }}>
-              🔗
+            <button onClick={shareRoom} className="w-12 h-12 rounded-2xl flex items-center justify-center active:scale-95" style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.14)', color: '#f0f0f5' }}>
+              <Share2 size={18} />
             </button>
           </div>
         </div>
