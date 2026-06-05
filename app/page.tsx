@@ -21,10 +21,10 @@ export default function HomePage() {
   const shadow = gradientShadow(theme)
 
   useEffect(() => {
-    const seen = localStorage.getItem('inside_splash_seen')
+    const seen = localStorage.getItem('flower_splash_seen')
     if (!seen) {
       setShowSplash(true)
-      localStorage.setItem('inside_splash_seen', '1')
+      localStorage.setItem('flower_splash_seen', '1')
     } else {
       setSplashDone(true)
     }
@@ -112,7 +112,7 @@ export default function HomePage() {
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               marginTop: '8px',
             }}>
-              Inside
+              Flower
             </h1>
             <p style={{ fontSize: '0.95rem', fontWeight: 600, color: 'rgba(240,240,245,0.45)', marginTop: '10px', lineHeight: 1.5, fontStyle: 'italic' }}>
               Entre amis.

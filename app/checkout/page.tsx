@@ -77,7 +77,7 @@ function CheckoutContent() {
               ✦
             </div>
             <div>
-              <div className="font-bold" style={{ color: '#f0f0f5' }}>Inside+</div>
+              <div className="font-bold" style={{ color: '#f0f0f5' }}>Flower+</div>
               <div className="text-sm" style={{ color: 'rgba(240,240,245,0.50)' }}>
                 {isYearly ? 'Abonnement annuel' : 'Abonnement mensuel'}
               </div>

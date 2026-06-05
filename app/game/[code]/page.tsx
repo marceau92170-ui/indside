@@ -95,7 +95,7 @@ export default function GamePage() {
       return
     }
 
-    const storedPlayerId = localStorage.getItem(`inside_player_${code}`)
+    const storedPlayerId = localStorage.getItem(`flower_player_${code}`)
     if (!storedPlayerId) {
       router.push(`/join?code=${code}`)
       return
@@ -183,7 +183,7 @@ export default function GamePage() {
     }
 
     // Fallback background from localStorage
-    const localBg = localStorage.getItem(`inside_bg_${code}`)
+    const localBg = localStorage.getItem(`flower_bg_${code}`)
     if (localBg) setBgFallback(localBg)
 
     setLoading(false)

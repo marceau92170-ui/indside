@@ -47,7 +47,7 @@ export default function PremiumGate({ reason, onClose }: PremiumGateProps) {
             color: '#fff', fontWeight: 800, fontSize: '0.85rem', marginBottom: '16px'
           }}>✦ INSIDE+</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 900, marginBottom: '8px', color: '#f0f0f5' }}>
-            Débloquer Inside+
+            Débloquer Flower+
           </div>
           <div style={{
             fontSize: '0.9rem', color: 'rgba(240,240,245,0.5)',
@@ -99,7 +99,7 @@ export default function PremiumGate({ reason, onClose }: PremiumGateProps) {
               boxShadow: '0 12px 40px rgba(245,158,11,0.35)',
             }}
           >
-            ✦ Passer à Inside+
+            ✦ Passer à Flower+
           </motion.button>
           <button
             onClick={onClose}

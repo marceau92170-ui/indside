@@ -54,7 +54,7 @@ export default function PricingPage() {
         </button>
         <div>
           <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Plans & tarifs</h1>
-          {isPremium && <p className="text-sm" style={{ color: 'rgba(245,158,11,0.90)' }}>✦ Inside+ actif</p>}
+          {isPremium && <p className="text-sm" style={{ color: 'rgba(245,158,11,0.90)' }}>✦ Flower+ actif</p>}
         </div>
       </div>
 
@@ -140,7 +140,7 @@ export default function PricingPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-black" style={{ color: '#f0f0f5' }}>Inside+</h2>
+                <h2 className="text-xl font-black" style={{ color: '#f0f0f5' }}>Flower+</h2>
                 <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff' }}>Recommandé</span>
               </div>
               <p className="text-sm" style={{ color: 'rgba(240,240,245,0.50)' }}>Sans limites</p>
@@ -174,7 +174,7 @@ export default function PricingPage() {
               className="w-full py-4 rounded-2xl text-white font-black text-lg"
               style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)', boxShadow: '0 12px 40px rgba(245,158,11,0.45)', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
             >
-              ✦ Passer à Inside+
+              ✦ Passer à Flower+
             </button>
           )}
         </div>

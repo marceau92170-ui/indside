@@ -137,7 +137,7 @@ export default function ResultsPage() {
   const shareRoom = async () => {
     const url = `${window.location.origin}/join?code=${code}`
     if (navigator.share) {
-      await navigator.share({ title: `Inside — ${room?.name}`, url })
+      await navigator.share({ title: `Flower — ${room?.name}`, url })
     } else {
       await navigator.clipboard.writeText(url)
       setCopied(true)
@@ -168,7 +168,7 @@ export default function ResultsPage() {
       const blob = await (await fetch(dataUrl)).blob()
       const file = new File([blob], 'inside-resultats.png', { type: 'image/png' })
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `Inside — ${room?.name}` })
+        await navigator.share({ files: [file], title: `Flower — ${room?.name}` })
       } else {
         downloadResultsImage()
       }
@@ -452,7 +452,7 @@ export default function ResultsPage() {
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🎉</div>
               <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#f0f0f5' }}>Vous avez kiffé ?</div>
-              <p style={{ fontSize: '.88rem', color: 'rgba(240,240,245,0.50)', marginTop: '6px', lineHeight: 1.5 }}>Inside reste gratuit grâce à votre soutien</p>
+              <p style={{ fontSize: '.88rem', color: 'rgba(240,240,245,0.50)', marginTop: '6px', lineHeight: 1.5 }}>Flower reste gratuit grâce à votre soutien</p>
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               {[
@@ -547,7 +547,7 @@ export default function ResultsPage() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">🎮</span>
             <div>
-              <p className="font-black text-lg leading-tight" style={{ color: '#f0f0f5' }}>Inside — {room?.name}</p>
+              <p className="font-black text-lg leading-tight" style={{ color: '#f0f0f5' }}>Flower — {room?.name}</p>
               <p className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.55)' }}>
                 {levelInfo.emoji} {levelInfo.label}
               </p>
@@ -598,7 +598,7 @@ export default function ResultsPage() {
       <div className="relative z-10">
         <button
           onClick={() => {
-            localStorage.setItem('inside_replay_questions', JSON.stringify(questions.map(q => q.text)))
+            localStorage.setItem('flower_replay_questions', JSON.stringify(questions.map(q => q.text)))
             router.push('/create?replay=1')
           }}
           className="w-full py-4 rounded-2xl text-white font-bold active:scale-95"

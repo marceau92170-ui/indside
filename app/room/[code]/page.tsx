@@ -10,7 +10,7 @@ export default function RoomRedirect() {
 
   useEffect(() => {
     async function redirect() {
-      const playerId = localStorage.getItem(`inside_player_${code}`)
+      const playerId = localStorage.getItem(`flower_player_${code}`)
       if (!playerId) {
         router.push(`/join?code=${code}`)
         return

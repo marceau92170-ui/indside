@@ -25,7 +25,7 @@ function SuccessContent() {
           })
         } catch {}
       }
-      localStorage.setItem('inside_premium', 'true')
+      localStorage.setItem('flower_premium', 'true')
       setVisible(true)
     }
 
@@ -66,7 +66,7 @@ function SuccessContent() {
         </motion.div>
 
         <div className="text-center">
-          <h1 className="text-3xl font-black mb-2" style={{ color: '#f0f0f5' }}>Bienvenue sur Inside+ !</h1>
+          <h1 className="text-3xl font-black mb-2" style={{ color: '#f0f0f5' }}>Bienvenue sur Flower+ !</h1>
           <p className="text-lg font-bold" style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             Tout est débloqué 🎉
           </p>

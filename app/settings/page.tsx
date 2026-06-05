@@ -19,23 +19,23 @@ export default function SettingsPage() {
   const grad = gradient(theme)
 
   useEffect(() => {
-    setSoundEnabled(localStorage.getItem('inside_sound_enabled') !== 'false')
-    setMusicEnabled(localStorage.getItem('inside_music_enabled') !== 'false')
-    const notifs = localStorage.getItem('inside_notifications_enabled')
+    setSoundEnabled(localStorage.getItem('flower_sound_enabled') !== 'false')
+    setMusicEnabled(localStorage.getItem('flower_music_enabled') !== 'false')
+    const notifs = localStorage.getItem('flower_notifications_enabled')
     setNotificationsEnabled(notifs === 'true')
-    setSelectedTheme((localStorage.getItem('inside_theme') as ThemeId) || 'tropical')
+    setSelectedTheme((localStorage.getItem('flower_theme') as ThemeId) || 'tropical')
   }, [])
 
   const toggleSound = () => {
     const next = !soundEnabled
-    localStorage.setItem('inside_sound_enabled', next ? 'true' : 'false')
+    localStorage.setItem('flower_sound_enabled', next ? 'true' : 'false')
     setSoundEnabled(next)
     if (next) playClick()
   }
 
   const toggleMusic = () => {
     const next = !musicEnabled
-    localStorage.setItem('inside_music_enabled', next ? 'true' : 'false')
+    localStorage.setItem('flower_music_enabled', next ? 'true' : 'false')
     setMusicEnabled(next)
     if (!next) stopAmbientMusic()
   }
@@ -47,16 +47,16 @@ export default function SettingsPage() {
 
   const deleteData = () => {
     const keysToDelete = [
-      'inside_splash_seen',
-      'inside_user_token',
-      'inside_games_played',
-      'inside_premium',
-      'inside_sound_enabled',
-      'inside_music_enabled',
-      'inside_replay_questions',
+      'flower_splash_seen',
+      'flower_user_token',
+      'flower_games_played',
+      'flower_premium',
+      'flower_sound_enabled',
+      'flower_music_enabled',
+      'flower_replay_questions',
     ]
     // Also delete any player-specific keys
-    const allKeys = Object.keys(localStorage).filter(k => k.startsWith('inside_player_'))
+    const allKeys = Object.keys(localStorage).filter(k => k.startsWith('flower_player_'))
     ;[...keysToDelete, ...allKeys].forEach(k => localStorage.removeItem(k))
     setShowDeleteConfirm(false)
     router.push('/')
@@ -186,7 +186,7 @@ export default function SettingsPage() {
           label="Notifications"
           description="Alertes de jeu"
           value={notificationsEnabled}
-          onChange={() => toggle('inside_notifications_enabled', !notificationsEnabled, setNotificationsEnabled)}
+          onChange={() => toggle('flower_notifications_enabled', !notificationsEnabled, setNotificationsEnabled)}
         />
       </div>
 
@@ -214,7 +214,7 @@ export default function SettingsPage() {
         >
           <div className="flex items-center gap-3">
             <span className="text-xl">✨</span>
-            <span className="font-semibold" style={{ color: '#f0f0f5' }}>Inside+ — Plans & tarifs</span>
+            <span className="font-semibold" style={{ color: '#f0f0f5' }}>Flower+ — Plans & tarifs</span>
           </div>
           <span style={{ color: theme.from }}>›</span>
         </Link>

@@ -52,7 +52,7 @@ export default function LobbyPage() {
       return
     }
 
-    const storedPlayerId = localStorage.getItem(`inside_player_${code}`)
+    const storedPlayerId = localStorage.getItem(`flower_player_${code}`)
     if (!storedPlayerId) {
       router.push(`/join?code=${code}`)
       return
@@ -159,7 +159,7 @@ export default function LobbyPage() {
   const shareRoom = async () => {
     const url = `${window.location.origin}/join?code=${code}`
     if (navigator.share) {
-      await navigator.share({ title: `Inside — ${room?.name}`, url })
+      await navigator.share({ title: `Flower — ${room?.name}`, url })
     } else {
       await navigator.clipboard.writeText(url)
       setCopied(true)

@@ -98,7 +98,7 @@ function JoinForm() {
       if (playerError || !player) throw new Error(playerError?.message || 'Failed to create player')
 
       // Save player id to localStorage
-      localStorage.setItem(`inside_player_${upperCode}`, player.id)
+      localStorage.setItem(`flower_player_${upperCode}`, player.id)
 
       router.push(`/lobby/${upperCode}`)
     } catch (err) {

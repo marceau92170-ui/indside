@@ -27,7 +27,7 @@ export default function TemplatesPage() {
   const displayTemplates = TEMPLATES.filter(t => t.slug !== 'creation-libre')
 
   useEffect(() => {
-    const cached = localStorage.getItem('inside_premium') === 'true'
+    const cached = localStorage.getItem('flower_premium') === 'true'
     if (cached) setUserPlan('premium')
     getUserPlan().then(plan => setUserPlan(plan))
   }, [])
@@ -56,7 +56,7 @@ export default function TemplatesPage() {
           </div>
           {!isPremium && (
             <Link href="/pricing" style={{ padding: '5px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: 800, background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', textDecoration: 'none', letterSpacing: '.02em' }}>
-              Inside+
+              Flower+
             </Link>
           )}
         </div>
@@ -195,7 +195,7 @@ export default function TemplatesPage() {
               ✦
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#f0f0f5', marginBottom: '2px' }}>Débloquer Inside+</div>
+              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#f0f0f5', marginBottom: '2px' }}>Débloquer Flower+</div>
               <div style={{ fontSize: '0.78rem', color: 'rgba(240,240,245,0.45)' }}>Tous les modèles · à partir de 4,99€/mois</div>
             </div>
             <ChevronRight size={18} color="rgba(245,158,11,0.70)" />
@@ -205,7 +205,7 @@ export default function TemplatesPage() {
 
       {showPremiumGate && (
         <PremiumGate
-          reason="Ce template est réservé aux abonnés Inside+."
+          reason="Ce template est réservé aux abonnés Flower+."
           onClose={() => setShowPremiumGate(false)}
         />
       )}

@@ -8,10 +8,10 @@ export const FREE_LIMITS = {
 
 export function getUserToken(): string {
   if (typeof window === 'undefined') return ''
-  let token = localStorage.getItem('inside_user_token')
+  let token = localStorage.getItem('flower_user_token')
   if (!token) {
     token = crypto.randomUUID()
-    localStorage.setItem('inside_user_token', token)
+    localStorage.setItem('flower_user_token', token)
   }
   return token
 }

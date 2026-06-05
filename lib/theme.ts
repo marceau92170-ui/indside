@@ -36,7 +36,7 @@ export const THEMES: Theme[] = [
 
 export function getThemeId(): ThemeId {
   if (typeof window === 'undefined') return 'tropical'
-  return (localStorage.getItem('inside_theme') as ThemeId) || 'tropical'
+  return (localStorage.getItem('flower_theme') as ThemeId) || 'tropical'
 }
 
 export function getTheme(): Theme {
@@ -45,7 +45,7 @@ export function getTheme(): Theme {
 }
 
 export function setTheme(id: ThemeId): void {
-  localStorage.setItem('inside_theme', id)
+  localStorage.setItem('flower_theme', id)
 }
 
 export function gradient(theme: Theme): string {

@@ -9,12 +9,12 @@ function getCtx(): AudioContext {
 
 function isSoundEnabled(): boolean {
   if (typeof window === 'undefined') return false
-  return localStorage.getItem('inside_sound_enabled') !== 'false'
+  return localStorage.getItem('flower_sound_enabled') !== 'false'
 }
 
 function isMusicEnabled(): boolean {
   if (typeof window === 'undefined') return false
-  return localStorage.getItem('inside_music_enabled') !== 'false'
+  return localStorage.getItem('flower_music_enabled') !== 'false'
 }
 
 export function playDing() {

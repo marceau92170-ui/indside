@@ -13,19 +13,19 @@ export default function ProfilePage() {
   const [isPremium, setIsPremium] = useState(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem('inside_nickname') || 'Joueur'
+    const stored = localStorage.getItem('flower_nickname') || 'Joueur'
     setNickname(stored)
     setNicknameInput(stored)
-    const games = parseInt(localStorage.getItem('inside_games_played') || '0', 10)
+    const games = parseInt(localStorage.getItem('flower_games_played') || '0', 10)
     setGamesPlayed(games)
-    setIsPremium(localStorage.getItem('inside_premium') === 'true')
+    setIsPremium(localStorage.getItem('flower_premium') === 'true')
   }, [])
 
   const saveNickname = () => {
     const trimmed = nicknameInput.trim()
     if (trimmed) {
       setNickname(trimmed)
-      localStorage.setItem('inside_nickname', trimmed)
+      localStorage.setItem('flower_nickname', trimmed)
     }
     setEditingNickname(false)
   }
@@ -95,7 +95,7 @@ export default function ProfilePage() {
 
         {isPremium && (
           <div className="px-4 py-1.5 rounded-full text-sm font-bold" style={{ background: 'linear-gradient(135deg, #f59e0b, #a855f7)', color: '#fff' }}>
-            ✨ Inside+
+            ✨ Flower+
           </div>
         )}
       </div>
@@ -118,7 +118,7 @@ export default function ProfilePage() {
           <span className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             🎮
           </span>
-          <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Joueur Inside</span>
+          <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Joueur Flower</span>
         </div>
       </div>
 
@@ -173,7 +173,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-3">
               <span className="text-xl">✨</span>
               <div>
-                <span className="font-bold" style={{ color: '#f0f0f5' }}>Passer à Inside+</span>
+                <span className="font-bold" style={{ color: '#f0f0f5' }}>Passer à Flower+</span>
                 <div className="text-xs" style={{ color: 'rgba(240,240,245,0.50)' }}>Fonctionnalités premium à 3,99€/mois</div>
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function ProfilePage() {
           >
             <div className="flex items-center gap-3">
               <span className="text-xl">✨</span>
-              <span className="font-semibold" style={{ color: '#f0f0f5' }}>Gérer Inside+</span>
+              <span className="font-semibold" style={{ color: '#f0f0f5' }}>Gérer Flower+</span>
             </div>
             <span style={{ color: 'rgba(240,240,245,0.30)' }}>›</span>
           </Link>

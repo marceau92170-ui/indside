@@ -173,7 +173,7 @@ function CreateForm() {
 
     const replay = searchParams.get('replay')
     if (replay === '1') {
-      const stored = localStorage.getItem('inside_replay_questions')
+      const stored = localStorage.getItem('flower_replay_questions')
       if (stored) {
         try {
           const qs = JSON.parse(stored)
@@ -183,7 +183,7 @@ function CreateForm() {
               typeof q === 'string' ? { text: q, type: 'yes_no' as const } : q
             )
             setQuestions(normalized)
-            localStorage.removeItem('inside_replay_questions')
+            localStorage.removeItem('flower_replay_questions')
           }
         } catch {}
       }
@@ -289,9 +289,9 @@ function CreateForm() {
 
       if (playerError || !player) throw new Error(playerError?.message || 'Failed to create player')
 
-      localStorage.setItem(`inside_player_${code}`, player.id)
+      localStorage.setItem(`flower_player_${code}`, player.id)
       if (imagePreview) {
-        localStorage.setItem(`inside_bg_${code}`, imagePreview)
+        localStorage.setItem(`flower_bg_${code}`, imagePreview)
       }
       playSuccess()
       router.push(`/lobby/${code}`)

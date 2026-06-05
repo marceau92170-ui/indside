@@ -87,7 +87,7 @@ export default function SplashScreen({ onComplete }: Props) {
             backgroundClip: 'text',
           }}
         >
-          Inside
+          Flower
         </h1>
         <motion.p
           style={{ fontSize: '1rem', fontWeight: 500, color: 'rgba(240,240,245,0.55)', maxWidth: '240px' }}
