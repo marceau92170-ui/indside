@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import type { Room, Player } from '@/lib/types'
 import { playClick, playSuccess } from '@/lib/sound'
 import NoxComment from '@/components/NoxComment'
+import Nox from '@/components/Nox'
 import { getNoxComment } from '@/lib/nox'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 import { Users, Copy, Share2, Check } from 'lucide-react'
@@ -196,6 +197,14 @@ export default function LobbyPage() {
       )}
 
       <div className="relative z-10 flex flex-col min-h-screen px-6 py-10 gap-6">
+        {/* Nox hero zone */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', paddingTop: '20px', paddingBottom: '8px' }}>
+          <Nox emotion="intrigued" size={90} animate />
+          <p style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f0f0f5', textAlign: 'center', letterSpacing: '-0.01em', margin: 0 }}>
+            La meute se rassemble.
+          </p>
+        </div>
+
         <div className="flex flex-col items-center gap-3 text-center pt-4">
           <h1 className="text-3xl font-black drop-shadow-lg" style={{ color: '#f0f0f5', textShadow: '0 2px 16px rgba(0,0,0,0.7)' }}>
             {room?.name}

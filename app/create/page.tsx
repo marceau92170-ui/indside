@@ -13,6 +13,7 @@ import PremiumGate from '@/components/PremiumGate'
 import { playClick, playSuccess } from '@/lib/sound'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 import { LayoutGrid, Sparkles, Home, UserCircle, Trophy, ImageIcon, Rocket } from 'lucide-react'
+import Nox from '@/components/Nox'
 
 function ChoiceScreen() {
   const theme = getTheme()
@@ -40,7 +41,7 @@ function ChoiceScreen() {
         <div style={{ position: 'absolute', bottom: '-80px', left: '-40px', width: '280px', height: '280px', borderRadius: '9999px', background: `radial-gradient(circle, ${theme.glowTo} 0%, transparent 70%)`, filter: 'blur(50px)' }} />
       </div>
 
-      {/* Header */}
+      {/* Back button */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', zIndex: 1 }}>
         <Link
           href="/"
@@ -52,10 +53,14 @@ function ChoiceScreen() {
             flexShrink: 0,
           }}
         >←</Link>
-        <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#f0f0f5', margin: 0 }}>Créer une expérience</h1>
-          <p style={{ fontSize: '12px', color: 'rgba(240,240,245,0.40)', marginTop: '2px' }}>Choisis comment tu veux jouer</p>
-        </div>
+      </div>
+
+      {/* Nox hero zone */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', paddingTop: '48px', paddingBottom: '8px', zIndex: 1 }}>
+        <Nox emotion="curious" size={100} animate />
+        <p style={{ fontSize: '1.3rem', fontWeight: 900, color: '#f0f0f5', textAlign: 'center', letterSpacing: '-0.01em', margin: 0 }}>
+          Que veux-tu créer ?
+        </p>
       </div>
 
       {/* Two cards */}

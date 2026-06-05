@@ -60,21 +60,37 @@ export default function Nox({ emotion = 'curious', size = 80, animate = true, cl
             animation: crystalPulse 2s ease-in-out infinite, crystalGlow 2s ease-in-out infinite;
             transform-origin: 50px 100px;
           }
-          @keyframes floatNox {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-3px); }
+          @keyframes noxBreath {
+            0%, 100% { transform: translateY(0px) scaleY(1); }
+            50% { transform: translateY(-2px) scaleY(1.01); }
           }
-          .nox-float { animation: floatNox 3s ease-in-out infinite; }
+          .nox-float { animation: noxBreath 4s ease-in-out infinite; }
+          @keyframes eyeBlink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.08); }
+          }
+          .nox-blink { animation: eyeBlink 4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+          @keyframes earWiggle {
+            0%, 85%, 100% { transform: rotate(0deg); }
+            90% { transform: rotate(-4deg); }
+            95% { transform: rotate(3deg); }
+          }
+          .nox-ear-left { animation: earWiggle 6s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom right; }
+          .nox-ear-right { animation: earWiggle 6s ease-in-out infinite; animation-delay: 0.3s; transform-box: fill-box; transform-origin: bottom left; }
         `}</style>
       </defs>
 
       <g className={animate ? 'nox-float' : ''}>
         {/* Left ear */}
-        <path d="M28 42 L20 12 L42 30 Z" fill="#1a0d3a" stroke="#2d1b69" strokeWidth="1" />
-        <path d="M30 40 L24 18 L40 32 Z" fill="#2d1b69" />
+        <g className={animate ? 'nox-ear-left' : ''}>
+          <path d="M28 42 L20 12 L42 30 Z" fill="#1a0d3a" stroke="#2d1b69" strokeWidth="1" />
+          <path d="M30 40 L24 18 L40 32 Z" fill="#2d1b69" />
+        </g>
         {/* Right ear */}
-        <path d="M72 42 L80 12 L58 30 Z" fill="#1a0d3a" stroke="#2d1b69" strokeWidth="1" />
-        <path d="M70 40 L76 18 L60 32 Z" fill="#2d1b69" />
+        <g className={animate ? 'nox-ear-right' : ''}>
+          <path d="M72 42 L80 12 L58 30 Z" fill="#1a0d3a" stroke="#2d1b69" strokeWidth="1" />
+          <path d="M70 40 L76 18 L60 32 Z" fill="#2d1b69" />
+        </g>
 
         {/* Head */}
         <ellipse cx="50" cy="52" rx="28" ry="26" fill="url(#bodyGrad)" stroke="#2d1b69" strokeWidth="1.5" />
@@ -86,21 +102,21 @@ export default function Nox({ emotion = 'curious', size = 80, animate = true, cl
         <ellipse cx="28" cy="56" rx="6" ry="3.5" fill="rgba(124,58,237,0.25)" />
         <ellipse cx="72" cy="56" rx="6" ry="3.5" fill="rgba(124,58,237,0.25)" />
 
-        {/* Left eye white */}
-        <ellipse cx="39" cy={50 + eyeConfig.offsetY} rx={eyeConfig.rx} ry={eyeConfig.ry} fill="white" filter="url(#glow)" />
-        {/* Left pupil */}
-        <ellipse cx="39" cy={50 + eyeConfig.offsetY} rx="3.5" ry={eyeConfig.pupilRy} fill="url(#eyeGrad)" />
-        {/* Left eye shine */}
-        <circle cx="41" cy={47 + eyeConfig.offsetY} r="1.5" fill="white" opacity="0.9" />
-        <circle cx="37.5" cy={52 + eyeConfig.offsetY} r="0.7" fill="white" opacity="0.5" />
+        {/* Left eye */}
+        <g className={animate ? 'nox-blink' : ''}>
+          <ellipse cx="39" cy={50 + eyeConfig.offsetY} rx={eyeConfig.rx} ry={eyeConfig.ry} fill="white" filter="url(#glow)" />
+          <ellipse cx="39" cy={50 + eyeConfig.offsetY} rx="3.5" ry={eyeConfig.pupilRy} fill="url(#eyeGrad)" />
+          <circle cx="41" cy={47 + eyeConfig.offsetY} r="1.5" fill="white" opacity="0.9" />
+          <circle cx="37.5" cy={52 + eyeConfig.offsetY} r="0.7" fill="white" opacity="0.5" />
+        </g>
 
-        {/* Right eye white */}
-        <ellipse cx="61" cy={50 + eyeConfig.offsetY} rx={eyeConfig.rx} ry={eyeConfig.ry} fill="white" filter="url(#glow)" />
-        {/* Right pupil */}
-        <ellipse cx="61" cy={50 + eyeConfig.offsetY} rx="3.5" ry={eyeConfig.pupilRy} fill="url(#eyeGrad)" />
-        {/* Right eye shine */}
-        <circle cx="63" cy={47 + eyeConfig.offsetY} r="1.5" fill="white" opacity="0.9" />
-        <circle cx="59.5" cy={52 + eyeConfig.offsetY} r="0.7" fill="white" opacity="0.5" />
+        {/* Right eye */}
+        <g className={animate ? 'nox-blink' : ''}>
+          <ellipse cx="61" cy={50 + eyeConfig.offsetY} rx={eyeConfig.rx} ry={eyeConfig.ry} fill="white" filter="url(#glow)" />
+          <ellipse cx="61" cy={50 + eyeConfig.offsetY} rx="3.5" ry={eyeConfig.pupilRy} fill="url(#eyeGrad)" />
+          <circle cx="63" cy={47 + eyeConfig.offsetY} r="1.5" fill="white" opacity="0.9" />
+          <circle cx="59.5" cy={52 + eyeConfig.offsetY} r="0.7" fill="white" opacity="0.5" />
+        </g>
 
         {/* Excited sparkle dots */}
         {emotion === 'excited' && (

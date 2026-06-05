@@ -19,6 +19,7 @@ import {
   calculateScores,
 } from '@/lib/game'
 import type { Room, Question, QuestionResult, Player, Answer, PlayerScore } from '@/lib/types'
+import Nox from '@/components/Nox'
 
 export default function ResultsPage() {
   const params = useParams()
@@ -219,6 +220,14 @@ export default function ResultsPage() {
           <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>{room?.name}</h1>
           <p className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.45)' }}>Résultats</p>
         </div>
+      </div>
+
+      {/* Nox hero zone */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', paddingTop: '16px', paddingBottom: '4px' }} className="relative z-10">
+        <Nox emotion="proud" size={90} animate />
+        <p style={{ fontSize: '1.15rem', fontWeight: 900, color: '#f0f0f5', textAlign: 'center', letterSpacing: '-0.01em' }}>
+          Voici le verdict.
+        </p>
       </div>
 
       {/* Group level card */}

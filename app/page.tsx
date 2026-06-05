@@ -90,43 +90,34 @@ export default function HomePage() {
 
         {/* Hero section */}
         <motion.div
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', textAlign: 'center', zIndex: 1, marginBottom: '56px' }}
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textAlign: 'center', zIndex: 1, marginBottom: '56px' }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: splashDone ? 1 : 0, y: splashDone ? 0 : 16 }}
           transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
         >
           <motion.div
-            style={{
-              width: '72px', height: '72px', borderRadius: '22px',
-              background: grad,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.8rem', fontWeight: 900, color: 'white',
-              boxShadow: shadow,
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            I
-          </motion.div>
-          <div>
-            <h1 style={{
-              fontSize: '3.5rem', fontWeight: 900, lineHeight: 1, margin: 0,
-              background: grad,
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            }}>
-              Inside
-            </h1>
-            <p style={{ fontSize: '1rem', fontWeight: 600, color: 'rgba(240,240,245,0.55)', marginTop: '10px', lineHeight: 1.5 }}>
-              Entre amis.
-            </p>
-          </div>
-          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: splashDone ? 1 : 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Nox emotion="curious" size={60} animate />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ position: 'absolute', width: '180px', height: '180px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(255,0,110,0.18) 0%, transparent 70%)', filter: 'blur(30px)' }} />
+              <Nox emotion="curious" size={120} animate />
+            </div>
           </motion.div>
+          <div>
+            <h1 style={{
+              fontSize: '4rem', fontWeight: 900, lineHeight: 1, margin: 0,
+              background: grad,
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+              marginTop: '8px',
+            }}>
+              Inside
+            </h1>
+            <p style={{ fontSize: '0.95rem', fontWeight: 600, color: 'rgba(240,240,245,0.45)', marginTop: '10px', lineHeight: 1.5, fontStyle: 'italic' }}>
+              Entre amis.
+            </p>
+          </div>
         </motion.div>
 
         {/* Buttons */}

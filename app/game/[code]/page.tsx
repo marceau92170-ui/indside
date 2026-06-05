@@ -8,6 +8,7 @@ import { getDoubleQuestionIndex } from '@/lib/game'
 import { playDing, playCountdownBeep, playWhoosh, playReveal, playClick, startAmbientMusic, stopAmbientMusic, setMusicVolume } from '@/lib/sound'
 import type { Room, Question, Player } from '@/lib/types'
 import NoxComment from '@/components/NoxComment'
+import Nox from '@/components/Nox'
 import { getRevealComment } from '@/lib/nox'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 import { Volume2, VolumeX, Users, Flag, ChevronRight } from 'lucide-react'
@@ -560,6 +561,7 @@ export default function GamePage() {
               100% { transform: scale(0.9); opacity: 0; }
             }
           `}</style>
+          <Nox emotion="excited" size={80} animate />
           <div
             key={countdown}
             style={{
@@ -576,7 +578,7 @@ export default function GamePage() {
           >
             {countdown}
           </div>
-          <p style={{ color: 'rgba(240,240,245,0.60)', fontWeight: 700, fontSize: '1.2rem', marginTop: '24px', letterSpacing: '.05em' }}>Prépare-toi !</p>
+          <p style={{ color: 'rgba(240,240,245,0.60)', fontWeight: 700, fontSize: '1.2rem', marginTop: '24px', letterSpacing: '.05em' }}>Voyons ce que vous cachez.</p>
         </div>
       )}
 
@@ -880,7 +882,7 @@ export default function GamePage() {
                 <NoxComment
                   comment={getRevealComment(yesPercent)}
                   emotion={yesPercent >= 80 || yesPercent <= 20 ? 'proud' : yesPercent >= 60 || yesPercent <= 40 ? 'intrigued' : 'surprised'}
-                  size={56}
+                  size={72}
                 />
 
                 <div
