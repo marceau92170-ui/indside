@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { playClick, stopAmbientMusic } from '@/lib/sound'
+import { getTheme, gradient, setTheme, THEMES } from '@/lib/theme'
+import type { ThemeId } from '@/lib/theme'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -11,12 +13,16 @@ export default function SettingsPage() {
   const [musicEnabled, setMusicEnabled] = useState(true)
   const [notificationsEnabled, setNotificationsEnabled] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [selectedTheme, setSelectedTheme] = useState<ThemeId>('tropical')
+  const theme = getTheme()
+  const grad = gradient(theme)
 
   useEffect(() => {
     setSoundEnabled(localStorage.getItem('inside_sound_enabled') !== 'false')
     setMusicEnabled(localStorage.getItem('inside_music_enabled') !== 'false')
     const notifs = localStorage.getItem('inside_notifications_enabled')
     setNotificationsEnabled(notifs === 'true')
+    setSelectedTheme((localStorage.getItem('inside_theme') as ThemeId) || 'tropical')
   }, [])
 
   const toggleSound = () => {
@@ -85,7 +91,7 @@ export default function SettingsPage() {
           width: '52px',
           height: '30px',
           borderRadius: '9999px',
-          background: value ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'rgba(255,255,255,0.12)',
+          background: value ? grad : 'rgba(255,255,255,0.12)',
           border: 'none',
           cursor: 'pointer',
           position: 'relative',
@@ -111,7 +117,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen flex flex-col px-6 py-8 gap-6 relative overflow-hidden" style={{ background: '#08080f' }}>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: `radial-gradient(circle, ${theme.glowFrom} 0%, transparent 70%)`, filter: 'blur(60px)' }} />
       </div>
 
       {/* Header */}
@@ -124,6 +130,32 @@ export default function SettingsPage() {
           ←
         </button>
         <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Paramètres</h1>
+      </div>
+
+      {/* Theme */}
+      <div className="relative z-10 flex flex-col gap-3">
+        <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.45)' }}>🎨 Thème</h2>
+        <div className="flex gap-3">
+          {THEMES.map(t => (
+            <button
+              key={t.id}
+              onClick={() => {
+                setTheme(t.id)
+                setSelectedTheme(t.id)
+                window.location.reload()
+              }}
+              className="flex-1 py-3 px-4 rounded-2xl font-bold text-sm active:scale-95"
+              style={{
+                background: selectedTheme === t.id ? gradient(t) : 'rgba(255,255,255,0.08)',
+                border: selectedTheme === t.id ? 'none' : '1px solid rgba(255,255,255,0.12)',
+                color: selectedTheme === t.id ? '#fff' : 'rgba(240,240,245,0.70)',
+                transition: 'all 0.2s',
+              }}
+            >
+              {t.emoji} {t.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Audio */}
@@ -168,7 +200,7 @@ export default function SettingsPage() {
             <span className="text-xl">🇫🇷</span>
             <div className="font-semibold" style={{ color: '#f0f0f5' }}>Français</div>
           </div>
-          <span className="text-sm px-3 py-1 rounded-full" style={{ background: 'rgba(139,92,246,0.15)', color: 'rgba(168,85,247,0.90)' }}>Seule option</span>
+          <span className="text-sm px-3 py-1 rounded-full" style={{ background: `${theme.from}25`, color: theme.from }}>Seule option</span>
         </div>
       </div>
 
@@ -177,13 +209,13 @@ export default function SettingsPage() {
         <Link
           href="/pricing"
           className="flex items-center justify-between p-5 rounded-2xl"
-          style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.10))', border: '1px solid rgba(139,92,246,0.25)', textDecoration: 'none' }}
+          style={{ background: `linear-gradient(135deg, ${theme.glowFrom}, ${theme.glowTo})`, border: `1px solid ${theme.from}40`, textDecoration: 'none' }}
         >
           <div className="flex items-center gap-3">
             <span className="text-xl">✨</span>
             <span className="font-semibold" style={{ color: '#f0f0f5' }}>Inside+ — Plans & tarifs</span>
           </div>
-          <span style={{ color: 'rgba(168,85,247,0.70)' }}>›</span>
+          <span style={{ color: theme.from }}>›</span>
         </Link>
       </div>
 

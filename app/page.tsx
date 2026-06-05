@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Nox from '@/components/Nox'
+import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 
 const SplashScreen = dynamic(() => import('@/components/SplashScreen'), { ssr: false })
 
@@ -13,6 +14,10 @@ export default function HomePage() {
   const router = useRouter()
   const [splashDone, setSplashDone] = useState(false)
   const [showSplash, setShowSplash] = useState(false)
+
+  const theme = getTheme()
+  const grad = gradient(theme)
+  const shadow = gradientShadow(theme)
 
   useEffect(() => {
     const seen = localStorage.getItem('inside_splash_seen')
@@ -78,8 +83,8 @@ export default function HomePage() {
 
         {/* Background glow */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '400px', height: '400px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-          <div style={{ position: 'absolute', bottom: '-80px', left: '50%', transform: 'translateX(-50%)', width: '360px', height: '360px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+          <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '400px', height: '400px', borderRadius: '9999px', background: `radial-gradient(circle, ${theme.glowFrom} 0%, transparent 70%)`, filter: 'blur(60px)' }} />
+          <div style={{ position: 'absolute', bottom: '-80px', left: '50%', transform: 'translateX(-50%)', width: '360px', height: '360px', borderRadius: '9999px', background: `radial-gradient(circle, ${theme.glowTo} 0%, transparent 70%)`, filter: 'blur(60px)' }} />
         </div>
 
         {/* Hero section */}
@@ -92,10 +97,10 @@ export default function HomePage() {
           <motion.div
             style={{
               width: '72px', height: '72px', borderRadius: '22px',
-              background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
+              background: grad,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '1.8rem', fontWeight: 900, color: 'white',
-              boxShadow: '0 20px 50px rgba(168,85,247,0.45)',
+              boxShadow: shadow,
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
@@ -105,7 +110,7 @@ export default function HomePage() {
           <div>
             <h1 style={{
               fontSize: '3.5rem', fontWeight: 900, lineHeight: 1, margin: 0,
-              background: 'linear-gradient(135deg, #a855f7, #c084fc, #ec4899)',
+              background: grad,
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>
               Inside
@@ -134,8 +139,8 @@ export default function HomePage() {
             <Link href="/create" style={{ textDecoration: 'none' }}>
               <div style={{
                 width: '100%', padding: '20px', borderRadius: '20px', textAlign: 'center',
-                background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
-                boxShadow: '0 12px 40px rgba(139,92,246,0.35)',
+                background: grad,
+                boxShadow: shadow,
                 fontWeight: 800, fontSize: '1.1rem', color: '#fff',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>

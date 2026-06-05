@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
+import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 
 async function compressToBase64(file: File): Promise<string> {
   return new Promise((resolve) => {
@@ -33,6 +34,9 @@ function JoinForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const prefillCode = searchParams.get('code') || ''
+  const theme = getTheme()
+  const grad = gradient(theme)
+  const shadow = gradientShadow(theme)
 
   const [code, setCode] = useState(prefillCode.toUpperCase())
   const [nickname, setNickname] = useState('')
@@ -110,7 +114,7 @@ function JoinForm() {
       {/* Background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.20) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-        <div className="absolute -bottom-40 -left-20 w-[400px] h-[400px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute -bottom-40 -left-20 w-[400px] h-[400px] rounded-full" style={{ background: `radial-gradient(circle, ${theme.glowTo} 0%, transparent 70%)`, filter: 'blur(60px)' }} />
       </div>
 
       {/* Header */}
@@ -171,7 +175,7 @@ function JoinForm() {
                 borderRadius: '50%',
                 background: avatarBase64 ? 'transparent' : 'rgba(20,16,36,0.85)',
                 backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(139,92,246,0.40)',
+                border: `1px solid ${theme.from}66`,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -245,8 +249,8 @@ function JoinForm() {
           disabled={loading}
           className="w-full py-5 rounded-2xl text-white font-bold text-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           style={{
-            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-            boxShadow: '0 10px 40px rgba(59,130,246,0.30)',
+            background: grad,
+            boxShadow: shadow,
           }}
         >
           {loading ? (

@@ -8,6 +8,7 @@ import type { Room, Player } from '@/lib/types'
 import { playClick, playSuccess } from '@/lib/sound'
 import NoxComment from '@/components/NoxComment'
 import { getNoxComment } from '@/lib/nox'
+import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -22,6 +23,9 @@ export default function LobbyPage() {
   const params = useParams()
   const router = useRouter()
   const code = (params.code as string).toUpperCase()
+  const theme = getTheme()
+  const grad = gradient(theme)
+  const shadow = gradientShadow(theme)
 
   const [room, setRoom] = useState<Room | null>(null)
   const [players, setPlayers] = useState<Player[]>([])
@@ -167,7 +171,7 @@ export default function LobbyPage() {
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-14 h-14 rounded-2xl animate-spin"
-            style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 0 30px rgba(168,85,247,0.4)' }}
+            style={{ background: grad, boxShadow: shadow }}
           />
           <p style={{ color: 'rgba(240,240,245,0.50)' }}>Chargement…</p>
         </div>
@@ -260,7 +264,7 @@ export default function LobbyPage() {
               <button
                 onClick={launchGame}
                 className="w-full py-5 rounded-2xl text-white font-black text-xl flex items-center justify-center gap-3"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 12px 40px rgba(168,85,247,0.45)' }}
+                style={{ background: grad, boxShadow: shadow }}
               >
                 Commencer
               </button>

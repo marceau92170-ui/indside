@@ -11,8 +11,12 @@ import type { GameTemplate } from '@/lib/types'
 import { canAddQuestion, canCreateRoom } from '@/lib/subscription'
 import PremiumGate from '@/components/PremiumGate'
 import { playClick, playSuccess } from '@/lib/sound'
+import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 
 function ChoiceScreen() {
+  const theme = getTheme()
+  const grad = gradient(theme)
+  const shadow = gradientShadow(theme)
   return (
     <motion.div
       style={{
@@ -31,8 +35,8 @@ function ChoiceScreen() {
     >
       {/* blobs */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', top: '-80px', right: '-60px', width: '300px', height: '300px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-        <div style={{ position: 'absolute', bottom: '-80px', left: '-40px', width: '280px', height: '280px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+        <div style={{ position: 'absolute', top: '-80px', right: '-60px', width: '300px', height: '300px', borderRadius: '9999px', background: `radial-gradient(circle, ${theme.glowFrom} 0%, transparent 70%)`, filter: 'blur(50px)' }} />
+        <div style={{ position: 'absolute', bottom: '-80px', left: '-40px', width: '280px', height: '280px', borderRadius: '9999px', background: `radial-gradient(circle, ${theme.glowTo} 0%, transparent 70%)`, filter: 'blur(50px)' }} />
       </div>
 
       {/* Header */}
@@ -61,8 +65,8 @@ function ChoiceScreen() {
           <Link href="/templates" style={{ textDecoration: 'none', display: 'block' }}>
             <div style={{
               padding: '28px 24px', borderRadius: '24px',
-              background: 'linear-gradient(135deg, rgba(139,92,246,0.18), rgba(168,85,247,0.10))',
-              border: '1px solid rgba(139,92,246,0.30)',
+              background: `linear-gradient(135deg, ${theme.glowFrom}, ${theme.glowTo})`,
+              border: `1px solid ${theme.from}50`,
               display: 'flex', flexDirection: 'column', gap: '10px',
             }}>
               <span style={{ fontSize: '2.5rem' }}>📚</span>
@@ -71,7 +75,7 @@ function ChoiceScreen() {
                 Choisis parmi nos jeux prêts à jouer. Questions déjà rédigées.
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(168,85,247,0.85)' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: theme.mid }}>
                   {TEMPLATES.filter(t => t.slug !== 'creation-libre').length} modèles disponibles →
                 </span>
               </div>
@@ -101,7 +105,7 @@ function ChoiceScreen() {
   )
 }
 
-function StepDots({ step }: { step: number }) {
+function StepDots({ step, grad }: { step: number; grad: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
       {[1, 2, 3].map(s => (
@@ -112,9 +116,9 @@ function StepDots({ step }: { step: number }) {
             height: '8px',
             borderRadius: '9999px',
             background: s === step
-              ? 'linear-gradient(135deg, #8b5cf6, #ec4899)'
+              ? grad
               : s < step
-                ? 'rgba(168,85,247,0.50)'
+                ? 'rgba(255,255,255,0.35)'
                 : 'rgba(255,255,255,0.18)',
             transition: 'all 0.25s ease',
           }}
@@ -128,6 +132,9 @@ function CreateForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const fileRef = useRef<HTMLInputElement>(null)
+  const theme = getTheme()
+  const grad = gradient(theme)
+  const shadow = gradientShadow(theme)
 
   const [step, setStep] = useState(1)
   const [roomName, setRoomName] = useState('')
@@ -308,8 +315,8 @@ function CreateForm() {
 
   const bgBlobs = (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', filter: 'blur(50px)' }} />
-      <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+      <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full" style={{ background: `radial-gradient(circle, ${theme.glowFrom} 0%, transparent 70%)`, filter: 'blur(50px)' }} />
+      <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full" style={{ background: `radial-gradient(circle, ${theme.glowTo} 0%, transparent 70%)`, filter: 'blur(50px)' }} />
     </div>
   )
 
@@ -331,7 +338,7 @@ function CreateForm() {
 
       {/* Step dots */}
       <div className="relative z-10 pt-2">
-        <StepDots step={step} />
+        <StepDots step={step} grad={grad} />
       </div>
 
       <AnimatePresence mode="wait">
@@ -407,7 +414,7 @@ function CreateForm() {
                 whileTap={{ scale: 0.97 }}
                 onClick={goToStep2}
                 className="flex-[3] py-4 rounded-2xl font-black text-white text-lg"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
+                style={{ background: grad, boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
               >
                 Continuer →
               </motion.button>
@@ -426,7 +433,7 @@ function CreateForm() {
             className="relative z-10 flex flex-col gap-5 flex-1"
           >
             <div>
-              <p className="text-sm font-semibold" style={{ color: 'rgba(168,85,247,0.80)' }}>{roomName}</p>
+              <p className="text-sm font-semibold" style={{ color: theme.from }}>{roomName}</p>
               <h2 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Questions</h2>
             </div>
 
@@ -434,7 +441,7 @@ function CreateForm() {
               <span className="font-semibold" style={{ color: 'rgba(240,240,245,0.60)' }}>
                 {questions.filter(q => q.text.trim()).length} question{questions.filter(q => q.text.trim()).length !== 1 ? 's' : ''}
               </span>
-              <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(168,85,247,0.15)', color: 'rgba(168,85,247,0.90)', border: '1px solid rgba(168,85,247,0.25)' }}>
+              <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: `${theme.from}25`, color: theme.from, border: `1px solid ${theme.from}40` }}>
                 max 15 · Oui / Non
               </span>
             </div>
@@ -444,10 +451,10 @@ function CreateForm() {
                 <div key={i}>
                   <div
                     className="flex gap-2 items-center rounded-2xl p-3 cursor-pointer"
-                    style={{ background: editingIndex === i ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.05)', border: editingIndex === i ? '1px solid rgba(139,92,246,0.35)' : '1px solid rgba(255,255,255,0.08)' }}
+                    style={{ background: editingIndex === i ? `${theme.from}18` : 'rgba(255,255,255,0.05)', border: editingIndex === i ? `1px solid ${theme.from}55` : '1px solid rgba(255,255,255,0.08)' }}
                     onClick={() => setEditingIndex(editingIndex === i ? null : i)}
                   >
-                    <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}>
+                    <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: grad, color: '#fff' }}>
                       {i + 1}
                     </span>
                     <span className="flex-1 font-medium" style={{ color: q.text.trim() ? '#f0f0f5' : 'rgba(240,240,245,0.30)' }}>
@@ -457,9 +464,9 @@ function CreateForm() {
                       onClick={e => { e.stopPropagation(); toggleQuestionType(i) }}
                       className="flex-shrink-0 px-2 py-1 rounded-full text-xs font-bold active:scale-90"
                       style={{
-                        background: q.type === 'yes_no' ? 'rgba(16,185,129,0.15)' : 'rgba(139,92,246,0.15)',
-                        border: q.type === 'yes_no' ? '1px solid rgba(16,185,129,0.30)' : '1px solid rgba(139,92,246,0.30)',
-                        color: q.type === 'yes_no' ? '#34d399' : '#a78bfa',
+                        background: q.type === 'yes_no' ? 'rgba(16,185,129,0.15)' : `${theme.from}25`,
+                        border: q.type === 'yes_no' ? '1px solid rgba(16,185,129,0.30)' : `1px solid ${theme.from}40`,
+                        color: q.type === 'yes_no' ? '#34d399' : theme.from,
                       }}
                     >
                       {q.type === 'yes_no' ? 'Oui/Non' : 'Texte'}
@@ -517,7 +524,7 @@ function CreateForm() {
                 whileTap={{ scale: 0.97 }}
                 onClick={goToStep3}
                 className="flex-[3] py-4 rounded-2xl font-black text-white text-lg"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
+                style={{ background: grad, boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
               >
                 Continuer →
               </motion.button>
@@ -536,7 +543,7 @@ function CreateForm() {
             className="relative z-10 flex flex-col gap-5 flex-1"
           >
             <div>
-              <p className="text-sm font-semibold" style={{ color: 'rgba(168,85,247,0.80)' }}>{roomName}</p>
+              <p className="text-sm font-semibold" style={{ color: theme.from }}>{roomName}</p>
               <h2 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Paramètres</h2>
             </div>
 
@@ -550,7 +557,7 @@ function CreateForm() {
                 onClick={() => setPointsEnabled(!pointsEnabled)}
                 style={{
                   width: '52px', height: '30px', borderRadius: '9999px',
-                  background: pointsEnabled ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'rgba(255,255,255,0.12)',
+                  background: pointsEnabled ? grad : 'rgba(255,255,255,0.12)',
                   border: 'none', cursor: 'pointer', position: 'relative', transition: 'background .2s', flexShrink: 0,
                 }}
               >
@@ -609,7 +616,7 @@ function CreateForm() {
                 onClick={handleSubmit}
                 disabled={loading}
                 className="flex-[3] py-4 rounded-2xl font-black text-white text-lg disabled:opacity-50 flex items-center justify-center gap-2"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
+                style={{ background: grad, boxShadow: '0 8px 30px rgba(168,85,247,0.35)' }}
               >
                 {loading ? (
                   <>
@@ -651,7 +658,7 @@ export default function CreatePage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#08080f' }}>
-        <div className="w-14 h-14 rounded-2xl animate-spin" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)' }} />
+        <div className="w-14 h-14 rounded-2xl animate-spin" style={{ background: 'linear-gradient(135deg, #FF006E, #FB5607, #FFBE0B)' }} />
       </div>
     }>
       <CreatePageInner />

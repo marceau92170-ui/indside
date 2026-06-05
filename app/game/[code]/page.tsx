@@ -9,6 +9,7 @@ import { playDing, playCountdownBeep, playWhoosh, playReveal, playClick, startAm
 import type { Room, Question, Player } from '@/lib/types'
 import NoxComment from '@/components/NoxComment'
 import { getRevealComment } from '@/lib/nox'
+import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -32,6 +33,9 @@ export default function GamePage() {
   const params = useParams()
   const router = useRouter()
   const code = (params.code as string).toUpperCase()
+  const theme = getTheme()
+  const grad = gradient(theme)
+  const shadow = gradientShadow(theme)
 
   const [room, setRoom] = useState<Room | null>(null)
   const [questions, setQuestions] = useState<Question[]>([])
@@ -496,7 +500,7 @@ export default function GamePage() {
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-14 h-14 rounded-2xl animate-spin"
-            style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 0 30px rgba(168,85,247,0.4)' }}
+            style={{ background: grad, boxShadow: shadow }}
           />
           <p style={{ color: 'rgba(240,240,245,0.50)' }}>Chargement…</p>
         </div>
@@ -515,7 +519,7 @@ export default function GamePage() {
   const noPercent = totalReveal > 0 ? Math.round((revealCounts.no / totalReveal) * 100) : 50
   const timerPercent = (timeLeft / QUESTION_DURATION) * 100
   const timerColor = timeLeft > 15
-    ? 'linear-gradient(90deg, #8b5cf6, #a855f7)'
+    ? `linear-gradient(90deg, ${theme.from}, ${theme.mid})`
     : timeLeft > 7
       ? 'linear-gradient(90deg, #f59e0b, #ef4444)'
       : 'linear-gradient(90deg, #ef4444, #e11d48)'
@@ -561,11 +565,11 @@ export default function GamePage() {
               fontSize: '10rem',
               fontWeight: 900,
               lineHeight: 1,
-              background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
+              background: grad,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-              filter: 'drop-shadow(0 0 40px rgba(168,85,247,0.6))',
+              filter: `drop-shadow(0 0 40px ${theme.from}99)`,
               animation: 'countPulse 0.9s ease-out forwards',
             }}
           >
@@ -645,7 +649,7 @@ export default function GamePage() {
 
         {/* Progress bar */}
         <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.15)' }}>
-          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #a855f7, #ec4899)' }} />
+          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: `linear-gradient(90deg, ${theme.from}, ${theme.to})` }} />
         </div>
 
         {/* ANSWERING PHASE */}
@@ -743,7 +747,7 @@ export default function GamePage() {
                         disabled={textAnswerSubmitted || submitting}
                         style={{
                           background: 'rgba(255,255,255,0.10)',
-                          border: textAnswerSubmitted ? '2px solid rgba(139,92,246,0.60)' : '2px solid rgba(255,255,255,0.20)',
+                          border: textAnswerSubmitted ? `2px solid ${theme.from}99` : '2px solid rgba(255,255,255,0.20)',
                           borderRadius: '20px',
                           padding: '20px 24px',
                           color: '#f0f0f5',
@@ -766,9 +770,9 @@ export default function GamePage() {
                           fontWeight: 900,
                           fontSize: '1.2rem',
                           color: '#fff',
-                          background: textAnswerSubmitted ? 'rgba(139,92,246,0.30)' : 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)',
-                          border: textAnswerSubmitted ? '2px solid rgba(139,92,246,0.50)' : 'none',
-                          boxShadow: textAnswerSubmitted ? 'none' : '0 8px 30px rgba(168,85,247,0.35)',
+                          background: textAnswerSubmitted ? `${theme.from}4d` : grad,
+                          border: textAnswerSubmitted ? `2px solid ${theme.from}80` : 'none',
+                          boxShadow: textAnswerSubmitted ? 'none' : shadow,
                           cursor: textAnswerSubmitted ? 'default' : 'pointer',
                           opacity: (!textAnswer.trim() && !textAnswerSubmitted) ? 0.5 : 1,
                         }}
@@ -957,7 +961,7 @@ export default function GamePage() {
               <button
                 onClick={handleNext}
                 className="w-full py-5 rounded-2xl text-white font-black text-xl active:scale-95 flex items-center justify-center gap-3"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 12px 40px rgba(168,85,247,0.45)' }}
+                style={{ background: grad, boxShadow: shadow }}
               >
                 {currentIndex + 1 >= questions.length ? '🏁 Terminer' : '➡️ Suivant'}
               </button>

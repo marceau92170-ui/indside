@@ -36,9 +36,9 @@ export default function Nox({ emotion = 'curious', size = 80, animate = true, cl
           <stop offset="100%" stopColor="#7c3aed" />
         </radialGradient>
         <radialGradient id="crystalGrad" cx="30%" cy="20%" r="80%">
-          <stop offset="0%" stopColor="#c4b5fd" />
-          <stop offset="60%" stopColor="#7c3aed" />
-          <stop offset="100%" stopColor="#4c1d95" />
+          <stop offset="0%" stopColor="#FFBE0B" />
+          <stop offset="60%" stopColor="#FB5607" />
+          <stop offset="100%" stopColor="#FF006E" />
         </radialGradient>
         <filter id="glow">
           <feGaussianBlur stdDeviation="1.5" result="blur" />
@@ -53,8 +53,8 @@ export default function Nox({ emotion = 'curious', size = 80, animate = true, cl
             50% { opacity: 1; transform: scale(1.08); }
           }
           @keyframes crystalGlow {
-            0%, 100% { filter: drop-shadow(0 0 3px rgba(167,139,250,0.6)); }
-            50% { filter: drop-shadow(0 0 9px rgba(167,139,250,1)); }
+            0%, 100% { filter: drop-shadow(0 0 3px rgba(255,0,110,0.6)); }
+            50% { filter: drop-shadow(0 0 9px rgba(255,190,11,1)); }
           }
           .crystal-anim {
             animation: crystalPulse 2s ease-in-out infinite, crystalGlow 2s ease-in-out infinite;
@@ -132,11 +132,11 @@ export default function Nox({ emotion = 'curious', size = 80, animate = true, cl
 
         {/* Crystal (neck) */}
         <g className="crystal-anim">
-          <line x1="50" y1="82" x2="50" y2="94" stroke="#4c1d95" strokeWidth="1.5" />
-          <circle cx="50" cy="81" r="2" fill="#7c3aed" />
+          <line x1="50" y1="82" x2="50" y2="94" stroke="#FB5607" strokeWidth="1.5" />
+          <circle cx="50" cy="81" r="2" fill="#FF006E" />
           <polygon points="50,94 46,102 50,106 54,102" fill="url(#crystalGrad)" />
-          <polygon points="50,94 46,102 50,98" fill="rgba(196,181,253,0.45)" />
-          <line x1="50" y1="94" x2="50" y2="106" stroke="rgba(196,181,253,0.3)" strokeWidth="0.5" />
+          <polygon points="50,94 46,102 50,98" fill="rgba(255,190,11,0.45)" />
+          <line x1="50" y1="94" x2="50" y2="106" stroke="rgba(255,190,11,0.3)" strokeWidth="0.5" />
         </g>
       </g>
     </svg>

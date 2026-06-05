@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { toPng } from 'html-to-image'
 import { supabase } from '@/lib/supabase'
 import { playFanfare, playClick } from '@/lib/sound'
+import { getTheme, gradient, gradientShadow } from '@/lib/theme'
 import {
   getGroupLevel,
   getGroupSummary,
@@ -22,6 +23,9 @@ export default function ResultsPage() {
   const params = useParams()
   const router = useRouter()
   const code = (params.code as string).toUpperCase()
+  const theme = getTheme()
+  const grad = gradient(theme)
+  const shadow = gradientShadow(theme)
 
   const [room, setRoom] = useState<Room | null>(null)
   const [results, setResults] = useState<QuestionResult[]>([])
@@ -172,7 +176,7 @@ export default function ResultsPage() {
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-14 h-14 rounded-2xl animate-spin"
-            style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 0 30px rgba(168,85,247,0.4)' }}
+            style={{ background: grad, boxShadow: shadow }}
           />
           <p style={{ color: 'rgba(240,240,245,0.50)' }}>Calcul des résultats…</p>
         </div>
@@ -196,7 +200,7 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen flex flex-col px-6 py-8 gap-6 relative overflow-hidden" style={{ background: '#08080f' }}>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.20) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full" style={{ background: `radial-gradient(circle, ${theme.glowFrom} 0%, transparent 70%)`, filter: 'blur(60px)' }} />
         <div className="absolute top-1/2 -left-40 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)', filter: 'blur(60px)' }} />
         <div className="absolute -bottom-32 -right-16 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.18) 0%, transparent 70%)', filter: 'blur(60px)' }} />
       </div>
@@ -238,13 +242,13 @@ export default function ResultsPage() {
       {/* Stats row */}
       <div className="relative z-10 grid grid-cols-2 gap-3">
         <div className="card p-5 flex flex-col gap-1">
-          <span className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #a855f7, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <span className="text-4xl font-black" style={{ background: grad, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             {participantCount}
           </span>
           <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Participant{participantCount > 1 ? 's' : ''}</span>
         </div>
         <div className="card p-5 flex flex-col gap-1">
-          <span className="text-4xl font-black" style={{ background: 'linear-gradient(135deg, #a855f7, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <span className="text-4xl font-black" style={{ background: grad, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             {totalAnswers}
           </span>
           <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Réponses</span>
@@ -254,7 +258,7 @@ export default function ResultsPage() {
       {/* Summary card */}
       <div
         className="relative z-10 p-6 rounded-3xl"
-        style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(236,72,153,0.20))', border: '1px solid rgba(168,85,247,0.30)' }}
+        style={{ background: `linear-gradient(135deg, ${theme.glowFrom}, ${theme.glowTo})`, border: `1px solid ${theme.from}4d` }}
       >
         <p className="text-lg font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>{summary}</p>
       </div>
@@ -306,7 +310,7 @@ export default function ResultsPage() {
 
           {podiumStep === 0 && (
             <div className="flex flex-col items-center gap-3 py-6">
-              <div className="animate-spin w-8 h-8 rounded-xl" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }} />
+              <div className="animate-spin w-8 h-8 rounded-xl" style={{ background: grad }} />
               <p style={{ color: 'rgba(240,240,245,0.45)', fontSize: '.9rem' }}>Calcul en cours…</p>
             </div>
           )}
@@ -410,7 +414,7 @@ export default function ResultsPage() {
                     <div className="flex-1 font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</div>
                     <div
                       className="text-sm font-black px-3 py-1 rounded-full"
-                      style={{ background: 'rgba(168,85,247,0.18)', color: '#c084fc' }}
+                      style={{ background: `${theme.from}2e`, color: theme.from }}
                     >
                       {entry.points} pts
                     </div>
@@ -442,7 +446,7 @@ export default function ResultsPage() {
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={() => router.push('/pricing')}
-                style={{ flex: 1, padding: '16px 8px', borderRadius: '16px', background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                style={{ flex: 1, padding: '16px 8px', borderRadius: '16px', background: grad, border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
               >
                 Découvrir Inside+
               </button>
@@ -506,7 +510,7 @@ export default function ResultsPage() {
             {copied ? '✅' : '📋'}
           </button>
         </div>
-        <button onClick={() => { playClick(); shareRoom() }} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)', boxShadow: '0 8px 30px rgba(168,85,247,0.30)' }}>
+        <button onClick={() => { playClick(); shareRoom() }} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95" style={{ background: grad, boxShadow: shadow }}>
           🔗 Partager le lien
         </button>
       </div>
@@ -515,7 +519,7 @@ export default function ResultsPage() {
       <div
         ref={shareCardRef}
         className="relative z-10 p-1 rounded-3xl"
-        style={{ background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899)' }}
+        style={{ background: grad }}
       >
         <div
           className="rounded-[22px] p-6 flex flex-col gap-4"
@@ -543,7 +547,7 @@ export default function ResultsPage() {
                     <span>{medals[i]}</span>
                     <span className="font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</span>
                     {room?.points_enabled && (
-                      <span className="text-xs font-semibold ml-auto" style={{ color: 'rgba(168,85,247,0.90)' }}>{entry.points} pts</span>
+                      <span className="text-xs font-semibold ml-auto" style={{ color: theme.from }}>{entry.points} pts</span>
                     )}
                   </div>
                 )

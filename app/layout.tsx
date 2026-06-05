@@ -20,8 +20,21 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+  (function() {
+    var themes = {
+      tropical: { from: '#FF006E', mid: '#FB5607', to: '#FFBE0B' },
+      citrus: { from: '#FFD60A', mid: '#FF9F1C', to: '#FF4365' }
+    };
+    var id = localStorage.getItem('inside_theme') || 'tropical';
+    var t = themes[id] || themes.tropical;
+    document.documentElement.style.setProperty('--c-from', t.from);
+    document.documentElement.style.setProperty('--c-mid', t.mid);
+    document.documentElement.style.setProperty('--c-to', t.to);
+  })();
+` }} />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#8b5cf6" />
+        <meta name="theme-color" content="#FF006E" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
