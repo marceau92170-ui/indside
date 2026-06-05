@@ -10,6 +10,7 @@ import type { Room, Question, Player } from '@/lib/types'
 import NoxComment from '@/components/NoxComment'
 import { getRevealComment } from '@/lib/nox'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
+import { Volume2, VolumeX, Users, Flag, ChevronRight } from 'lucide-react'
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -545,7 +546,7 @@ export default function GamePage() {
           borderRadius: '12px', padding: '8px 12px', color: 'white', cursor: 'pointer',
         }}
       >
-        {musicOn ? '🔊' : '🔇'}
+        {musicOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
       </button>
 
       {/* Countdown overlay */}
@@ -638,8 +639,8 @@ export default function GamePage() {
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-xl font-black drop-shadow-lg" style={{ color: '#f0f0f5', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{room.name}</h1>
           <div className="flex items-center gap-2">
-            <div className="py-1.5 px-3 rounded-full text-sm font-bold" style={{ background: 'rgba(0,0,0,0.40)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)' }}>
-              👥 {players.length}
+            <div className="py-1.5 px-3 rounded-full text-sm font-bold flex items-center gap-1" style={{ background: 'rgba(0,0,0,0.40)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)' }}>
+              <Users size={13} /> {players.length}
             </div>
             <div className="py-1.5 px-3 rounded-full text-sm font-black" style={{ background: 'rgba(0,0,0,0.40)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.12)' }}>
               {currentIndex + 1}/{questions.length}
@@ -721,8 +722,8 @@ export default function GamePage() {
                                 ) : (
                                   p.nickname.charAt(0).toUpperCase()
                                 )}
-                                <span className="absolute -bottom-1 -right-1" style={{ fontSize: '0.7rem' }}>
-                                  {answered ? '✅' : '⏳'}
+                                <span className="absolute -bottom-1 -right-1" style={{ fontSize: '0.65rem', color: answered ? '#34d399' : 'rgba(200,200,210,0.45)', lineHeight: 1 }}>
+                                  ●
                                 </span>
                               </div>
                             </div>
@@ -950,7 +951,7 @@ export default function GamePage() {
                 className="w-full py-5 rounded-2xl text-white font-black text-xl active:scale-95 flex items-center justify-center gap-3"
                 style={{ background: grad, boxShadow: shadow }}
               >
-                {currentIndex + 1 >= questions.length ? '🏁 Terminer' : '➡️ Suivant'}
+                {currentIndex + 1 >= questions.length ? <><Flag size={18} /> Terminer</> : <><ChevronRight size={20} /> Suivant</>}
               </button>
             )}
 

@@ -8,6 +8,7 @@ import { toPng } from 'html-to-image'
 import { supabase } from '@/lib/supabase'
 import { playFanfare, playClick } from '@/lib/sound'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
+import { Trophy, RotateCcw, Share2, Crown, Check, Copy, ImageIcon, Users, Sparkles } from 'lucide-react'
 import {
   getGroupLevel,
   getGroupSummary,
@@ -268,7 +269,7 @@ export default function ResultsPage() {
         <div className="relative z-10 grid grid-cols-2 gap-3">
           {controversial && controversial.total > 0 && (
             <div className="card p-4 flex flex-col gap-2">
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#fbbf24' }}>🔥 La plus controversée</p>
+              <p className="text-xs font-bold uppercase tracking-wide flex items-center gap-1" style={{ color: '#fbbf24' }}><Sparkles size={12} /> La plus controversée</p>
               <p className="text-sm font-bold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{controversial.question.text}</p>
               <div className="flex gap-1 text-xs flex-wrap">
                 <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>{controversial.yesPercent}% Oui</span>
@@ -278,7 +279,7 @@ export default function ResultsPage() {
           )}
           {consensus && consensus.total > 0 && (
             <div className="card p-4 flex flex-col gap-2">
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#60a5fa' }}>🤝 Le plus de consensus</p>
+              <p className="text-xs font-bold uppercase tracking-wide flex items-center gap-1" style={{ color: '#60a5fa' }}><Users size={12} /> Le plus de consensus</p>
               <p className="text-sm font-bold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{consensus.question.text}</p>
               <div className="flex gap-1 text-xs flex-wrap">
                 <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>{consensus.yesPercent}% Oui</span>
@@ -291,7 +292,7 @@ export default function ResultsPage() {
 
       {/* Badges */}
       <div className="relative z-10 flex flex-col gap-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>🏅 Badges</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.50)' }}><Crown size={18} /> Badges</h2>
         <div className="grid grid-cols-2 gap-3">
           {BADGES.map((badge, i) => (
             <div key={i} className="card p-4 flex flex-col items-center gap-2 text-center">
@@ -306,7 +307,7 @@ export default function ResultsPage() {
       {/* Podium + Leaderboard */}
       {room?.points_enabled && leaderboard.length > 0 && (
         <div className="relative z-10 flex flex-col gap-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>🏆 Classement</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.50)' }}><Trophy size={20} /> Classement</h2>
 
           {podiumStep === 0 && (
             <div className="flex flex-col items-center gap-3 py-6">
@@ -330,7 +331,7 @@ export default function ResultsPage() {
                 gap: '12px',
               }}
             >
-              <span style={{ fontSize: '1.6rem' }}>🥉</span>
+              <span style={{ fontWeight: 900, fontSize: '1.1rem', color: '#9ca3af', background: 'rgba(156,163,175,0.18)', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
               <div style={{ flex: 1, fontWeight: 700, color: '#f0f0f5' }}>{leaderboard[2]?.player.nickname}</div>
               <div style={{ fontWeight: 900, fontSize: '.85rem', color: '#9ca3af' }}>{leaderboard[2]?.points} pts</div>
             </div>
@@ -351,7 +352,7 @@ export default function ResultsPage() {
                 gap: '12px',
               }}
             >
-              <span style={{ fontSize: '1.8rem' }}>🥈</span>
+              <span style={{ fontWeight: 900, fontSize: '1.1rem', color: '#d1d5db', background: 'rgba(209,213,219,0.18)', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
               <div style={{ flex: 1, fontWeight: 700, color: '#f0f0f5' }}>{leaderboard[1]?.player.nickname}</div>
               <div style={{ fontWeight: 900, fontSize: '.9rem', color: '#d1d5db' }}>{leaderboard[1]?.points} pts</div>
             </div>
@@ -373,10 +374,10 @@ export default function ResultsPage() {
                 boxShadow: '0 8px 32px rgba(245,158,11,0.20)',
               }}
             >
-              <span style={{ fontSize: '2.2rem' }}>👑</span>
+              <Crown size={24} color="#fbbf24" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 900, fontSize: '1.15rem', color: '#f0f0f5' }}>{leaderboard[0]?.player.nickname}</div>
-                <div style={{ fontSize: '.8rem', color: 'rgba(240,240,245,0.50)', marginTop: '2px' }}>🎉 Gagnant !</div>
+                <div style={{ fontSize: '.8rem', color: 'rgba(240,240,245,0.50)', marginTop: '2px' }}>Gagnant !</div>
               </div>
               <div style={{ fontWeight: 900, fontSize: '1.1rem', color: '#fbbf24' }}>{leaderboard[0]?.points} pts</div>
             </div>
@@ -409,7 +410,7 @@ export default function ResultsPage() {
                         flexShrink: 0,
                       }}
                     >
-                      {entry.rank === 1 ? '👑' : entry.rank}
+                      {entry.rank === 1 ? <Crown size={16} /> : entry.rank}
                     </div>
                     <div className="flex-1 font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</div>
                     <div
@@ -439,7 +440,7 @@ export default function ResultsPage() {
           >
             <div style={{ width: '44px', height: '4px', borderRadius: '99px', background: 'rgba(255,255,255,0.20)', margin: '0 auto -6px' }} />
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🎉</div>
+              <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'center' }}><Sparkles size={32} color="#fbbf24" /></div>
               <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#f0f0f5' }}>Vous avez kiffé ?</div>
               <p style={{ fontSize: '.88rem', color: 'rgba(240,240,245,0.50)', marginTop: '6px', lineHeight: 1.5 }}>Passez à Inside+ pour des fonctionnalités premium</p>
             </div>
@@ -488,8 +489,8 @@ export default function ResultsPage() {
                   />
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="font-bold" style={{ color: '#34d399' }}>✅ {r.yesPercent}% Oui ({r.yesCount})</span>
-                  <span className="font-bold" style={{ color: '#f87171' }}>❌ {100 - r.yesPercent}% Non ({r.noCount})</span>
+                  <span className="font-bold flex items-center gap-1" style={{ color: '#34d399' }}><Check size={14} /> {r.yesPercent}% Oui ({r.yesCount})</span>
+                  <span className="font-bold" style={{ color: '#f87171' }}>{100 - r.yesPercent}% Non ({r.noCount})</span>
                 </div>
               </>
             ) : (
@@ -506,12 +507,12 @@ export default function ResultsPage() {
           <div className="flex-1 py-3 px-4 rounded-2xl text-center font-black text-xl tracking-widest" style={{ background: 'rgba(255,255,255,0.08)', color: '#f0f0f5' }}>
             {code}
           </div>
-          <button onClick={copyCode} className="px-4 rounded-2xl text-xl active:scale-95" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
-            {copied ? '✅' : '📋'}
+          <button onClick={copyCode} className="px-4 rounded-2xl active:scale-95 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}>
+            {copied ? <Check size={18} /> : <Copy size={18} />}
           </button>
         </div>
-        <button onClick={() => { playClick(); shareRoom() }} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95" style={{ background: grad, boxShadow: shadow }}>
-          🔗 Partager le lien
+        <button onClick={() => { playClick(); shareRoom() }} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95 flex items-center justify-center gap-2" style={{ background: grad, boxShadow: shadow }}>
+          <Share2 size={18} /> Partager le lien
         </button>
       </div>
 
@@ -526,7 +527,7 @@ export default function ResultsPage() {
           style={{ background: 'rgba(14,12,30,0.95)', backdropFilter: 'blur(20px)' }}
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🎮</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#f0f0f5' }}>I</span>
             <div>
               <p className="font-black text-lg leading-tight" style={{ color: '#f0f0f5' }}>Inside — {room?.name}</p>
               <p className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.55)' }}>
@@ -535,16 +536,16 @@ export default function ResultsPage() {
             </div>
           </div>
           <div className="flex gap-4 text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.60)' }}>
-            <span>👥 {participantCount} joueur{participantCount > 1 ? 's' : ''}</span>
-            <span>❓ {results.length} questions</span>
+            <span className="flex items-center gap-1"><Users size={14} /> {participantCount} joueur{participantCount > 1 ? 's' : ''}</span>
+            <span>{results.length} questions</span>
           </div>
           {leaderboard.length > 0 && (
             <div className="flex flex-col gap-1.5">
               {leaderboard.slice(0, 3).map((entry, i) => {
-                const medals = ['🥇', '🥈', '🥉']
+                const medalNums = ['1', '2', '3']
                 return (
                   <div key={entry.player.id} className="flex items-center gap-2">
-                    <span>{medals[i]}</span>
+                    <span style={{ fontWeight: 800, fontSize: '.8rem', color: 'rgba(240,240,245,0.60)' }}>{medalNums[i]}</span>
                     <span className="font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</span>
                     {room?.points_enabled && (
                       <span className="text-xs font-semibold ml-auto" style={{ color: theme.from }}>{entry.points} pts</span>
@@ -564,14 +565,14 @@ export default function ResultsPage() {
           className="w-full py-3 rounded-2xl font-bold active:scale-95"
           style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}
         >
-          📸 Sauvegarder en image
+          <span className="flex items-center justify-center gap-2"><ImageIcon size={18} /> Sauvegarder en image</span>
         </button>
         <button
           onClick={shareResultsImage}
           className="w-full py-3 rounded-2xl font-bold active:scale-95"
           style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}
         >
-          🔗 Partager
+          <span className="flex items-center justify-center gap-2"><Share2 size={18} /> Partager</span>
         </button>
       </div>
 
@@ -583,10 +584,10 @@ export default function ResultsPage() {
             localStorage.setItem('inside_replay_questions', JSON.stringify(questions.map(q => q.text)))
             router.push('/create?replay=1')
           }}
-          className="w-full py-4 rounded-2xl text-white font-bold active:scale-95"
+          className="w-full py-4 rounded-2xl text-white font-bold active:scale-95 flex items-center justify-center gap-2"
           style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', color: '#f0f0f5' }}
         >
-          🔁 Rejouer avec les mêmes questions
+          <RotateCcw size={18} /> Rejouer avec les mêmes questions
         </button>
       </div>
 

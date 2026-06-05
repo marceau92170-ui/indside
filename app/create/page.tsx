@@ -12,6 +12,7 @@ import { canAddQuestion, canCreateRoom } from '@/lib/subscription'
 import PremiumGate from '@/components/PremiumGate'
 import { playClick, playSuccess } from '@/lib/sound'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
+import { LayoutGrid, Sparkles, Home, UserCircle, Trophy, ImageIcon, Rocket } from 'lucide-react'
 
 function ChoiceScreen() {
   const theme = getTheme()
@@ -69,7 +70,7 @@ function ChoiceScreen() {
               border: `1px solid ${theme.from}50`,
               display: 'flex', flexDirection: 'column', gap: '10px',
             }}>
-              <span style={{ fontSize: '2.5rem' }}>📚</span>
+              <LayoutGrid size={20} />
               <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#f0f0f5' }}>Utiliser un modèle</div>
               <p style={{ fontSize: '.92rem', color: 'rgba(240,240,245,0.55)', lineHeight: 1.5, margin: 0 }}>
                 Choisis parmi nos jeux prêts à jouer. Questions déjà rédigées.
@@ -92,7 +93,7 @@ function ChoiceScreen() {
               border: '1px solid rgba(255,255,255,0.12)',
               display: 'flex', flexDirection: 'column', gap: '10px',
             }}>
-              <span style={{ fontSize: '2.5rem' }}>🎨</span>
+              <Sparkles size={20} />
               <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#f0f0f5' }}>Création libre</div>
               <p style={{ fontSize: '.92rem', color: 'rgba(240,240,245,0.55)', lineHeight: 1.5, margin: 0 }}>
                 Crée ton propre quiz de A à Z avec tes propres questions.
@@ -374,7 +375,7 @@ function CreateForm() {
             )}
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>🏠 Nom de la salle</label>
+              <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'rgba(240,240,245,0.55)' }}><Home size={14} /> Nom de la salle</label>
               <input
                 type="text"
                 value={roomName}
@@ -385,7 +386,7 @@ function CreateForm() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>🎭 Ton pseudo</label>
+              <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'rgba(240,240,245,0.55)' }}><UserCircle size={14} /> Ton pseudo</label>
               <input
                 type="text"
                 value={nickname}
@@ -550,7 +551,7 @@ function CreateForm() {
             {/* Points toggle */}
             <div className="p-5 rounded-2xl flex items-center justify-between gap-4" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}>
               <div>
-                <div className="font-bold" style={{ color: '#f0f0f5' }}>🏆 Système de points</div>
+                <div className="font-bold flex items-center gap-2" style={{ color: '#f0f0f5' }}><Trophy size={18} /> Système de points</div>
                 <div className="text-xs mt-1" style={{ color: 'rgba(240,240,245,0.45)' }}>Active le classement et les scores</div>
               </div>
               <button
@@ -572,7 +573,7 @@ function CreateForm() {
 
             {/* Image upload */}
             <div className="flex flex-col gap-3">
-              <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>📸 Image de fond (optionnel)</label>
+              <label className="text-sm font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'rgba(240,240,245,0.55)' }}><ImageIcon size={14} /> Image de fond (optionnel)</label>
               <button
                 onClick={() => fileRef.current?.click()}
                 className="relative w-full h-36 rounded-2xl overflow-hidden active:scale-95"
@@ -583,7 +584,7 @@ function CreateForm() {
                   <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'rgba(240,240,245,0.35)' }}>
-                    <span className="text-3xl">🖼️</span>
+                    <ImageIcon size={32} color="rgba(240,240,245,0.35)" />
                     <span className="text-sm font-semibold">Appuie pour choisir une photo</span>
                   </div>
                 )}
@@ -626,7 +627,7 @@ function CreateForm() {
                     </svg>
                     Création…
                   </>
-                ) : '🚀 Créer'}
+                ) : <><Rocket size={18} /> Créer</>}
               </motion.button>
             </div>
           </motion.div>

@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { playClick, stopAmbientMusic } from '@/lib/sound'
 import { getTheme, gradient, setTheme, THEMES } from '@/lib/theme'
 import type { ThemeId } from '@/lib/theme'
+import { Volume2, Music, Palette, Trash2 } from 'lucide-react'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -62,13 +63,13 @@ export default function SettingsPage() {
   }
 
   const ToggleRow = ({
-    emoji,
+    icon,
     label,
     description,
     value,
     onChange,
   }: {
-    emoji: string
+    icon: ReactNode
     label: string
     description?: string
     value: boolean
@@ -79,7 +80,7 @@ export default function SettingsPage() {
       style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
     >
       <div className="flex items-center gap-3">
-        <span className="text-xl">{emoji}</span>
+        <span style={{ color: 'rgba(240,240,245,0.75)', display: 'flex' }}>{icon}</span>
         <div>
           <div className="font-semibold" style={{ color: '#f0f0f5' }}>{label}</div>
           {description && <div className="text-xs mt-0.5" style={{ color: 'rgba(240,240,245,0.45)' }}>{description}</div>}
@@ -134,7 +135,7 @@ export default function SettingsPage() {
 
       {/* Theme */}
       <div className="relative z-10 flex flex-col gap-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.45)' }}>🎨 Thème</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.45)' }}><Palette size={18} /> Thème</h2>
         <div className="flex gap-3">
           {THEMES.map(t => (
             <button
@@ -162,14 +163,14 @@ export default function SettingsPage() {
       <div className="relative z-10 flex flex-col gap-3">
         <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.45)' }}>Audio</h2>
         <ToggleRow
-          emoji="🔊"
+          icon={<Volume2 size={18} />}
           label="Sons"
           description="Effets sonores du jeu"
           value={soundEnabled}
           onChange={toggleSound}
         />
         <ToggleRow
-          emoji="🎵"
+          icon={<Music size={18} />}
           label="Musique"
           description="Musique d'ambiance"
           value={musicEnabled}
@@ -181,7 +182,7 @@ export default function SettingsPage() {
       <div className="relative z-10 flex flex-col gap-3">
         <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.45)' }}>Notifications</h2>
         <ToggleRow
-          emoji="🔔"
+          icon={<span style={{ fontSize: '1.1rem' }}>🔔</span>}
           label="Notifications"
           description="Alertes de jeu"
           value={notificationsEnabled}
@@ -228,7 +229,7 @@ export default function SettingsPage() {
             className="p-5 rounded-2xl text-left font-semibold"
             style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.20)', color: '#fca5a5' }}
           >
-            🗑️ Supprimer mes données
+            <span className="flex items-center gap-2"><Trash2 size={18} /> Supprimer mes données</span>
           </button>
         ) : (
           <div

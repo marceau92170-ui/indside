@@ -1,6 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { Crown, Users, LayoutGrid, BarChart2, Award, Sparkles, Check } from 'lucide-react'
 
 interface PremiumGateProps {
   reason: string
@@ -11,12 +12,12 @@ export default function PremiumGate({ reason, onClose }: PremiumGateProps) {
   const router = useRouter()
 
   const features = [
-    { emoji: '♾️', text: 'Questions illimitées' },
-    { emoji: '👥', text: 'Joueurs illimités' },
-    { emoji: '🎭', text: 'Tous les templates premium' },
-    { emoji: '📊', text: 'Statistiques avancées' },
-    { emoji: '🏅', text: 'Badges avancés' },
-    { emoji: '✨', text: 'Futures fonctionnalités' },
+    { icon: <Check size={18} />, text: 'Questions illimitées' },
+    { icon: <Users size={18} />, text: 'Joueurs illimités' },
+    { icon: <LayoutGrid size={18} />, text: 'Tous les templates premium' },
+    { icon: <BarChart2 size={18} />, text: 'Statistiques avancées' },
+    { icon: <Award size={18} />, text: 'Badges avancés' },
+    { icon: <Sparkles size={18} />, text: 'Futures fonctionnalités' },
   ]
 
   return (
@@ -71,7 +72,7 @@ export default function PremiumGate({ reason, onClose }: PremiumGateProps) {
               transition={{ delay: 0.2 + i * 0.06 }}
               style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
             >
-              <span style={{ fontSize: '1.1rem' }}>{f.emoji}</span>
+              <span style={{ color: 'rgba(240,240,245,0.75)', display: 'flex' }}>{f.icon}</span>
               <span style={{ fontSize: '0.9rem', color: 'rgba(240,240,245,0.8)', fontWeight: 500 }}>{f.text}</span>
             </motion.div>
           ))}

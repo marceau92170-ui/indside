@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getUserPlan } from '@/lib/subscription'
+import { Check, Crown } from 'lucide-react'
 
 export default function PricingPage() {
   const router = useRouter()
@@ -106,7 +107,7 @@ export default function PricingPage() {
         <div className="flex flex-col gap-2">
           {freeFeatures.map((f, i) => (
             <div key={i} className="flex items-start gap-2">
-              <span className="text-sm mt-0.5" style={{ color: '#34d399' }}>✓</span>
+              <Check size={16} color="#34d399" className="mt-0.5 flex-shrink-0" />
               <span className="text-sm" style={{ color: 'rgba(240,240,245,0.70)' }}>{f}</span>
             </div>
           ))}
@@ -157,7 +158,7 @@ export default function PricingPage() {
           <div className="flex flex-col gap-2">
             {premiumFeatures.map((f, i) => (
               <div key={i} className="flex items-start gap-2">
-                <span className="text-sm mt-0.5" style={{ color: '#f59e0b' }}>✓</span>
+                <Check size={16} color="#f59e0b" className="mt-0.5 flex-shrink-0" />
                 <span className="text-sm" style={{ color: 'rgba(240,240,245,0.80)' }}>{f}</span>
               </div>
             ))}
