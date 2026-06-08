@@ -110,7 +110,7 @@ function JoinForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-8 relative overflow-hidden" style={{ background: '#08080f' }}>
+    <div className="min-h-screen flex flex-col px-6 py-8 relative overflow-hidden" style={{ background: '#050508' }}>
       {/* Background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.20) 0%, transparent 70%)', filter: 'blur(60px)' }} />
@@ -126,7 +126,7 @@ function JoinForm() {
         >
           ←
         </Link>
-        <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Rejoindre</h1>
+        <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Rejoins la partie</h1>
       </div>
 
       <div className="flex-1 flex flex-col justify-center gap-5 relative z-10">
@@ -138,7 +138,7 @@ function JoinForm() {
             onChange={e => setCode(e.target.value.toUpperCase().slice(0, 6))}
             placeholder="CODE"
             maxLength={6}
-            className="w-full py-5 px-5 rounded-2xl text-white placeholder:text-white/25 text-3xl font-black tracking-[0.3em] text-center focus:outline-none uppercase"
+            className="w-full py-6 px-5 rounded-2xl text-white placeholder:text-white/25 text-4xl font-black tracking-[0.4em] text-center focus:outline-none uppercase"
             style={{
               background: 'rgba(255,255,255,0.08)',
               border: '1px solid rgba(255,255,255,0.14)',

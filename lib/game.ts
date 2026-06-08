@@ -47,10 +47,6 @@ export function getConsensusQuestion(results: QuestionResult[]): QuestionResult 
   return results.reduce((a, b) => Math.abs(b.yesPercent - 50) > Math.abs(a.yesPercent - 50) ? b : a)
 }
 
-export function getDoubleQuestionIndex(questions: Question[]): number {
-  return Math.floor(questions.length / 2)
-}
-
 export function calculateScores(
   players: Player[],
   questions: Question[],
@@ -59,28 +55,25 @@ export function calculateScores(
 ): PlayerScore[] {
   if (!pointsEnabled) return players.map((p, i) => ({ player: p, points: 0, rank: i + 1 }))
 
-  const doubleIndex = getDoubleQuestionIndex(questions)
   const playerPoints: Record<string, number> = {}
   players.forEach(p => { playerPoints[p.id] = 0 })
 
-  // +1 point per answer (participation)
+  // Count answers per player (participation)
   answers.forEach(a => {
     if (playerPoints[a.player_id] !== undefined) {
       playerPoints[a.player_id] += 1
     }
   })
 
-  // Bonus: majority bonus per question (+5 normal, +25 on double question)
-  questions.forEach((q, idx) => {
-    const isDouble = idx === doubleIndex
-    const majorityBonus = isDouble ? 25 : 5
+  // Bonus: majority match bonus per question
+  questions.forEach((q) => {
     const qAnswers = answers.filter(a => a.question_id === q.id)
     const yesCount = qAnswers.filter(a => a.value === true).length
     const noCount = qAnswers.length - yesCount
     const majorityValue = yesCount >= noCount ? true : false
     qAnswers.forEach(a => {
       if (a.value === majorityValue && playerPoints[a.player_id] !== undefined) {
-        playerPoints[a.player_id] += majorityBonus
+        playerPoints[a.player_id] += 5
       }
     })
   })

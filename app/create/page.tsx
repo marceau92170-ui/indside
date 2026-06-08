@@ -27,7 +27,7 @@ function ChoiceScreen() {
         flexDirection: 'column',
         padding: '48px 24px',
         gap: '24px',
-        background: '#08080f',
+        background: '#050508',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -59,7 +59,7 @@ function ChoiceScreen() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', paddingTop: '48px', paddingBottom: '8px', zIndex: 1 }}>
         <Nox emotion="curious" size={100} animate />
         <p style={{ fontSize: '1.3rem', fontWeight: 900, color: '#f0f0f5', textAlign: 'center', letterSpacing: '-0.01em', margin: 0 }}>
-          Que veux-tu créer ?
+          Prêt à jouer ?
         </p>
       </div>
 
@@ -339,7 +339,7 @@ function CreateForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-8 gap-5 relative" style={{ background: '#08080f' }}>
+    <div className="min-h-screen flex flex-col px-6 py-8 gap-5 relative" style={{ background: '#050508' }}>
       {bgBlobs}
 
       {/* Step dots */}
@@ -663,7 +663,7 @@ function CreatePageInner() {
 export default function CreatePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#08080f' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#050508' }}>
         <div className="w-14 h-14 rounded-2xl animate-spin" style={{ background: 'linear-gradient(135deg, #FF006E, #FB5607, #FFBE0B)' }} />
       </div>
     }>

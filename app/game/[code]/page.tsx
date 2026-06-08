@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
-import { getDoubleQuestionIndex } from '@/lib/game'
 import { playDing, playCountdownBeep, playWhoosh, playReveal, playClick, startAmbientMusic, stopAmbientMusic, setMusicVolume } from '@/lib/sound'
 import type { Room, Question, Player } from '@/lib/types'
 import NoxComment from '@/components/NoxComment'
@@ -54,7 +53,6 @@ export default function GamePage() {
   const [floatingReactions, setFloatingReactions] = useState<FloatingReaction[]>([])
   const reactionCounterRef = useRef(0)
   const [countdown, setCountdown] = useState<number | null>(null)
-  const [showPtsBonus, setShowPtsBonus] = useState<string | null>(null)
   const [myAnswer, setMyAnswer] = useState<boolean | null>(null)
   const myAnswerRef = useRef<boolean | null>(null)
   const [musicOn, setMusicOn] = useState(true)
@@ -296,7 +294,6 @@ export default function GamePage() {
           hasAutoRevealedRef.current = false
           setMyAnswer(null)
           myAnswerRef.current = null
-          setShowPtsBonus(null)
           setTextAnswer('')
           textAnswerRef.current = ''
           setTextAnswerSubmitted(false)
@@ -319,26 +316,6 @@ export default function GamePage() {
 
           if (q?.type === 'text_answer') {
             fetchTextAnswers(q.id)
-          } else {
-            const myAns = myAnswerRef.current
-            if (myAns !== null) {
-              setTimeout(() => {
-                setRevealCounts(rc => {
-                  const totalVotes = rc.yes + rc.no
-                  const majorityIsYes = rc.yes >= rc.no
-                  const inMajority = myAns === majorityIsYes
-                  const doubleIdx = getDoubleQuestionIndex(qs)
-                  const isDouble = idx === doubleIdx
-                  const bonus = inMajority ? (isDouble ? 25 : 5) : 0
-                  const total = 1 + bonus
-                  if (totalVotes > 0) {
-                    setShowPtsBonus(`+${total} pts`)
-                    setTimeout(() => setShowPtsBonus(null), 2500)
-                  }
-                  return rc
-                })
-              }, 600)
-            }
           }
         }
 
@@ -498,7 +475,7 @@ export default function GamePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#08080f' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#050508' }}>
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-14 h-14 rounded-2xl animate-spin"
@@ -525,9 +502,6 @@ export default function GamePage() {
     : timeLeft > 7
       ? 'linear-gradient(90deg, #f59e0b, #ef4444)'
       : 'linear-gradient(90deg, #ef4444, #e11d48)'
-
-  const doubleIndex = getDoubleQuestionIndex(questions)
-  const isDoubleQuestion = currentIndex === doubleIndex
 
   const effectiveBg = room.image_url || bgFallback
 
@@ -598,24 +572,6 @@ export default function GamePage() {
             {r.emoji}
           </div>
         ))}
-        {showPtsBonus && (
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '50%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              fontSize: '2rem',
-              fontWeight: 900,
-              color: '#fbbf24',
-              textShadow: '0 0 20px rgba(251,191,36,0.7)',
-              animation: 'floatUp 2.5s ease-out forwards',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {showPtsBonus}
-          </div>
-        )}
       </div>
 
       <style>{`
@@ -658,15 +614,6 @@ export default function GamePage() {
         {/* ANSWERING PHASE */}
         {room.question_phase === 'answering' && (
           <>
-            {isDoubleQuestion && (
-              <div
-                className="w-full py-3 px-5 rounded-2xl flex items-center justify-center gap-2"
-                style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(251,191,36,0.15))', border: '1px solid rgba(245,158,11,0.40)', color: '#fbbf24' }}
-              >
-                <span style={{ fontWeight: 900, fontSize: '2rem' }}>×5</span>
-              </div>
-            )}
-
             <div className="flex items-center gap-3">
               <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.12)' }}>
                 <div

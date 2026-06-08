@@ -10,14 +10,11 @@ import { getUserPlan } from '@/lib/subscription'
 import PremiumGate from '@/components/PremiumGate'
 
 const CATEGORY_LABELS: Record<string, string> = {
-  'Célébration': 'Célébration',
   'Soirée': 'Soirée',
-  'Votes': 'Votes',
-  'Osé': 'Pimenté',
-  'Étudiant': 'Campus',
-  'Voyage': 'Aventure',
-  'Romance': 'Romance',
+  'Hot': '🌡️ Hot',
+  'Gênant': 'Gênant',
   'Adulte': '🔞 Adulte',
+  'Custom': 'Libre',
 }
 
 export default function TemplatesPage() {
@@ -43,7 +40,7 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#08080f', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#050508', position: 'relative', overflow: 'hidden' }}>
 
       {/* Header */}
       <div style={{ position: 'sticky', top: 0, zIndex: 20, padding: '16px 20px 12px', background: 'rgba(8,8,15,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>

@@ -47,7 +47,7 @@ export default function HomePage() {
           alignItems: 'center',
           justifyContent: 'center',
           padding: '48px 24px',
-          background: '#08080f',
+          background: '#050508',
           position: 'relative',
           overflow: 'hidden',
           gap: '0',
@@ -114,9 +114,6 @@ export default function HomePage() {
             }}>
               Flower
             </h1>
-            <p style={{ fontSize: '0.95rem', fontWeight: 600, color: 'rgba(240,240,245,0.45)', marginTop: '10px', lineHeight: 1.5, fontStyle: 'italic' }}>
-              Entre amis.
-            </p>
           </div>
         </motion.div>
 
@@ -130,11 +127,12 @@ export default function HomePage() {
           <motion.div whileTap={{ scale: 0.97 }}>
             <Link href="/create" style={{ textDecoration: 'none' }}>
               <div style={{
-                width: '100%', padding: '20px', borderRadius: '20px', textAlign: 'center',
+                width: '100%', padding: '24px 20px', borderRadius: '22px', textAlign: 'center',
                 background: grad,
-                boxShadow: shadow,
-                fontWeight: 800, fontSize: '1.1rem', color: '#fff',
+                boxShadow: `${shadow}, 0 0 60px rgba(236,72,153,0.25)`,
+                fontWeight: 900, fontSize: '1.2rem', color: '#fff',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                letterSpacing: '0.02em',
               }}>
                 Créer
               </div>
@@ -144,10 +142,10 @@ export default function HomePage() {
           <motion.div whileTap={{ scale: 0.97 }}>
             <Link href="/join" style={{ textDecoration: 'none' }}>
               <div style={{
-                width: '100%', padding: '20px', borderRadius: '20px', textAlign: 'center',
+                width: '100%', padding: '24px 20px', borderRadius: '22px', textAlign: 'center',
                 background: 'rgba(255,255,255,0.07)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                fontWeight: 700, fontSize: '1.05rem', color: 'rgba(240,240,245,0.85)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                fontWeight: 800, fontSize: '1.1rem', color: 'rgba(240,240,245,0.90)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 Rejoindre
