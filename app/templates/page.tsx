@@ -40,16 +40,25 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050508', position: 'relative', overflow: 'hidden' }}>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(160deg, #1a0020 0%, #050508 40%, #200010 100%)',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Big ambient glow */}
+      <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '500px', height: '500px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(255,0,110,0.15) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
 
       {/* Header */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 20, padding: '16px 20px 12px', background: 'rgba(8,8,15,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, padding: '16px 20px 12px', background: 'rgba(5,5,8,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/create" style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f0f0f5', textDecoration: 'none', flexShrink: 0 }}>
             <ChevronLeft size={18} />
           </Link>
           <div style={{ flex: 1 }}>
-            <h1 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#f0f0f5', margin: 0, letterSpacing: '-0.01em' }}>Choisir un modèle</h1>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#f0f0f5', margin: 0, letterSpacing: '-0.03em' }}>
+              Mode de jeu
+            </h1>
           </div>
           {!isPremium && (
             <Link href="/pricing" style={{ padding: '5px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: 800, background: 'linear-gradient(135deg, #f59e0b, #f97316)', color: '#fff', textDecoration: 'none', letterSpacing: '.02em' }}>
@@ -60,7 +69,7 @@ export default function TemplatesPage() {
       </div>
 
       {/* Template cards */}
-      <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ padding: '20px 16px 40px', paddingTop: '8px', display: 'flex', flexDirection: 'column' }}>
         {displayTemplates.map((t, i) => {
           const locked = t.is_premium && !isPremium
           return (
@@ -71,100 +80,71 @@ export default function TemplatesPage() {
               transition={{ duration: 0.3, delay: i * 0.05, ease: 'easeOut' }}
               whileTap={{ scale: locked ? 1 : 0.985 }}
               onClick={() => handleTemplateClick(t)}
-              style={{ cursor: 'pointer', position: 'relative' }}
+              style={{ position: 'relative', marginTop: '28px', cursor: 'pointer' }}
             >
+              {/* Big emoji overlapping card top-left */}
               <div style={{
-                borderRadius: '20px',
-                overflow: 'hidden',
-                border: `1px solid ${locked ? 'rgba(255,255,255,0.07)' : t.color_from + '30'}`,
-                opacity: locked ? 0.72 : 1,
+                position: 'absolute', top: '-24px', left: '20px', zIndex: 2,
+                fontSize: '3rem', lineHeight: 1,
+                filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))',
               }}>
-                {/* Color band top */}
+                {t.emoji}
+              </div>
+
+              {/* Light card */}
+              <div style={{
+                borderRadius: '24px',
+                background: locked ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.92)',
+                backdropFilter: 'blur(20px)',
+                padding: '20px 20px 20px 20px',
+                paddingTop: '28px',
+                border: 'none',
+                boxShadow: `0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08)`,
+                position: 'relative',
+                overflow: 'hidden',
+              }}>
+                {/* Color accent strip on left */}
                 <div style={{
-                  height: '6px',
-                  background: `linear-gradient(90deg, ${t.color_from}, ${t.color_to})`,
+                  position: 'absolute', left: 0, top: 0, bottom: 0, width: '5px',
+                  background: `linear-gradient(180deg, ${t.color_from}, ${t.color_to})`,
+                  borderRadius: '24px 0 0 24px',
                 }} />
 
-                {/* Card body */}
-                <div style={{
-                  padding: '18px 20px',
-                  background: `linear-gradient(145deg, ${t.color_from}14 0%, rgba(8,8,15,0.95) 60%)`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                }}>
-                  {/* Left: colored icon block */}
-                  <div style={{
-                    width: '52px',
-                    height: '52px',
-                    borderRadius: '14px',
-                    background: `linear-gradient(135deg, ${t.color_from}, ${t.color_to})`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.6rem',
-                    flexShrink: 0,
-                    boxShadow: `0 8px 24px ${t.color_from}40`,
+                <div style={{ paddingLeft: '12px' }}>
+                  {/* Category badge */}
+                  <span style={{
+                    fontSize: '10px', fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase',
+                    color: t.color_from, display: 'block', marginBottom: '4px',
                   }}>
-                    {t.emoji}
+                    {CATEGORY_LABELS[t.category] || t.category}
+                  </span>
+                  {/* Title */}
+                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '8px' }}>
+                    {t.name}
                   </div>
-
-                  {/* Center: text */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <span style={{
-                        fontSize: '11px', fontWeight: 800, letterSpacing: '.08em', textTransform: 'uppercase',
-                        color: t.color_from, opacity: locked ? 0.6 : 1,
-                      }}>
-                        {CATEGORY_LABELS[t.category] || t.category}
-                      </span>
-                      {t.question_count > 0 && (
-                        <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(240,240,245,0.30)', letterSpacing: '.04em' }}>
-                          · {t.question_count} questions
-                        </span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f0f0f5', letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: '5px' }}>
-                      {t.name}
-                    </div>
-                    <div style={{ fontSize: '0.78rem', color: 'rgba(240,240,245,0.45)', lineHeight: 1.45, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {t.description}
-                    </div>
+                  {/* Description */}
+                  <div style={{ fontSize: '0.82rem', color: '#555', lineHeight: 1.5 }}>
+                    {t.description}
                   </div>
-
-                  {/* Right: lock or arrow */}
-                  <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {/* Bottom row */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px' }}>
+                    <span style={{ fontSize: '11px', color: '#999', fontWeight: 600 }}>
+                      {t.question_count > 0 ? `${t.question_count} questions` : 'Libre'}
+                    </span>
                     {locked ? (
-                      <div style={{
-                        width: '32px', height: '32px', borderRadius: '10px',
-                        background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        <Lock size={14} color="#f59e0b" />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #f59e0b, #f97316)', borderRadius: '8px', padding: '4px 10px' }}>
+                        <Lock size={11} color="#fff" />
+                        <span style={{ fontSize: '10px', fontWeight: 800, color: '#fff', letterSpacing: '.05em' }}>FLOWER+</span>
                       </div>
                     ) : (
-                      <div style={{
-                        width: '32px', height: '32px', borderRadius: '10px',
-                        background: `${t.color_from}18`, border: `1px solid ${t.color_from}28`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        <ChevronRight size={16} color={t.color_from} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: `linear-gradient(135deg, ${t.color_from}, ${t.color_to})`, borderRadius: '8px', padding: '5px 12px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#fff' }}>Jouer</span>
+                        <ChevronRight size={13} color="#fff" />
                       </div>
                     )}
                   </div>
                 </div>
               </div>
-
-              {/* Premium badge */}
-              {t.is_premium && (
-                <div style={{
-                  position: 'absolute', top: '14px', right: locked ? '56px' : '56px',
-                  background: 'linear-gradient(135deg, #f59e0b, #f97316)',
-                  borderRadius: '6px', padding: '2px 7px', fontSize: '9px', fontWeight: 800, color: '#fff', letterSpacing: '.05em',
-                }}>
-                  PLUS
-                </div>
-              )}
             </motion.div>
           )
         })}
@@ -177,7 +157,7 @@ export default function TemplatesPage() {
             transition={{ duration: 0.3, delay: displayTemplates.length * 0.05 + 0.1 }}
             onClick={() => router.push('/pricing')}
             style={{
-              marginTop: '6px',
+              marginTop: '36px',
               padding: '20px',
               borderRadius: '20px',
               background: 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(249,115,22,0.08))',

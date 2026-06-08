@@ -10,7 +10,7 @@ import NoxComment from '@/components/NoxComment'
 import Nox from '@/components/Nox'
 import { getRevealComment } from '@/lib/nox'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
-import { Volume2, VolumeX, Users, Flag, ChevronRight } from 'lucide-react'
+import { Volume2, VolumeX, Users, ChevronRight } from 'lucide-react'
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -22,6 +22,7 @@ const AVATAR_COLORS = [
 ]
 
 const REACTION_EMOJIS = ['😭', '🔥', '💀', '🫠', '🤌', '👏']
+const QUESTION_MOODS = ['😬', '🫦', '😈', '🤤', '🥵', '😳', '🫣', '💀', '😏', '🔥']
 const QUESTION_DURATION = 30
 
 interface FloatingReaction {
@@ -639,46 +640,65 @@ export default function GamePage() {
                   transition={{ duration: 0.25, ease: 'easeOut' }}
                   style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', width: '100%' }}
                 >
-                  <div
-                    className="w-full p-8 rounded-3xl"
-                    style={{ background: 'rgba(0,0,0,0.50)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.18)' }}
-                  >
-                    <p className="font-black text-center leading-snug" style={{ color: '#f0f0f5', fontSize: '1.5rem' }}>
+                  {/* Mood emoji above card */}
+                  <div style={{ textAlign: 'center', marginBottom: '-20px', position: 'relative', zIndex: 2 }}>
+                    <span style={{ fontSize: '4rem', filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.5))' }}>
+                      {QUESTION_MOODS[currentIndex % QUESTION_MOODS.length]}
+                    </span>
+                  </div>
+
+                  {/* Light question card */}
+                  <div style={{
+                    width: '100%',
+                    background: 'rgba(255,255,255,0.93)',
+                    borderRadius: '28px',
+                    padding: '36px 24px 28px',
+                    boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
+                    position: 'relative',
+                    zIndex: 1,
+                  }}>
+                    {/* Question counter badge */}
+                    <div style={{
+                      position: 'absolute', top: '-14px', right: '24px',
+                      width: '48px', height: '48px', borderRadius: '9999px',
+                      background: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '0.8rem', fontWeight: 900, color: '#0a0a0a',
+                    }}>
+                      {currentIndex + 1}/{questions.length}
+                    </div>
+
+                    <p style={{
+                      fontSize: '1.4rem', fontWeight: 900, color: '#0a0a0a',
+                      textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.02em',
+                      margin: 0,
+                    }}>
                       {question?.text}
                     </p>
                   </div>
 
                   {players.length > 0 && (
-                    <div
-                      className="w-full p-4 rounded-2xl"
-                      style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.10)' }}
-                    >
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {players.map((p, i) => {
-                          const answered = answeredPlayerIds.has(p.id)
-                          return (
-                            <div key={p.id} className="flex flex-col items-center gap-1">
-                              <div
-                                className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white relative overflow-hidden"
-                                style={{
-                                  background: p.avatar_url ? 'transparent' : AVATAR_COLORS[i % AVATAR_COLORS.length],
-                                  opacity: answered ? 1 : 0.45,
-                                }}
-                              >
-                                {p.avatar_url ? (
-                                  // eslint-disable-next-line @next/next/no-img-element
-                                  <img src={p.avatar_url} alt={p.nickname} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                ) : (
-                                  p.nickname.charAt(0).toUpperCase()
-                                )}
-                                <span className="absolute -bottom-1 -right-1" style={{ fontSize: '0.65rem', color: answered ? '#34d399' : 'rgba(200,200,210,0.45)', lineHeight: 1 }}>
-                                  ●
-                                </span>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center' }}>
+                      {players.map((p) => {
+                        const answered = answeredPlayerIds.has(p.id)
+                        return (
+                          <div key={p.id} style={{
+                            padding: '5px 12px', borderRadius: '9999px',
+                            background: answered ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
+                            border: `1px solid ${answered ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.08)'}`,
+                            fontSize: '12px', fontWeight: 700,
+                            color: answered ? '#f0f0f5' : 'rgba(240,240,245,0.35)',
+                            display: 'flex', alignItems: 'center', gap: '5px',
+                          }}>
+                            {p.avatar_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={p.avatar_url} style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover' }} alt="" />
+                            ) : null}
+                            {p.nickname}
+                            {answered && <span style={{ color: '#34d399', fontSize: '10px' }}>●</span>}
+                          </div>
+                        )
+                      })}
                     </div>
                   )}
 
@@ -740,7 +760,7 @@ export default function GamePage() {
                         disabled={submitting || hasAnsweredCurrent}
                         className="flex-1 flex flex-col items-center justify-center gap-1"
                         style={{
-                          padding: '28px 12px',
+                          padding: '36px 20px',
                           borderRadius: '24px',
                           background: hasAnsweredCurrent && myAnswer === false
                             ? 'rgba(239,68,68,0.18)' : 'rgba(255,255,255,0.05)',
@@ -753,7 +773,7 @@ export default function GamePage() {
                         }}
                       >
                         <span style={{ fontSize: '2rem', lineHeight: 1 }}>✕</span>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: hasAnsweredCurrent && myAnswer === false ? '#f87171' : 'rgba(240,240,245,0.55)', letterSpacing: '.04em' }}>Non</span>
+                        <span style={{ fontSize: '2rem', fontWeight: 900, color: hasAnsweredCurrent && myAnswer === false ? '#f87171' : 'rgba(240,240,245,0.85)', letterSpacing: '-0.02em' }}>Non</span>
                       </motion.button>
                       <motion.button
                         whileTap={{ scale: 0.95 }}
@@ -762,7 +782,7 @@ export default function GamePage() {
                         disabled={submitting || hasAnsweredCurrent}
                         className="flex-1 flex flex-col items-center justify-center gap-1"
                         style={{
-                          padding: '28px 12px',
+                          padding: '36px 20px',
                           borderRadius: '24px',
                           background: hasAnsweredCurrent && myAnswer === true
                             ? 'rgba(16,185,129,0.18)' : 'rgba(255,255,255,0.05)',
@@ -775,7 +795,7 @@ export default function GamePage() {
                         }}
                       >
                         <span style={{ fontSize: '2rem', lineHeight: 1 }}>○</span>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: hasAnsweredCurrent && myAnswer === true ? '#34d399' : 'rgba(240,240,245,0.55)', letterSpacing: '.04em' }}>Oui</span>
+                        <span style={{ fontSize: '2rem', fontWeight: 900, color: hasAnsweredCurrent && myAnswer === true ? '#34d399' : 'rgba(240,240,245,0.85)', letterSpacing: '-0.02em' }}>Oui</span>
                       </motion.button>
                     </div>
                   )}
@@ -897,10 +917,19 @@ export default function GamePage() {
             {isHost && (
               <button
                 onClick={handleNext}
-                className="w-full py-5 rounded-2xl text-white font-black text-xl active:scale-95 flex items-center justify-center gap-3"
-                style={{ background: grad, boxShadow: shadow }}
+                style={{
+                  width: '100%', padding: '20px',
+                  borderRadius: '9999px',
+                  background: '#fff',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                  fontWeight: 900, fontSize: '1.1rem',
+                  color: '#0a0a0a', letterSpacing: '-0.01em',
+                  border: 'none', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                }}
               >
-                {currentIndex + 1 >= questions.length ? <><Flag size={18} /> Terminer</> : <><ChevronRight size={20} /> Suivant</>}
+                {currentIndex + 1 >= questions.length ? 'Terminer' : 'Question suivante'}
+                <ChevronRight size={20} color="#0a0a0a" />
               </button>
             )}
 
