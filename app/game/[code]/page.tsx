@@ -10,7 +10,7 @@ import NoxComment from '@/components/NoxComment'
 import Nox from '@/components/Nox'
 import { getRevealComment } from '@/lib/nox'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
-import { Volume2, VolumeX, Users, ChevronRight } from 'lucide-react'
+import { Volume2, VolumeX, Users, ChevronRight, LogOut } from 'lucide-react'
 
 const AVATAR_COLORS = [
   'linear-gradient(135deg, #8b5cf6, #ec4899)',
@@ -447,7 +447,7 @@ export default function GamePage() {
     const { error } = await supabase.from('answers').insert({
       player_id: pid,
       question_id: currentQ.id,
-      value: null,
+      value: false,
       text_value: txt,
     })
 
@@ -508,22 +508,38 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Music toggle button */}
-      <button
-        onClick={() => {
-          const next = !musicOn
-          setMusicOn(next)
-          setMusicVolume(next ? 0.06 : 0)
-          playClick()
-        }}
-        style={{
-          position: 'fixed', top: '16px', right: '16px', zIndex: 50,
-          background: 'rgba(0,0,0,0.50)', border: '1px solid rgba(255,255,255,0.15)',
-          borderRadius: '12px', padding: '8px 12px', color: 'white', cursor: 'pointer',
-        }}
-      >
-        {musicOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
-      </button>
+      {/* Top fixed controls */}
+      <div style={{ position: 'fixed', top: '16px', right: '16px', zIndex: 50, display: 'flex', gap: '8px' }}>
+        <button
+          onClick={() => {
+            const next = !musicOn
+            setMusicOn(next)
+            setMusicVolume(next ? 0.06 : 0)
+            playClick()
+          }}
+          style={{
+            background: 'rgba(0,0,0,0.50)', border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '12px', padding: '8px 12px', color: 'white', cursor: 'pointer',
+          }}
+        >
+          {musicOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
+        </button>
+      </div>
+      <div style={{ position: 'fixed', top: '16px', left: '16px', zIndex: 50 }}>
+        <button
+          onClick={() => {
+            stopAmbientMusic()
+            router.push('/')
+          }}
+          style={{
+            background: 'rgba(0,0,0,0.50)', border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '12px', padding: '8px 12px', color: 'white', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 700,
+          }}
+        >
+          <LogOut size={15} />
+        </button>
+      </div>
 
       {/* Countdown overlay */}
       {countdown !== null && (
@@ -818,28 +834,32 @@ export default function GamePage() {
             </div>
 
             {isTextAnswerQuestion ? (
-              /* Text answer reveal */
-              <div
-                className="w-full p-6 rounded-3xl flex flex-col gap-4"
-                style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.12)' }}
-              >
-                <p className="text-xs font-bold uppercase tracking-widest text-center" style={{ color: 'rgba(240,240,245,0.40)' }}>Réponses</p>
+              /* Text answer reveal — white cards */
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <p style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(240,240,245,0.40)', textAlign: 'center' }}>Ce que tout le monde a répondu</p>
                 {revealTextAnswers.length === 0 ? (
-                  <p className="text-center" style={{ color: 'rgba(240,240,245,0.45)', fontSize: '0.9rem' }}>Aucune réponse…</p>
+                  <p style={{ textAlign: 'center', color: 'rgba(240,240,245,0.45)', fontSize: '0.9rem' }}>Aucune réponse…</p>
                 ) : (
                   revealTextAnswers.map((item, i) => (
-                    <div
+                    <motion.div
                       key={i}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.12 }}
                       style={{
-                        padding: '14px 18px',
-                        borderRadius: '16px',
-                        background: 'rgba(255,255,255,0.07)',
-                        border: '1px solid rgba(255,255,255,0.10)',
+                        borderRadius: '20px',
+                        background: 'rgba(255,255,255,0.93)',
+                        backdropFilter: 'blur(20px)',
+                        padding: '16px 18px',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.30)',
+                        position: 'relative',
+                        overflow: 'hidden',
                       }}
                     >
-                      <p style={{ color: 'rgba(240,240,245,0.55)', fontSize: '0.78rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '.05em' }}>{item.nickname}</p>
-                      <p style={{ color: '#f0f0f5', fontWeight: 700, fontSize: '1.05rem' }}>{item.text_value}</p>
-                    </div>
+                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: grad, borderRadius: '20px 0 0 20px' }} />
+                      <p style={{ color: theme.from, fontSize: '0.72rem', fontWeight: 800, marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '.08em', paddingLeft: '8px' }}>{item.nickname}</p>
+                      <p style={{ color: '#0a0a0a', fontWeight: 800, fontSize: '1.05rem', lineHeight: 1.35, paddingLeft: '8px' }}>{item.text_value}</p>
+                    </motion.div>
                   ))
                 )}
               </div>
