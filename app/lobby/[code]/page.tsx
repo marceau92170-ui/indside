@@ -70,6 +70,16 @@ export default function LobbyPage() {
     setRoom(roomData)
     roomRef.current = roomData
 
+    // Save to recent rooms in localStorage
+    try {
+      const recentRaw = localStorage.getItem('flower_recent_rooms')
+      const recent: Array<{ code: string; name: string; date: string }> = recentRaw ? JSON.parse(recentRaw) : []
+      const filtered = recent.filter(r => r.code !== roomData.code)
+      filtered.unshift({ code: roomData.code, name: roomData.name, date: new Date().toISOString() })
+      localStorage.setItem('flower_recent_rooms', JSON.stringify(filtered.slice(0, 3)))
+    } catch {}
+
+
     const { data: playerData } = await supabase
       .from('players')
       .select('*')

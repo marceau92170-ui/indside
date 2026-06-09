@@ -61,6 +61,7 @@ export default function GamePage() {
   const [textAnswer, setTextAnswer] = useState('')
   const [textAnswerSubmitted, setTextAnswerSubmitted] = useState(false)
   const [revealTextAnswers, setRevealTextAnswers] = useState<Array<{ nickname: string; text_value: string }>>([])
+  const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set())
   const textAnswerRef = useRef('')
 
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
@@ -834,33 +835,52 @@ export default function GamePage() {
             </div>
 
             {isTextAnswerQuestion ? (
-              /* Text answer reveal — white cards */
+              /* Text answer reveal — anonymous cards, tap to reveal author */
               <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <p style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(240,240,245,0.40)', textAlign: 'center' }}>Ce que tout le monde a répondu</p>
                 {revealTextAnswers.length === 0 ? (
                   <p style={{ textAlign: 'center', color: 'rgba(240,240,245,0.45)', fontSize: '0.9rem' }}>Aucune réponse…</p>
                 ) : (
-                  revealTextAnswers.map((item, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.12 }}
-                      style={{
-                        borderRadius: '20px',
-                        background: 'rgba(255,255,255,0.93)',
-                        backdropFilter: 'blur(20px)',
-                        padding: '16px 18px',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.30)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: grad, borderRadius: '20px 0 0 20px' }} />
-                      <p style={{ color: theme.from, fontSize: '0.72rem', fontWeight: 800, marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '.08em', paddingLeft: '8px' }}>{item.nickname}</p>
-                      <p style={{ color: '#0a0a0a', fontWeight: 800, fontSize: '1.05rem', lineHeight: 1.35, paddingLeft: '8px' }}>{item.text_value}</p>
-                    </motion.div>
-                  ))
+                  revealTextAnswers.map((item, i) => {
+                    const isRevealed = revealedIndices.has(i)
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.12 }}
+                        onClick={() => {
+                          if (!isRevealed) {
+                            setRevealedIndices(prev => { const s = new Set(prev); s.add(i); return s })
+                          }
+                        }}
+                        style={{
+                          borderRadius: '20px',
+                          background: 'rgba(255,255,255,0.93)',
+                          backdropFilter: 'blur(20px)',
+                          padding: '16px 18px',
+                          boxShadow: '0 4px 20px rgba(0,0,0,0.30)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          cursor: isRevealed ? 'default' : 'pointer',
+                        }}
+                      >
+                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: grad, borderRadius: '20px 0 0 20px' }} />
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: isRevealed ? 1 : 0 }}
+                          transition={{ duration: 0.35, ease: 'easeIn' }}
+                          style={{ color: theme.from, fontSize: '0.72rem', fontWeight: 800, marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '.08em', paddingLeft: '8px' }}
+                        >
+                          {item.nickname}
+                        </motion.div>
+                        <p style={{ color: '#0a0a0a', fontWeight: 800, fontSize: '1.05rem', lineHeight: 1.35, paddingLeft: '8px' }}>{item.text_value}</p>
+                        {!isRevealed && (
+                          <p style={{ color: 'rgba(0,0,0,0.30)', fontSize: '0.68rem', fontWeight: 700, textAlign: 'right', marginTop: '6px', letterSpacing: '.04em' }}>Tap pour révéler</p>
+                        )}
+                      </motion.div>
+                    )
+                  })
                 )}
               </div>
             ) : (
