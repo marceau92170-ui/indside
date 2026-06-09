@@ -244,7 +244,7 @@ function CreateForm() {
         if (tpl.slug !== 'creation-libre') {
           setRoomName(tpl.name)
           if (tpl.questions && tpl.questions.length > 0) {
-            setQuestions(tpl.questions.map(t => ({ text: t, type: 'yes_no' as const })))
+            setQuestions(tpl.questions.map(q => ({ text: q.text, type: q.type })))
           }
         }
       }
