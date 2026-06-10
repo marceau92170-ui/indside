@@ -17,17 +17,14 @@ import Nox from '@/components/Nox'
 
 function ChoiceScreen() {
   const theme = getTheme()
-  const grad = gradient(theme)
-  const shadow = gradientShadow(theme)
+  const templateCount = TEMPLATES.filter(t => t.slug !== 'creation-libre').length
   return (
     <motion.div
       style={{
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        padding: '48px 24px',
-        gap: '24px',
-        background: '#050508',
+        background: 'linear-gradient(160deg, #1a0020 0%, #050508 40%, #200010 100%)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -35,77 +32,135 @@ function ChoiceScreen() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35 }}
     >
-      {/* blobs */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', top: '-80px', right: '-60px', width: '300px', height: '300px', borderRadius: '9999px', background: `radial-gradient(circle, ${theme.glowFrom} 0%, transparent 70%)`, filter: 'blur(50px)' }} />
-        <div style={{ position: 'absolute', bottom: '-80px', left: '-40px', width: '280px', height: '280px', borderRadius: '9999px', background: `radial-gradient(circle, ${theme.glowTo} 0%, transparent 70%)`, filter: 'blur(50px)' }} />
-      </div>
+      {/* Ambient glow */}
+      <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '500px', height: '500px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(255,0,110,0.15) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
 
-      {/* Back button */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', zIndex: 1 }}>
-        <Link
-          href="/"
-          style={{
-            width: '40px', height: '40px', borderRadius: '14px',
-            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#f0f0f5', textDecoration: 'none', fontSize: '1.1rem',
-            flexShrink: 0,
-          }}
-        >←</Link>
+      {/* Header */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, padding: '16px 20px 12px', background: 'rgba(5,5,8,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link
+            href="/"
+            style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f0f0f5', textDecoration: 'none', flexShrink: 0 }}
+          >
+            <Home size={16} />
+          </Link>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#f0f0f5', margin: 0, letterSpacing: '-0.02em' }}>
+            Nouvelle partie
+          </h1>
+        </div>
       </div>
 
       {/* Nox hero zone */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', paddingTop: '48px', paddingBottom: '8px', zIndex: 1 }}>
-        <Nox emotion="curious" size={100} animate />
-        <p style={{ fontSize: '1.3rem', fontWeight: 900, color: '#f0f0f5', textAlign: 'center', letterSpacing: '-0.01em', margin: 0 }}>
-          Prêt à jouer ?
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '40px 20px 16px', zIndex: 1 }}>
+        <div style={{ position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '220px', height: '220px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(255,0,110,0.22) 0%, transparent 70%)', filter: 'blur(30px)', pointerEvents: 'none' }} />
+          <Nox emotion="excited" size={130} animate />
+        </div>
+        <p style={{ fontSize: '1.6rem', fontWeight: 900, color: '#f0f0f5', textAlign: 'center', letterSpacing: '-0.03em', margin: 0, lineHeight: 1.1 }}>
+          Comment jouer ?
+        </p>
+        <p style={{ fontSize: '0.82rem', color: 'rgba(240,240,245,0.45)', textAlign: 'center', margin: 0 }}>
+          Choisis ton mode de jeu pour commencer
         </p>
       </div>
 
       {/* Two cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1, justifyContent: 'center', zIndex: 1 }}>
+      <div style={{ padding: '8px 16px 40px', display: 'flex', flexDirection: 'column', gap: '0px', zIndex: 1 }}>
 
         {/* Template option */}
-        <motion.div whileTap={{ scale: 0.98 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.05, ease: 'easeOut' }}
+          whileTap={{ scale: 0.985 }}
+          style={{ position: 'relative', marginTop: '28px' }}
+        >
+          <div style={{ position: 'absolute', top: '-24px', left: '20px', zIndex: 2, fontSize: '3rem', lineHeight: 1, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))' }}>
+            🎭
+          </div>
           <Link href="/templates" style={{ textDecoration: 'none', display: 'block' }}>
             <div style={{
-              padding: '28px 24px', borderRadius: '24px',
-              background: `linear-gradient(135deg, ${theme.glowFrom}, ${theme.glowTo})`,
-              border: `1px solid ${theme.from}50`,
-              display: 'flex', flexDirection: 'column', gap: '10px',
+              borderRadius: '24px',
+              background: 'rgba(255,255,255,0.92)',
+              backdropFilter: 'blur(20px)',
+              padding: '20px 20px 20px 20px',
+              paddingTop: '28px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08)',
+              position: 'relative',
+              overflow: 'hidden',
             }}>
-              <LayoutGrid size={20} />
-              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#f0f0f5' }}>Utiliser un modèle</div>
-              <p style={{ fontSize: '.92rem', color: 'rgba(240,240,245,0.55)', lineHeight: 1.5, margin: 0 }}>
-                Choisis parmi nos jeux prêts à jouer. Questions déjà rédigées.
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: theme.mid }}>
-                  {TEMPLATES.filter(t => t.slug !== 'creation-libre').length} modèles disponibles →
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '5px', background: 'linear-gradient(180deg, #FF006E, #FB5607)', borderRadius: '24px 0 0 24px' }} />
+              <div style={{ paddingLeft: '12px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase', color: '#FF006E', display: 'block', marginBottom: '4px' }}>
+                  PRÊT À JOUER
                 </span>
+                <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '8px' }}>
+                  Utiliser un modèle
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#555', lineHeight: 1.5 }}>
+                  Questions déjà rédigées. Lance la partie en 10 secondes.
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px' }}>
+                  <span style={{ fontSize: '11px', color: '#999', fontWeight: 600 }}>
+                    {templateCount} modes disponibles
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'linear-gradient(135deg, #FF006E, #FB5607)', borderRadius: '8px', padding: '5px 12px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#fff' }}>Choisir</span>
+                    <LayoutGrid size={11} color="#fff" />
+                  </div>
+                </div>
               </div>
             </div>
           </Link>
         </motion.div>
 
         {/* Free creation option */}
-        <motion.div whileTap={{ scale: 0.98 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.10, ease: 'easeOut' }}
+          whileTap={{ scale: 0.985 }}
+          style={{ position: 'relative', marginTop: '28px' }}
+        >
+          <div style={{ position: 'absolute', top: '-24px', left: '20px', zIndex: 2, fontSize: '3rem', lineHeight: 1, filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))' }}>
+            ✏️
+          </div>
           <Link href="/create?free=1" style={{ textDecoration: 'none', display: 'block' }}>
             <div style={{
-              padding: '28px 24px', borderRadius: '24px',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              display: 'flex', flexDirection: 'column', gap: '10px',
+              borderRadius: '24px',
+              background: 'rgba(255,255,255,0.92)',
+              backdropFilter: 'blur(20px)',
+              padding: '20px 20px 20px 20px',
+              paddingTop: '28px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08)',
+              position: 'relative',
+              overflow: 'hidden',
             }}>
-              <Sparkles size={20} />
-              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#f0f0f5' }}>Création libre</div>
-              <p style={{ fontSize: '.92rem', color: 'rgba(240,240,245,0.55)', lineHeight: 1.5, margin: 0 }}>
-                Crée ton propre quiz de A à Z avec tes propres questions.
-              </p>
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '5px', background: 'linear-gradient(180deg, #6366f1, #a855f7)', borderRadius: '24px 0 0 24px' }} />
+              <div style={{ paddingLeft: '12px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase', color: '#6366f1', display: 'block', marginBottom: '4px' }}>
+                  PERSONNALISÉ
+                </span>
+                <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0a0a0a', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '8px' }}>
+                  Création libre
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#555', lineHeight: 1.5 }}>
+                  Écris tes propres questions. Un jeu 100% sur mesure.
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px' }}>
+                  <span style={{ fontSize: '11px', color: '#999', fontWeight: 600 }}>
+                    Illimité
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: '8px', padding: '5px 12px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#fff' }}>Créer</span>
+                    <Sparkles size={11} color="#fff" />
+                  </div>
+                </div>
+              </div>
             </div>
           </Link>
         </motion.div>
+
       </div>
     </motion.div>
   )
