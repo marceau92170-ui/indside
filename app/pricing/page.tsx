@@ -107,26 +107,34 @@ export default function PricingPage() {
           <Nox emotion="excited" size={120} animate />
         </div>
 
-        {/* Features */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
-          {features.map(({ icon: Icon, text }, i) => (
-            <div key={i} style={{
-              display: 'flex', alignItems: 'center', gap: '12px',
-              padding: '12px 16px', borderRadius: '16px',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-            }}>
-              <div style={{
-                width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0,
-                background: 'linear-gradient(135deg, rgba(255,0,110,0.3), rgba(139,0,255,0.3))',
-                border: '1px solid rgba(255,0,110,0.3)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+        {/* Features card */}
+        <div style={{
+          width: '100%', borderRadius: '24px', overflow: 'hidden',
+          border: '1.5px solid rgba(255,0,110,0.35)',
+          background: 'rgba(255,0,110,0.06)',
+          boxShadow: '0 0 40px rgba(255,0,110,0.12), inset 0 0 40px rgba(139,0,255,0.05)',
+        }}>
+          {/* Top gradient bar */}
+          <div style={{ height: '3px', background: 'linear-gradient(90deg, #ff006e, #8b00ff, #ff006e)', backgroundSize: '200% 100%' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', padding: '4px 0' }}>
+            {features.map(({ icon: Icon, text }, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: '12px',
+                padding: '14px 18px',
+                borderBottom: i < features.length - 1 ? '1px solid rgba(255,0,110,0.12)' : 'none',
               }}>
-                <Icon size={15} color="#ff6eb0" />
+                <div style={{
+                  width: '30px', height: '30px', borderRadius: '9px', flexShrink: 0,
+                  background: 'linear-gradient(135deg, rgba(255,0,110,0.25), rgba(139,0,255,0.25))',
+                  border: '1px solid rgba(255,0,110,0.25)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Icon size={14} color="#ff6eb0" />
+                </div>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'rgba(255,255,255,0.88)' }}>{text}</span>
               </div>
-              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>{text}</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
@@ -145,16 +153,20 @@ export default function PricingPage() {
           style={{
             width: '100%', padding: '22px',
             borderRadius: '9999px',
-            background: loading ? 'rgba(255,255,255,0.15)' : '#fff',
-            fontWeight: 900, fontSize: '1.2rem',
-            color: loading ? 'rgba(255,255,255,0.5)' : '#0a0a0a',
+            background: loading
+              ? 'rgba(255,255,255,0.10)'
+              : 'linear-gradient(135deg, #ff006e 0%, #8b00ff 100%)',
+            fontWeight: 900, fontSize: '1.15rem',
+            color: '#fff',
             border: 'none', cursor: loading ? 'default' : 'pointer',
-            boxShadow: loading ? 'none' : '0 12px 40px rgba(255,0,110,0.30)',
-            letterSpacing: '-0.01em',
+            boxShadow: loading ? 'none' : '0 8px 32px rgba(255,0,110,0.50), 0 2px 8px rgba(0,0,0,0.4)',
+            letterSpacing: '0.01em',
             transition: 'all 0.2s',
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          {loading ? 'Chargement…' : 'Commencer maintenant'}
+          {loading ? 'Chargement…' : '✦ S\'abonner pour 4,99€/mois'}
         </button>
 
         <button
