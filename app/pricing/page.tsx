@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Check, Zap, Shield, Sparkles } from 'lucide-react'
 import Nox from '@/components/Nox'
@@ -8,6 +8,8 @@ import { getUserToken } from '@/lib/subscription'
 
 export default function PricingPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const urlError = searchParams.get('error')
   const [recovering, setRecovering] = useState(false)
   const [email, setEmail] = useState('')
   const [recoverStatus, setRecoverStatus] = useState<'idle' | 'loading' | 'ok' | 'notfound'>('idle')
@@ -153,9 +155,9 @@ export default function PricingPage() {
       {/* Bottom CTA */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '340px', zIndex: 1 }}>
 
-        {error && (
+        {(error || urlError) && (
           <p style={{ textAlign: 'center', color: '#f87171', fontSize: '0.82rem', margin: 0, padding: '10px', borderRadius: '12px', background: 'rgba(239,68,68,0.10)', border: '1px solid rgba(239,68,68,0.25)' }}>
-            {error}
+            {error || urlError}
           </p>
         )}
 
