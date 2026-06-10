@@ -10,10 +10,13 @@ import { Settings } from 'lucide-react'
 
 const SplashScreen = dynamic(() => import('@/components/SplashScreen'), { ssr: false })
 
+interface RecentRoom { code: string; name: string; date: string }
+
 export default function HomePage() {
   const router = useRouter()
   const [splashDone, setSplashDone] = useState(false)
   const [showSplash, setShowSplash] = useState(false)
+  const [recentRooms, setRecentRooms] = useState<RecentRoom[]>([])
 
   useEffect(() => {
     const seen = localStorage.getItem('flower_splash_seen')
@@ -23,6 +26,10 @@ export default function HomePage() {
     } else {
       setSplashDone(true)
     }
+    try {
+      const raw = localStorage.getItem('flower_recent_rooms')
+      if (raw) setRecentRooms(JSON.parse(raw))
+    } catch {}
   }, [])
 
   const handleSplashComplete = () => {
@@ -97,6 +104,35 @@ export default function HomePage() {
             Ce que tes amis pensent vraiment.
           </p>
         </motion.div>
+
+        {/* Recent rooms */}
+        {recentRooms.length > 0 && (
+          <motion.div
+            style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', maxWidth: '340px', zIndex: 1, marginBottom: '4px' }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: splashDone ? 1 : 0, y: splashDone ? 0 : 12 }}
+            transition={{ duration: 0.5, ease: 'easeOut', delay: 0.15 }}
+          >
+            <p style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', margin: 0 }}>Reprendre</p>
+            {recentRooms.map(room => (
+              <div key={room.code} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '12px', padding: '10px 12px' }}>
+                <Link href={`/lobby/${room.code}`} style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)' }}>{room.name}</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '.08em' }}>{room.code}</span>
+                  <span style={{ marginLeft: 'auto', color: 'rgba(255,255,255,0.50)', fontSize: '0.9rem' }}>→</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    const updated = recentRooms.filter(r => r.code !== room.code)
+                    setRecentRooms(updated)
+                    localStorage.setItem('flower_recent_rooms', JSON.stringify(updated))
+                  }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.30)', cursor: 'pointer', padding: '2px 4px', fontSize: '1rem', lineHeight: 1 }}
+                >×</button>
+              </div>
+            ))}
+          </motion.div>
+        )}
 
         {/* Buttons */}
         <motion.div

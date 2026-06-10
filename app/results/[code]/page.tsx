@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { toPng } from 'html-to-image'
 import { supabase } from '@/lib/supabase'
 import { playFanfare, playClick } from '@/lib/sound'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
@@ -36,7 +37,9 @@ export default function ResultsPage() {
   const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [sharingStory, setSharingStory] = useState(false)
   const roomIdRef = useRef<string | null>(null)
+  const storyCardRef = useRef<HTMLDivElement | null>(null)
 
   const loadResults = useCallback(async () => {
     const { data: roomData, error: roomError } = await supabase
@@ -104,6 +107,27 @@ export default function ResultsPage() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }
+  }
+
+  const shareStory = async () => {
+    if (!storyCardRef.current) return
+    setSharingStory(true)
+    try {
+      const dataUrl = await toPng(storyCardRef.current, { pixelRatio: 2 })
+      const blob = await (await fetch(dataUrl)).blob()
+      const file = new File([blob], 'flower-story.png', { type: 'image/png' })
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Flower — résultats de soirée' })
+      } else {
+        const a = document.createElement('a')
+        a.href = dataUrl
+        a.download = 'flower-story.png'
+        a.click()
+      }
+    } catch (e) {
+      console.error(e)
+    }
+    setSharingStory(false)
   }
 
   if (loading) {
@@ -272,6 +296,65 @@ export default function ResultsPage() {
             </button>
           </div>
         </motion.div>
+
+        {/* Story share card */}
+        {(() => {
+          const yesNoResults = results.filter(r => r.question.type === 'yes_no' && r.total > 0)
+          if (yesNoResults.length === 0) return null
+          const mostExtreme = yesNoResults.reduce((best, r) => {
+            const extremity = Math.abs(r.yesPercent - 50)
+            const bestExtremity = Math.abs(best.yesPercent - 50)
+            return extremity > bestExtremity ? r : best
+          }, yesNoResults[0])
+          const statLabel = mostExtreme.yesPercent >= 50
+            ? `${mostExtreme.yesPercent}% ont répondu OUI à :`
+            : `${100 - mostExtreme.yesPercent}% ont répondu NON à :`
+          return (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + results.length * 0.05 }} style={{ marginTop: '28px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+              {/* The story card itself */}
+              <div
+                ref={storyCardRef}
+                style={{
+                  width: '360px',
+                  height: '520px',
+                  borderRadius: '24px',
+                  background: 'linear-gradient(160deg, #1a0020 0%, #050508 50%, #200010 100%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '40px 32px 32px',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.60)',
+                  overflow: 'hidden',
+                  position: 'relative',
+                }}
+              >
+                {/* Glow */}
+                <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '320px', height: '320px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(255,0,110,0.25) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+                {/* Top: App name */}
+                <div style={{ fontSize: '3.5rem', fontWeight: 900, letterSpacing: '-0.04em', color: '#fff', textTransform: 'uppercase', textShadow: '3px 3px 0px rgba(255,0,110,0.6), 6px 6px 0px rgba(255,0,110,0.25)', zIndex: 1 }}>FLOWER</div>
+                {/* Middle: stat */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', zIndex: 1, textAlign: 'center' }}>
+                  <p style={{ fontSize: '1rem', fontWeight: 800, color: 'rgba(255,255,255,0.55)', letterSpacing: '.04em', margin: 0 }}>{statLabel}</p>
+                  <p style={{ fontSize: '1.35rem', fontWeight: 900, color: '#fff', lineHeight: 1.3, margin: 0, letterSpacing: '-0.02em' }}>{mostExtreme.question.text}</p>
+                </div>
+                {/* Bottom: tagline + code */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', zIndex: 1 }}>
+                  <p style={{ fontSize: '0.78rem', fontWeight: 700, color: 'rgba(255,255,255,0.40)', margin: 0, letterSpacing: '.06em' }}>Joue avec nous · flower.app</p>
+                  <p style={{ fontSize: '0.9rem', fontWeight: 900, color: 'rgba(255,255,255,0.60)', margin: 0, letterSpacing: '.12em' }}>{code}</p>
+                </div>
+              </div>
+              {/* Share button */}
+              <button
+                onClick={() => { playClick(); shareStory() }}
+                disabled={sharingStory}
+                style={{ padding: '14px 28px', borderRadius: '14px', background: 'linear-gradient(135deg, #e11d48, #9333ea)', border: 'none', color: '#fff', fontWeight: 800, fontSize: '0.9rem', cursor: sharingStory ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(225,29,72,0.35)', opacity: sharingStory ? 0.7 : 1 }}
+              >
+                <Share2 size={16} /> {sharingStory ? 'Export…' : 'Partager en story'}
+              </button>
+            </motion.div>
+          )
+        })()}
 
         {/* Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
