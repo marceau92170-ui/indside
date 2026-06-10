@@ -12,7 +12,7 @@ import { canAddQuestion, canCreateRoom } from '@/lib/subscription'
 import PremiumGate from '@/components/PremiumGate'
 import { playClick, playSuccess } from '@/lib/sound'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
-import { LayoutGrid, Sparkles, Home, UserCircle, Trophy, ImageIcon, Rocket } from 'lucide-react'
+import { LayoutGrid, Sparkles, Home, UserCircle, Trophy, ImageIcon, Rocket, Minus, MessageSquare, ToggleLeft } from 'lucide-react'
 import Nox from '@/components/Nox'
 
 function ChoiceScreen() {
@@ -572,73 +572,140 @@ function CreateForm() {
               <h2 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>Questions</h2>
             </div>
 
-            <div className="flex items-center justify-between">
-              <span className="font-semibold" style={{ color: 'rgba(240,240,245,0.60)' }}>
-                {questions.filter(q => q.text.trim()).length} question{questions.filter(q => q.text.trim()).length !== 1 ? 's' : ''}
-              </span>
-              <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: `${theme.from}25`, color: theme.from, border: `1px solid ${theme.from}40` }}>
-                max 15 · Oui / Non
+            {/* Counter + hint */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '6px', height: '6px', borderRadius: '9999px', background: grad }} />
+                <span style={{ fontSize: '13px', fontWeight: 700, color: 'rgba(240,240,245,0.55)' }}>
+                  {questions.filter(q => q.text.trim()).length} / 15
+                </span>
+              </div>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(240,240,245,0.30)', letterSpacing: '.03em' }}>
+                Appuie pour modifier
               </span>
             </div>
 
-            <div className="flex flex-col gap-3">
-              {questions.map((q, i) => (
-                <div key={i}>
-                  <div
-                    className="flex gap-2 items-center rounded-2xl p-3 cursor-pointer"
-                    style={{ background: editingIndex === i ? `${theme.from}18` : 'rgba(255,255,255,0.05)', border: editingIndex === i ? `1px solid ${theme.from}55` : '1px solid rgba(255,255,255,0.08)' }}
-                    onClick={() => setEditingIndex(editingIndex === i ? null : i)}
-                  >
-                    <span className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0" style={{ background: grad, color: '#fff' }}>
-                      {i + 1}
-                    </span>
-                    <span className="flex-1 font-medium" style={{ color: q.text.trim() ? '#f0f0f5' : 'rgba(240,240,245,0.30)' }}>
-                      {q.text.trim() || `Question ${i + 1}…`}
-                    </span>
-                    <button
-                      onClick={e => { e.stopPropagation(); toggleQuestionType(i) }}
-                      className="flex-shrink-0 px-2 py-1 rounded-full text-xs font-bold active:scale-90"
+            {/* Thin gradient separator */}
+            <div style={{ height: '1px', background: `linear-gradient(90deg, ${theme.from}60, transparent)` }} />
+
+            <div className="flex flex-col" style={{ gap: '2px' }}>
+              {questions.map((q, i) => {
+                const isEditing = editingIndex === i
+                const filled = q.text.trim().length > 0
+                return (
+                  <div key={i}>
+                    <div
+                      onClick={() => setEditingIndex(isEditing ? null : i)}
                       style={{
-                        background: q.type === 'yes_no' ? 'rgba(16,185,129,0.15)' : `${theme.from}25`,
-                        border: q.type === 'yes_no' ? '1px solid rgba(16,185,129,0.30)' : `1px solid ${theme.from}40`,
-                        color: q.type === 'yes_no' ? '#34d399' : theme.from,
+                        display: 'flex', alignItems: 'center', gap: '12px',
+                        padding: '13px 14px',
+                        borderRadius: '14px',
+                        cursor: 'pointer',
+                        background: isEditing ? 'rgba(255,255,255,0.06)' : 'transparent',
+                        borderLeft: isEditing ? `3px solid ${theme.from}` : '3px solid transparent',
+                        transition: 'all 0.15s ease',
                       }}
                     >
-                      {q.type === 'yes_no' ? 'Oui/Non' : 'Texte'}
-                    </button>
-                    {questions.length > 1 && (
-                      <button
-                        onClick={e => { e.stopPropagation(); removeQuestion(i) }}
-                        className="w-8 h-8 rounded-xl flex items-center justify-center text-lg active:scale-90 flex-shrink-0"
-                        style={{ background: 'rgba(239,68,68,0.20)', color: '#f87171' }}
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
-                  {editingIndex === i && (
-                    <div className="mt-2 px-1">
-                      <input
-                        type="text"
-                        value={q.text}
-                        onChange={e => updateQuestion(i, e.target.value)}
-                        placeholder={`Question ${i + 1}…`}
-                        autoFocus
-                        style={{ ...inputStyle, fontSize: '1rem' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
+                      {/* Number */}
+                      <span style={{
+                        fontSize: '11px', fontWeight: 900, letterSpacing: '.03em',
+                        color: filled ? theme.from : 'rgba(240,240,245,0.20)',
+                        minWidth: '18px', textAlign: 'right', flexShrink: 0,
+                      }}>
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
 
-              <button
-                onClick={addQuestion}
-                className="w-full py-4 rounded-2xl font-semibold active:scale-95"
-                style={{ border: '2px dashed rgba(255,255,255,0.18)', color: 'rgba(240,240,245,0.50)', background: 'rgba(255,255,255,0.02)' }}
-              >
-                + Ajouter une question
-              </button>
+                      {/* Text */}
+                      <span style={{
+                        flex: 1, fontSize: '0.88rem', fontWeight: filled ? 600 : 400,
+                        color: filled ? '#f0f0f5' : 'rgba(240,240,245,0.25)',
+                        lineHeight: 1.4,
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                      }}>
+                        {q.text.trim() || `Question ${i + 1}…`}
+                      </span>
+
+                      {/* Type pill */}
+                      <button
+                        onClick={e => { e.stopPropagation(); toggleQuestionType(i) }}
+                        style={{
+                          flexShrink: 0, padding: '3px 8px', borderRadius: '6px',
+                          fontSize: '10px', fontWeight: 800, letterSpacing: '.04em',
+                          background: q.type === 'yes_no' ? 'rgba(16,185,129,0.12)' : `${theme.from}20`,
+                          border: q.type === 'yes_no' ? '1px solid rgba(16,185,129,0.25)' : `1px solid ${theme.from}35`,
+                          color: q.type === 'yes_no' ? '#34d399' : theme.from,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {q.type === 'yes_no' ? 'OUI/NON' : 'TEXTE'}
+                      </button>
+
+                      {/* Remove */}
+                      {questions.length > 1 && (
+                        <button
+                          onClick={e => { e.stopPropagation(); removeQuestion(i) }}
+                          style={{
+                            flexShrink: 0, width: '26px', height: '26px', borderRadius: '8px',
+                            background: 'rgba(239,68,68,0.10)', border: 'none',
+                            color: 'rgba(248,113,113,0.60)', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}
+                        >
+                          <Minus size={13} />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Inline edit */}
+                    <AnimatePresence>
+                      {isEditing && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.18 }}
+                          style={{ overflow: 'hidden', paddingLeft: '42px', paddingRight: '4px' }}
+                        >
+                          <input
+                            type="text"
+                            value={q.text}
+                            onChange={e => updateQuestion(i, e.target.value)}
+                            placeholder={`Écris ta question…`}
+                            autoFocus
+                            style={{
+                              ...inputStyle,
+                              fontSize: '0.95rem',
+                              padding: '12px 16px',
+                              borderRadius: '12px',
+                              marginBottom: '6px',
+                              borderColor: `${theme.from}50`,
+                            }}
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )
+              })}
             </div>
+
+            {/* Thin gradient separator */}
+            <div style={{ height: '1px', background: `linear-gradient(90deg, transparent, ${theme.from}40, transparent)` }} />
+
+            <button
+              onClick={addQuestion}
+              style={{
+                width: '100%', padding: '13px',
+                borderRadius: '12px',
+                border: `1px dashed ${theme.from}40`,
+                color: theme.from,
+                background: `${theme.from}08`,
+                fontWeight: 700, fontSize: '13px',
+                cursor: 'pointer', letterSpacing: '.03em',
+              }}
+            >
+              + Nouvelle question
+            </button>
 
             {error && (
               <div className="py-3 px-4 rounded-2xl text-sm font-semibold" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: '#fca5a5' }}>
