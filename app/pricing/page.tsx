@@ -32,29 +32,24 @@ export default function PricingPage() {
     if (loading) return
     setLoading(true)
     setError(null)
+    // Fallback direct navigation if fetch fails
+    const userToken = getUserToken()
     try {
-      const userToken = getUserToken()
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: 'monthly', userToken }),
       })
-      if (!res.ok) {
-        const text = await res.text()
-        setError(`Erreur serveur ${res.status}: ${text.slice(0, 100)}`)
-        setLoading(false)
-        return
-      }
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
       } else {
-        setError(data.error || 'Pas d\'URL reçue du serveur')
+        setError(data.error || 'Erreur inconnue')
         setLoading(false)
       }
-    } catch (e: any) {
-      setError(`Erreur: ${e?.message || 'inconnue'}`)
-      setLoading(false)
+    } catch {
+      // Si fetch échoue, navigation directe
+      window.location.href = `/api/stripe/checkout?token=${userToken}`
     }
   }
 
@@ -161,8 +156,10 @@ export default function PricingPage() {
           </p>
         )}
 
-        <a
-          href={checkoutUrl}
+        <button
+          type="button"
+          onClick={handleContinue}
+          disabled={loading}
           style={{
             display: 'block', width: '100%', padding: '22px',
             borderRadius: '9999px', textAlign: 'center', textDecoration: 'none',
@@ -171,6 +168,7 @@ export default function PricingPage() {
               : 'linear-gradient(135deg, #ff006e 0%, #8b00ff 100%)',
             fontWeight: 900, fontSize: '1.15rem',
             color: loading ? 'rgba(255,255,255,0.5)' : '#fff',
+            border: 'none',
             boxShadow: loading ? 'none' : '0 8px 32px rgba(255,0,110,0.50), 0 2px 8px rgba(0,0,0,0.4)',
             letterSpacing: '0.01em',
             transition: 'all 0.2s',
@@ -178,7 +176,7 @@ export default function PricingPage() {
           }}
         >
           {loading ? 'Chargement…' : '✦ S\'abonner pour 4,99€/mois'}
-        </a>
+        </button>
 
         <button
           onClick={() => setRecovering(r => !r)}
