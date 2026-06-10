@@ -189,10 +189,33 @@ function StepDots({ step, grad }: { step: number; grad: string }) {
   )
 }
 
+async function compressAvatar(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = 80
+        canvas.height = 80
+        const ctx = canvas.getContext('2d')!
+        const size = Math.min(img.width, img.height)
+        const x = (img.width - size) / 2
+        const y = (img.height - size) / 2
+        ctx.drawImage(img, x, y, size, size, 0, 0, 80, 80)
+        resolve(canvas.toDataURL('image/jpeg', 0.75))
+      }
+      img.src = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
 function CreateForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const fileRef = useRef<HTMLInputElement>(null)
+  const avatarRef = useRef<HTMLInputElement>(null)
   const theme = getTheme()
   const grad = gradient(theme)
   const shadow = gradientShadow(theme)
@@ -200,6 +223,7 @@ function CreateForm() {
   const [step, setStep] = useState(1)
   const [roomName, setRoomName] = useState('')
   const [nickname, setNickname] = useState('')
+  const [avatarBase64, setAvatarBase64] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [questions, setQuestions] = useState<Array<{ text: string; type: 'yes_no' | 'text_answer' }>>([{ text: '', type: 'yes_no' }])
@@ -338,7 +362,7 @@ function CreateForm() {
 
       const { data: player, error: playerError } = await supabase
         .from('players')
-        .insert({ room_id: room.id, nickname: nickname.trim(), is_host: true })
+        .insert({ room_id: room.id, nickname: nickname.trim(), is_host: true, avatar_url: avatarBase64 || null })
         .select()
         .single()
 
@@ -455,6 +479,56 @@ function CreateForm() {
                 maxLength={20}
                 style={inputStyle}
               />
+            </div>
+
+            {/* Avatar */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.55)' }}>Ta photo (optionnel)</label>
+              <div className="flex items-center gap-4">
+                <div
+                  onClick={() => avatarRef.current?.click()}
+                  style={{
+                    width: '72px', height: '72px', borderRadius: '9999px', cursor: 'pointer', flexShrink: 0,
+                    background: avatarBase64 ? 'transparent' : 'rgba(255,255,255,0.08)',
+                    border: avatarBase64 ? 'none' : '2px dashed rgba(255,255,255,0.20)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+                  }}
+                >
+                  {avatarBase64 ? (
+                    <img src={avatarBase64} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '9999px' }} />
+                  ) : (
+                    <span style={{ fontSize: '1.6rem' }}>📷</span>
+                  )}
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => avatarRef.current?.click()}
+                    style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '8px 16px', color: '#f0f0f5', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    {avatarBase64 ? 'Changer' : 'Ajouter une photo'}
+                  </button>
+                  {avatarBase64 && (
+                    <button
+                      type="button"
+                      onClick={() => setAvatarBase64(null)}
+                      style={{ background: 'none', border: 'none', color: 'rgba(240,240,245,0.4)', fontSize: '12px', cursor: 'pointer', marginLeft: '8px' }}
+                    >
+                      Supprimer
+                    </button>
+                  )}
+                </div>
+                <input
+                  ref={avatarRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (file) setAvatarBase64(await compressAvatar(file))
+                  }}
+                />
+              </div>
             </div>
 
             {error && (
