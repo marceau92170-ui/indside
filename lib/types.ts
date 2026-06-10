@@ -72,7 +72,7 @@ export interface GameTemplate {
   color_to: string
   question_count: number
   is_premium?: boolean
-  questions?: string[]
+  questions?: Array<{ text: string; type: 'yes_no' | 'text_answer' }>
 }
 
 export interface Badge {
