@@ -153,27 +153,28 @@ export default function PricingPage() {
           </p>
         )}
 
-        <button
-          onClick={handleContinue}
-          disabled={loading}
+        <a
+          href={`/api/stripe/checkout?token=${typeof window !== 'undefined' ? (localStorage.getItem('flower_user_token') || 'new') : 'new'}`}
+          onClick={(e) => {
+            e.preventDefault()
+            handleContinue()
+          }}
           style={{
-            width: '100%', padding: '22px',
-            borderRadius: '9999px',
+            display: 'block', width: '100%', padding: '22px',
+            borderRadius: '9999px', textAlign: 'center', textDecoration: 'none',
             background: loading
               ? 'rgba(255,255,255,0.10)'
               : 'linear-gradient(135deg, #ff006e 0%, #8b00ff 100%)',
             fontWeight: 900, fontSize: '1.15rem',
-            color: '#fff',
-            border: 'none', cursor: loading ? 'default' : 'pointer',
+            color: loading ? 'rgba(255,255,255,0.5)' : '#fff',
             boxShadow: loading ? 'none' : '0 8px 32px rgba(255,0,110,0.50), 0 2px 8px rgba(0,0,0,0.4)',
             letterSpacing: '0.01em',
             transition: 'all 0.2s',
-            position: 'relative',
-            overflow: 'hidden',
+            cursor: loading ? 'default' : 'pointer',
           }}
         >
           {loading ? 'Chargement…' : '✦ S\'abonner pour 4,99€/mois'}
-        </button>
+        </a>
 
         <button
           onClick={() => setRecovering(r => !r)}
