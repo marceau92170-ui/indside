@@ -321,8 +321,8 @@ export default function GamePage() {
           }
         }
 
-        setRoom(updated)
-        roomRef.current = updated
+        setRoom(prev => ({ ...updated, image_url: updated.image_url || prev?.image_url || null }))
+        roomRef.current = { ...updated, image_url: updated.image_url || roomRef.current?.image_url || null }
 
         if (updated.status === 'finished') {
           router.push(`/results/${code}`)
