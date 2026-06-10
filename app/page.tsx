@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Nox from '@/components/Nox'
-import { Settings, User } from 'lucide-react'
+import { Settings } from 'lucide-react'
 
 const SplashScreen = dynamic(() => import('@/components/SplashScreen'), { ssr: false })
 
@@ -62,17 +62,6 @@ export default function HomePage() {
             }}
           >
             <Settings size={18} />
-          </button>
-          <button
-            onClick={() => router.push('/profile')}
-            style={{
-              width: '40px', height: '40px', borderRadius: '14px',
-              background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.1rem', cursor: 'pointer', color: '#fff',
-            }}
-          >
-            <User size={18} />
           </button>
         </div>
 

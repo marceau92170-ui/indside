@@ -4,22 +4,23 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { toPng } from 'html-to-image'
 import { supabase } from '@/lib/supabase'
 import { playFanfare, playClick } from '@/lib/sound'
 import { getTheme, gradient, gradientShadow } from '@/lib/theme'
-import { Trophy, RotateCcw, Share2, Crown, Check, Copy, ImageIcon, Users, Sparkles } from 'lucide-react'
-import {
-  getGroupLevel,
-  getGroupSummary,
-  getControversialQuestion,
-  getConsensusQuestion,
-  GROUP_LEVEL_INFO,
-  BADGES,
-  calculateScores,
-} from '@/lib/game'
-import type { Room, Question, QuestionResult, Player, Answer, PlayerScore } from '@/lib/types'
+import { ChevronLeft, RotateCcw, Share2, Check, Copy, Home } from 'lucide-react'
+import type { Room, Question, Player, Answer } from '@/lib/types'
 import Nox from '@/components/Nox'
+
+interface QuestionResult {
+  question: Question
+  yesCount: number
+  noCount: number
+  total: number
+  yesPercent: number
+  textAnswers: Array<{ nickname: string; text_value: string }>
+}
+
+const MOODS = ['😬', '🫦', '😈', '🤤', '🥵', '😳', '🫣', '💀', '😏', '🔥']
 
 export default function ResultsPage() {
   const params = useParams()
@@ -32,14 +33,10 @@ export default function ResultsPage() {
   const [room, setRoom] = useState<Room | null>(null)
   const [results, setResults] = useState<QuestionResult[]>([])
   const [questions, setQuestions] = useState<Question[]>([])
-  const [participantCount, setParticipantCount] = useState(0)
+  const [players, setPlayers] = useState<Player[]>([])
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
-  const [leaderboard, setLeaderboard] = useState<PlayerScore[]>([])
   const roomIdRef = useRef<string | null>(null)
-  const [podiumStep, setPodiumStep] = useState(0)
-  const [showTipJar, setShowTipJar] = useState(false)
-  const shareCardRef = useRef<HTMLDivElement>(null)
 
   const loadResults = useCallback(async () => {
     const { data: roomData, error: roomError } = await supabase
@@ -48,79 +45,49 @@ export default function ResultsPage() {
       .eq('code', code)
       .single()
 
-    if (roomError || !roomData) {
-      router.push('/')
-      return
-    }
+    if (roomError || !roomData) { router.push('/'); return }
     setRoom(roomData)
     roomIdRef.current = roomData.id
 
     const { data: playersData } = await supabase
-      .from('players')
-      .select('*')
-      .eq('room_id', roomData.id)
-    const players: Player[] = playersData ?? []
-    setParticipantCount(players.length)
+      .from('players').select('*').eq('room_id', roomData.id)
+    const playerList: Player[] = playersData ?? []
+    setPlayers(playerList)
 
     const { data: qs } = await supabase
-      .from('questions')
-      .select('*')
-      .eq('room_id', roomData.id)
-      .order('order_index', { ascending: true })
-    const questions: Question[] = qs ?? []
-    setQuestions(questions)
+      .from('questions').select('*').eq('room_id', roomData.id).order('order_index', { ascending: true })
+    const questionList: Question[] = qs ?? []
+    setQuestions(questionList)
 
-    const questionIds = questions.map(q => q.id)
+    const questionIds = questionList.map(q => q.id)
     const { data: answersData } = questionIds.length > 0
       ? await supabase.from('answers').select('*').in('question_id', questionIds)
       : { data: [] }
     const answers: Answer[] = answersData ?? []
 
-    const questionResults: QuestionResult[] = questions.map(q => {
+    const qResults: QuestionResult[] = questionList.map(q => {
       const qAnswers = answers.filter(a => a.question_id === q.id)
+      if (q.type === 'text_answer') {
+        const textAnswers = qAnswers
+          .filter(a => a.text_value)
+          .map(a => {
+            const pl = playerList.find(p => p.id === a.player_id)
+            return { nickname: pl?.nickname ?? '?', text_value: a.text_value ?? '' }
+          })
+        return { question: q, yesCount: 0, noCount: 0, total: qAnswers.length, yesPercent: 0, textAnswers }
+      }
       const yesCount = qAnswers.filter(a => a.value === true).length
       const noCount = qAnswers.filter(a => a.value === false).length
-      const total = qAnswers.length
+      const total = yesCount + noCount
       const yesPercent = total > 0 ? Math.round((yesCount / total) * 100) : 0
-      return { question: q, yesCount, noCount, total, yesPercent }
+      return { question: q, yesCount, noCount, total, yesPercent, textAnswers: [] }
     })
-    setResults(questionResults)
-
-    const scores = calculateScores(players, questions, answers, roomData.points_enabled)
-    setLeaderboard(scores)
-
+    setResults(qResults)
     setLoading(false)
-
-    let step = 0
-    const podiumInterval = setInterval(() => {
-      step += 1
-      setPodiumStep(step)
-      if (step >= 3) clearInterval(podiumInterval)
-    }, 1200)
-
-    setTimeout(() => setShowTipJar(true), 4000)
+    playFanfare()
   }, [code, router])
 
-  useEffect(() => {
-    loadResults()
-  }, [loadResults])
-
-  useEffect(() => {
-    if (podiumStep === 3) {
-      playFanfare()
-    }
-  }, [podiumStep])
-
-  useEffect(() => {
-    if (!roomIdRef.current) return
-    const roomId = roomIdRef.current
-    const channel = supabase.channel(`results-${roomId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'answers' }, () => {
-        loadResults()
-      })
-      .subscribe()
-    return () => { supabase.removeChannel(channel) }
-  }, [room?.id, loadResults])
+  useEffect(() => { loadResults() }, [loadResults])
 
   const copyCode = async () => {
     await navigator.clipboard.writeText(code)
@@ -139,471 +106,189 @@ export default function ResultsPage() {
     }
   }
 
-  const downloadResultsImage = async () => {
-    if (!shareCardRef.current) return
-    try {
-      const dataUrl = await toPng(shareCardRef.current, {
-        backgroundColor: '#1a0a2e',
-        pixelRatio: 2,
-      })
-      const link = document.createElement('a')
-      link.download = `inside-${code}-resultats.png`
-      link.href = dataUrl
-      link.click()
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const shareResultsImage = async () => {
-    if (!shareCardRef.current) return
-    try {
-      const dataUrl = await toPng(shareCardRef.current, { backgroundColor: '#1a0a2e', pixelRatio: 2 })
-      const blob = await (await fetch(dataUrl)).blob()
-      const file = new File([blob], 'inside-resultats.png', { type: 'image/png' })
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `Flower — ${room?.name}` })
-      } else {
-        downloadResultsImage()
-      }
-    } catch (e) {
-      console.error(e)
-      downloadResultsImage()
-    }
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#050508' }}>
-        <div className="flex flex-col items-center gap-4">
-          <div
-            className="w-14 h-14 rounded-2xl animate-spin"
-            style={{ background: grad, boxShadow: shadow }}
-          />
-          <p style={{ color: 'rgba(240,240,245,0.50)' }}>Calcul des résultats…</p>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050508' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: grad, boxShadow: shadow, animation: 'spin 1s linear infinite' }} />
+          <p style={{ color: 'rgba(240,240,245,0.50)' }}>Chargement…</p>
         </div>
       </div>
     )
   }
 
-  const groupLevel = getGroupLevel(results)
-  const levelInfo = GROUP_LEVEL_INFO[groupLevel]
-  const summary = getGroupSummary(results)
-  const controversial = getControversialQuestion(results)
-  const consensus = getConsensusQuestion(results)
   const totalAnswers = results.reduce((acc, r) => acc + r.total, 0)
 
-  const rankColors = [
-    { bg: 'linear-gradient(135deg, #f59e0b, #fbbf24)', text: '#78350f' },
-    { bg: 'linear-gradient(135deg, #9ca3af, #d1d5db)', text: '#374151' },
-    { bg: 'linear-gradient(135deg, #b45309, #d97706)', text: '#fff' },
-  ]
-
   return (
-    <div className="min-h-screen flex flex-col px-6 py-8 gap-6 relative overflow-hidden" style={{ background: '#050508' }}>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full" style={{ background: `radial-gradient(circle, ${theme.glowFrom} 0%, transparent 70%)`, filter: 'blur(60px)' }} />
-        <div className="absolute top-1/2 -left-40 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-        <div className="absolute -bottom-32 -right-16 w-80 h-80 rounded-full" style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.18) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-      </div>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #1a0020 0%, #050508 40%, #200010 100%)', position: 'relative', overflow: 'hidden' }}>
+      {/* Ambient glow */}
+      <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '500px', height: '500px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(255,0,110,0.15) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
 
       {/* Header */}
-      <div className="relative z-10 flex items-center gap-4">
-        <Link
-          href={`/`}
-          className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)' }}
-        >
-          ←
-        </Link>
-        <div>
-          <h1 className="text-2xl font-black" style={{ color: '#f0f0f5' }}>{room?.name}</h1>
-          <p className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.45)' }}>Résultats</p>
-        </div>
-      </div>
-
-      {/* Nox hero zone */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', paddingTop: '16px', paddingBottom: '4px' }} className="relative z-10">
-        <Nox emotion="proud" size={90} animate />
-        <p style={{ fontSize: '1.15rem', fontWeight: 900, color: '#f0f0f5', textAlign: 'center', letterSpacing: '-0.01em' }}>
-          Voici le verdict.
-        </p>
-      </div>
-
-      {/* Group level card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="relative z-10 p-8 rounded-3xl flex flex-col items-center gap-3 text-center"
-        style={{
-          background: `linear-gradient(135deg, ${levelInfo.colorFrom}30, ${levelInfo.colorTo}25)`,
-          border: `1px solid ${levelInfo.colorFrom}40`,
-          backdropFilter: 'blur(12px)',
-        }}
-      >
-        <span style={{ fontSize: '4rem' }}>{levelInfo.emoji}</span>
-        <div>
-          <h2 className="text-3xl font-black" style={{ color: '#f0f0f5' }}>{levelInfo.label}</h2>
-          <p className="text-base mt-1" style={{ color: 'rgba(240,240,245,0.70)' }}>{levelInfo.description}</p>
-        </div>
-      </motion.div>
-
-      {/* Stats row */}
-      <div className="relative z-10 grid grid-cols-2 gap-3">
-        <div className="card p-5 flex flex-col gap-1">
-          <span className="text-4xl font-black" style={{ background: grad, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            {participantCount}
-          </span>
-          <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Participant{participantCount > 1 ? 's' : ''}</span>
-        </div>
-        <div className="card p-5 flex flex-col gap-1">
-          <span className="text-4xl font-black" style={{ background: grad, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            {totalAnswers}
-          </span>
-          <span className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.50)' }}>Réponses</span>
-        </div>
-      </div>
-
-      {/* Summary card */}
-      <div
-        className="relative z-10 p-6 rounded-3xl"
-        style={{ background: `linear-gradient(135deg, ${theme.glowFrom}, ${theme.glowTo})`, border: `1px solid ${theme.from}4d` }}
-      >
-        <p className="text-lg font-black text-center leading-snug" style={{ color: '#f0f0f5' }}>{summary}</p>
-      </div>
-
-      {/* Highlight cards */}
-      {(controversial || consensus) && (
-        <div className="relative z-10 grid grid-cols-2 gap-3">
-          {controversial && controversial.total > 0 && (
-            <div className="card p-4 flex flex-col gap-2">
-              <p className="text-xs font-bold uppercase tracking-wide flex items-center gap-1" style={{ color: '#fbbf24' }}><Sparkles size={12} /> La plus controversée</p>
-              <p className="text-sm font-bold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{controversial.question.text}</p>
-              <div className="flex gap-1 text-xs flex-wrap">
-                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>{controversial.yesPercent}% Oui</span>
-                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>{100 - controversial.yesPercent}% Non</span>
-              </div>
-            </div>
-          )}
-          {consensus && consensus.total > 0 && (
-            <div className="card p-4 flex flex-col gap-2">
-              <p className="text-xs font-bold uppercase tracking-wide flex items-center gap-1" style={{ color: '#60a5fa' }}><Users size={12} /> Le plus de consensus</p>
-              <p className="text-sm font-bold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{consensus.question.text}</p>
-              <div className="flex gap-1 text-xs flex-wrap">
-                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.20)', color: '#6ee7b7' }}>{consensus.yesPercent}% Oui</span>
-                <span className="py-1 px-2 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.20)', color: '#fca5a5' }}>{100 - consensus.yesPercent}% Non</span>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Badges */}
-      <div className="relative z-10 flex flex-col gap-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.50)' }}><Crown size={18} /> Badges</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {BADGES.map((badge, i) => (
-            <div key={i} className="card p-4 flex flex-col items-center gap-2 text-center">
-              <span className="text-3xl">{badge.emoji}</span>
-              <span className="text-sm font-bold" style={{ color: '#f0f0f5' }}>{badge.label}</span>
-              <span className="text-xs font-medium" style={{ color: 'rgba(240,240,245,0.45)' }}>{badge.description}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Podium + Leaderboard */}
-      {room?.points_enabled && leaderboard.length > 0 && (
-        <div className="relative z-10 flex flex-col gap-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: 'rgba(240,240,245,0.50)' }}><Trophy size={20} /> Classement</h2>
-
-          {podiumStep === 0 && (
-            <div className="flex flex-col items-center gap-3 py-6">
-              <div className="animate-spin w-8 h-8 rounded-xl" style={{ background: grad }} />
-              <p style={{ color: 'rgba(240,240,245,0.45)', fontSize: '.9rem' }}>Calcul en cours…</p>
-            </div>
-          )}
-
-          {podiumStep >= 1 && leaderboard.length >= 3 && (
-            <div
-              style={{
-                transition: 'opacity 0.6s ease, transform 0.6s ease',
-                opacity: podiumStep >= 1 ? 1 : 0,
-                transform: podiumStep >= 1 ? 'translateY(0)' : 'translateY(40px)',
-                padding: '14px 16px',
-                borderRadius: '20px',
-                background: 'rgba(156,163,175,0.12)',
-                border: '1px solid rgba(156,163,175,0.25)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-              }}
-            >
-              <span style={{ fontWeight: 900, fontSize: '1.1rem', color: '#9ca3af', background: 'rgba(156,163,175,0.18)', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
-              <div style={{ flex: 1, fontWeight: 700, color: '#f0f0f5' }}>{leaderboard[2]?.player.nickname}</div>
-              <div style={{ fontWeight: 900, fontSize: '.85rem', color: '#9ca3af' }}>{leaderboard[2]?.points} pts</div>
-            </div>
-          )}
-
-          {podiumStep >= 2 && leaderboard.length >= 2 && (
-            <div
-              style={{
-                transition: 'opacity 0.6s ease, transform 0.6s ease',
-                opacity: podiumStep >= 2 ? 1 : 0,
-                transform: podiumStep >= 2 ? 'translateY(0)' : 'translateY(40px)',
-                padding: '16px 18px',
-                borderRadius: '22px',
-                background: 'linear-gradient(135deg, rgba(156,163,175,0.18), rgba(209,213,219,0.12))',
-                border: '1px solid rgba(209,213,219,0.30)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-              }}
-            >
-              <span style={{ fontWeight: 900, fontSize: '1.1rem', color: '#d1d5db', background: 'rgba(209,213,219,0.18)', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
-              <div style={{ flex: 1, fontWeight: 700, color: '#f0f0f5' }}>{leaderboard[1]?.player.nickname}</div>
-              <div style={{ fontWeight: 900, fontSize: '.9rem', color: '#d1d5db' }}>{leaderboard[1]?.points} pts</div>
-            </div>
-          )}
-
-          {podiumStep >= 3 && leaderboard.length >= 1 && (
-            <div
-              style={{
-                transition: 'opacity 0.6s ease, transform 0.6s ease',
-                opacity: podiumStep >= 3 ? 1 : 0,
-                transform: podiumStep >= 3 ? 'translateY(0)' : 'translateY(40px)',
-                padding: '22px 20px',
-                borderRadius: '24px',
-                background: 'linear-gradient(135deg, rgba(245,158,11,0.25), rgba(251,191,36,0.15))',
-                border: '1px solid rgba(245,158,11,0.45)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                boxShadow: '0 8px 32px rgba(245,158,11,0.20)',
-              }}
-            >
-              <Crown size={24} color="#fbbf24" />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 900, fontSize: '1.15rem', color: '#f0f0f5' }}>{leaderboard[0]?.player.nickname}</div>
-                <div style={{ fontSize: '.8rem', color: 'rgba(240,240,245,0.50)', marginTop: '2px' }}>Gagnant !</div>
-              </div>
-              <div style={{ fontWeight: 900, fontSize: '1.1rem', color: '#fbbf24' }}>{leaderboard[0]?.points} pts</div>
-            </div>
-          )}
-
-          {podiumStep >= 3 && (
-            <div className="flex flex-col gap-2">
-              {leaderboard.map((entry, idx) => {
-                const rankStyle = entry.rank <= 3 ? rankColors[entry.rank - 1] : null
-                return (
-                  <motion.div
-                    key={entry.player.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: idx * 0.08, ease: 'easeOut' }}
-                    className="card p-4 flex items-center gap-3"
-                  >
-                    <div
-                      style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '12px',
-                        background: rankStyle ? rankStyle.bg : 'rgba(255,255,255,0.08)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 900,
-                        fontSize: '.9rem',
-                        color: rankStyle ? rankStyle.text : 'rgba(240,240,245,0.40)',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {entry.rank === 1 ? <Crown size={16} /> : entry.rank}
-                    </div>
-                    <div className="flex-1 font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</div>
-                    <div
-                      className="text-sm font-black px-3 py-1 rounded-full"
-                      style={{ background: `${theme.from}2e`, color: theme.from }}
-                    >
-                      {entry.points} pts
-                    </div>
-                  </motion.div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tip Jar Modal */}
-      {showTipJar && (
-        <div
-          style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}
-          onClick={() => setShowTipJar(false)}
-        >
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }} />
-          <div
-            style={{ position: 'relative', zIndex: 1, background: 'linear-gradient(180deg,rgba(18,12,40,0.98),rgba(10,8,24,0.99))', borderRadius: '28px 28px 0 0', padding: '28px 24px 48px', display: 'flex', flexDirection: 'column', gap: '18px', border: '1px solid rgba(255,255,255,0.10)', borderBottom: 'none' }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ width: '44px', height: '4px', borderRadius: '99px', background: 'rgba(255,255,255,0.20)', margin: '0 auto -6px' }} />
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'center' }}><Sparkles size={32} color="#fbbf24" /></div>
-              <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#f0f0f5' }}>Vous avez kiffé ?</div>
-              <p style={{ fontSize: '.88rem', color: 'rgba(240,240,245,0.50)', marginTop: '6px', lineHeight: 1.5 }}>Passez à Flower+ pour des fonctionnalités premium</p>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                onClick={() => router.push('/pricing')}
-                style={{ flex: 1, padding: '16px 8px', borderRadius: '16px', background: grad, border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
-              >
-                Découvrir Flower+
-              </button>
-            </div>
-            <button
-              onClick={() => setShowTipJar(false)}
-              style={{ background: 'none', border: 'none', color: 'rgba(240,240,245,0.35)', fontSize: '.9rem', cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'underline' }}
-            >
-              Non merci
-            </button>
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, padding: '16px 20px 12px', background: 'rgba(5,5,8,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link href="/" style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f0f0f5', textDecoration: 'none', flexShrink: 0 }}>
+            <Home size={16} />
+          </Link>
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#f0f0f5', margin: 0, letterSpacing: '-0.02em' }}>{room?.name}</h1>
+            <p style={{ fontSize: '0.72rem', color: 'rgba(240,240,245,0.40)', margin: 0, marginTop: '1px' }}>{players.length} joueurs · {questions.length} questions</p>
+          </div>
+          <div style={{ padding: '4px 10px', borderRadius: '8px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)' }}>
+            <span style={{ fontSize: '11px', fontWeight: 800, color: 'rgba(240,240,245,0.60)', letterSpacing: '.06em' }}>{code}</span>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Per-question results */}
-      <div className="relative z-10 flex flex-col gap-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'rgba(240,240,245,0.50)' }}>Toutes les questions</h2>
+      <div style={{ padding: '20px 16px 60px', display: 'flex', flexDirection: 'column', gap: '0' }}>
+
+        {/* Nox hero */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '24px 0 8px', zIndex: 1 }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '200px', height: '200px', borderRadius: '9999px', background: 'radial-gradient(circle, rgba(255,0,110,0.20) 0%, transparent 70%)', filter: 'blur(25px)', pointerEvents: 'none' }} />
+            <Nox emotion="proud" size={110} animate />
+          </div>
+          <p style={{ fontSize: '1.6rem', fontWeight: 900, color: '#f0f0f5', textAlign: 'center', letterSpacing: '-0.03em', margin: 0, lineHeight: 1.1 }}>C&apos;est terminé 🔥</p>
+          <p style={{ fontSize: '0.82rem', color: 'rgba(240,240,245,0.45)', textAlign: 'center', margin: 0 }}>{totalAnswers} réponses données ce soir</p>
+        </div>
+
+        {/* Player avatars row */}
+        {players.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} style={{ position: 'relative', marginTop: '28px' }}>
+            <div style={{ position: 'absolute', top: '-22px', left: '18px', zIndex: 2, fontSize: '2.2rem', lineHeight: 1 }}>👥</div>
+            <div style={{ borderRadius: '24px', background: 'rgba(255,255,255,0.92)', boxShadow: '0 8px 32px rgba(0,0,0,0.30)', position: 'relative', overflow: 'hidden', padding: '20px 20px 20px 24px' }}>
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '5px', background: grad, borderRadius: '24px 0 0 24px' }} />
+              <span style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase', color: theme.from }}>PARTICIPANTS</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+                {players.map((p, i) => (
+                  <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0,0,0,0.06)', borderRadius: '9999px', padding: '5px 10px 5px 5px' }}>
+                    {p.avatar_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.avatar_url} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} alt="" />
+                    ) : (
+                      <div style={{ width: 24, height: 24, borderRadius: '50%', background: `linear-gradient(135deg, ${theme.from}, ${theme.to})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 900, color: '#fff' }}>
+                        {p.nickname[0].toUpperCase()}
+                      </div>
+                    )}
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#222' }}>{p.nickname}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Per-question results */}
         {results.map((r, i) => (
           <motion.div
             key={r.question.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.08, ease: 'easeOut' }}
-            className="card p-5"
+            transition={{ delay: 0.08 + i * 0.06, ease: 'easeOut' }}
+            style={{ position: 'relative', marginTop: '28px' }}
           >
-            <div className="flex items-start justify-between gap-2 mb-4">
-              <p className="font-semibold leading-snug flex-1" style={{ color: '#f0f0f5' }}>{r.question.text}</p>
-              <span className="text-sm font-black flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(240,240,245,0.40)' }}>{i + 1}</span>
+            <div style={{ position: 'absolute', top: '-22px', left: '18px', zIndex: 2, fontSize: '2rem', lineHeight: 1, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.4))' }}>
+              {MOODS[i % MOODS.length]}
             </div>
-            {r.total > 0 ? (
-              <>
-                <div className="w-full h-2.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(239,68,68,0.30)' }}>
-                  <motion.div
-                    className="h-full rounded-full"
-                    style={{ background: 'linear-gradient(90deg, #10b981, #34d399)' }}
-                    initial={{ width: '0%' }}
-                    animate={{ width: `${r.yesPercent}%` }}
-                    transition={{ duration: 0.8, delay: i * 0.1, ease: 'easeOut' }}
-                  />
+            <div style={{ borderRadius: '24px', background: 'rgba(255,255,255,0.92)', boxShadow: '0 8px 32px rgba(0,0,0,0.30)', position: 'relative', overflow: 'hidden', padding: '20px 20px 20px 24px' }}>
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '5px', background: `linear-gradient(180deg, ${theme.from}, ${theme.to})`, borderRadius: '24px 0 0 24px' }} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase', color: theme.from }}>Q{i + 1}</span>
+              </div>
+              <p style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0a0a0a', lineHeight: 1.4, marginBottom: '14px' }}>{r.question.text}</p>
+
+              {r.question.type === 'text_answer' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {r.textAnswers.length === 0 ? (
+                    <p style={{ fontSize: '0.82rem', color: '#999' }}>Aucune réponse</p>
+                  ) : (
+                    r.textAnswers.map((ta, j) => (
+                      <div key={j} style={{ background: 'rgba(0,0,0,0.05)', borderRadius: '12px', padding: '10px 14px' }}>
+                        <p style={{ fontSize: '10px', fontWeight: 800, color: theme.from, textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: '3px' }}>{ta.nickname}</p>
+                        <p style={{ fontSize: '0.88rem', fontWeight: 700, color: '#222' }}>{ta.text_value}</p>
+                      </div>
+                    ))
+                  )}
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="font-bold flex items-center gap-1" style={{ color: '#34d399' }}><Check size={14} /> {r.yesPercent}% Oui ({r.yesCount})</span>
-                  <span className="font-bold" style={{ color: '#f87171' }}>{100 - r.yesPercent}% Non ({r.noCount})</span>
-                </div>
-              </>
-            ) : (
-              <p className="text-sm" style={{ color: 'rgba(240,240,245,0.30)' }}>Aucune réponse pour l&apos;instant</p>
-            )}
+              ) : (
+                r.total > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {/* Yes bar */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 800, color: '#10b981' }}>Oui — {r.yesCount} joueur{r.yesCount !== 1 ? 's' : ''}</span>
+                        <span style={{ fontSize: '14px', fontWeight: 900, color: '#10b981' }}>{r.yesPercent}%</span>
+                      </div>
+                      <div style={{ height: '8px', borderRadius: '9999px', background: 'rgba(16,185,129,0.15)', overflow: 'hidden' }}>
+                        <motion.div
+                          style={{ height: '100%', borderRadius: '9999px', background: 'linear-gradient(90deg, #10b981, #34d399)' }}
+                          initial={{ width: '0%' }}
+                          animate={{ width: `${r.yesPercent}%` }}
+                          transition={{ duration: 0.8, delay: 0.1 + i * 0.06, ease: 'easeOut' }}
+                        />
+                      </div>
+                    </div>
+                    {/* No bar */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 800, color: '#ef4444' }}>Non — {r.noCount} joueur{r.noCount !== 1 ? 's' : ''}</span>
+                        <span style={{ fontSize: '14px', fontWeight: 900, color: '#ef4444' }}>{100 - r.yesPercent}%</span>
+                      </div>
+                      <div style={{ height: '8px', borderRadius: '9999px', background: 'rgba(239,68,68,0.15)', overflow: 'hidden' }}>
+                        <motion.div
+                          style={{ height: '100%', borderRadius: '9999px', background: 'linear-gradient(90deg, #ef4444, #f87171)' }}
+                          initial={{ width: '0%' }}
+                          animate={{ width: `${100 - r.yesPercent}%` }}
+                          transition={{ duration: 0.8, delay: 0.15 + i * 0.06, ease: 'easeOut' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p style={{ fontSize: '0.82rem', color: '#999' }}>Aucune réponse</p>
+                )
+              )}
+            </div>
           </motion.div>
         ))}
-      </div>
 
-      {/* Share section */}
-      <div className="relative z-10 card p-5 flex flex-col gap-3">
-        <p className="text-sm font-semibold text-center" style={{ color: 'rgba(240,240,245,0.50)' }}>Invite plus d&apos;amis !</p>
-        <div className="flex gap-2">
-          <div className="flex-1 py-3 px-4 rounded-2xl text-center font-black text-xl tracking-widest" style={{ background: 'rgba(255,255,255,0.08)', color: '#f0f0f5' }}>
-            {code}
+        {/* Share & actions */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + results.length * 0.05 }} style={{ position: 'relative', marginTop: '32px' }}>
+          <div style={{ position: 'absolute', top: '-22px', left: '18px', zIndex: 2, fontSize: '2.2rem', lineHeight: 1 }}>📢</div>
+          <div style={{ borderRadius: '24px', background: 'rgba(255,255,255,0.92)', boxShadow: '0 8px 32px rgba(0,0,0,0.30)', position: 'relative', overflow: 'hidden', padding: '20px 20px 20px 24px' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '5px', background: 'linear-gradient(180deg, #6366f1, #a855f7)', borderRadius: '24px 0 0 24px' }} />
+            <span style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase', color: '#6366f1' }}>PARTAGER</span>
+            <p style={{ fontSize: '1.1rem', fontWeight: 900, color: '#0a0a0a', margin: '4px 0 14px', letterSpacing: '-0.01em' }}>Invite plus d&apos;amis</p>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+              <div style={{ flex: 1, padding: '12px 16px', borderRadius: '14px', textAlign: 'center', fontWeight: 900, fontSize: '1.15rem', letterSpacing: '.12em', background: 'rgba(0,0,0,0.06)', color: '#111' }}>
+                {code}
+              </div>
+              <button onClick={copyCode} style={{ padding: '12px 16px', borderRadius: '14px', background: 'rgba(0,0,0,0.06)', border: 'none', cursor: 'pointer', color: '#333', display: 'flex', alignItems: 'center' }}>
+                {copied ? <Check size={16} color="#10b981" /> : <Copy size={16} />}
+              </button>
+            </div>
+            <button onClick={() => { playClick(); shareRoom() }} style={{ width: '100%', padding: '14px', borderRadius: '14px', background: grad, border: 'none', color: '#fff', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: shadow }}>
+              <Share2 size={16} /> Partager le lien
+            </button>
           </div>
-          <button onClick={copyCode} className="px-4 rounded-2xl active:scale-95 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}>
-            {copied ? <Check size={18} /> : <Copy size={18} />}
+        </motion.div>
+
+        {/* Actions */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+          <button
+            onClick={() => {
+              playClick()
+              localStorage.setItem('flower_replay_questions', JSON.stringify(questions.map(q => q.text)))
+              router.push('/create?replay=1')
+            }}
+            style={{ width: '100%', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}
+          >
+            <RotateCcw size={16} /> Rejouer avec les mêmes questions
           </button>
+          <Link href="/create" style={{ width: '100%', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem', textDecoration: 'none' }}>
+            <Home size={16} /> Nouvelle partie
+          </Link>
         </div>
-        <button onClick={() => { playClick(); shareRoom() }} className="w-full py-3 rounded-2xl text-white font-bold active:scale-95 flex items-center justify-center gap-2" style={{ background: grad, boxShadow: shadow }}>
-          <Share2 size={18} /> Partager le lien
-        </button>
-      </div>
-
-      {/* Share card */}
-      <div
-        ref={shareCardRef}
-        className="relative z-10 p-1 rounded-3xl"
-        style={{ background: grad }}
-      >
-        <div
-          className="rounded-[22px] p-6 flex flex-col gap-4"
-          style={{ background: 'rgba(14,12,30,0.95)', backdropFilter: 'blur(20px)' }}
-        >
-          <div className="flex items-center gap-3">
-            <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#f0f0f5' }}>I</span>
-            <div>
-              <p className="font-black text-lg leading-tight" style={{ color: '#f0f0f5' }}>Flower — {room?.name}</p>
-              <p className="text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.55)' }}>
-                {levelInfo.emoji} {levelInfo.label}
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-4 text-sm font-semibold" style={{ color: 'rgba(240,240,245,0.60)' }}>
-            <span className="flex items-center gap-1"><Users size={14} /> {participantCount} joueur{participantCount > 1 ? 's' : ''}</span>
-            <span>{results.length} questions</span>
-          </div>
-          {leaderboard.length > 0 && (
-            <div className="flex flex-col gap-1.5">
-              {leaderboard.slice(0, 3).map((entry, i) => {
-                const medalNums = ['1', '2', '3']
-                return (
-                  <div key={entry.player.id} className="flex items-center gap-2">
-                    <span style={{ fontWeight: 800, fontSize: '.8rem', color: 'rgba(240,240,245,0.60)' }}>{medalNums[i]}</span>
-                    <span className="font-bold" style={{ color: '#f0f0f5' }}>{entry.player.nickname}</span>
-                    {room?.points_enabled && (
-                      <span className="text-xs font-semibold ml-auto" style={{ color: theme.from }}>{entry.points} pts</span>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Image export buttons */}
-      <div className="relative z-10 flex flex-col gap-2">
-        <button
-          onClick={downloadResultsImage}
-          className="w-full py-3 rounded-2xl font-bold active:scale-95"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}
-        >
-          <span className="flex items-center justify-center gap-2"><ImageIcon size={18} /> Sauvegarder en image</span>
-        </button>
-        <button
-          onClick={shareResultsImage}
-          className="w-full py-3 rounded-2xl font-bold active:scale-95"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#f0f0f5' }}
-        >
-          <span className="flex items-center justify-center gap-2"><Share2 size={18} /> Partager</span>
-        </button>
-      </div>
-
-      {/* Replay button */}
-      <div className="relative z-10">
-        <button
-          onClick={() => {
-            playClick()
-            localStorage.setItem('flower_replay_questions', JSON.stringify(questions.map(q => q.text)))
-            router.push('/create?replay=1')
-          }}
-          className="w-full py-4 rounded-2xl text-white font-bold active:scale-95 flex items-center justify-center gap-2"
-          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', color: '#f0f0f5' }}
-        >
-          <RotateCcw size={18} /> Rejouer avec les mêmes questions
-        </button>
-      </div>
-
-      <div className="relative z-10 pb-4 text-center">
-        <Link href="/create" className="text-sm underline" style={{ color: 'rgba(240,240,245,0.35)' }}>
-          Créer une nouvelle salle
-        </Link>
       </div>
     </div>
   )
