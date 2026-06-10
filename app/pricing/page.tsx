@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Check, Zap, Shield, Sparkles } from 'lucide-react'
 import Nox from '@/components/Nox'
 import { getUserToken } from '@/lib/subscription'
@@ -13,6 +13,12 @@ export default function PricingPage() {
   const [recoverStatus, setRecoverStatus] = useState<'idle' | 'loading' | 'ok' | 'notfound'>('idle')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [checkoutUrl, setCheckoutUrl] = useState('/api/stripe/checkout?token=new')
+
+  useEffect(() => {
+    const token = localStorage.getItem('flower_user_token') || 'new'
+    setCheckoutUrl(`/api/stripe/checkout?token=${token}`)
+  }, [])
 
   const features = [
     { icon: Zap, text: 'Accès à tous les modes de jeu' },
@@ -154,7 +160,7 @@ export default function PricingPage() {
         )}
 
         <a
-          href={`/api/stripe/checkout?token=${typeof window !== 'undefined' ? (localStorage.getItem('flower_user_token') || 'new') : 'new'}`}
+          href={checkoutUrl}
           onClick={(e) => {
             e.preventDefault()
             handleContinue()

@@ -3,7 +3,10 @@ import { NextResponse } from 'next/server'
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const userToken = searchParams.get('token') || 'anonymous'
-  return createCheckoutSession('monthly', userToken)
+  const result = await createCheckoutSession('monthly', userToken)
+  const data = await result.json()
+  if (data.url) return NextResponse.redirect(data.url)
+  return NextResponse.redirect(new URL('/pricing', req.url))
 }
 
 export async function POST(req: Request) {
