@@ -1,11 +1,16 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Check } from 'lucide-react'
 import Nox from '@/components/Nox'
+import { getUserToken } from '@/lib/subscription'
 
 export default function PricingPage() {
   const router = useRouter()
+  const [recovering, setRecovering] = useState(false)
+  const [email, setEmail] = useState('')
+  const [recoverStatus, setRecoverStatus] = useState<'idle' | 'loading' | 'ok' | 'notfound'>('idle')
 
   const features = [
     'Accès à tous les modes de jeu',
@@ -14,10 +19,11 @@ export default function PricingPage() {
   ]
 
   const handleContinue = async () => {
+    const userToken = getUserToken()
     const res = await fetch('/api/stripe/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: 'monthly' }),
+      body: JSON.stringify({ plan: 'monthly', userToken }),
     })
     const data = await res.json()
     if (data.url) window.location.href = data.url
@@ -107,6 +113,53 @@ export default function PricingPage() {
         >
           Continuer
         </button>
+
+        <button
+          onClick={() => setRecovering(r => !r)}
+          style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.40)', fontSize: '0.82rem', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit' }}
+        >
+          J&apos;ai déjà un abonnement actif
+        </button>
+
+        {recovering && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}>
+            <p style={{ color: 'rgba(255,255,255,0.70)', fontSize: '0.82rem', margin: 0, textAlign: 'center' }}>
+              Entre l&apos;email utilisé lors du paiement pour récupérer ton accès.
+            </p>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="ton@email.com"
+              style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.08)', color: '#f0f0f5', fontSize: '0.95rem', outline: 'none', fontFamily: 'inherit' }}
+            />
+            {recoverStatus === 'ok' && <p style={{ color: '#34d399', fontSize: '0.82rem', textAlign: 'center', margin: 0 }}>✓ Accès récupéré ! Retour à l&apos;accueil…</p>}
+            {recoverStatus === 'notfound' && <p style={{ color: '#f87171', fontSize: '0.82rem', textAlign: 'center', margin: 0 }}>Aucun abonnement trouvé pour cet email.</p>}
+            <button
+              disabled={recoverStatus === 'loading' || !email.trim()}
+              onClick={async () => {
+                setRecoverStatus('loading')
+                const userToken = getUserToken()
+                const res = await fetch('/api/stripe/recover', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: email.trim(), userToken }),
+                })
+                const data = await res.json()
+                if (data.success) {
+                  localStorage.setItem('flower_premium', 'true')
+                  setRecoverStatus('ok')
+                  setTimeout(() => router.push('/'), 1500)
+                } else {
+                  setRecoverStatus('notfound')
+                }
+              }}
+              style={{ padding: '12px', borderRadius: '12px', background: recoverStatus === 'loading' ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              {recoverStatus === 'loading' ? 'Vérification…' : 'Récupérer mon accès'}
+            </button>
+          </div>
+        )}
 
         <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'rgba(255,255,255,0.30)', margin: 0 }}>
           Conditions · Politique de confidentialité
