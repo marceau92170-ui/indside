@@ -211,6 +211,28 @@ async function compressAvatar(file: File): Promise<string> {
   })
 }
 
+async function compressBg(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const maxW = 960
+        const ratio = Math.min(maxW / img.width, maxW / img.height, 1)
+        const w = Math.round(img.width * ratio)
+        const h = Math.round(img.height * ratio)
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
+        resolve(canvas.toDataURL('image/jpeg', 0.65))
+      }
+      img.src = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
 function CreateForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -269,11 +291,12 @@ function CreateForm() {
     }
   }, [searchParams])
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
+    const compressed = await compressBg(file)
+    setImagePreview(compressed)
   }
 
   const addQuestion = async () => {
@@ -319,18 +342,7 @@ function CreateForm() {
         setShowPremiumGate(true)
         return
       }
-      let imageUrl: string | null = null
-      if (imageFile) {
-        const ext = imageFile.name.split('.').pop()
-        const path = `rooms/${Date.now()}.${ext}`
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('images')
-          .upload(path, imageFile)
-        if (!uploadError && uploadData) {
-          const { data: urlData } = supabase.storage.from('images').getPublicUrl(uploadData.path)
-          imageUrl = urlData.publicUrl
-        }
-      }
+      const imageUrl: string | null = imagePreview ?? null
 
       const code = generateCode()
 
