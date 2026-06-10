@@ -161,10 +161,6 @@ export default function PricingPage() {
 
         <a
           href={checkoutUrl}
-          onClick={(e) => {
-            e.preventDefault()
-            handleContinue()
-          }}
           style={{
             display: 'block', width: '100%', padding: '22px',
             borderRadius: '9999px', textAlign: 'center', textDecoration: 'none',
