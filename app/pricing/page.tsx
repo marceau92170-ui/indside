@@ -31,15 +31,21 @@ export default function PricingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: 'monthly', userToken }),
       })
+      if (!res.ok) {
+        const text = await res.text()
+        setError(`Erreur serveur ${res.status}: ${text.slice(0, 100)}`)
+        setLoading(false)
+        return
+      }
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
       } else {
-        setError(data.error || 'Une erreur est survenue')
+        setError(data.error || 'Pas d\'URL reçue du serveur')
         setLoading(false)
       }
-    } catch {
-      setError('Erreur réseau, réessaie.')
+    } catch (e: any) {
+      setError(`Erreur: ${e?.message || 'inconnue'}`)
       setLoading(false)
     }
   }
