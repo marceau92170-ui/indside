@@ -65,12 +65,28 @@ export async function POST(request: NextRequest) {
           // Only process NEW emails
           if (emailMessage.status !== EmailStatus.NEW) continue
 
+          // Quota guard — stop if monthly limit reached
+          const freshAgency = await prisma.agency.findUnique({
+            where: { id: mailbox.agencyId },
+            select: { emailQuotaUsed: true, emailQuotaMax: true },
+          })
+          if (freshAgency && freshAgency.emailQuotaUsed >= freshAgency.emailQuotaMax) {
+            console.warn(`Quota atteint pour agence ${mailbox.agencyId}`)
+            break
+          }
+
           await classifyAndProcess({
             emailMessage,
             message: msg,
             mailbox,
             agency: mailbox.agency,
             provider,
+          })
+
+          // Increment monthly quota
+          await prisma.agency.update({
+            where: { id: mailbox.agencyId },
+            data: { emailQuotaUsed: { increment: 1 } },
           })
 
           results.processed++

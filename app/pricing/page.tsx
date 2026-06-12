@@ -1,7 +1,9 @@
 import Link from "next/link"
+import PricingButtons from "@/components/PricingButtons"
 
 const PLANS = [
   {
+    key: "STARTER" as const,
     name: "Starter",
     price: 99,
     tagline: "Pour démarrer",
@@ -15,6 +17,7 @@ const PLANS = [
     highlighted: false,
   },
   {
+    key: "PRO" as const,
     name: "Pro",
     price: 249,
     tagline: "Le plus populaire",
@@ -28,6 +31,7 @@ const PLANS = [
     highlighted: true,
   },
   {
+    key: "AGENCY_PLUS" as const,
     name: "Agence+",
     price: 499,
     tagline: "Pour les réseaux",
@@ -108,16 +112,7 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href="/register"
-                  className={`text-center rounded-xl px-5 py-3 text-sm font-semibold transition-colors ${
-                    plan.highlighted
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  }`}
-                >
-                  Commencer l&apos;essai
-                </Link>
+                <PricingButtons planKey={plan.key} highlighted={plan.highlighted} />
               </div>
             ))}
           </div>

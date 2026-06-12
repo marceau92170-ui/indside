@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { AUTO_REPLY_CATEGORIES } from "@/lib/constants"
 import RulesEditor, { type RuleItem } from "@/components/RulesEditor"
 import AgencySettings from "@/components/AgencySettings"
+import BillingSection from "@/components/BillingSection"
 
 export const dynamic = "force-dynamic"
 
@@ -155,6 +156,17 @@ export default async function SettingsPage({
         <AgencySettings
           initialTone={agency?.tone ?? "vouvoiement"}
           initialSignature={agency?.signature ?? ""}
+        />
+      </section>
+
+      {/* Abonnement */}
+      <section className="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Abonnement &amp; quota</h2>
+        <BillingSection
+          plan={agency?.plan ?? "STARTER"}
+          quotaUsed={agency?.emailQuotaUsed ?? 0}
+          quotaMax={agency?.emailQuotaMax ?? 500}
+          hasStripe={!!agency?.stripeCustomerId}
         />
       </section>
     </div>
