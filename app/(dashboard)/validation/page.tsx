@@ -37,12 +37,14 @@ export default async function ValidationPage() {
 
   return (
     <div className="p-6 md:p-8 max-w-5xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">File de validation</h1>
-      <p className="text-sm text-gray-500 mb-6">
-        {items.length > 0
-          ? `${items.length} brouillon${items.length > 1 ? "s" : ""} en attente de votre validation.`
-          : "Validez les réponses proposées par l'agent en un clic."}
-      </p>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-white">Validation</h1>
+        <p className="text-sm text-slate-500 mt-0.5">
+          {items.length > 0
+            ? `${items.length} brouillon${items.length > 1 ? "s" : ""} en attente de votre validation`
+            : "Aucun brouillon en attente pour l'instant"}
+        </p>
+      </div>
 
       <ValidationQueue items={items} />
     </div>
