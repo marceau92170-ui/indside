@@ -3,9 +3,7 @@ import { EmailCategory, Priority } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { CLASSIFY_SYSTEM_PROMPT, buildClassifyPrompt } from "@/lib/prompts/classify"
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+const getAnthropic = () => new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 interface ClassifyResult {
   category: EmailCategory
@@ -24,7 +22,7 @@ export async function classifyEmail(params: {
 
   const userPrompt = buildClassifyPrompt(from, subject, body)
 
-  const response = await anthropic.messages.create({
+  const response = await getAnthropic().messages.create({
     model: "claude-3-5-haiku-20241022",
     max_tokens: 1024,
     system: CLASSIFY_SYSTEM_PROMPT,

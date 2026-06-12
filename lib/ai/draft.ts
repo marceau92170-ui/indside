@@ -4,9 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { buildDraftSystemPrompt, buildDraftPrompt } from "@/lib/prompts/draft"
 import type { NewMessage } from "@/lib/email/providers"
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+const getAnthropic = () => new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function generateDraft(params: {
   email: Pick<NewMessage, "from" | "subject" | "bodyText">
@@ -24,7 +22,7 @@ export async function generateDraft(params: {
     extractedData
   )
 
-  const response = await anthropic.messages.create({
+  const response = await getAnthropic().messages.create({
     model: "claude-3-5-haiku-20241022",
     max_tokens: 1024,
     system: systemPrompt,
