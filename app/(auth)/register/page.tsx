@@ -43,7 +43,7 @@ export default function RegisterPage() {
       if (loginResult?.error) {
         router.push("/login")
       } else {
-        router.push("/dashboard")
+        router.push("/onboarding")
         router.refresh()
       }
     } catch {
