@@ -4,7 +4,8 @@ import { decrypt } from "@/lib/crypto"
 import { GmailProvider } from "@/lib/email/providers/gmail"
 import { classifyEmail } from "@/lib/ai/classify"
 import { generateDraft } from "@/lib/ai/draft"
-import { CONFIDENCE_THRESHOLD } from "@/lib/constants"
+import { buildAutoReply } from "@/lib/automation/templates"
+import { CONFIDENCE_THRESHOLD, AUTO_REPLY_CATEGORIES } from "@/lib/constants"
 import { EmailStatus, DraftStatus, AutoAction, type Mailbox, type Agency } from "@prisma/client"
 import type { NewMessage } from "@/lib/email/providers"
 
@@ -154,73 +155,56 @@ async function classifyAndProcess({
     return
   }
 
-  // Generate draft content
-  const draftContent = await generateDraft({
-    email: {
-      from: message.from,
-      subject: message.subject,
-      bodyText: message.bodyText,
-    },
-    category: classification.category,
-    extractedData: classification.extractedData,
-    agency: {
-      name: agency.name,
-      tone: agency.tone,
-      signature: agency.signature,
-    },
-    agencyId: mailbox.agencyId,
-  })
+  // ----- AUTO-RÉPONSE : template sûr uniquement (pas d'IA générative) -----
+  // RÈGLE D'OR : ne part en automatique que si la catégorie est en liste
+  // blanche ET la confiance est élevée. Le contenu vient d'un template figé,
+  // jamais d'un texte libre généré qui pourrait engager l'agence.
+  const isWhitelisted = (AUTO_REPLY_CATEGORIES as readonly string[]).includes(
+    classification.category
+  )
 
   if (
     rule.action === AutoAction.AUTO_REPLY &&
+    isWhitelisted &&
     classification.confidence >= CONFIDENCE_THRESHOLD
   ) {
-    const toEmail = extractEmail(message.from)
-    await provider.sendMessage({
-      to: toEmail,
-      subject: `Re: ${message.subject}`,
-      body: draftContent,
-      threadId: message.threadId,
+    const replyBody = buildAutoReply(rule.template, classification.category, {
+      nom: classification.extractedData.nom as string | undefined,
+      signature: agency.signature,
+      agencyName: agency.name,
     })
 
-    await prisma.emailMessage.update({
-      where: { id: emailMessage.id },
-      data: { status: EmailStatus.AUTO_SENT },
-    })
+    // Filet de sécurité : si aucun template sûr, on bascule en brouillon
+    if (replyBody) {
+      const toEmail = extractEmail(message.from)
+      await provider.sendMessage({
+        to: toEmail,
+        subject: `Re: ${message.subject}`,
+        body: replyBody,
+        threadId: message.threadId,
+      })
 
-    await prisma.draft.create({
-      data: {
-        emailMessageId: emailMessage.id,
-        content: draftContent,
-        status: DraftStatus.APPROVED,
-        sentAt: new Date(),
-      },
-    })
-  } else {
-    const toEmail = extractEmail(message.from)
-    const gmailDraftId = await provider.createDraft({
-      to: toEmail,
-      subject: `Re: ${message.subject}`,
-      body: draftContent,
-      threadId: message.threadId,
-    })
+      await prisma.emailMessage.update({
+        where: { id: emailMessage.id },
+        data: { status: EmailStatus.AUTO_SENT },
+      })
 
-    await prisma.emailMessage.update({
-      where: { id: emailMessage.id },
-      data: { status: EmailStatus.DRAFT_READY },
-    })
+      await prisma.draft.create({
+        data: {
+          emailMessageId: emailMessage.id,
+          content: replyBody,
+          status: DraftStatus.APPROVED,
+          sentAt: new Date(),
+        },
+      })
 
-    await prisma.draft.create({
-      data: {
-        emailMessageId: emailMessage.id,
-        content: draftContent,
-        status: DraftStatus.PENDING,
-        providerDraftId: gmailDraftId,
-      },
-    })
+      await provider.markRead(message.providerId)
+      return
+    }
   }
 
-  await provider.markRead(message.providerId)
+  // ----- BROUILLON À VALIDER : IA générative, relu par un humain -----
+  await createDraftOnly({ emailMessage, message, classification, agency, provider })
 }
 
 async function createDraftOnly({

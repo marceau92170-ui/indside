@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { seedDefaultRules } from "@/lib/automation/defaults"
 
 export async function POST(request: Request) {
   try {
@@ -47,6 +48,9 @@ export async function POST(request: Request) {
       },
       include: { users: true },
     })
+
+    // Préréglage « prudent » : crée les règles d'automatisation par défaut
+    await seedDefaultRules(agency.id)
 
     return NextResponse.json({
       success: true,
