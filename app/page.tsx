@@ -107,8 +107,11 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-gray-100 px-6 py-8">
-        <div className="max-w-6xl mx-auto text-center text-sm text-gray-400">
-          © 2024 ImmoMail · Conçu pour les agences immobilières françaises
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm text-gray-400">
+          <span>© ImmoMail · Conçu pour les agences immobilières françaises</span>
+          <Link href="/confidentialite" className="hover:text-gray-600 underline">
+            Confidentialité
+          </Link>
         </div>
       </footer>
     </div>
