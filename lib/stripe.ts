@@ -1,7 +1,21 @@
 import Stripe from "stripe"
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2023-10-16",
+// Initialisation lazy : pas d'erreur au build si la clé n'est pas encore configurée
+let _stripe: Stripe | null = null
+export function getStripeClient(): Stripe {
+  if (!_stripe) {
+    const key = process.env.STRIPE_SECRET_KEY
+    if (!key) throw new Error("STRIPE_SECRET_KEY non configurée")
+    _stripe = new Stripe(key, { apiVersion: "2023-10-16" })
+  }
+  return _stripe
+}
+
+// Alias rétrocompatible pour les imports existants
+export const stripe = new Proxy({} as Stripe, {
+  get(_, prop) {
+    return (getStripeClient() as unknown as Record<string | symbol, unknown>)[prop]
+  },
 })
 
 // Price IDs à remplacer par tes vrais IDs Stripe (mode Test)
