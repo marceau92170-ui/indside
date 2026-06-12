@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { ESTIMATED_TIME_PER_EMAIL_MINUTES } from "@/lib/constants"
 import { EmailStatus } from "@prisma/client"
+import DemoSeedButton from "@/components/DemoSeedButton"
 
 export const dynamic = "force-dynamic"
 
@@ -92,6 +93,19 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
         <p className="text-gray-500 mt-1">Vue d&apos;ensemble de votre activité email</p>
       </div>
+
+      {totalProcessed === 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50 border border-gray-200 rounded-xl p-5 mb-8">
+          <div>
+            <p className="font-medium text-gray-900">Aperçu du produit</p>
+            <p className="text-sm text-gray-500">
+              Pas encore de boîte connectée ? Chargez un jeu de données de démonstration
+              pour voir l&apos;agent en action.
+            </p>
+          </div>
+          <DemoSeedButton />
+        </div>
+      )}
 
       {/* Stats principales */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
