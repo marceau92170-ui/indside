@@ -2,12 +2,15 @@ import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { AUTO_REPLY_CATEGORIES } from "@/lib/constants"
+import RulesEditor, { type RuleItem } from "@/components/RulesEditor"
+import AgencySettings from "@/components/AgencySettings"
 
-// Messages de feedback affichés après le retour du flux OAuth Gmail
+export const dynamic = "force-dynamic"
+
 const SUCCESS_MESSAGES: Record<string, string> = {
   gmail_connected: "Boîte Gmail connectée avec succès.",
 }
-
 const ERROR_MESSAGES: Record<string, string> = {
   gmail_auth_failed: "La connexion Gmail a échoué. Réessayez.",
   gmail_no_tokens:
@@ -16,66 +19,86 @@ const ERROR_MESSAGES: Record<string, string> = {
   gmail_callback_failed: "Erreur lors de la connexion. Réessayez.",
 }
 
+// Ordre d'affichage logique des catégories
+const CATEGORY_ORDER = [
+  "LEAD_ACHAT",
+  "LEAD_LOCATION",
+  "DEMANDE_VISITE",
+  "DOSSIER_PIECES",
+  "LOCATAIRE",
+  "PROPRIETAIRE",
+  "FOURNISSEUR",
+  "ADMIN",
+  "AUTRE",
+  "SPAM",
+]
+
 export default async function SettingsPage({
   searchParams,
 }: {
   searchParams: { success?: string; error?: string }
 }) {
   const session = await getServerSession(authOptions)
-  if (!session?.user?.agencyId) {
-    redirect("/login")
-  }
+  if (!session?.user?.agencyId) redirect("/login")
+  const agencyId = session.user.agencyId
 
-  const mailboxes = await prisma.mailbox.findMany({
-    where: { agencyId: session.user.agencyId },
-    orderBy: { createdAt: "desc" },
-  })
+  const [agency, mailboxes, rules] = await Promise.all([
+    prisma.agency.findUnique({ where: { id: agencyId } }),
+    prisma.mailbox.findMany({ where: { agencyId }, orderBy: { createdAt: "desc" } }),
+    prisma.automationRule.findMany({ where: { agencyId } }),
+  ])
 
-  const successMsg = searchParams.success
-    ? SUCCESS_MESSAGES[searchParams.success]
-    : null
+  const whitelist = AUTO_REPLY_CATEGORIES as readonly string[]
+  const ruleItems: RuleItem[] = rules
+    .map((r) => ({
+      id: r.id,
+      category: r.category,
+      action: r.action,
+      enabled: r.enabled,
+      whitelisted: whitelist.includes(r.category),
+    }))
+    .sort(
+      (a, b) => CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category)
+    )
+
+  const successMsg = searchParams.success ? SUCCESS_MESSAGES[searchParams.success] : null
   const errorMsg = searchParams.error
     ? ERROR_MESSAGES[searchParams.error] ?? "Une erreur est survenue."
     : null
 
   return (
-    <div className="p-8 max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">
-        Règles &amp; Paramètres
-      </h1>
-      <p className="text-sm text-gray-500 mb-8">
-        Connectez votre boîte email et configurez l'agent.
-      </p>
+    <div className="p-6 md:p-8 max-w-3xl space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Règles &amp; Paramètres</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Configurez le comportement de votre agent et connectez votre boîte.
+        </p>
+      </div>
 
       {successMsg && (
-        <div className="mb-6 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+        <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
           {successMsg}
         </div>
       )}
       {errorMsg && (
-        <div className="mb-6 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
+        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
           {errorMsg}
         </div>
       )}
 
-      {/* Section connexion Gmail */}
+      {/* Connexion Gmail */}
       <section className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Boîtes email connectées
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">Boîtes email connectées</h2>
             <p className="text-sm text-gray-500">
-              L'agent surveille ces boîtes et traite les emails entrants.
+              L&apos;agent surveille ces boîtes et traite les emails entrants.
             </p>
           </div>
           <a
             href="/api/gmail/connect"
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 shrink-0"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 11l8-5H4l8 5zm0 2L4 8v10h16V8l-8 5z" />
-            </svg>
             Connecter Gmail
           </a>
         </div>
@@ -87,19 +110,12 @@ export default async function SettingsPage({
         ) : (
           <ul className="divide-y divide-gray-100">
             {mailboxes.map((mb) => (
-              <li
-                key={mb.id}
-                className="flex items-center justify-between py-3"
-              >
+              <li key={mb.id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {mb.email}
-                  </p>
+                  <p className="text-sm font-medium text-gray-900">{mb.email}</p>
                   <p className="text-xs text-gray-500">
                     {mb.provider} · dernière synchro :{" "}
-                    {mb.lastSyncAt
-                      ? new Date(mb.lastSyncAt).toLocaleString("fr-FR")
-                      : "jamais"}
+                    {mb.lastSyncAt ? new Date(mb.lastSyncAt).toLocaleString("fr-FR") : "jamais"}
                   </p>
                 </div>
                 <span
@@ -117,6 +133,29 @@ export default async function SettingsPage({
             ))}
           </ul>
         )}
+      </section>
+
+      {/* Règles d'automatisation */}
+      <section className="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900">Règles par catégorie</h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Pour chaque type d&apos;email, choisissez l&apos;action de l&apos;agent. La réponse
+          automatique n&apos;est proposée que pour les cas sans risque.
+        </p>
+        {ruleItems.length === 0 ? (
+          <p className="text-sm text-gray-400">Règles non initialisées.</p>
+        ) : (
+          <RulesEditor rules={ruleItems} />
+        )}
+      </section>
+
+      {/* Ton & signature */}
+      <section className="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Ton &amp; signature</h2>
+        <AgencySettings
+          initialTone={agency?.tone ?? "vouvoiement"}
+          initialSignature={agency?.signature ?? ""}
+        />
       </section>
     </div>
   )
