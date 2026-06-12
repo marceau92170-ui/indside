@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { seedDefaultRules } from "@/lib/automation/defaults"
 
 declare module "next-auth" {
   interface Session {
@@ -16,7 +17,7 @@ declare module "next-auth" {
     }
   }
   interface User {
-    agencyId: string
+    agencyId?: string | null
   }
 }
 
@@ -68,25 +69,61 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
     })
   )
 }
 
+/**
+ * Garantit qu'un utilisateur possède une agence (et ses règles par défaut).
+ * Utilisé pour les comptes créés via Google sign-in, qui arrivent sans agence.
+ * Retourne l'agencyId résolu.
+ */
+async function ensureAgencyForUser(userId: string): Promise<string> {
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+  if (user?.agencyId) return user.agencyId
+
+  const agency = await prisma.agency.create({
+    data: { name: user?.name ? `Agence ${user.name}` : "Mon agence" },
+  })
+  await prisma.user.update({
+    where: { id: userId },
+    data: { agencyId: agency.id },
+  })
+  await seedDefaultRules(agency.id)
+  return agency.id
+}
+
 export const authOptions: NextAuthOptions = {
-  // @ts-expect-error - PrismaAdapter type mismatch between @auth/prisma-adapter and next-auth v4
   adapter: PrismaAdapter(prisma),
   providers,
+  // JWT obligatoire : CredentialsProvider ne fonctionne pas avec les sessions
+  // "database" dans NextAuth v4. Les comptes Google restent persistés via l'adapter.
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
   pages: {
     signIn: "/login",
   },
   callbacks: {
-    async session({ session, user }) {
+    async jwt({ token, user }) {
+      // À la connexion, `user` est présent : on mémorise id + agencyId
+      if (user) {
+        token.id = user.id
+        const uid = user.id as string
+        const agencyId = (user as { agencyId?: string | null }).agencyId
+        token.agencyId = agencyId || (await ensureAgencyForUser(uid))
+      }
+      // Filet de sécurité : si jamais l'agencyId manque encore, on le résout
+      if (token.id && !token.agencyId) {
+        token.agencyId = await ensureAgencyForUser(token.id as string)
+      }
+      return token
+    },
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = user.id
-        session.user.agencyId = (user as { agencyId: string }).agencyId
+        session.user.id = token.id as string
+        session.user.agencyId = token.agencyId as string
       }
       return session
     },
