@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   const resetUrl = `${appUrl}/reset-password?token=${token}`
 
   await getResend().emails.send({
-    from: "ImmoMail <noreply@immomail.fr>",
+    from: "ImmoMail <onboarding@resend.dev>",
     to: user.email,
     subject: "Réinitialisation de votre mot de passe ImmoMail",
     html: `
