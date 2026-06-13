@@ -48,20 +48,22 @@ const PLANS = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <header className="border-b border-gray-100 px-6 py-4">
+    <div className="min-h-screen flex flex-col bg-slate-950">
+      <header className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-blue-600">
-            ImmoMail
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <span className="text-white font-bold">ImmoMail</span>
           </Link>
           <nav className="flex items-center gap-6">
-            <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
+            <Link href="/login" className="text-sm text-slate-400 hover:text-white transition-colors">
               Connexion
             </Link>
-            <Link
-              href="/register"
-              className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium"
-            >
+            <Link href="/register" className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-500 font-medium transition-colors">
               Créer un compte
             </Link>
           </nav>
@@ -71,42 +73,38 @@ export default function PricingPage() {
       <main className="flex-1 px-6 py-16">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Des tarifs simples et transparents
-            </h1>
-            <p className="text-lg text-gray-500">
-              Sans engagement. Hébergement des données en Union Européenne.
-            </p>
+            <h1 className="text-4xl font-bold text-white mb-4">Tarifs simples et transparents</h1>
+            <p className="text-slate-400 text-lg">Sans engagement · Hébergement EU · Données sécurisées</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-4">
             {PLANS.map((plan) => (
               <div
                 key={plan.name}
                 className={`rounded-2xl border p-7 flex flex-col ${
                   plan.highlighted
-                    ? "border-blue-600 shadow-lg ring-1 ring-blue-600"
-                    : "border-gray-200"
+                    ? "border-indigo-500/50 bg-indigo-500/5"
+                    : "border-slate-800 bg-slate-900"
                 }`}
               >
                 {plan.highlighted && (
-                  <span className="self-start text-xs font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full mb-3">
+                  <span className="self-start text-xs font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full mb-3">
                     {plan.tagline}
                   </span>
                 )}
                 {!plan.highlighted && (
-                  <span className="text-xs font-medium text-gray-400 mb-3">{plan.tagline}</span>
+                  <span className="text-xs font-medium text-slate-500 mb-3">{plan.tagline}</span>
                 )}
-                <h2 className="text-xl font-bold text-gray-900">{plan.name}</h2>
+                <h2 className="text-xl font-bold text-white">{plan.name}</h2>
                 <div className="mt-3 mb-6">
-                  <span className="text-4xl font-bold text-gray-900">{plan.price}€</span>
-                  <span className="text-gray-500"> / mois</span>
+                  <span className="text-4xl font-bold text-white">{plan.price}€</span>
+                  <span className="text-slate-500"> / mois</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
-                      <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <li key={f} className="flex items-start gap-2 text-sm text-slate-400">
+                      <svg className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
                       {f}
                     </li>
@@ -117,9 +115,9 @@ export default function PricingPage() {
             ))}
           </div>
 
-          <p className="text-center text-sm text-gray-400 mt-10">
+          <p className="text-center text-sm text-slate-600 mt-10">
             Tous les prix sont hors taxes. Hébergement des données en Union Européenne.{" "}
-            <Link href="/confidentialite" className="underline hover:text-gray-600">
+            <Link href="/confidentialite" className="underline hover:text-slate-400">
               Politique de confidentialité
             </Link>
           </p>

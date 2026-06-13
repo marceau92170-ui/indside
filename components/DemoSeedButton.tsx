@@ -21,7 +21,7 @@ export default function DemoSeedButton() {
     <button
       onClick={seed}
       disabled={loading}
-      className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
+      className="rounded-lg bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-50"
     >
       {loading ? "Chargement…" : "Charger des données de démonstration"}
     </button>
