@@ -6,8 +6,21 @@ import { prisma } from "@/lib/prisma"
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
-  if (!session?.user?.agencyId) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
+  }
+
+  // Récupère l'agencyId depuis la session OU directement depuis la DB
+  let agencyId = session.user.agencyId
+  if (!agencyId) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { agencyId: true },
+    })
+    agencyId = user?.agencyId ?? null
+  }
+  if (!agencyId) {
+    return NextResponse.json({ error: "Aucune agence liée à ce compte" }, { status: 400 })
   }
 
   const { plan } = await req.json()
@@ -20,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   const agency = await prisma.agency.findUnique({
-    where: { id: session.user.agencyId },
+    where: { id: agencyId },
   })
   if (!agency) return NextResponse.json({ error: "Agence introuvable" }, { status: 404 })
 
