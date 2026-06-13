@@ -67,112 +67,127 @@ export default async function DashboardPage() {
   const maxCount = Math.max(1, ...categoryStats.map((c) => c.count))
 
   return (
-    <div className="p-6 md:p-8 max-w-6xl">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-xl font-semibold text-white">Tableau de bord</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Vue d&apos;ensemble de votre activité email</p>
-      </div>
+    <div className="p-6 md:p-8 max-w-5xl mx-auto">
 
-      {/* Empty state */}
-      {totalProcessed === 0 && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-xl p-5 mb-8">
-          <div>
-            <p className="text-sm font-medium text-white">Aucune donnée pour l&apos;instant</p>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Chargez un jeu de démonstration pour voir l&apos;agent en action.
-            </p>
-          </div>
-          <DemoSeedButton />
-        </div>
-      )}
-
-      {/* Quota warning */}
+      {/* Quota / plan alerts */}
       {agency && agency.emailQuotaMax === 0 && (
         <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
-          <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-          </svg>
+          <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
           <div className="flex-1">
             <p className="text-sm font-semibold text-amber-300">Aucun abonnement actif</p>
             <p className="text-xs text-slate-400 mt-0.5">Choisissez un plan pour activer le traitement IA de vos emails.</p>
           </div>
-          <a href="/pricing" className="text-xs bg-amber-500 hover:bg-amber-400 text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0">
-            Voir les plans →
-          </a>
+          <a href="/pricing" className="text-xs bg-amber-500 hover:bg-amber-400 text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0">Voir les plans →</a>
         </div>
       )}
       {agency && agency.emailQuotaMax > 0 && agency.emailQuotaMax < 999999 && (() => {
         const pct = Math.round((agency.emailQuotaUsed / agency.emailQuotaMax) * 100)
         if (pct >= 100) return (
           <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
-            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-            </svg>
+            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
             <div className="flex-1">
               <p className="text-sm font-semibold text-red-300">Quota mensuel atteint — traitement suspendu</p>
-              <p className="text-xs text-slate-400 mt-0.5">Les nouveaux emails ne sont plus traités jusqu&apos;au renouvellement ou à l&apos;upgrade.</p>
+              <p className="text-xs text-slate-400 mt-0.5">Les nouveaux emails ne sont plus traités jusqu&apos;au renouvellement.</p>
             </div>
-            <a href="/pricing" className="text-xs bg-red-500 hover:bg-red-400 text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0">
-              Upgrader
-            </a>
+            <a href="/pricing" className="text-xs bg-red-500 hover:bg-red-400 text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0">Upgrader</a>
           </div>
         )
         if (pct >= 80) return (
           <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
-            <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-            </svg>
+            <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
             <div className="flex-1">
               <p className="text-sm font-semibold text-amber-300">{pct}% du quota utilisé</p>
               <p className="text-xs text-slate-400 mt-0.5">{agency.emailQuotaUsed} / {agency.emailQuotaMax} emails ce mois-ci.</p>
             </div>
-            <a href="/pricing" className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors shrink-0">
-              Voir les plans →
-            </a>
+            <a href="/pricing" className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors shrink-0">Voir les plans →</a>
           </div>
         )
         return null
       })()}
 
-      {/* Pending drafts alert */}
-      {pendingDrafts > 0 && (
-        <Link
-          href="/validation"
-          className="flex items-center justify-between bg-indigo-600/10 border border-indigo-500/20 rounded-xl p-4 mb-8 hover:bg-indigo-600/15 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
-            <div>
-              <p className="text-sm font-semibold text-indigo-300">
-                {pendingDrafts} brouillon{pendingDrafts > 1 ? "s" : ""} en attente
-              </p>
-              <p className="text-xs text-slate-500">Cliquez pour valider →</p>
-            </div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Tableau de bord</h1>
+          <p className="text-sm text-slate-500 mt-1">Activité de votre agent IA email</p>
+        </div>
+        {pendingDrafts > 0 && (
+          <Link
+            href="/validation"
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+          >
+            <span className="w-5 h-5 bg-white/20 rounded-full text-xs flex items-center justify-center font-bold">{pendingDrafts}</span>
+            Valider les brouillons
+          </Link>
+        )}
+      </div>
+
+      {/* Empty state */}
+      {totalProcessed === 0 && (
+        <div className="flex flex-col items-center justify-center text-center py-16 border border-dashed border-slate-800 rounded-2xl mb-8">
+          <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mb-4">
+            <svg className="w-6 h-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
           </div>
-          <span className="text-2xl font-bold text-indigo-400">{pendingDrafts}</span>
-        </Link>
+          <p className="text-sm font-semibold text-white mb-1">Aucun email traité pour l&apos;instant</p>
+          <p className="text-xs text-slate-500 mb-5">Connectez Gmail dans les paramètres pour commencer.</p>
+          <DemoSeedButton />
+        </div>
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
-          { label: "Emails traités", value: totalProcessed, sub: `${weekProcessed} cette semaine` },
-          { label: "Leads détectés", value: leads, sub: "achat + location" },
-          { label: "Auto-réponses", value: autoSent, sub: "sans intervention" },
-          { label: "Temps économisé", value: timeSavedLabel, sub: "≈ 3 min / email" },
+          {
+            label: "Emails traités",
+            value: totalProcessed,
+            sub: `+${weekProcessed} cette semaine`,
+            icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />,
+            color: "text-indigo-400",
+            bg: "bg-indigo-500/10",
+          },
+          {
+            label: "Leads détectés",
+            value: leads,
+            sub: "achat & location",
+            icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />,
+            color: "text-emerald-400",
+            bg: "bg-emerald-500/10",
+          },
+          {
+            label: "Auto-réponses",
+            value: autoSent,
+            sub: "sans intervention",
+            icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />,
+            color: "text-violet-400",
+            bg: "bg-violet-500/10",
+          },
+          {
+            label: "Temps économisé",
+            value: timeSavedLabel,
+            sub: "≈ 3 min / email",
+            icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
+            color: "text-amber-400",
+            bg: "bg-amber-500/10",
+          },
         ].map((s) => (
-          <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{s.label}</p>
-            <p className="text-2xl font-bold text-white mt-2">{s.value}</p>
-            <p className="text-xs text-slate-600 mt-0.5">{s.sub}</p>
+          <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
+            <div className={`w-8 h-8 ${s.bg} rounded-lg flex items-center justify-center`}>
+              <svg className={`w-4 h-4 ${s.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">{s.icon}</svg>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{s.value}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
+            </div>
+            <p className="text-xs text-slate-600">{s.sub}</p>
           </div>
         ))}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4">
         {/* Category breakdown */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
           <h2 className="text-sm font-semibold text-white mb-5">Répartition par catégorie</h2>
           {categoryStats.length === 0 ? (
             <p className="text-sm text-slate-600 py-8 text-center">Aucune donnée</p>
@@ -180,15 +195,12 @@ export default async function DashboardPage() {
             <div className="space-y-4">
               {categoryStats.map((c) => (
                 <div key={c.category}>
-                  <div className="flex justify-between text-xs mb-1.5">
-                    <span className="text-slate-400">{CATEGORY_LABELS[c.category] ?? c.category}</span>
-                    <span className="text-slate-500 font-medium tabular-nums">{c.count}</span>
+                  <div className="flex justify-between text-xs mb-2">
+                    <span className="text-slate-300 font-medium">{CATEGORY_LABELS[c.category] ?? c.category}</span>
+                    <span className="text-slate-500 tabular-nums">{c.count}</span>
                   </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-indigo-500 rounded-full"
-                      style={{ width: `${(c.count / maxCount) * 100}%` }}
-                    />
+                  <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${(c.count / maxCount) * 100}%` }} />
                   </div>
                 </div>
               ))}
@@ -197,9 +209,14 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent activity */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-800">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-white">Activité récente</h2>
+            {recentEmails.length > 0 && (
+              <Link href="/validation" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                Voir tout →
+              </Link>
+            )}
           </div>
           {recentEmails.length === 0 ? (
             <div className="p-10 text-center">
@@ -207,31 +224,24 @@ export default async function DashboardPage() {
               <p className="text-xs text-slate-600 mt-1">Connectez Gmail pour commencer.</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-800 max-h-[380px] overflow-auto">
+            <div className="divide-y divide-slate-800/60 max-h-[400px] overflow-auto">
               {recentEmails.map((email) => {
                 const st = STATUS_CONFIG[email.status] ?? { label: email.status, dot: "bg-slate-600" }
                 return (
-                  <div key={email.id} className="px-5 py-3.5 hover:bg-slate-800/50 transition-colors">
+                  <div key={email.id} className="px-6 py-4 hover:bg-slate-800/40 transition-colors">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          {email.category && (
-                            <span className="text-xs font-medium px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">
-                              {CATEGORY_LABELS[email.category] ?? email.category}
-                            </span>
-                          )}
-                          {email.priority === "URGENT" && (
-                            <span className="text-xs font-medium px-2 py-0.5 rounded bg-red-500/10 text-red-400">
-                              Urgent
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-white truncate">{email.subject || "(sans objet)"}</p>
+                        {email.category && (
+                          <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 mb-1.5">
+                            {CATEGORY_LABELS[email.category] ?? email.category}
+                          </span>
+                        )}
+                        <p className="text-sm text-white truncate font-medium">{email.subject || "(sans objet)"}</p>
                         <p className="text-xs text-slate-500 truncate mt-0.5">{email.from}</p>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
                         <div className={`w-1.5 h-1.5 rounded-full ${st.dot}`}></div>
-                        <span className="text-xs text-slate-500">{st.label}</span>
+                        <span className="text-xs text-slate-500 whitespace-nowrap">{st.label}</span>
                       </div>
                     </div>
                   </div>
