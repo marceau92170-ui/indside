@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       where: { id: session.user.id },
       select: { agencyId: true },
     })
-    agencyId = user?.agencyId ?? null
+    agencyId = user?.agencyId ?? ""
   }
   if (!agencyId) {
     return NextResponse.json({ error: "Aucune agence liée à ce compte" }, { status: 400 })
