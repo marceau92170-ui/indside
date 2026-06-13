@@ -7,6 +7,7 @@ import RulesEditor, { type RuleItem } from "@/components/RulesEditor"
 import AgencySettings from "@/components/AgencySettings"
 import BillingSection from "@/components/BillingSection"
 import PromoCodeInput from "@/components/PromoCodeInput"
+import DisconnectMailboxButton from "@/components/DisconnectMailboxButton"
 
 export const dynamic = "force-dynamic"
 
@@ -114,17 +115,20 @@ export default async function SettingsPage({
         ) : (
           <ul className="divide-y divide-slate-800">
             {mailboxes.map((mb) => (
-              <li key={mb.id} className="flex items-center justify-between py-3.5">
-                <div>
-                  <p className="text-sm text-white">{mb.email}</p>
+              <li key={mb.id} className="flex items-center justify-between py-3.5 gap-4">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-white truncate">{mb.email}</p>
                   <p className="text-xs text-slate-600 mt-0.5">
-                    {mb.provider} · sync{" "}
+                    Dernière sync :{" "}
                     {mb.lastSyncAt ? new Date(mb.lastSyncAt).toLocaleString("fr-FR") : "jamais"}
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <div className={`w-1.5 h-1.5 rounded-full ${mb.status === "ACTIVE" ? "bg-emerald-400" : mb.status === "ERROR" ? "bg-red-400" : "bg-slate-600"}`}></div>
-                  <span className="text-xs text-slate-500">{mb.status === "ACTIVE" ? "Actif" : mb.status === "ERROR" ? "Erreur" : mb.status}</span>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-1.5">
+                    <div className={`w-1.5 h-1.5 rounded-full ${mb.status === "ACTIVE" ? "bg-emerald-400" : mb.status === "ERROR" ? "bg-red-400" : "bg-slate-600"}`}></div>
+                    <span className="text-xs text-slate-500">{mb.status === "ACTIVE" ? "Actif" : mb.status === "ERROR" ? "Erreur" : mb.status}</span>
+                  </div>
+                  <DisconnectMailboxButton mailboxId={mb.id} />
                 </div>
               </li>
             ))}

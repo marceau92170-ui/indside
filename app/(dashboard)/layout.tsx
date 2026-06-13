@@ -111,15 +111,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-800">
+        <div className="p-4 border-t border-slate-800 space-y-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-indigo-600/20 rounded-full flex items-center justify-center shrink-0">
-              <span className="text-indigo-400 text-xs font-semibold">
+            <div className="w-8 h-8 bg-indigo-600/20 rounded-full flex items-center justify-center shrink-0">
+              <span className="text-indigo-400 text-xs font-bold">
                 {session.user?.email?.charAt(0).toUpperCase()}
               </span>
             </div>
-            <p className="text-xs text-slate-500 truncate">{session.user?.email}</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-white font-medium truncate">{session.user?.name || session.user?.email}</p>
+              <p className="text-xs text-slate-500 truncate">{session.user?.email}</p>
+            </div>
           </div>
+          <button
+            onClick={() => import("next-auth/react").then(m => m.signOut({ callbackUrl: "/login" }))}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-500 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Se déconnecter
+          </button>
         </div>
       </aside>
 
