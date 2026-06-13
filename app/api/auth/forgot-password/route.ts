@@ -16,34 +16,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   }
 
-  const token = crypto.randomBytes(32).toString("hex")
-  const expires = new Date(Date.now() + 1000 * 60 * 60) // 1 heure
+  // Code à 6 chiffres, valable 15 minutes
+  const code = String(Math.floor(100000 + Math.random() * 900000))
+  const expires = new Date(Date.now() + 1000 * 60 * 15)
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { resetToken: token, resetTokenExpiresAt: expires },
+    data: { resetToken: code, resetTokenExpiresAt: expires },
   })
-
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://indside-production.up.railway.app"
-  const resetUrl = `${appUrl}/reset-password?token=${token}`
 
   await getResend().emails.send({
     from: "ImmoMail <onboarding@resend.dev>",
     to: user.email,
-    subject: "Réinitialisation de votre mot de passe ImmoMail",
+    subject: "Votre code de réinitialisation ImmoMail",
     html: `
-      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 32px;">
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
         <h2 style="color: #1e293b; margin-bottom: 8px;">Réinitialisation de mot de passe</h2>
         <p style="color: #64748b; margin-bottom: 24px;">
-          Vous avez demandé à réinitialiser votre mot de passe ImmoMail. Cliquez sur le bouton ci-dessous.
-          Ce lien est valable <strong>1 heure</strong>.
+          Voici votre code de vérification. Il est valable <strong>15 minutes</strong>.
         </p>
-        <a href="${resetUrl}"
-           style="display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
-          Réinitialiser mon mot de passe →
-        </a>
-        <p style="color: #94a3b8; font-size: 12px; margin-top: 24px;">
-          Si vous n'avez pas fait cette demande, ignorez cet email. Votre mot de passe ne changera pas.
+        <div style="background: #f1f5f9; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+          <span style="font-size: 40px; font-weight: 800; letter-spacing: 12px; color: #1e293b;">${code}</span>
+        </div>
+        <p style="color: #94a3b8; font-size: 12px;">
+          Si vous n'avez pas fait cette demande, ignorez cet email.
         </p>
       </div>
     `,
