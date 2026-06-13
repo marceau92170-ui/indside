@@ -2,147 +2,99 @@ import Link from "next/link"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-slate-950">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <header className="border-b border-slate-800/60 px-6 py-4">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <span className="text-lg font-bold text-gray-900">ImmoMail</span>
+            <span className="text-white font-bold">ImmoMail</span>
           </div>
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="/pricing" className="text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium">
+          <nav className="flex items-center gap-6">
+            <Link href="/pricing" className="text-sm text-slate-400 hover:text-white transition-colors">
               Tarifs
             </Link>
-            <Link href="/login" className="text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium">
+            <Link href="/login" className="text-sm text-slate-400 hover:text-white transition-colors">
               Connexion
             </Link>
             <Link
               href="/register"
-              className="text-sm bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-semibold shadow-sm"
+              className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-500 font-medium transition-colors"
             >
-              Créer un compte →
+              Créer un compte
             </Link>
           </nav>
         </div>
       </header>
 
-      <main className="flex-1 pt-16">
+      <main className="flex-1">
         {/* Hero */}
-        <section className="bg-slate-950 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/40 via-slate-950 to-slate-950"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-600/10 blur-3xl rounded-full pointer-events-none"></div>
-
-          <div className="relative max-w-5xl mx-auto px-6 py-32 text-center">
-            <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold px-4 py-2 rounded-full mb-8 uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse"></span>
-              Agent IA pour agences immobilières françaises
-            </div>
-
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 tracking-tight">
-              Votre assistant email
-              <br />
-              <span className="bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent">
-                intelligent pour l&apos;immobilier
-              </span>
-            </h1>
-
-            <p className="text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-              ImmoMail connecte votre boîte Gmail, classe chaque email entrant et rédige une réponse professionnelle —
-              vous n&apos;avez plus qu&apos;à valider.
+        <section className="px-6 py-24 md:py-32 border-b border-slate-800/60">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-6">
+              Pour les agences immobilières françaises
             </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
+              Traitez vos emails<br />deux fois plus vite.
+            </h1>
+            <p className="text-lg text-slate-400 mb-10 max-w-xl leading-relaxed">
+              ImmoMail se connecte à votre Gmail, classe chaque email entrant et rédige une réponse professionnelle.
+              Vous relisez, vous approuvez, vous envoyez.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href="/register"
-                className="bg-indigo-600 text-white px-8 py-4 rounded-xl text-base font-semibold hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25 w-full sm:w-auto"
+                className="inline-flex items-center justify-center bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-indigo-500 transition-colors"
               >
-                Créer un compte
+                Créer un compte →
               </Link>
               <Link
                 href="/pricing"
-                className="text-slate-300 hover:text-white px-8 py-4 rounded-xl text-base font-medium transition-colors border border-slate-700 hover:border-slate-500 w-full sm:w-auto"
+                className="inline-flex items-center justify-center text-slate-300 px-6 py-3 rounded-lg text-sm font-medium border border-slate-700 hover:border-slate-500 hover:text-white transition-colors"
               >
                 Voir les tarifs
               </Link>
             </div>
-
-            <p className="text-sm text-slate-600 mt-6">
-              Accès sur invitation · Contactez-nous pour un accès
-            </p>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 mt-20 max-w-lg mx-auto border-t border-slate-800 pt-10">
-              <div>
-                <div className="text-3xl font-bold text-white">3 min</div>
-                <div className="text-sm text-slate-500 mt-1">économisées par email</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-white">10</div>
-                <div className="text-sm text-slate-500 mt-1">catégories détectées</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-white">85%</div>
-                <div className="text-sm text-slate-500 mt-1">de précision IA</div>
-              </div>
-            </div>
+            <p className="text-xs text-slate-600 mt-5">Accès sur invitation · Sans engagement</p>
           </div>
         </section>
 
         {/* How it works */}
-        <section className="py-24 px-6 bg-white">
+        <section className="px-6 py-20 border-b border-slate-800/60">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Comment ça marche ?</h2>
-              <p className="text-gray-500 max-w-xl mx-auto">
-                Trois étapes simples pour ne plus jamais perdre de temps sur vos emails.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-12">
+              Comment ça marche
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
-                  step: "01",
-                  icon: (
-                    <svg className="w-6 h-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                  ),
+                  num: "1",
                   title: "Connectez Gmail",
-                  desc: "Autorisez ImmoMail à accéder à votre boîte mail en quelques secondes. Vos données restent privées et chiffrées.",
+                  desc: "Autorisez l'accès à votre boîte mail. La connexion est chiffrée, vos tokens ne sont jamais exposés.",
                 },
                 {
-                  step: "02",
-                  icon: (
-                    <svg className="w-6 h-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                  ),
-                  title: "L'IA classe et rédige",
-                  desc: "Chaque email entrant est analysé, classifié (lead, visite, locataire…) et une réponse professionnelle est générée.",
+                  num: "2",
+                  title: "L'agent classifie et rédige",
+                  desc: "Chaque email entrant est analysé (lead, visite, locataire…) et une réponse est générée dans votre ton.",
                 },
                 {
-                  step: "03",
-                  icon: (
-                    <svg className="w-6 h-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  ),
-                  title: "Vous validez en un clic",
-                  desc: "Relisez, modifiez si besoin, et envoyez. Vous gardez le contrôle total sur chaque réponse engageante.",
+                  num: "3",
+                  title: "Vous validez",
+                  desc: "Relisez, modifiez si besoin, puis envoyez. Vous gardez le contrôle total. Rien ne part sans vous.",
                 },
-              ].map((item) => (
-                <div key={item.step} className="relative p-8 rounded-2xl bg-gray-50 border border-gray-100">
-                  <div className="absolute top-6 right-6 text-4xl font-black text-gray-100">{item.step}</div>
-                  <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-5">
-                    {item.icon}
+              ].map((s) => (
+                <div key={s.num} className="flex gap-5">
+                  <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-indigo-400 shrink-0 mt-0.5">
+                    {s.num}
                   </div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                  <div>
+                    <h3 className="text-white font-semibold mb-2">{s.title}</h3>
+                    <p className="text-sm text-slate-400 leading-relaxed">{s.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -150,26 +102,40 @@ export default function HomePage() {
         </section>
 
         {/* Features */}
-        <section className="py-24 px-6 bg-slate-950 text-white">
+        <section className="px-6 py-20 border-b border-slate-800/60">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Tout ce dont votre agence a besoin</h2>
-              <p className="text-slate-400 max-w-xl mx-auto">
-                Conçu spécifiquement pour les agences immobilières françaises.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-12">
+              Ce que ça fait
+            </h2>
+            <div className="grid md:grid-cols-2 gap-3">
               {[
-                { title: "10 catégories immobilières", desc: "Leads achat/location, demandes de visite, locataires, propriétaires, dossiers, fournisseurs, spam…", color: "indigo" },
-                { title: "Brouillons dans votre ton", desc: "Paramétrez le vouvoiement/tutoiement et la signature — chaque réponse respecte l'identité de votre agence.", color: "blue" },
-                { title: "Règles d'automatisation", desc: "Choisissez ce qui part automatiquement, ce qui attend validation, et ce qui est simplement classé.", color: "violet" },
-                { title: "Sécurité humain-in-the-loop", desc: "Les engagements (prix, RDV, disponibilité) ne partent JAMAIS sans votre validation. Toujours.", color: "emerald" },
-                { title: "Portails reconnus", desc: "SeLoger, Leboncoin, BienIci, LogicImmo, PAP — les leads des portails sont identifiés automatiquement.", color: "orange" },
-                { title: "Quota et statistiques", desc: "Suivez le nombre d'emails traités, les leads entrants, le temps économisé chaque semaine.", color: "pink" },
+                {
+                  title: "10 catégories immobilières",
+                  desc: "Leads achat/location, demandes de visite, locataires, propriétaires, dossiers, fournisseurs, spam — classés automatiquement.",
+                },
+                {
+                  title: "Réponses dans votre ton",
+                  desc: "Vouvoiement ou tutoiement, votre signature, le nom de votre agence — chaque brouillon respecte votre identité.",
+                },
+                {
+                  title: "Règles configurables",
+                  desc: "Choisissez ce qui part automatiquement, ce qui attend votre validation, et ce qui est simplement classé.",
+                },
+                {
+                  title: "Humain en dernier recours",
+                  desc: "Les engagements — prix, rendez-vous, disponibilité — ne partent jamais sans votre validation. C'est une règle non négociable.",
+                },
+                {
+                  title: "Portails immobiliers reconnus",
+                  desc: "SeLoger, Leboncoin, BienIci, LogicImmo, PAP — les leads des portails sont identifiés et traités en priorité.",
+                },
+                {
+                  title: "Suivi de l'activité",
+                  desc: "Volume traité, leads détectés, temps économisé — un tableau de bord clair pour piloter votre agence.",
+                },
               ].map((f) => (
-                <div key={f.title} className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors">
-                  <h3 className="font-semibold text-white mb-2">{f.title}</h3>
+                <div key={f.title} className="p-5 rounded-xl bg-slate-900 border border-slate-800">
+                  <h3 className="text-white font-semibold text-sm mb-1.5">{f.title}</h3>
                   <p className="text-sm text-slate-400 leading-relaxed">{f.desc}</p>
                 </div>
               ))}
@@ -178,38 +144,37 @@ export default function HomePage() {
         </section>
 
         {/* CTA */}
-        <section className="py-24 px-6 bg-white">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <section className="px-6 py-24">
+          <div className="max-w-xl mx-auto">
+            <h2 className="text-2xl font-bold text-white mb-3">
               Prêt à gagner du temps ?
             </h2>
-            <p className="text-gray-500 mb-8 text-lg">
-              Rejoignez les agences qui utilisent ImmoMail pour traiter leurs emails 3x plus vite.
+            <p className="text-slate-400 mb-8 text-sm leading-relaxed">
+              Rejoignez les agences qui utilisent ImmoMail pour traiter leurs emails plus vite, sans sacrifier la qualité de leurs réponses.
             </p>
             <Link
               href="/register"
-              className="inline-block bg-indigo-600 text-white px-10 py-4 rounded-xl text-base font-semibold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/20"
+              className="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-indigo-500 transition-colors"
             >
               Créer un compte →
             </Link>
-            <p className="text-sm text-gray-400 mt-4">Accès sur code d&apos;invitation</p>
+            <p className="text-xs text-slate-600 mt-4">Accès sur code d&apos;invitation</p>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-slate-950 border-t border-slate-800 px-6 py-8">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+      <footer className="border-t border-slate-800/60 px-6 py-6">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center">
-              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-5 h-5 bg-indigo-600 rounded flex items-center justify-center">
+              <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <span className="text-slate-400 font-medium">ImmoMail</span>
-            <span>· Conçu pour les agences immobilières françaises</span>
+            <span>ImmoMail · Conçu pour les agences immobilières françaises</span>
           </div>
-          <Link href="/confidentialite" className="hover:text-slate-300 underline underline-offset-2">
+          <Link href="/confidentialite" className="hover:text-slate-400 underline underline-offset-2">
             Politique de confidentialité
           </Link>
         </div>

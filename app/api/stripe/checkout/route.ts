@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     })
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://immomail.vercel.app"
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://indside-production.up.railway.app"
 
   const checkoutSession = await stripe.checkout.sessions.create({
     customer: customerId,
@@ -52,7 +52,6 @@ export async function POST(req: NextRequest) {
     payment_method_types: ["card"],
     line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: {
-      trial_period_days: 14,
       metadata: { agencyId: agency.id, plan },
     },
     success_url: `${appUrl}/dashboard?payment=success`,

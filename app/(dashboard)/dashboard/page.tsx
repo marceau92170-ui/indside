@@ -38,6 +38,11 @@ export default async function DashboardPage() {
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   const mailboxFilter = { mailbox: { agencyId } }
 
+  const agency = await prisma.agency.findUnique({
+    where: { id: agencyId },
+    select: { emailQuotaUsed: true, emailQuotaMax: true, plan: true },
+  })
+
   const [totalProcessed, weekProcessed, pendingDrafts, autoSent, leads, byCategory, recentEmails] =
     await Promise.all([
       prisma.emailMessage.count({ where: { ...mailboxFilter, status: { not: EmailStatus.NEW } } }),
@@ -81,6 +86,40 @@ export default async function DashboardPage() {
           <DemoSeedButton />
         </div>
       )}
+
+      {/* Quota warning */}
+      {agency && agency.emailQuotaMax < 999999 && (() => {
+        const pct = Math.round((agency.emailQuotaUsed / agency.emailQuotaMax) * 100)
+        if (pct >= 100) return (
+          <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
+            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-red-300">Quota mensuel atteint — traitement suspendu</p>
+              <p className="text-xs text-slate-400 mt-0.5">Les nouveaux emails ne sont plus traités jusqu&apos;au renouvellement ou à l&apos;upgrade.</p>
+            </div>
+            <a href="/pricing" className="text-xs bg-red-500 hover:bg-red-400 text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0">
+              Upgrader
+            </a>
+          </div>
+        )
+        if (pct >= 80) return (
+          <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
+            <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-300">{pct}% du quota utilisé</p>
+              <p className="text-xs text-slate-400 mt-0.5">{agency.emailQuotaUsed} / {agency.emailQuotaMax} emails ce mois-ci.</p>
+            </div>
+            <a href="/pricing" className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors shrink-0">
+              Voir les plans →
+            </a>
+          </div>
+        )
+        return null
+      })()}
 
       {/* Pending drafts alert */}
       {pendingDrafts > 0 && (
