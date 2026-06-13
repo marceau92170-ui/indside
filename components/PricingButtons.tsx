@@ -42,8 +42,8 @@ export default function PricingButtons({ planKey, highlighted }: Props) {
       disabled={loading}
       className={`w-full text-center rounded-xl px-5 py-3 text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
         highlighted
-          ? "bg-blue-600 text-white hover:bg-blue-700"
-          : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+          ? "bg-indigo-600 text-white hover:bg-indigo-500"
+          : "bg-slate-800 text-slate-200 hover:bg-slate-700"
       }`}
     >
       {loading ? "Redirection..." : "Commencer l'essai"}

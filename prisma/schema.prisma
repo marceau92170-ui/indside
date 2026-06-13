@@ -216,3 +216,27 @@ model UsageLog {
   metadata    Json?
   createdAt   DateTime @default(now())
 }
+
+model PromoCode {
+  id           String    @id @default(cuid())
+  code         String    @unique
+  maxUses      Int       @default(1)
+  usedCount    Int       @default(0)
+  durationDays Int       @default(30)
+  plan         Plan      @default(PRO)
+  notes        String?
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  redemptions PromoRedemption[]
+}
+
+model PromoRedemption {
+  id          String    @id @default(cuid())
+  promoCodeId String
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id])
+  agencyId    String
+  redeemedAt  DateTime  @default(now())
+
+  @@unique([agencyId])
+}

@@ -48,33 +48,31 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
   }
 
   return (
-    <div className="divide-y divide-gray-100">
+    <div className="divide-y divide-slate-800">
       {state.map((rule) => {
         const actions = rule.whitelisted
           ? ["AUTO_REPLY", "DRAFT_ONLY", "LABEL_ONLY"]
           : ["DRAFT_ONLY", "LABEL_ONLY"]
         return (
-          <div key={rule.id} className="flex items-center justify-between gap-4 py-3">
+          <div key={rule.id} className="flex items-center justify-between gap-4 py-3.5">
             <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => update(rule.id, { enabled: !rule.enabled })}
-                className={`relative w-10 h-6 rounded-full transition-colors shrink-0 ${
-                  rule.enabled ? "bg-blue-600" : "bg-gray-300"
+                className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
+                  rule.enabled ? "bg-indigo-600" : "bg-slate-700"
                 }`}
                 aria-label="Activer/désactiver"
               >
                 <span
-                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform shadow-sm ${
                     rule.enabled ? "translate-x-4" : ""
                   }`}
                 />
               </button>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900">
-                  {CATEGORY_LABELS[rule.category] ?? rule.category}
-                </p>
+                <p className="text-sm text-white">{CATEGORY_LABELS[rule.category] ?? rule.category}</p>
                 {rule.action === "AUTO_REPLY" && rule.enabled && (
-                  <p className="text-xs text-green-600">Réponse envoyée automatiquement</p>
+                  <p className="text-xs text-emerald-500">Réponse envoyée automatiquement</p>
                 )}
               </div>
             </div>
@@ -82,7 +80,7 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
               value={rule.action}
               disabled={!rule.enabled || savingId === rule.id}
               onChange={(e) => update(rule.id, { action: e.target.value })}
-              className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white disabled:opacity-50 shrink-0"
+              className="text-xs bg-slate-800 border border-slate-700 text-slate-300 rounded-lg px-3 py-1.5 disabled:opacity-40 shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               {actions.map((a) => (
                 <option key={a} value={a}>

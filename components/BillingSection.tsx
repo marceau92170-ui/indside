@@ -34,13 +34,12 @@ export default function BillingSection({ plan, quotaUsed, quotaMax, hasStripe }:
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-gray-900">
-            Plan actuel :{" "}
-            <span className="text-blue-600 font-semibold">{PLAN_LABELS[plan] ?? plan}</span>
+          <p className="text-sm text-white">
+            Plan <span className="text-indigo-400 font-semibold">{PLAN_LABELS[plan] ?? plan}</span>
           </p>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             {isUnlimited ? "Emails illimités" : `${quotaUsed} / ${quotaMax} emails ce mois-ci`}
           </p>
         </div>
@@ -48,14 +47,14 @@ export default function BillingSection({ plan, quotaUsed, quotaMax, hasStripe }:
           <button
             onClick={handlePortal}
             disabled={loading}
-            className="text-sm text-blue-600 hover:underline disabled:opacity-50"
+            className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors disabled:opacity-50"
           >
-            {loading ? "..." : "Gérer l'abonnement"}
+            {loading ? "…" : "Gérer l'abonnement →"}
           </button>
         ) : (
           <a
             href="/pricing"
-            className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
           >
             Choisir un plan
           </a>
@@ -64,19 +63,20 @@ export default function BillingSection({ plan, quotaUsed, quotaMax, hasStripe }:
 
       {!isUnlimited && (
         <div>
-          <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${
-                pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-yellow-500" : "bg-blue-500"
+                pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-amber-500" : "bg-indigo-500"
               }`}
               style={{ width: `${pct}%` }}
             />
           </div>
-          {pct >= 90 && (
-            <p className="text-xs text-red-600 mt-1">
-              Quota presque atteint — passez au plan supérieur pour ne pas bloquer le traitement.
+          <div className="flex justify-between mt-1.5">
+            <p className={`text-xs ${pct >= 90 ? "text-red-400" : "text-slate-600"}`}>
+              {pct >= 90 ? "Quota presque atteint — pensez à upgrader" : `${pct}% utilisé`}
             </p>
-          )}
+            <p className="text-xs text-slate-600">{quotaMax} / mois</p>
+          </div>
         </div>
       )}
     </div>
