@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { Resend } from "resend"
 import crypto from "crypto"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const getResend = () => new Resend(process.env.RESEND_API_KEY ?? "missing")
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json().catch(() => ({}))
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://indside-production.up.railway.app"
   const resetUrl = `${appUrl}/reset-password?token=${token}`
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: "ImmoMail <noreply@immomail.fr>",
     to: user.email,
     subject: "Réinitialisation de votre mot de passe ImmoMail",
