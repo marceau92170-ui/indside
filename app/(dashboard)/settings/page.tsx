@@ -74,6 +74,21 @@ export default async function SettingsPage({
         </div>
       )}
 
+      {/* No quota banner */}
+      {agency && agency.emailQuotaMax === 0 && (
+        <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
+          <svg className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <div>
+            <p className="text-sm font-semibold text-amber-300">Aucun accès actif</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Entrez un code d&apos;invitation ou choisissez un plan pour que l&apos;agent commence à traiter vos emails.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Gmail */}
       <section className="bg-slate-900 border border-slate-800 rounded-xl p-6">
         <div className="flex items-center justify-between mb-5 gap-4">

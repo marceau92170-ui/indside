@@ -74,7 +74,7 @@ model Agency {
   tone             String    @default("vouvoiement")
   signature        String    @default("")
   emailQuotaUsed   Int       @default(0)
-  emailQuotaMax    Int       @default(500)
+  emailQuotaMax    Int       @default(0)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
