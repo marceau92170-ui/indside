@@ -60,9 +60,9 @@ export default function PricingPage() {
             </Link>
             <Link
               href="/register"
-              className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium"
+              className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium"
             >
-              Essai gratuit
+              Créer un compte
             </Link>
           </nav>
         </div>
@@ -75,7 +75,7 @@ export default function PricingPage() {
               Des tarifs simples et transparents
             </h1>
             <p className="text-lg text-gray-500">
-              14 jours d&apos;essai gratuit, sans carte bancaire. Annulez à tout moment.
+              Sans engagement. Hébergement des données en Union Européenne.
             </p>
           </div>
 

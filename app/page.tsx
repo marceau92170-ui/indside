@@ -25,7 +25,7 @@ export default function HomePage() {
               href="/register"
               className="text-sm bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors font-semibold shadow-sm"
             >
-              Essai gratuit →
+              Créer un compte →
             </Link>
           </nav>
         </div>
@@ -61,7 +61,7 @@ export default function HomePage() {
                 href="/register"
                 className="bg-indigo-600 text-white px-8 py-4 rounded-xl text-base font-semibold hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25 w-full sm:w-auto"
               >
-                Commencer gratuitement
+                Créer un compte
               </Link>
               <Link
                 href="/pricing"
@@ -72,7 +72,7 @@ export default function HomePage() {
             </div>
 
             <p className="text-sm text-slate-600 mt-6">
-              14 jours d&apos;essai · Sans carte bancaire · Annulation à tout moment
+              Accès sur invitation · Contactez-nous pour un accès
             </p>
 
             {/* Stats */}
@@ -190,9 +190,9 @@ export default function HomePage() {
               href="/register"
               className="inline-block bg-indigo-600 text-white px-10 py-4 rounded-xl text-base font-semibold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/20"
             >
-              Commencer l&apos;essai gratuit →
+              Créer un compte →
             </Link>
-            <p className="text-sm text-gray-400 mt-4">14 jours gratuits · Sans engagement</p>
+            <p className="text-sm text-gray-400 mt-4">Accès sur code d&apos;invitation</p>
           </div>
         </section>
       </main>

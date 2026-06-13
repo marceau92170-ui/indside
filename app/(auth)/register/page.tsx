@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [promoCode, setPromoCode] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -42,6 +43,13 @@ export default function RegisterPage() {
       if (loginResult?.error) {
         router.push("/login")
       } else {
+        if (promoCode.trim()) {
+          await fetch("/api/promo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: promoCode.trim() }),
+          })
+        }
         router.push("/onboarding")
         router.refresh()
       }
@@ -66,14 +74,10 @@ export default function RegisterPage() {
         </Link>
 
         <div>
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-            <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></span>
-            14 jours d&apos;essai gratuit
-          </div>
           <h2 className="text-3xl font-bold text-white leading-snug mb-4">
-            Commencez à gagner
+            Rejoignez ImmoMail
             <br />
-            <span className="text-indigo-400">du temps dès aujourd&apos;hui</span>
+            <span className="text-indigo-400">sur invitation</span>
           </h2>
           <p className="text-slate-400 text-sm leading-relaxed mb-8">
             En moins de 5 minutes, connectez votre Gmail et laissez l&apos;IA
@@ -83,8 +87,8 @@ export default function RegisterPage() {
           <div className="space-y-4">
             {[
               { label: "Configuration en 5 min", sub: "Connectez Gmail, c'est tout" },
-              { label: "Sans carte bancaire", sub: "14 jours pour tester sans risque" },
-              { label: "Annulation immédiate", sub: "Sans engagement, sans friction" },
+              { label: "Accès sur code d'invitation", sub: "Activez votre code après inscription" },
+              { label: "Contrôle total", sub: "Vous validez chaque réponse avant envoi" },
             ].map((item) => (
               <div key={item.label} className="flex items-start gap-3">
                 <div className="w-5 h-5 bg-indigo-600/20 rounded-full flex items-center justify-center shrink-0 mt-0.5">
@@ -117,7 +121,7 @@ export default function RegisterPage() {
           </div>
 
           <h1 className="text-2xl font-bold text-white mb-1">Créer votre espace</h1>
-          <p className="text-slate-400 text-sm mb-8">14 jours gratuits · Sans carte bancaire</p>
+          <p className="text-slate-400 text-sm mb-8">Inscription gratuite · Activez votre accès avec un code</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
@@ -187,12 +191,26 @@ export default function RegisterPage() {
               />
             </div>
 
+            <div>
+              <label htmlFor="promoCode" className="block text-sm font-medium text-slate-300 mb-1.5">
+                Code d&apos;invitation <span className="text-slate-600 font-normal">(optionnel)</span>
+              </label>
+              <input
+                id="promoCode"
+                type="text"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm font-mono tracking-widest"
+                placeholder="XXXXXXXX"
+              />
+            </div>
+
             <button
               type="submit"
               disabled={loading}
               className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              {loading ? "Création en cours..." : "Créer mon espace gratuit →"}
+              {loading ? "Création en cours..." : "Créer mon compte →"}
             </button>
 
             <p className="text-center text-sm text-slate-500 pt-2">

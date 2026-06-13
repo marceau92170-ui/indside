@@ -6,6 +6,7 @@ import { AUTO_REPLY_CATEGORIES } from "@/lib/constants"
 import RulesEditor, { type RuleItem } from "@/components/RulesEditor"
 import AgencySettings from "@/components/AgencySettings"
 import BillingSection from "@/components/BillingSection"
+import PromoCodeInput from "@/components/PromoCodeInput"
 
 export const dynamic = "force-dynamic"
 
@@ -33,10 +34,11 @@ export default async function SettingsPage({
   if (!session?.user?.agencyId) redirect("/login")
   const agencyId = session.user.agencyId
 
-  const [agency, mailboxes, rules] = await Promise.all([
+  const [agency, mailboxes, rules, redemption] = await Promise.all([
     prisma.agency.findUnique({ where: { id: agencyId } }),
     prisma.mailbox.findMany({ where: { agencyId }, orderBy: { createdAt: "desc" } }),
     prisma.automationRule.findMany({ where: { agencyId } }),
+    prisma.promoRedemption.findUnique({ where: { agencyId } }),
   ])
 
   const whitelist = AUTO_REPLY_CATEGORIES as readonly string[]
@@ -147,6 +149,13 @@ export default async function SettingsPage({
           quotaMax={agency?.emailQuotaMax ?? 500}
           hasStripe={!!agency?.stripeCustomerId}
         />
+      </section>
+
+      {/* Promo code */}
+      <section className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h2 className="text-sm font-semibold text-white mb-1">Code d&apos;accès</h2>
+        <p className="text-xs text-slate-500 mb-5">Entrez votre code d&apos;invitation pour activer ou prolonger votre accès.</p>
+        <PromoCodeInput hasRedemption={!!redemption} />
       </section>
     </div>
   )
