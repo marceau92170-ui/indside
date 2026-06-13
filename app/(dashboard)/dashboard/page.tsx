@@ -88,7 +88,21 @@ export default async function DashboardPage() {
       )}
 
       {/* Quota warning */}
-      {agency && agency.emailQuotaMax < 999999 && (() => {
+      {agency && agency.emailQuotaMax === 0 && (
+        <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
+          <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-amber-300">Aucun abonnement actif</p>
+            <p className="text-xs text-slate-400 mt-0.5">Choisissez un plan pour activer le traitement IA de vos emails.</p>
+          </div>
+          <a href="/pricing" className="text-xs bg-amber-500 hover:bg-amber-400 text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0">
+            Voir les plans →
+          </a>
+        </div>
+      )}
+      {agency && agency.emailQuotaMax > 0 && agency.emailQuotaMax < 999999 && (() => {
         const pct = Math.round((agency.emailQuotaUsed / agency.emailQuotaMax) * 100)
         if (pct >= 100) return (
           <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">

@@ -47,7 +47,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     data: {
       plan: "STARTER",
       stripeSubId: null,
-      emailQuotaMax: 500,
+      emailQuotaMax: 0,
     },
   })
 }
