@@ -20,10 +20,9 @@ export async function POST(
   }
 
   const body = await request.json().catch(() => ({}))
-  const data: { action?: AutoAction; enabled?: boolean } = {}
+  const data: { action?: AutoAction; enabled?: boolean; template?: string | null } = {}
 
   if (typeof body.action === "string" && body.action in AutoAction) {
-    // Filet de sécurité : interdit l'auto-réponse hors liste blanche (règle d'or)
     const isWhitelisted = (AUTO_REPLY_CATEGORIES as readonly string[]).includes(rule.category)
     if (body.action === AutoAction.AUTO_REPLY && !isWhitelisted) {
       return NextResponse.json(
@@ -36,10 +35,13 @@ export async function POST(
   if (typeof body.enabled === "boolean") {
     data.enabled = body.enabled
   }
+  if ("template" in body) {
+    data.template = typeof body.template === "string" && body.template.trim() ? body.template.trim() : null
+  }
 
   const updated = await prisma.automationRule.update({
     where: { id: rule.id },
     data,
   })
-  return NextResponse.json({ ok: true, rule: { id: updated.id, action: updated.action, enabled: updated.enabled } })
+  return NextResponse.json({ ok: true, rule: { id: updated.id, action: updated.action, enabled: updated.enabled, template: updated.template } })
 }

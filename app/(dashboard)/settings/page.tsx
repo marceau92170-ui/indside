@@ -49,6 +49,7 @@ export default async function SettingsPage({
       action: r.action,
       enabled: r.enabled,
       whitelisted: whitelist.includes(r.category),
+      template: r.template ?? null,
     }))
     .sort((a, b) => CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category))
 
