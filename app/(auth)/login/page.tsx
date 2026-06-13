@@ -142,12 +142,14 @@ export default function LoginPage() {
               {loading ? "Connexion..." : "Se connecter →"}
             </button>
 
-            <p className="text-center text-sm text-slate-500 pt-2">
-              Pas encore de compte ?{" "}
+            <div className="flex items-center justify-between pt-2 text-sm">
+              <Link href="/forgot-password" className="text-slate-500 hover:text-slate-300 transition-colors">
+                Mot de passe oublié ?
+              </Link>
               <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
                 Créer un compte
               </Link>
-            </p>
+            </div>
           </form>
         </div>
       </div>
