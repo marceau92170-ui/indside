@@ -121,7 +121,7 @@ export default function RegisterPage() {
           </div>
 
           <h1 className="text-2xl font-bold text-white mb-1">Créer votre espace</h1>
-          <p className="text-slate-400 text-sm mb-8">Inscription gratuite · Activez votre accès avec un code</p>
+          <p className="text-slate-400 text-sm mb-8">Accès sur invitation · Activez votre compte avec un code</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (

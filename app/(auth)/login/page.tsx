@@ -145,7 +145,7 @@ export default function LoginPage() {
             <p className="text-center text-sm text-slate-500 pt-2">
               Pas encore de compte ?{" "}
               <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
-                Essai gratuit 14 jours
+                Créer un compte
               </Link>
             </p>
           </form>
