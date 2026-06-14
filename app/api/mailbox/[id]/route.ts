@@ -18,6 +18,14 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     return NextResponse.json({ error: "Boîte introuvable" }, { status: 404 })
   }
 
+  // Cascade: delete drafts → emailMessages → mailbox
+  const emails = await prisma.emailMessage.findMany({
+    where: { mailboxId: params.id },
+    select: { id: true },
+  })
+  const emailIds = emails.map((e) => e.id)
+  await prisma.draft.deleteMany({ where: { emailMessageId: { in: emailIds } } })
+  await prisma.emailMessage.deleteMany({ where: { mailboxId: params.id } })
   await prisma.mailbox.delete({ where: { id: params.id } })
 
   return NextResponse.json({ ok: true })
