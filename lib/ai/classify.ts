@@ -23,7 +23,7 @@ export async function classifyEmail(params: {
   const userPrompt = buildClassifyPrompt(from, subject, body)
 
   const response = await getAnthropic().messages.create({
-    model: "claude-3-5-haiku-20241022",
+    model: "claude-haiku-4-5-20251001",
     max_tokens: 1024,
     system: CLASSIFY_SYSTEM_PROMPT,
     messages: [{ role: "user", content: userPrompt }],
