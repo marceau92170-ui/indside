@@ -14,11 +14,20 @@ export const dynamic = "force-dynamic"
 const SUCCESS_MESSAGES: Record<string, string> = {
   gmail_connected: "Boîte Gmail connectée avec succès.",
 }
+const MAILBOX_LIMITS: Record<string, number> = {
+  STARTER: 1,
+  PRO: 3,
+  AGENCY_PLUS: 999,
+}
+
 const ERROR_MESSAGES: Record<string, string> = {
   gmail_auth_failed: "La connexion Gmail a échoué. Réessayez.",
   gmail_no_tokens: "Google n'a pas renvoyé de refresh token. Révoquez l'accès dans votre compte Google puis reconnectez la boîte.",
   gmail_no_email: "Impossible de récupérer l'adresse Gmail.",
   gmail_callback_failed: "Erreur lors de la connexion. Réessayez.",
+  no_plan: "Activez un abonnement avant de connecter une boîte Gmail.",
+  mailbox_limit_starter: "Limite atteinte — le plan Starter inclut 1 boîte Gmail. Passez au plan Pro pour en connecter jusqu'à 3.",
+  mailbox_limit_pro: "Limite atteinte — le plan Pro inclut 3 boîtes Gmail. Passez à l'Agence+ pour un nombre illimité.",
 }
 
 const CATEGORY_ORDER = [
@@ -95,17 +104,30 @@ export default async function SettingsPage({
         <div className="flex items-center justify-between mb-5 gap-4">
           <div>
             <h2 className="text-sm font-semibold text-white">Boîtes Gmail connectées</h2>
-            <p className="text-xs text-slate-500 mt-0.5">L&apos;agent surveille ces boîtes en continu.</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {agency?.plan && MAILBOX_LIMITS[agency.plan] < 999
+                ? `${mailboxes.length} / ${MAILBOX_LIMITS[agency.plan]} boîte${MAILBOX_LIMITS[agency.plan] > 1 ? "s" : ""} utilisée${MAILBOX_LIMITS[agency.plan] > 1 ? "s" : ""} — plan ${agency.plan === "STARTER" ? "Starter" : "Pro"}`
+                : "Boîtes illimitées — plan Agence+"}
+            </p>
           </div>
-          <a
-            href="/api/gmail/connect"
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors shrink-0"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Connecter Gmail
-          </a>
+          {(!agency?.plan || mailboxes.length < (MAILBOX_LIMITS[agency.plan ?? "STARTER"] ?? 1)) ? (
+            <a
+              href="/api/gmail/connect"
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors shrink-0"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Connecter Gmail
+            </a>
+          ) : (
+            <a
+              href="/pricing"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-lg transition-colors shrink-0"
+            >
+              Upgrader pour plus →
+            </a>
+          )}
         </div>
 
         {mailboxes.length === 0 ? (
