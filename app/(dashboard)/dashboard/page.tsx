@@ -15,19 +15,19 @@ const CATEGORY_LABELS: Record<string, string> = {
   DEMANDE_VISITE: "Demande visite",
   LOCATAIRE: "Locataire",
   PROPRIETAIRE: "Propriétaire",
-  DOSSIER_PIECES: "Dossier pièces",
+  DOSSIER_PIECES: "Dossier / pièces",
   FOURNISSEUR: "Fournisseur",
   ADMIN: "Administratif",
   SPAM: "Spam",
   AUTRE: "Autre",
 }
 
-const STATUS_CONFIG: Record<string, { label: string; dot: string }> = {
-  CLASSIFIED: { label: "Classifié", dot: "bg-blue-400" },
-  DRAFT_READY: { label: "Brouillon prêt", dot: "bg-amber-400" },
-  AUTO_SENT: { label: "Auto-envoyé", dot: "bg-emerald-400" },
-  VALIDATED: { label: "Validé", dot: "bg-emerald-400" },
-  IGNORED: { label: "Ignoré", dot: "bg-slate-600" },
+const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
+  CLASSIFIED: { label: "Classifié", color: "text-slate-400" },
+  DRAFT_READY: { label: "À valider", color: "text-amber-400" },
+  AUTO_SENT: { label: "Auto-envoyé", color: "text-emerald-400" },
+  VALIDATED: { label: "Envoyé", color: "text-emerald-400" },
+  IGNORED: { label: "Ignoré", color: "text-slate-600" },
 }
 
 export default async function DashboardPage() {
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
       prisma.emailMessage.count({ where: { ...mailboxFilter, status: EmailStatus.AUTO_SENT } }),
       prisma.emailMessage.count({ where: { ...mailboxFilter, category: { in: ["LEAD_ACHAT", "LEAD_LOCATION"] } } }),
       prisma.emailMessage.groupBy({ by: ["category"], where: { ...mailboxFilter, category: { not: null } }, _count: { _all: true } }),
-      prisma.emailMessage.findMany({ where: { ...mailboxFilter, status: { not: EmailStatus.NEW } }, orderBy: { receivedAt: "desc" }, take: 10 }),
+      prisma.emailMessage.findMany({ where: { ...mailboxFilter, status: { not: EmailStatus.NEW } }, orderBy: { receivedAt: "desc" }, take: 15, select: { id: true, subject: true, from: true, category: true, status: true, receivedAt: true } }),
     ])
 
   const timeSavedMinutes = totalProcessed * ESTIMATED_TIME_PER_EMAIL_MINUTES
@@ -64,189 +64,136 @@ export default async function DashboardPage() {
   const categoryStats = byCategory
     .map((c) => ({ category: c.category as string, count: c._count._all }))
     .sort((a, b) => b.count - a.count)
-  const maxCount = Math.max(1, ...categoryStats.map((c) => c.count))
+
+  const quotaPct = agency && agency.emailQuotaMax > 0
+    ? Math.round((agency.emailQuotaUsed / agency.emailQuotaMax) * 100)
+    : 0
 
   return (
     <div className="p-6 md:p-8 max-w-5xl mx-auto">
 
-      {/* Quota / plan alerts */}
+      {/* Alerts */}
       {agency && agency.emailQuotaMax === 0 && (
-        <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
-          <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-amber-300">Aucun abonnement actif</p>
-            <p className="text-xs text-slate-400 mt-0.5">Choisissez un plan pour activer le traitement IA de vos emails.</p>
-          </div>
-          <a href="/pricing" className="text-xs bg-amber-500 hover:bg-amber-400 text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0">Voir les plans →</a>
+        <div className="flex items-center gap-3 border border-amber-500/30 bg-amber-500/5 rounded-lg px-4 py-3 mb-6 text-sm">
+          <span className="text-amber-400">⚠</span>
+          <span className="text-amber-300 font-medium">Aucun abonnement actif</span>
+          <span className="text-slate-400">— les emails ne sont pas traités.</span>
+          <a href="/pricing" className="ml-auto text-amber-400 hover:text-amber-300 font-medium shrink-0">Activer →</a>
         </div>
       )}
-      {agency && agency.emailQuotaMax > 0 && agency.emailQuotaMax < 999999 && (() => {
-        const pct = Math.round((agency.emailQuotaUsed / agency.emailQuotaMax) * 100)
-        if (pct >= 100) return (
-          <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
-            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-red-300">Quota mensuel atteint — traitement suspendu</p>
-              <p className="text-xs text-slate-400 mt-0.5">Les nouveaux emails ne sont plus traités jusqu&apos;au renouvellement.</p>
-            </div>
-            <a href="/pricing" className="text-xs bg-red-500 hover:bg-red-400 text-white px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0">Upgrader</a>
-          </div>
-        )
-        if (pct >= 80) return (
-          <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6">
-            <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-amber-300">{pct}% du quota utilisé</p>
-              <p className="text-xs text-slate-400 mt-0.5">{agency.emailQuotaUsed} / {agency.emailQuotaMax} emails ce mois-ci.</p>
-            </div>
-            <a href="/pricing" className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors shrink-0">Voir les plans →</a>
-          </div>
-        )
-        return null
-      })()}
+      {agency && agency.emailQuotaMax > 0 && quotaPct >= 100 && (
+        <div className="flex items-center gap-3 border border-red-500/30 bg-red-500/5 rounded-lg px-4 py-3 mb-6 text-sm">
+          <span className="text-red-400">⊘</span>
+          <span className="text-red-300 font-medium">Quota atteint — traitement suspendu</span>
+          <a href="/pricing" className="ml-auto text-red-400 hover:text-red-300 font-medium shrink-0">Upgrader →</a>
+        </div>
+      )}
+      {agency && agency.emailQuotaMax > 0 && quotaPct >= 80 && quotaPct < 100 && (
+        <div className="flex items-center gap-3 border border-amber-500/20 bg-amber-500/5 rounded-lg px-4 py-3 mb-6 text-sm">
+          <span className="text-amber-400">⚠</span>
+          <span className="text-slate-300">{quotaPct}% du quota utilisé — {agency.emailQuotaUsed} / {agency.emailQuotaMax} emails</span>
+          <a href="/pricing" className="ml-auto text-amber-400 hover:text-amber-300 font-medium shrink-0">Voir les plans →</a>
+        </div>
+      )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Tableau de bord</h1>
-          <p className="text-sm text-slate-500 mt-1">Activité de votre agent IA email</p>
+          <h1 className="text-lg font-semibold text-white">Vue d&apos;ensemble</h1>
+          <p className="text-sm text-slate-500 mt-0.5">+{weekProcessed} email{weekProcessed !== 1 ? "s" : ""} cette semaine</p>
         </div>
         {pendingDrafts > 0 && (
           <Link
             href="/validation"
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
           >
             <span className="w-5 h-5 bg-white/20 rounded-full text-xs flex items-center justify-center font-bold">{pendingDrafts}</span>
-            Valider les brouillons
+            Valider
           </Link>
         )}
       </div>
 
       {/* Empty state */}
       {totalProcessed === 0 && (
-        <div className="flex flex-col items-center justify-center text-center py-16 border border-dashed border-slate-800 rounded-2xl mb-8">
-          <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mb-4">
-            <svg className="w-6 h-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <p className="text-sm font-semibold text-white mb-1">Aucun email traité pour l&apos;instant</p>
+        <div className="flex flex-col items-center justify-center text-center py-16 border border-dashed border-slate-800 rounded-lg mb-6">
+          <p className="text-sm font-medium text-white mb-1">Aucun email traité</p>
           <p className="text-xs text-slate-500 mb-5">Connectez Gmail dans les paramètres pour commencer.</p>
           <DemoSeedButton />
         </div>
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 border border-slate-800 rounded-lg overflow-hidden mb-6">
         {[
-          {
-            label: "Emails traités",
-            value: totalProcessed,
-            sub: `+${weekProcessed} cette semaine`,
-            icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />,
-            color: "text-indigo-400",
-            bg: "bg-indigo-500/10",
-          },
-          {
-            label: "Leads détectés",
-            value: leads,
-            sub: "achat & location",
-            icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />,
-            color: "text-emerald-400",
-            bg: "bg-emerald-500/10",
-          },
-          {
-            label: "Auto-réponses",
-            value: autoSent,
-            sub: "sans intervention",
-            icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />,
-            color: "text-violet-400",
-            bg: "bg-violet-500/10",
-          },
-          {
-            label: "Temps économisé",
-            value: timeSavedLabel,
-            sub: "≈ 3 min / email",
-            icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
-            color: "text-amber-400",
-            bg: "bg-amber-500/10",
-          },
-        ].map((s) => (
-          <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
-            <div className={`w-8 h-8 ${s.bg} rounded-lg flex items-center justify-center`}>
-              <svg className={`w-4 h-4 ${s.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">{s.icon}</svg>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{s.value}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
-            </div>
-            <p className="text-xs text-slate-600">{s.sub}</p>
+          { label: "Emails traités", value: totalProcessed },
+          { label: "Leads détectés", value: leads },
+          { label: "Auto-réponses", value: autoSent },
+          { label: "Temps économisé", value: timeSavedLabel },
+        ].map((s, i) => (
+          <div key={s.label} className={`p-5 ${i > 0 ? "border-l border-slate-800" : ""} ${i >= 2 ? "border-t lg:border-t-0 border-slate-800" : ""}`}>
+            <p className="text-2xl font-bold text-white tabular-nums">{s.value}</p>
+            <p className="text-xs text-slate-500 mt-1">{s.label}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        {/* Category breakdown */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-5">Répartition par catégorie</h2>
-          {categoryStats.length === 0 ? (
-            <p className="text-sm text-slate-600 py-8 text-center">Aucune donnée</p>
-          ) : (
-            <div className="space-y-4">
-              {categoryStats.map((c) => (
-                <div key={c.category}>
-                  <div className="flex justify-between text-xs mb-2">
-                    <span className="text-slate-300 font-medium">{CATEGORY_LABELS[c.category] ?? c.category}</span>
-                    <span className="text-slate-500 tabular-nums">{c.count}</span>
-                  </div>
-                  <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${(c.count / maxCount) * 100}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Recent activity */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white">Activité récente</h2>
+      <div className="grid lg:grid-cols-5 gap-4">
+        {/* Recent emails — table */}
+        <div className="lg:col-span-3 border border-slate-800 rounded-lg overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
+            <h2 className="text-sm font-medium text-white">Activité récente</h2>
             {recentEmails.length > 0 && (
-              <Link href="/validation" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+              <Link href="/validation" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
                 Voir tout →
               </Link>
             )}
           </div>
           {recentEmails.length === 0 ? (
-            <div className="p-10 text-center">
-              <p className="text-sm text-slate-500">Aucun email traité pour l&apos;instant</p>
-              <p className="text-xs text-slate-600 mt-1">Connectez Gmail pour commencer.</p>
+            <div className="py-12 text-center">
+              <p className="text-sm text-slate-600">Aucun email pour l&apos;instant</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-800/60 max-h-[400px] overflow-auto">
+            <div className="divide-y divide-slate-800/60">
               {recentEmails.map((email) => {
-                const st = STATUS_CONFIG[email.status] ?? { label: email.status, dot: "bg-slate-600" }
+                const st = STATUS_CONFIG[email.status] ?? { label: email.status, color: "text-slate-500" }
                 return (
-                  <div key={email.id} className="px-6 py-4 hover:bg-slate-800/40 transition-colors">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        {email.category && (
-                          <span className="inline-block text-xs font-medium px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 mb-1.5">
-                            {CATEGORY_LABELS[email.category] ?? email.category}
-                          </span>
-                        )}
-                        <p className="text-sm text-white truncate font-medium">{email.subject || "(sans objet)"}</p>
-                        <p className="text-xs text-slate-500 truncate mt-0.5">{email.from}</p>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-                        <div className={`w-1.5 h-1.5 rounded-full ${st.dot}`}></div>
-                        <span className="text-xs text-slate-500 whitespace-nowrap">{st.label}</span>
-                      </div>
+                  <div key={email.id} className="flex items-center gap-4 px-5 py-3 hover:bg-slate-800/30 transition-colors">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm text-white truncate">{email.subject || "(sans objet)"}</p>
+                      <p className="text-xs text-slate-600 truncate mt-0.5">{email.from}</p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      {email.category && (
+                        <span className="hidden sm:block text-xs text-slate-500">
+                          {CATEGORY_LABELS[email.category] ?? email.category}
+                        </span>
+                      )}
+                      <span className={`text-xs font-medium ${st.color}`}>{st.label}</span>
                     </div>
                   </div>
                 )
               })}
+            </div>
+          )}
+        </div>
+
+        {/* Category breakdown */}
+        <div className="lg:col-span-2 border border-slate-800 rounded-lg overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-slate-800">
+            <h2 className="text-sm font-medium text-white">Par catégorie</h2>
+          </div>
+          {categoryStats.length === 0 ? (
+            <div className="py-12 text-center">
+              <p className="text-sm text-slate-600">Aucune donnée</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-800/60">
+              {categoryStats.map((c) => (
+                <div key={c.category} className="flex items-center justify-between px-5 py-3">
+                  <span className="text-sm text-slate-300">{CATEGORY_LABELS[c.category] ?? c.category}</span>
+                  <span className="text-sm font-medium text-white tabular-nums">{c.count}</span>
+                </div>
+              ))}
             </div>
           )}
         </div>

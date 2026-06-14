@@ -8,6 +8,7 @@ import { buildAutoReply } from "@/lib/automation/templates"
 import { CONFIDENCE_THRESHOLD, AUTO_REPLY_CATEGORIES } from "@/lib/constants"
 import { EmailStatus, DraftStatus, AutoAction, type Mailbox, type Agency } from "@prisma/client"
 import type { NewMessage } from "@/lib/email/providers"
+import { notifyNewDrafts } from "@/lib/email/notify"
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization")
@@ -28,6 +29,8 @@ export async function POST(request: NextRequest) {
     mailboxes: mailboxes.length,
   }
 
+  const draftsByAgency: Record<string, number> = {}
+
   for (const mailbox of mailboxes as (Mailbox & { agency: Agency })[]) {
     try {
       // Expire trial if past trialEndsAt
@@ -42,7 +45,6 @@ export async function POST(request: NextRequest) {
       const accessToken = decrypt(mailbox.accessTokenEnc)
       const refreshToken = decrypt(mailbox.refreshTokenEnc)
 
-      // Persist refreshed token automatically when Google renews it
       const provider = new GmailProvider(accessToken, refreshToken, async (newToken) => {
         console.log(`Token refreshed for mailbox ${mailbox.id} — saving to DB`)
         await prisma.mailbox.update({
@@ -57,7 +59,6 @@ export async function POST(request: NextRequest) {
 
       for (const msg of messages) {
         try {
-          // Upsert email message
           const emailMessage = await prisma.emailMessage.upsert({
             where: {
               mailboxId_providerId: {
@@ -79,10 +80,8 @@ export async function POST(request: NextRequest) {
             },
           })
 
-          // Only process NEW emails
           if (emailMessage.status !== EmailStatus.NEW) continue
 
-          // Quota guard — stop if monthly limit reached
           const freshAgency = await prisma.agency.findUnique({
             where: { id: mailbox.agencyId },
             select: { emailQuotaUsed: true, emailQuotaMax: true },
@@ -92,7 +91,7 @@ export async function POST(request: NextRequest) {
             break
           }
 
-          await classifyAndProcess({
+          const drafted = await classifyAndProcess({
             emailMessage,
             message: msg,
             mailbox,
@@ -100,7 +99,10 @@ export async function POST(request: NextRequest) {
             provider,
           })
 
-          // Increment monthly quota
+          if (drafted) {
+            draftsByAgency[mailbox.agencyId] = (draftsByAgency[mailbox.agencyId] ?? 0) + 1
+          }
+
           await prisma.agency.update({
             where: { id: mailbox.agencyId },
             data: { emailQuotaUsed: { increment: 1 } },
@@ -113,7 +115,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Update historyId
       await prisma.mailbox.update({
         where: { id: mailbox.id },
         data: {
@@ -124,16 +125,26 @@ export async function POST(request: NextRequest) {
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
       console.error(`Error processing mailbox ${mailbox.id}: ${msg}`)
-      // Only mark ERROR for persistent failures, not transient ones
       const isAuthError = msg.includes("invalid_grant") || msg.includes("401") || msg.includes("Token has been expired")
       await prisma.mailbox.update({
         where: { id: mailbox.id },
         data: {
           status: isAuthError ? "ERROR" : mailbox.status,
-          lastSyncAt: new Date(), // Always update so we know cron ran
+          lastSyncAt: new Date(),
         },
       })
       results.errors++
+    }
+  }
+
+  // Send one notification email per agency that got new drafts
+  for (const [agencyId, count] of Object.entries(draftsByAgency)) {
+    const users = await prisma.user.findMany({
+      where: { agencyId },
+      select: { email: true },
+    })
+    for (const user of users) {
+      await notifyNewDrafts(user.email, count)
     }
   }
 
@@ -152,8 +163,7 @@ async function classifyAndProcess({
   mailbox: Mailbox
   agency: Agency
   provider: GmailProvider
-}) {
-  // Classify
+}): Promise<boolean> {
   const classification = await classifyEmail({
     from: message.from,
     subject: message.subject,
@@ -161,7 +171,6 @@ async function classifyAndProcess({
     agencyId: mailbox.agencyId,
   })
 
-  // Update email with classification
   await prisma.emailMessage.update({
     where: { id: emailMessage.id },
     data: {
@@ -174,7 +183,6 @@ async function classifyAndProcess({
     },
   })
 
-  // Find automation rule
   const rule = await prisma.automationRule.findUnique({
     where: {
       agencyId_category: {
@@ -186,18 +194,14 @@ async function classifyAndProcess({
 
   if (!rule?.enabled) {
     await createDraftOnly({ emailMessage, message, classification, agency, provider })
-    return
+    return true
   }
 
   if (rule.action === AutoAction.LABEL_ONLY) {
     await provider.markRead(message.providerId)
-    return
+    return false
   }
 
-  // ----- AUTO-RÉPONSE : template sûr uniquement (pas d'IA générative) -----
-  // RÈGLE D'OR : ne part en automatique que si la catégorie est en liste
-  // blanche ET la confiance est élevée. Le contenu vient d'un template figé,
-  // jamais d'un texte libre généré qui pourrait engager l'agence.
   const isWhitelisted = (AUTO_REPLY_CATEGORIES as readonly string[]).includes(
     classification.category
   )
@@ -213,7 +217,6 @@ async function classifyAndProcess({
       agencyName: agency.name,
     })
 
-    // Filet de sécurité : si aucun template sûr, on bascule en brouillon
     if (replyBody) {
       const toEmail = extractEmail(message.from)
       await provider.sendMessage({
@@ -238,12 +241,12 @@ async function classifyAndProcess({
       })
 
       await provider.markRead(message.providerId)
-      return
+      return false
     }
   }
 
-  // ----- BROUILLON À VALIDER : IA générative, relu par un humain -----
   await createDraftOnly({ emailMessage, message, classification, agency, provider })
+  return true
 }
 
 async function createDraftOnly({
