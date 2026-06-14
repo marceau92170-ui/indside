@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { decrypt } from "@/lib/crypto"
+import { decrypt, encrypt } from "@/lib/crypto"
 import { GmailProvider } from "@/lib/email/providers/gmail"
 import { classifyEmail } from "@/lib/ai/classify"
 import { generateDraft } from "@/lib/ai/draft"
@@ -32,7 +32,15 @@ export async function POST(request: NextRequest) {
     try {
       const accessToken = decrypt(mailbox.accessTokenEnc)
       const refreshToken = decrypt(mailbox.refreshTokenEnc)
-      const provider = new GmailProvider(accessToken, refreshToken)
+
+      // Persist refreshed token automatically when Google renews it
+      const provider = new GmailProvider(accessToken, refreshToken, async (newToken) => {
+        console.log(`Token refreshed for mailbox ${mailbox.id} — saving to DB`)
+        await prisma.mailbox.update({
+          where: { id: mailbox.id },
+          data: { accessTokenEnc: encrypt(newToken) },
+        })
+      })
 
       const { messages, newHistoryId } = await provider.listNewMessages(
         mailbox.historyId ?? undefined
@@ -105,10 +113,16 @@ export async function POST(request: NextRequest) {
         },
       })
     } catch (e) {
-      console.error(`Error processing mailbox ${mailbox.id}:`, e)
+      const msg = e instanceof Error ? e.message : String(e)
+      console.error(`Error processing mailbox ${mailbox.id}: ${msg}`)
+      // Only mark ERROR for persistent failures, not transient ones
+      const isAuthError = msg.includes("invalid_grant") || msg.includes("401") || msg.includes("Token has been expired")
       await prisma.mailbox.update({
         where: { id: mailbox.id },
-        data: { status: "ERROR" },
+        data: {
+          status: isAuthError ? "ERROR" : mailbox.status,
+          lastSyncAt: new Date(), // Always update so we know cron ran
+        },
       })
       results.errors++
     }

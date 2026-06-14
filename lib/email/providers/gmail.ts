@@ -31,8 +31,14 @@ function buildRawEmail(params: {
 export class GmailProvider implements EmailProvider {
   private gmail
   private auth
+  private onRefreshCallback?: (newAccessToken: string) => Promise<void>
 
-  constructor(accessToken: string, refreshToken: string) {
+  constructor(
+    accessToken: string,
+    refreshToken: string,
+    onRefresh?: (newAccessToken: string) => Promise<void>
+  ) {
+    this.onRefreshCallback = onRefresh
     this.auth = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET
@@ -41,6 +47,16 @@ export class GmailProvider implements EmailProvider {
       access_token: accessToken,
       refresh_token: refreshToken,
     })
+
+    // Persist refreshed tokens automatically
+    this.auth.on("tokens", (tokens) => {
+      if (tokens.access_token && this.onRefreshCallback) {
+        this.onRefreshCallback(tokens.access_token).catch((e) =>
+          console.error("Failed to persist refreshed token:", e)
+        )
+      }
+    })
+
     this.gmail = google.gmail({ version: "v1", auth: this.auth })
   }
 
@@ -65,16 +81,18 @@ export class GmailProvider implements EmailProvider {
           try {
             const msg = await this.getMessage(id)
             messages.push(msg)
-          } catch {}
+          } catch (e) {
+            console.error(`Failed to fetch message ${id}:`, e)
+          }
         }
         return {
           messages,
           newHistoryId: res.data.historyId ?? historyId,
         }
       } catch (e: unknown) {
-        // If historyId is too old, fall back to listing unread
         const err = e as { code?: number }
         if (err?.code !== 404 && err?.code !== 410) throw e
+        // historyId too old — fall through to full unread fetch
       }
     }
 
@@ -90,10 +108,11 @@ export class GmailProvider implements EmailProvider {
       try {
         const msg = await this.getMessage(item.id)
         messages.push(msg)
-      } catch {}
+      } catch (e) {
+        console.error(`Failed to fetch message ${item.id}:`, e)
+      }
     }
 
-    // Get current historyId
     const profile = await this.gmail.users.getProfile({ userId: "me" })
     return {
       messages,
