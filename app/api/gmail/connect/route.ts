@@ -32,7 +32,7 @@ export async function GET() {
   // Check mailbox limit for plan
   const limit = MAILBOX_LIMITS[agency.plan] ?? 1
   const count = await prisma.mailbox.count({
-    where: { agencyId: session.user.agencyId, status: { not: "DELETED" } },
+    where: { agencyId: session.user.agencyId, status: { not: "DISCONNECTED" } },
   })
 
   if (count >= limit) {
