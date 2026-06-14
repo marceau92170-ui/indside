@@ -30,6 +30,15 @@ export async function POST(request: NextRequest) {
 
   for (const mailbox of mailboxes as (Mailbox & { agency: Agency })[]) {
     try {
+      // Expire trial if past trialEndsAt
+      if (mailbox.agency.trialEndsAt && mailbox.agency.trialEndsAt < new Date()) {
+        await prisma.agency.update({
+          where: { id: mailbox.agencyId },
+          data: { emailQuotaMax: 0 },
+        })
+        continue
+      }
+
       const accessToken = decrypt(mailbox.accessTokenEnc)
       const refreshToken = decrypt(mailbox.refreshTokenEnc)
 
