@@ -36,17 +36,22 @@ export default async function ValidationPage() {
     }))
 
   return (
-    <div className="p-6 md:p-8 max-w-5xl">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-white">Validation</h1>
-        <p className="text-sm text-slate-500 mt-0.5">
-          {items.length > 0
-            ? `${items.length} brouillon${items.length > 1 ? "s" : ""} en attente de votre validation`
-            : "Aucun brouillon en attente pour l'instant"}
-        </p>
+    <div className="flex flex-col min-h-full">
+      {/* Topbar */}
+      <div className="h-[60px] border-b border-line px-6 md:px-7 flex items-center shrink-0">
+        <div>
+          <h1 className="text-base font-semibold tracking-tight">Brouillons à valider</h1>
+          <p className="text-[12.5px] text-zinc-500 mt-px">
+            {items.length > 0
+              ? `${items.length} réponse${items.length > 1 ? "s" : ""} en attente de votre validation`
+              : "Aucun brouillon en attente pour l'instant"}
+          </p>
+        </div>
       </div>
 
-      <ValidationQueue items={items} />
+      <div className="p-6 md:p-7 max-w-5xl w-full mx-auto animate-fade-up">
+        <ValidationQueue items={items} />
+      </div>
     </div>
   )
 }

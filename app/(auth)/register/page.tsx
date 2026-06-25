@@ -62,25 +62,27 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-slate-950">
+    <div className="min-h-screen flex bg-ink-950 text-white">
       {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 border-r border-slate-800 flex-col justify-between p-12">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden border-r border-line bg-gradient-to-b from-ink-900 to-ink-950">
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.18),transparent_70%)] pointer-events-none" />
+
+        <Link href="/" className="flex items-center gap-2.5 relative">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-[0_2px_8px_rgba(99,102,241,0.4)]">
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <span className="text-white font-bold">ImmoMail</span>
+          <span className="font-semibold tracking-tight">ImmoMail</span>
         </Link>
 
-        <div>
-          <h2 className="text-3xl font-bold text-white leading-snug mb-4">
+        <div className="relative">
+          <h2 className="text-[30px] font-bold leading-[1.18] tracking-tightest mb-3.5">
             Rejoignez ImmoMail
             <br />
-            <span className="text-indigo-400">sur invitation</span>
+            <span className="gradient-text">sur invitation</span>
           </h2>
-          <p className="text-slate-400 text-sm leading-relaxed mb-8">
+          <p className="text-zinc-400 text-sm leading-relaxed mb-8 max-w-sm">
             En moins de 5 minutes, connectez votre Gmail et laissez l&apos;IA
             gérer la classification et les brouillons de vos emails immobiliers.
           </p>
@@ -92,37 +94,37 @@ export default function RegisterPage() {
               { label: "Contrôle total", sub: "Vous validez chaque réponse avant envoi" },
             ].map((item) => (
               <div key={item.label} className="flex items-start gap-3">
-                <div className="w-5 h-5 bg-indigo-600/20 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                  <svg className="w-3 h-3 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                <div className="w-5 h-5 bg-indigo-500/15 rounded-md flex items-center justify-center shrink-0 mt-0.5">
+                  <svg className="w-3 h-3 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-slate-200">{item.label}</div>
-                  <div className="text-xs text-slate-500">{item.sub}</div>
+                  <div className="text-[13.5px] font-medium text-zinc-200">{item.label}</div>
+                  <div className="text-xs text-zinc-500">{item.sub}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-xs text-slate-600">© 2026 ImmoMail · Agences immobilières françaises</p>
+        <p className="text-[11.5px] text-zinc-600 relative">© 2026 ImmoMail · Agences immobilières françaises</p>
       </div>
 
       {/* Right panel */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-sm">
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <span className="text-white font-bold">ImmoMail</span>
+            <span className="font-semibold">ImmoMail</span>
           </div>
 
-          <h1 className="text-2xl font-bold text-white mb-1">Créer votre espace</h1>
-          <p className="text-slate-400 text-sm mb-8">Accès sur invitation · Activez votre compte avec un code</p>
+          <h1 className="text-[22px] font-semibold tracking-tight mb-1.5">Créer votre espace</h1>
+          <p className="text-zinc-400 text-[13.5px] mb-7">Accès sur invitation · Activez votre compte avec un code</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
@@ -132,7 +134,7 @@ export default function RegisterPage() {
             )}
 
             <div>
-              <label htmlFor="agencyName" className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="agencyName" className="block text-[13px] font-medium text-zinc-300 mb-1.5">
                 Nom de l&apos;agence
               </label>
               <input
@@ -141,13 +143,13 @@ export default function RegisterPage() {
                 required
                 value={agencyName}
                 onChange={(e) => setAgencyName(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                className="w-full px-3.5 py-2.5 bg-ink-850 border border-line rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 focus:bg-ink-900 text-sm transition-all"
                 placeholder="Agence Dupont Immobilier"
               />
             </div>
 
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="name" className="block text-[13px] font-medium text-zinc-300 mb-1.5">
                 Votre nom
               </label>
               <input
@@ -156,13 +158,13 @@ export default function RegisterPage() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                className="w-full px-3.5 py-2.5 bg-ink-850 border border-line rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 focus:bg-ink-900 text-sm transition-all"
                 placeholder="Jean Dupont"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="email" className="block text-[13px] font-medium text-zinc-300 mb-1.5">
                 Email professionnel
               </label>
               <input
@@ -171,13 +173,13 @@ export default function RegisterPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                className="w-full px-3.5 py-2.5 bg-ink-850 border border-line rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 focus:bg-ink-900 text-sm transition-all"
                 placeholder="jean@agence.fr"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1.5">
+              <label htmlFor="password" className="block text-[13px] font-medium text-zinc-300 mb-1.5">
                 Mot de passe
               </label>
               <div className="relative">
@@ -188,13 +190,13 @@ export default function RegisterPage() {
                   minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-11 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                  className="w-full px-3.5 py-2.5 pr-11 bg-ink-850 border border-line rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 focus:bg-ink-900 text-sm transition-all"
                   placeholder="8 caractères minimum"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-zinc-500 hover:text-zinc-300 transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? (
@@ -212,15 +214,15 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="promoCode" className="block text-sm font-medium text-slate-300 mb-1.5">
-                Code d&apos;invitation <span className="text-slate-600 font-normal">(optionnel)</span>
+              <label htmlFor="promoCode" className="block text-[13px] font-medium text-zinc-300 mb-1.5">
+                Code d&apos;invitation <span className="text-zinc-600 font-normal">(optionnel)</span>
               </label>
               <input
                 id="promoCode"
                 type="text"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm font-mono tracking-widest"
+                className="w-full px-3.5 py-2.5 bg-ink-850 border border-line rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 focus:bg-ink-900 text-sm font-mono tracking-widest transition-all"
                 placeholder="XXXXXXXX"
               />
             </div>
@@ -228,14 +230,15 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full py-2.5 px-4 bg-brand hover:bg-brand-hover text-white font-medium rounded-lg text-sm transition-all hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed mt-1 flex items-center justify-center gap-2"
             >
+              {loading ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : null}
               {loading ? "Création en cours..." : "Créer mon compte →"}
             </button>
 
-            <p className="text-center text-sm text-slate-500 pt-2">
+            <p className="text-center text-[13px] text-zinc-500 pt-2">
               Déjà un compte ?{" "}
-              <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
+              <Link href="/login" className="text-brand-hover hover:text-indigo-300 font-medium">
                 Se connecter
               </Link>
             </p>
