@@ -59,12 +59,12 @@ export default function PromoCodeInput({ hasRedemption }: { hasRedemption: boole
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           placeholder="CODE D'INVITATION"
-          className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-mono tracking-widest"
+          className="flex-1 px-4 py-2.5 bg-ink-850 border border-line rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 focus:bg-ink-900 text-sm font-mono tracking-widest transition-all"
         />
         <button
           onClick={redeem}
           disabled={loading || !code.trim()}
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+          className="px-4 py-2.5 bg-brand hover:bg-brand-hover text-white text-[13px] font-medium rounded-lg transition-all hover:shadow-glow disabled:opacity-50"
         >
           {loading ? "…" : "Activer"}
         </button>

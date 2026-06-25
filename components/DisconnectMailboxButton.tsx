@@ -21,8 +21,8 @@ export default function DisconnectMailboxButton({ mailboxId }: { mailboxId: stri
 
   if (confirm) {
     return (
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-slate-400">Confirmer ?</span>
+      <div className="flex items-center gap-2.5">
+        <span className="text-xs text-zinc-400">Confirmer ?</span>
         <button
           onClick={disconnect}
           disabled={loading}
@@ -32,7 +32,7 @@ export default function DisconnectMailboxButton({ mailboxId }: { mailboxId: stri
         </button>
         <button
           onClick={() => setConfirm(false)}
-          className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
         >
           Annuler
         </button>
@@ -43,7 +43,7 @@ export default function DisconnectMailboxButton({ mailboxId }: { mailboxId: stri
   return (
     <button
       onClick={() => setConfirm(true)}
-      className="text-xs text-slate-600 hover:text-red-400 transition-colors"
+      className="text-xs text-zinc-600 hover:text-red-400 transition-colors"
     >
       Déconnecter
     </button>

@@ -37,9 +37,9 @@ export default function BillingSection({ plan, quotaUsed, quotaMax, hasStripe }:
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm text-white">
-            Plan <span className="text-indigo-400 font-semibold">{PLAN_LABELS[plan] ?? plan}</span>
+            Plan <span className="text-brand-hover font-semibold">{PLAN_LABELS[plan] ?? plan}</span>
           </p>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-zinc-500 mt-0.5">
             {isUnlimited ? "Emails illimités" : `${quotaUsed} / ${quotaMax} emails ce mois-ci`}
           </p>
         </div>
@@ -47,14 +47,14 @@ export default function BillingSection({ plan, quotaUsed, quotaMax, hasStripe }:
           <button
             onClick={handlePortal}
             disabled={loading}
-            className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors disabled:opacity-50"
+            className="text-sm text-brand-hover hover:text-indigo-300 transition-colors disabled:opacity-50"
           >
             {loading ? "…" : "Gérer l'abonnement →"}
           </button>
         ) : (
           <a
             href="/pricing"
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
+            className="px-4 py-2 bg-brand hover:bg-brand-hover text-white text-[13px] font-medium rounded-lg transition-all hover:shadow-glow"
           >
             Choisir un plan
           </a>
@@ -63,19 +63,19 @@ export default function BillingSection({ plan, quotaUsed, quotaMax, hasStripe }:
 
       {!isUnlimited && (
         <div>
-          <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
+          <div className="h-[7px] rounded-full bg-ink-800 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${
-                pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-amber-500" : "bg-indigo-500"
+                pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-amber-500" : "bg-gradient-to-r from-indigo-500 to-violet-500"
               }`}
               style={{ width: `${pct}%` }}
             />
           </div>
           <div className="flex justify-between mt-1.5">
-            <p className={`text-xs ${pct >= 90 ? "text-red-400" : "text-slate-600"}`}>
+            <p className={`text-xs ${pct >= 90 ? "text-red-400" : "text-zinc-600"}`}>
               {pct >= 90 ? "Quota presque atteint — pensez à upgrader" : `${pct}% utilisé`}
             </p>
-            <p className="text-xs text-slate-600">{quotaMax} / mois</p>
+            <p className="text-xs text-zinc-600">{quotaMax} / mois</p>
           </div>
         </div>
       )}

@@ -100,7 +100,7 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
   }
 
   return (
-    <div className="divide-y divide-slate-800">
+    <div className="divide-y divide-line">
       {state.map((rule) => {
         const actions = rule.whitelisted
           ? ["AUTO_REPLY", "DRAFT_ONLY", "LABEL_ONLY"]
@@ -116,7 +116,7 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
                 <button
                   onClick={() => update(rule.id, { enabled: !rule.enabled })}
                   className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
-                    rule.enabled ? "bg-indigo-600" : "bg-slate-700"
+                    rule.enabled ? "bg-brand" : "bg-ink-800"
                   }`}
                   aria-label="Activer/désactiver"
                 >
@@ -127,9 +127,9 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
                   />
                 </button>
                 <div className="min-w-0">
-                  <p className="text-sm text-white">{CATEGORY_LABELS[rule.category] ?? rule.category}</p>
+                  <p className="text-[13.5px] text-white font-medium">{CATEGORY_LABELS[rule.category] ?? rule.category}</p>
                   {isAutoReply && rule.enabled && (
-                    <p className="text-xs text-emerald-500">Envoi automatique actif</p>
+                    <p className="text-[11.5px] text-emerald-400">Envoi automatique actif</p>
                   )}
                 </div>
               </div>
@@ -138,7 +138,7 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
                   value={rule.action}
                   disabled={!rule.enabled || savingId === rule.id}
                   onChange={(e) => update(rule.id, { action: e.target.value })}
-                  className="text-xs bg-slate-800 border border-slate-700 text-slate-300 rounded-lg px-3 py-1.5 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="text-xs bg-ink-850 border border-line text-zinc-300 rounded-lg px-3 py-1.5 disabled:opacity-40 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all"
                 >
                   {actions.map((a) => (
                     <option key={a} value={a}>
@@ -149,7 +149,7 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
                 {isAutoReply && rule.enabled && (
                   <button
                     onClick={() => setExpanded((s) => ({ ...s, [rule.id]: !s[rule.id] }))}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 px-2 py-1.5 rounded-lg hover:bg-indigo-500/10 transition-colors"
+                    className="text-xs text-brand-hover hover:text-indigo-300 px-2 py-1.5 rounded-lg hover:bg-brand/10 transition-colors"
                   >
                     {isExpanded ? "Fermer" : "Message →"}
                   </button>
@@ -158,25 +158,25 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
             </div>
 
             {isAutoReply && rule.enabled && isExpanded && (
-              <div className="mt-4 pl-12 space-y-2">
-                <p className="text-xs text-slate-500">
+              <div className="mt-4 pl-12 space-y-2 animate-fade-up">
+                <p className="text-xs text-zinc-500">
                   Ce message part automatiquement, sans validation. Variables disponibles :{" "}
-                  <code className="text-indigo-400 bg-slate-800 px-1 rounded">{"{{salutation}}"}</code>{" "}
+                  <code className="text-brand-hover bg-ink-850 px-1 rounded">{"{{salutation}}"}</code>{" "}
                   et{" "}
-                  <code className="text-indigo-400 bg-slate-800 px-1 rounded">{"{{signature}}"}</code>
+                  <code className="text-brand-hover bg-ink-850 px-1 rounded">{"{{signature}}"}</code>
                 </p>
                 <textarea
                   value={templates[rule.id] ?? ""}
                   onChange={(e) => setTemplates((s) => ({ ...s, [rule.id]: e.target.value }))}
                   placeholder={placeholder}
                   rows={8}
-                  className="w-full text-sm bg-slate-800 border border-slate-700 rounded-lg p-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none leading-relaxed font-mono"
+                  className="w-full text-[13px] bg-ink-850 border border-line rounded-lg p-3 text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 focus:bg-ink-900 resize-none leading-relaxed font-mono transition-all"
                 />
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => saveTemplate(rule.id)}
                     disabled={savingTemplate === rule.id}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+                    className="px-4 py-2 bg-brand hover:bg-brand-hover text-white text-xs font-medium rounded-lg transition-all hover:shadow-glow disabled:opacity-50"
                   >
                     {savingTemplate === rule.id ? "Enregistrement…" : "Enregistrer le message"}
                   </button>
@@ -184,7 +184,7 @@ export default function RulesEditor({ rules }: { rules: RuleItem[] }) {
                     <span className="text-xs text-emerald-400">Enregistré</span>
                   )}
                   {!templates[rule.id] && (
-                    <span className="text-xs text-slate-600">Vide = message par défaut</span>
+                    <span className="text-xs text-zinc-600">Vide = message par défaut</span>
                   )}
                 </div>
               </div>

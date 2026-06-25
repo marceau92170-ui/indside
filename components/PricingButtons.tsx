@@ -55,10 +55,10 @@ export default function PricingButtons({ planKey, highlighted }: Props) {
       <button
         onClick={handleCheckout}
         disabled={loading || status === "loading"}
-        className={`w-full text-center rounded-xl px-5 py-3 text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+        className={`w-full text-center rounded-xl px-5 py-3 text-sm font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
           highlighted
-            ? "bg-indigo-600 text-white hover:bg-indigo-500"
-            : "bg-slate-800 text-slate-200 hover:bg-slate-700"
+            ? "bg-brand text-white hover:bg-brand-hover hover:shadow-glow"
+            : "bg-ink-800 text-zinc-200 hover:bg-ink-850 border border-line hover:border-line-strong"
         }`}
       >
         {loading ? "Redirection…" : label}
