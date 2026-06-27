@@ -11,7 +11,8 @@ export async function GET(req: NextRequest) {
 
   const email = req.nextUrl.searchParams.get("email")
   const plan = (req.nextUrl.searchParams.get("plan") ?? "PRO") as Plan
-  const days = parseInt(req.nextUrl.searchParams.get("days") ?? "1")
+  const days = parseInt(req.nextUrl.searchParams.get("days") ?? "0")
+  const hours = parseInt(req.nextUrl.searchParams.get("hours") ?? "0")
   const resetSync = req.nextUrl.searchParams.get("reset") === "true"
 
   if (!email) return NextResponse.json({ error: "email requis" }, { status: 400 })
@@ -23,7 +24,10 @@ export async function GET(req: NextRequest) {
   })
   if (!user?.agencyId) return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 })
 
-  const trialEndsAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000)
+  // Durée totale = jours + heures ; par défaut 1 jour si rien n'est précisé
+  const totalHours = days * 24 + hours
+  const durationMs = (totalHours > 0 ? totalHours : 24) * 60 * 60 * 1000
+  const trialEndsAt = new Date(Date.now() + durationMs)
   const quotaMax = PLAN_QUOTAS[plan]
 
   await prisma.agency.update({
@@ -43,6 +47,7 @@ export async function GET(req: NextRequest) {
     email,
     plan,
     quotaMax,
+    durationHours: totalHours > 0 ? totalHours : 24,
     trialEndsAt: trialEndsAt.toISOString(),
     syncReset: resetSync,
   })
