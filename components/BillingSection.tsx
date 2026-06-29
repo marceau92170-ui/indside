@@ -77,6 +77,9 @@ export default function BillingSection({ plan, quotaUsed, quotaMax, hasStripe }:
             </p>
             <p className="text-xs text-zinc-600">{quotaMax} / mois</p>
           </div>
+          <p className="text-[11px] text-zinc-600 mt-2">
+            Les spams et newsletters ne sont pas comptés — seuls les emails utiles le sont.
+          </p>
         </div>
       )}
     </div>

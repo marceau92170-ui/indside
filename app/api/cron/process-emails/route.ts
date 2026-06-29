@@ -6,9 +6,15 @@ import { classifyEmail } from "@/lib/ai/classify"
 import { generateDraft } from "@/lib/ai/draft"
 import { buildAutoReply } from "@/lib/automation/templates"
 import { CONFIDENCE_THRESHOLD, AUTO_REPLY_CATEGORIES } from "@/lib/constants"
-import { EmailStatus, DraftStatus, AutoAction, type Mailbox, type Agency } from "@prisma/client"
+import { EmailStatus, DraftStatus, AutoAction, EmailCategory, Priority, type Mailbox, type Agency } from "@prisma/client"
 import type { NewMessage } from "@/lib/email/providers"
 import { notifyNewDrafts } from "@/lib/email/notify"
+import { prefilter } from "@/lib/email/prefilter"
+import { isQuotaCounting } from "@/lib/ai/models"
+
+// Garde-fou anti-emballement (cf. SPEC §6.4) : au-delà de ce nombre d'emails
+// traités sur une boîte en 24 h, on suspend l'auto-traitement et on alerte.
+const RUNAWAY_LIMIT_24H = 1000
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization")
@@ -53,6 +59,28 @@ export async function POST(request: NextRequest) {
         })
       })
 
+      // Garde-fou anti-emballement : si la boîte a déjà traité un volume
+      // anormal en 24 h (boucle, import massif…), on suspend pour protéger
+      // l'expérience client et les coûts API.
+      const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000)
+      const recentCount = await prisma.emailMessage.count({
+        where: {
+          mailboxId: mailbox.id,
+          processedAt: { gte: since24h },
+          status: { not: EmailStatus.NEW },
+        },
+      })
+      if (recentCount >= RUNAWAY_LIMIT_24H) {
+        console.error(
+          `ALERTE anti-emballement : boîte ${mailbox.id} (${mailbox.email}) a traité ${recentCount} emails en 24h — auto-traitement suspendu.`
+        )
+        await prisma.mailbox.update({
+          where: { id: mailbox.id },
+          data: { status: "ERROR", lastSyncAt: new Date() },
+        })
+        continue
+      }
+
       const { messages, newHistoryId } = await provider.listNewMessages(
         mailbox.historyId ?? undefined
       )
@@ -82,6 +110,31 @@ export async function POST(request: NextRequest) {
 
           if (emailMessage.status !== EmailStatus.NEW) continue
 
+          // ===== PRÉ-FILTRE DÉTERMINISTE (avant toute IA) =====
+          // Spam / newsletters / notifications : étiquetés, jamais facturés,
+          // aucun appel API. (cf. SPEC §2)
+          const pre = prefilter({
+            from: msg.from,
+            subject: msg.subject,
+            hasListUnsubscribe: msg.hasListUnsubscribe,
+            precedenceBulk: msg.precedenceBulk,
+            autoSubmitted: msg.autoSubmitted,
+          })
+          if (pre) {
+            await prisma.emailMessage.update({
+              where: { id: emailMessage.id },
+              data: {
+                category: EmailCategory.SPAM,
+                priority: Priority.BAS,
+                confidence: 1,
+                status: EmailStatus.CLASSIFIED,
+                processedAt: new Date(),
+              },
+            })
+            await provider.markRead(msg.providerId).catch(() => {})
+            continue // pas d'IA, pas de quota
+          }
+
           const freshAgency = await prisma.agency.findUnique({
             where: { id: mailbox.agencyId },
             select: { emailQuotaUsed: true, emailQuotaMax: true },
@@ -91,7 +144,7 @@ export async function POST(request: NextRequest) {
             break
           }
 
-          const drafted = await classifyAndProcess({
+          const { category, drafted } = await classifyAndProcess({
             emailMessage,
             message: msg,
             mailbox,
@@ -103,10 +156,14 @@ export async function POST(request: NextRequest) {
             draftsByAgency[mailbox.agencyId] = (draftsByAgency[mailbox.agencyId] ?? 0) + 1
           }
 
-          await prisma.agency.update({
-            where: { id: mailbox.agencyId },
-            data: { emailQuotaUsed: { increment: 1 } },
-          })
+          // Incrémente le quota UNIQUEMENT pour un email "utile"
+          // (catégorie métier pertinente). SPAM / AUTRE ne comptent pas. (SPEC §1)
+          if (isQuotaCounting(category)) {
+            await prisma.agency.update({
+              where: { id: mailbox.agencyId },
+              data: { emailQuotaUsed: { increment: 1 } },
+            })
+          }
 
           results.processed++
         } catch (e) {
@@ -163,7 +220,7 @@ async function classifyAndProcess({
   mailbox: Mailbox
   agency: Agency
   provider: GmailProvider
-}): Promise<boolean> {
+}): Promise<{ category: string; drafted: boolean }> {
   const classification = await classifyEmail({
     from: message.from,
     subject: message.subject,
@@ -194,12 +251,12 @@ async function classifyAndProcess({
 
   if (!rule?.enabled) {
     await createDraftOnly({ emailMessage, message, classification, agency, provider })
-    return true
+    return { category: classification.category, drafted: true }
   }
 
   if (rule.action === AutoAction.LABEL_ONLY) {
     await provider.markRead(message.providerId)
-    return false
+    return { category: classification.category, drafted: false }
   }
 
   const isWhitelisted = (AUTO_REPLY_CATEGORIES as readonly string[]).includes(
@@ -241,12 +298,12 @@ async function classifyAndProcess({
       })
 
       await provider.markRead(message.providerId)
-      return false
+      return { category: classification.category, drafted: false }
     }
   }
 
   await createDraftOnly({ emailMessage, message, classification, agency, provider })
-  return true
+  return { category: classification.category, drafted: true }
 }
 
 async function createDraftOnly({

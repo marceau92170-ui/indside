@@ -136,6 +136,13 @@ export class GmailProvider implements EmailProvider {
     const dateStr = getHeader("Date")
     const receivedAt = dateStr ? new Date(dateStr) : new Date()
 
+    // En-têtes pour le pré-filtre déterministe (newsletters / notifications)
+    const precedence = getHeader("Precedence").toLowerCase()
+    const autoSub = getHeader("Auto-Submitted").toLowerCase()
+    const hasListUnsubscribe = !!getHeader("List-Unsubscribe")
+    const precedenceBulk = precedence === "bulk" || precedence === "list" || precedence === "junk"
+    const autoSubmitted = autoSub !== "" && autoSub !== "no"
+
     let bodyText = ""
     const payload = msg.payload
 
@@ -164,6 +171,9 @@ export class GmailProvider implements EmailProvider {
       snippet: msg.snippet ?? "",
       bodyText,
       receivedAt,
+      hasListUnsubscribe,
+      precedenceBulk,
+      autoSubmitted,
     }
   }
 

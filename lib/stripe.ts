@@ -25,8 +25,9 @@ export const STRIPE_PRICES = {
   AGENCY_PLUS: process.env.STRIPE_PRICE_AGENCY_PLUS || "price_agency_plus_placeholder",
 } as const
 
+// Quotas d'emails "utiles" / mois (cf. SPEC §4). Agence+ plafonné (fair use).
 export const PLAN_QUOTAS: Record<string, number> = {
-  STARTER: 500,
-  PRO: 2000,
-  AGENCY_PLUS: 999999,
+  STARTER: 1000,
+  PRO: 3000,
+  AGENCY_PLUS: 12000,
 }

@@ -6,6 +6,10 @@ export interface NewMessage {
   snippet: string
   bodyText: string
   receivedAt: Date
+  // En-têtes utiles au pré-filtre déterministe (cf. lib/email/prefilter.ts)
+  hasListUnsubscribe?: boolean
+  precedenceBulk?: boolean
+  autoSubmitted?: boolean
 }
 
 export interface CreateDraftParams {

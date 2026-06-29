@@ -11,7 +11,7 @@ const PLANS = [
       "1 boîte email connectée",
       "Classification automatique",
       "Brouillons de réponse illimités",
-      "500 emails / mois",
+      "1 000 emails utiles / mois",
       "Support par email",
     ],
     highlighted: false,
@@ -25,7 +25,7 @@ const PLANS = [
       "3 boîtes email connectées",
       "Tout Starter, plus :",
       "Réponses automatiques (liste blanche)",
-      "2 000 emails / mois",
+      "3 000 emails utiles / mois",
       "Statistiques avancées",
     ],
     highlighted: true,
@@ -38,7 +38,7 @@ const PLANS = [
     features: [
       "Boîtes illimitées",
       "Multi-agences",
-      "Emails illimités",
+      "12 000 emails utiles / mois",
       "Statistiques avancées",
       "Support prioritaire",
     ],
@@ -114,7 +114,10 @@ export default function PricingPage() {
             ))}
           </div>
 
-          <p className="text-center text-sm text-zinc-600 mt-10">
+          <p className="text-center text-sm text-zinc-500 mt-10">
+            Les spams et newsletters ne sont jamais comptés dans votre quota — seuls les emails utiles le sont.
+          </p>
+          <p className="text-center text-sm text-zinc-600 mt-2">
             Tous les prix sont hors taxes. Hébergement des données en Union Européenne.{" "}
             <Link href="/confidentialite" className="underline hover:text-zinc-400">
               Politique de confidentialité

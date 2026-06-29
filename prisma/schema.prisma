@@ -208,15 +208,18 @@ model AutomationRule {
 }
 
 model UsageLog {
-  id          String   @id @default(cuid())
-  agencyId    String
-  agency      Agency   @relation(fields: [agencyId], references: [id])
-  type        String
-  tokensIn    Int?
-  tokensOut   Int?
-  emailsCount Int?
-  metadata    Json?
-  createdAt   DateTime @default(now())
+  id             String   @id @default(cuid())
+  agencyId       String
+  agency         Agency   @relation(fields: [agencyId], references: [id])
+  type           String
+  model          String?
+  tokensIn       Int?
+  tokensOut      Int?
+  costEur        Float?
+  countedInQuota Boolean  @default(false)
+  emailsCount    Int?
+  metadata       Json?
+  createdAt      DateTime @default(now())
 }
 
 model PromoCode {
