@@ -60,6 +60,44 @@ export default function HomePage() {
 
         <p className="text-xs text-zinc-600 mt-5 relative">Accès sur invitation · Aucune carte bancaire requise pour commencer</p>
 
+        {/* Product preview (mockup statique) */}
+        <div className="mt-16 w-full relative animate-fade-up" aria-hidden="true">
+          <div className="absolute inset-x-0 -top-10 h-40 bg-[radial-gradient(ellipse,rgba(99,102,241,0.15),transparent_70%)] pointer-events-none" />
+          <div className="relative rounded-2xl border border-line bg-ink-900 shadow-card-lg overflow-hidden text-left">
+            {/* Barre fenêtre */}
+            <div className="flex items-center gap-1.5 px-4 py-3 border-b border-line bg-ink-900">
+              <span className="w-2.5 h-2.5 rounded-full bg-ink-800" />
+              <span className="w-2.5 h-2.5 rounded-full bg-ink-800" />
+              <span className="w-2.5 h-2.5 rounded-full bg-ink-800" />
+              <span className="ml-3 text-[11px] text-zinc-600">app.immomail — Brouillons à valider</span>
+            </div>
+            {/* Contenu mockup */}
+            <div className="p-4 sm:p-5 space-y-2.5">
+              {[
+                { cat: "Lead achat", catCls: "bg-indigo-500/10 text-indigo-300", subject: "Nouveau contact — Appartement T3 Lyon 3e", status: "Réponse prête", statusCls: "text-emerald-400", dot: "bg-emerald-400" },
+                { cat: "Demande de visite", catCls: "bg-amber-500/10 text-amber-400", subject: "Visite appartement rue Garibaldi", status: "À valider", statusCls: "text-amber-400", dot: "bg-amber-400" },
+                { cat: "Locataire", catCls: "bg-violet-500/10 text-violet-300", subject: "Problème chauffe-eau — 12 rue des Lilas", status: "À valider", statusCls: "text-amber-400", dot: "bg-amber-400" },
+              ].map((r) => (
+                <div key={r.subject} className="flex items-center gap-3 rounded-lg border border-line bg-ink-950/60 px-3.5 py-2.5">
+                  <span className={`hidden sm:inline-flex text-[10.5px] font-medium px-2 py-[3px] rounded-md shrink-0 ${r.catCls}`}>{r.cat}</span>
+                  <span className="text-[12.5px] text-zinc-200 truncate flex-1">{r.subject}</span>
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium shrink-0 ${r.statusCls}`}>
+                    <span className={`w-[5px] h-[5px] rounded-full ${r.dot}`} />
+                    {r.status}
+                  </span>
+                </div>
+              ))}
+              <div className="flex items-center justify-between pt-1.5">
+                <span className="text-[11px] text-zinc-600">L&apos;IA a rédigé 3 réponses — relisez et envoyez.</span>
+                <span className="inline-flex items-center gap-1.5 bg-brand text-white text-[11px] font-medium px-3 py-1.5 rounded-md">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                  Approuver &amp; envoyer
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 3 steps */}
         <div className="mt-20 grid grid-cols-3 gap-6 text-left w-full relative">
           {[

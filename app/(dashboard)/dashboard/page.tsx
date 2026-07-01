@@ -171,9 +171,9 @@ export default async function DashboardPage() {
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-6 stagger">
           {stats.map((s) => (
-            <div key={s.label} className="group bg-ink-900 border border-line rounded-xl p-[18px] transition-all hover:border-line-strong hover:-translate-y-0.5 hover:shadow-card">
+            <div key={s.label} className="group bg-ink-900 border border-line rounded-xl p-[18px] transition-all hover:border-line-strong hover:-translate-y-0.5 hover:shadow-card animate-fade-up">
               <div className={`w-8 h-8 rounded-[9px] flex items-center justify-center mb-3.5 ${s.ic}`}>
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">{s.icon}</svg>
               </div>
