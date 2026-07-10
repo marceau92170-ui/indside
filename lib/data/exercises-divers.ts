@@ -1,0 +1,422 @@
+import type { ExerciseSeed } from "./types";
+
+// 5 exercices — Cardio & endurance
+export const CARDIO_EXERCISES: ExerciseSeed[] = [
+  {
+    slug: "fartlek-15",
+    name: "Fartlek 15 minutes",
+    category: "cardio",
+    emoji: "🫁",
+    description:
+      "Course continue avec variations d'allure libres : le cardio « à la suédoise », moins monotone qu'un footing et plus proche des efforts du match.",
+    steps: [
+      "Échauffement : 3 minutes de course très facile.",
+      "Pendant 10 minutes, alterne librement : 1 min allure moyenne, 30 s allure rapide, 1 min facile…",
+      "Utilise le terrain : accélère entre deux lampadaires, récupère jusqu'au suivant.",
+      "Termine par 2 minutes très faciles pour redescendre.",
+    ],
+    mistakes:
+      "Partir trop vite et exploser au bout de 5 minutes ; faire tout le fartlek à la même allure ; sauter le retour au calme.",
+    breathing: "Sur les phases rapides tu dois pouvoir dire 3-4 mots, sur les phases lentes tenir une conversation.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "12 minutes au total avec des accélérations plus courtes (15-20 s).",
+    variantHard: "20 minutes avec 8 accélérations de 45 s à allure soutenue.",
+    durationMin: 15,
+  },
+  {
+    slug: "intermittent-30-30",
+    name: "Intermittent 30/30",
+    category: "cardio",
+    emoji: "🫁",
+    description:
+      "30 secondes de course rapide, 30 secondes de récupération en marchant ou trottinant. Le format de référence pour développer le moteur aérobie des footballeurs.",
+    steps: [
+      "Échauffement 5 minutes (course facile + gammes légères).",
+      "Cours 30 secondes à allure rapide mais régulière (~85-90 % de ton max, pas un sprint).",
+      "Récupère 30 secondes en trottinant très lentement ou en marchant.",
+      "6 à 10 répétitions selon ton âge et ton niveau. La dernière doit être aussi rapide que la première.",
+    ],
+    mistakes:
+      "Sprinter les premières répétitions et marcher les dernières ; s'arrêter complètement pendant la récupération ; négliger l'échauffement.",
+    breathing: "Respiration profonde et active pendant les 30 s de récupération.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "6 répétitions avec 45 s de récupération.",
+    variantHard: "2 blocs de 8 répétitions séparés par 3 minutes de marche.",
+    durationMin: 15,
+    isFree: true,
+  },
+  {
+    slug: "navette-conduite",
+    name: "Navette en conduite de balle",
+    category: "cardio",
+    emoji: "🫁",
+    description:
+      "Allers-retours en conduite de balle entre deux plots. Le cardio utile : tu améliores ton moteur ET ta technique sous fatigue en même temps.",
+    steps: [
+      "Place deux plots espacés de 15-20 m.",
+      "Conduis le ballon d'un plot à l'autre à allure soutenue, demi-tour serré autour du plot.",
+      "45 secondes de travail, 45 secondes de récupération (ballon sous le pied, tu marches).",
+      "6 à 8 répétitions. Compte tes allers-retours et garde le même total à chaque répétition.",
+    ],
+    mistakes:
+      "Toucher fort et courir derrière le ballon (ce n'est plus de la conduite) ; demi-tours larges qui font perdre du temps ; toujours tourner du même côté.",
+    breathing: "Respiration active pendant la récupération, ne t'assieds pas.",
+    equipment: ["ballon", "plots"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "30 s de travail / 60 s de récupération, 5 répétitions.",
+    variantHard: "Demi-tours imposés : crochet intérieur à un plot, semelle à l'autre ; pied faible sur les 2 dernières répétitions.",
+    durationMin: 12,
+  },
+  {
+    slug: "gamme-progressive",
+    name: "Progressives 60-80-100 %",
+    category: "cardio",
+    emoji: "🫁",
+    description:
+      "Courses de 40-60 m en accélération progressive : tu montes de 60 % à 100 % de ta vitesse sur la distance. Le pont parfait entre endurance et vitesse.",
+    steps: [
+      "Sur 40 à 60 m, démarre à 60 % de ta vitesse.",
+      "Accélère progressivement : 80 % à mi-distance, ~100 % sur les 10 derniers mètres.",
+      "Décélère en douceur sur 15 m (ne pile jamais à pleine vitesse).",
+      "Reviens en marchant. 5 à 6 répétitions.",
+    ],
+    mistakes:
+      "Atteindre 100 % dès les premiers mètres ; crisper le visage et les épaules à haute vitesse ; s'arrêter net en fin de course.",
+    breathing: "Relâchée pendant la course : mâchoire et épaules détendues.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "Monte à 80 % maximum au lieu de 100 %.",
+    variantHard: "8 répétitions, les 3 dernières en tenant les 15 derniers mètres à pleine vitesse.",
+    durationMin: 10,
+  },
+  {
+    slug: "pyramide-30-45-60",
+    name: "Pyramide 30-45-60",
+    category: "cardio",
+    emoji: "🫁",
+    description:
+      "Intermittent en pyramide : les efforts s'allongent puis raccourcissent. Apprend à gérer des efforts de durées différentes, comme en match.",
+    steps: [
+      "Échauffement 5 minutes.",
+      "Cours à allure soutenue : 30 s, puis 45 s, puis 60 s, puis 45 s, puis 30 s.",
+      "Entre chaque effort, récupère en trottinant le même temps que l'effort précédent.",
+      "L'allure doit rester la même sur tous les efforts : c'est ça, le défi.",
+    ],
+    mistakes:
+      "Partir trop vite sur le premier 30 s ; changer d'allure selon la durée ; récupérer à l'arrêt complet.",
+    breathing: "Contrôle ta respiration dès les récupérations : inspire profondément par le nez.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "Pyramide 20-30-40-30-20 avec récupérations doublées.",
+    variantHard: "Double pyramide avec 3 minutes de marche entre les deux.",
+    durationMin: 14,
+  },
+];
+
+// 7 exercices — Prévention (routine inspirée FIFA 11+ adaptée solo)
+export const PREVENTION_EXERCISES: ExerciseSeed[] = [
+  {
+    slug: "equilibre-unipodal",
+    name: "Équilibre unipodal",
+    category: "prevention",
+    emoji: "🛡️",
+    description:
+      "Tenir sur une jambe en conditions de plus en plus instables. La proprioception qui évite les entorses de cheville — la blessure n°1 chez les jeunes joueurs.",
+    steps: [
+      "Debout sur une jambe, genou légèrement fléchi, l'autre pied décollé.",
+      "Tiens 30 secondes stable, sans poser le pied ni t'accrocher.",
+      "Ajoute du mouvement : passe un ballon imaginaire autour de ta taille, ou touche le sol devant toi.",
+      "30 s par jambe, 2 fois.",
+    ],
+    mistakes:
+      "Jambe d'appui tendue et verrouillée ; regarder ses pieds ; s'agripper à un mur à la première perte d'équilibre (reprends, c'est le travail).",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "Près d'un mur, contact du doigt autorisé.",
+    variantHard: "Yeux fermés, ou en jonglant lentement avec un ballon de l'autre jambe.",
+    durationMin: 4,
+    isFree: true,
+  },
+  {
+    slug: "proprioception-yeux-fermes",
+    name: "Proprioception yeux fermés",
+    category: "prevention",
+    emoji: "🛡️",
+    description:
+      "Équilibre sur une jambe sans les yeux : le système nerveux apprend à stabiliser cheville et genou tout seul, comme lors d'une réception de saut en match.",
+    steps: [
+      "Debout sur une jambe, trouve d'abord ta stabilité yeux ouverts.",
+      "Ferme les yeux et tiens 15 à 20 secondes.",
+      "Si tu poses le pied, rouvre les yeux, restabilise, referme.",
+      "3 essais par jambe. Progresse en durée chaque semaine.",
+    ],
+    mistakes:
+      "Faire l'exercice sur une surface glissante ou encombrée ; bloquer le genou ; tricher en gardant les yeux mi-ouverts.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "Yeux fermés mais un doigt en contact léger avec un mur.",
+    variantHard: "Yeux fermés + mouvements lents de la jambe libre dans toutes les directions.",
+    durationMin: 4,
+  },
+  {
+    slug: "nordic-hamstring-assiste",
+    name: "Nordic hamstring assisté",
+    category: "prevention",
+    emoji: "🛡️",
+    description:
+      "Descente contrôlée du buste vers l'avant, genoux bloqués au sol, freinée par les ischio-jambiers. L'exercice qui a fait chuter les claquages dans le foot pro. Version assistée, 15 ans et plus.",
+    steps: [
+      "À genoux sur une surface moelleuse (herbe, tapis), cale tes chevilles sous un support solide (banc, meuble bas… ou demande à quelqu'un).",
+      "Corps aligné des genoux à la tête, bras devant la poitrine.",
+      "Laisse-toi descendre vers l'avant LE PLUS LENTEMENT possible en freinant avec l'arrière des cuisses.",
+      "Quand tu ne peux plus freiner, amortis avec les mains et repousse-toi pour remonter.",
+      "3 séries de 4 répétitions maximum. Les courbatures seront réelles les premières semaines.",
+    ],
+    mistakes:
+      "Casser les hanches (le corps doit rester aligné) ; descendre en chute libre ; en faire trop dès la première séance.",
+    breathing: "Inspire en haut, souffle pendant toute la descente.",
+    equipment: ["aucun"],
+    minAge: 15,
+    positions: [],
+    variantEasy: "Réduis l'amplitude : descends seulement sur le premier tiers.",
+    variantHard: "Ralentis encore la descente (8-10 s) ou remonte en t'aidant le moins possible des mains.",
+    durationMin: 5,
+  },
+  {
+    slug: "mobilite-chevilles",
+    name: "Mobilité chevilles",
+    category: "prevention",
+    emoji: "🛡️",
+    description:
+      "Flexions de cheville contre un mur. Des chevilles mobiles = des appuis plus sûrs, de meilleurs squats et moins de compensations au genou.",
+    steps: [
+      "Face à un mur, pied droit à ~10 cm du mur.",
+      "Avance le genou droit vers le mur sans décoller le talon.",
+      "Touche le mur avec le genou 10 fois, puis recule le pied d'1-2 cm et recommence.",
+      "Trouve ta distance max (talon au sol), note-la, puis change de pied.",
+    ],
+    mistakes:
+      "Talon qui décolle (la répétition ne compte pas) ; genou qui part vers l'intérieur ; aller trop vite sans contrôle.",
+    equipment: ["mur"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "Pied plus près du mur, amplitude réduite.",
+    variantHard: "Ajoute une rotation : genou vers l'extérieur puis l'intérieur du pied à chaque flexion.",
+    durationMin: 4,
+  },
+  {
+    slug: "mobilite-hanches",
+    name: "Mobilité hanches (90/90 et fentes dynamiques)",
+    category: "prevention",
+    emoji: "🛡️",
+    description:
+      "Routine de mobilité des hanches : rotations en position 90/90 et grandes fentes avec ouverture. Des hanches libres pour frapper plus fort et se blesser moins.",
+    steps: [
+      "Assis au sol en 90/90 : jambe avant pliée à 90°, jambe arrière pliée à 90° sur le côté.",
+      "Bascule les deux genoux d'un côté à l'autre sans les mains, 10 passages lents.",
+      "Puis en fente avant très longue, pose les mains au sol à l'intérieur du pied avant.",
+      "Ouvre le buste vers le ciel du côté de la jambe avant, 5 rotations lentes par côté.",
+    ],
+    mistakes:
+      "Forcer avec des à-coups ; dos complètement arrondi en fente ; retenir sa respiration.",
+    breathing: "Expire longuement sur chaque position, c'est le souffle qui débloque l'amplitude.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "Aide-toi des mains en 90/90.",
+    variantHard: "Tiens 3 respirations complètes dans chaque position extrême.",
+    durationMin: 6,
+  },
+  {
+    slug: "mollets-excentrique",
+    name: "Mollets excentriques (protection tendon d'Achille)",
+    category: "prevention",
+    emoji: "🛡️",
+    description:
+      "Montée sur deux pieds, descente lente sur un seul. Protège le tendon d'Achille, très sollicité par les surfaces dures des city-stades.",
+    steps: [
+      "Sur une marche, avant-pieds au bord, monte sur les pointes avec les DEUX pieds.",
+      "Enlève un pied, et descends sur UNE jambe en 4-5 secondes, talon sous le niveau de la marche.",
+      "Repose le deuxième pied pour remonter à deux.",
+      "3 séries de 8 par jambe.",
+    ],
+    mistakes:
+      "Descendre vite (toute la valeur est dans la lenteur) ; genou tendu verrouillé ; rebondir en bas.",
+    breathing: "Expire pendant la descente lente.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "Au sol sans marche, descente lente à une jambe.",
+    variantHard: "Descente en 8 secondes, ou genou légèrement fléchi pour cibler le soléaire.",
+    durationMin: 5,
+  },
+  {
+    slug: "etirements-fin-seance",
+    name: "Étirements de fin de séance",
+    category: "prevention",
+    emoji: "🛡️",
+    description:
+      "Routine douce de 5 minutes après l'effort : quadriceps, ischios, adducteurs, mollets, fessiers. Pas pour la performance immédiate — pour la souplesse à long terme et le rituel de récupération.",
+    steps: [
+      "Quadriceps : debout, talon vers la fesse, genoux collés. 30 s par jambe.",
+      "Ischios : assis, une jambe tendue, penche-toi vers le pied dos droit. 30 s par jambe.",
+      "Adducteurs : assis en papillon, plantes de pieds l'une contre l'autre. 45 s.",
+      "Mollets : en fente contre un mur, talon arrière au sol. 30 s par jambe.",
+      "Fessiers : allongé, cheville sur le genou opposé, ramène la cuisse vers toi. 30 s par côté.",
+    ],
+    mistakes:
+      "Étirer à froid ou avec des à-coups ; chercher la douleur (une tension confortable suffit) ; bâcler en 1 minute.",
+    breathing: "Expire longuement en entrant dans chaque étirement.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: [],
+    variantEasy: "Réduis chaque position à 20 s.",
+    variantHard: "Double le temps de chaque position en respirant profondément.",
+    durationMin: 6,
+  },
+];
+
+// 6 exercices — Spécifique gardien
+export const GARDIEN_EXERCISES: ExerciseSeed[] = [
+  {
+    slug: "appuis-plongeons-souple",
+    name: "Appuis + plongeons sur surface souple",
+    category: "gardien",
+    emoji: "🧤",
+    description:
+      "Enchaînement d'appuis rapides puis plongeon latéral au sol sur herbe ou tapis. La mécanique du plongeon sans appréhension et sans se faire mal.",
+    steps: [
+      "Sur une surface souple (herbe, tapis), enchaîne 3 secondes d'appuis rapides sur place.",
+      "Plonge latéralement au sol : d'abord le genou côté plongeon, puis la hanche, puis l'épaule (jamais le coude en premier).",
+      "Attrape un ballon imaginaire (ou réel posé au sol) avec les deux mains.",
+      "Relève-toi immédiatement en un mouvement. 5 plongeons par côté.",
+    ],
+    mistakes:
+      "Tomber sur le coude ou plonger à plat ventre ; fermer les yeux au moment du plongeon ; se relever lentement en deux temps.",
+    equipment: ["ballon"],
+    minAge: 13,
+    positions: ["GB"],
+    variantEasy: "Plongeons depuis la position à genoux pour apprendre la chute.",
+    variantHard: "Plonge sur un ballon réel posé à 1,5 m, relève-toi et enchaîne de l'autre côté.",
+    durationMin: 8,
+  },
+  {
+    slug: "deplacements-lateraux-gardien",
+    name: "Déplacements latéraux gardien",
+    category: "gardien",
+    emoji: "🧤",
+    description:
+      "Pas chassés en position de gardien entre deux repères, avec arrêts en position parée. Le jeu de jambes qui met sur la trajectoire avant même l'arrêt.",
+    steps: [
+      "Deux repères espacés de 3-4 m (largeur de but imaginaire).",
+      "En position de base (genoux fléchis, mains devant, poids sur l'avant des pieds), pas chassés d'un repère à l'autre.",
+      "À chaque repère : stop net en position parée 1 seconde, comme si le tir partait.",
+      "6 allers-retours, 3 séries, sans croiser les jambes.",
+    ],
+    mistakes:
+      "Croiser les pieds pendant le déplacement ; se redresser en bougeant ; sautiller haut au lieu de glisser.",
+    equipment: ["plots"],
+    minAge: 13,
+    positions: ["GB"],
+    variantEasy: "Déplacements plus lents en tenant la position basse.",
+    variantHard: "Ajoute un plongeon au sol tous les 2 allers-retours, ou une touche de sol de la main à chaque repère.",
+    durationMin: 6,
+  },
+  {
+    slug: "jeu-au-pied-mur",
+    name: "Jeu au pied contre mur",
+    category: "gardien",
+    emoji: "🧤",
+    description:
+      "Contrôles et relances des deux pieds contre un mur. Le gardien moderne est le premier relanceur : ton jeu au pied vaut de l'or pour ton équipe.",
+    steps: [
+      "À 5-6 m d'un mur, passe appuyée du pied droit, contrôle du retour, relance du gauche.",
+      "Varie les surfaces : intérieur, cou-de-pied, et première touche orientée.",
+      "Simule la pression : contrôle et relance en 2 touches max.",
+      "3 séries de 20 relances en alternant les pieds.",
+    ],
+    mistakes:
+      "Toujours relancer du pied fort ; contrôles dans les pieds qui t'obligeraient à dégager en catastrophe ; frapper sans regarder une cible imaginaire.",
+    equipment: ["ballon", "mur"],
+    minAge: 13,
+    positions: ["GB"],
+    variantEasy: "3 touches autorisées, distance réduite.",
+    variantHard: "Une touche directe, ou contrôle orienté imposé à droite puis à gauche alternativement.",
+    durationMin: 8,
+  },
+  {
+    slug: "prises-de-balle-mur",
+    name: "Prises de balle contre mur",
+    category: "gardien",
+    emoji: "🧤",
+    description:
+      "Frappes contre un mur et captation propre à chaque retour. Mains en W, coudes souples : la base de la sécurité d'un gardien.",
+    steps: [
+      "À 3-4 m du mur, envoie le ballon des mains ou du pied à hauteurs variées.",
+      "Capte le retour : mains en W (pouces qui se touchent) pour les ballons hauts, en cuillère pour les bas.",
+      "Amortis avec les coudes souples et ramène le ballon contre la poitrine.",
+      "20 prises hautes, 20 mi-hauteur, 20 au sol (genou en barrière).",
+    ],
+    mistakes:
+      "Mains rigides qui font rebondir le ballon ; pouces écartés sur les prises hautes ; oublier la barrière du genou sur les ballons au sol.",
+    equipment: ["ballon", "mur"],
+    minAge: 13,
+    positions: ["GB"],
+    variantEasy: "Lance à la main doucement et rapproche-toi du mur.",
+    variantHard: "Frappe plus fort, ou tourne le dos et retourne-toi au rebond pour capter.",
+    durationMin: 7,
+  },
+  {
+    slug: "detente-verticale-gardien",
+    name: "Détente verticale gardien",
+    category: "gardien",
+    emoji: "🧤",
+    description:
+      "Sauts verticaux avec extension des bras comme pour capter un centre. Version adaptée à l'âge : hauteur de saut contrôlée avant 15 ans, puissance maximale après.",
+    steps: [
+      "Position de base gardien, genoux fléchis.",
+      "Saute verticalement en montant un genou (protection en match) et tends les bras au plus haut, mains en W.",
+      "Attrape un ballon imaginaire au point le plus haut, atterris fléchi et équilibré.",
+      "8 sauts, 2 séries (13-14 ans : sauts à intensité modérée, focus technique).",
+    ],
+    mistakes:
+      "Atterrir jambes tendues ; regarder ses mains au lieu du ballon imaginaire ; sauter sans monter le genou de protection.",
+    equipment: ["aucun"],
+    minAge: 13,
+    positions: ["GB"],
+    variantEasy: "Saute à 60-70 % en te concentrant sur la position des mains.",
+    variantHard: "(15 ans+) Enchaîne pas chassé + impulsion à une jambe, comme sur un centre venu de côté.",
+    durationMin: 5,
+  },
+  {
+    slug: "reflexes-balle-mur",
+    name: "Réflexes balle-mur",
+    category: "gardien",
+    emoji: "🧤",
+    description:
+      "Lancers rapprochés contre un mur avec captation immédiate. Le temps de réaction se travaille : chaque dixième gagné, c'est un arrêt de plus.",
+    steps: [
+      "À 2-3 m d'un mur, lance le ballon fort à une main contre le mur.",
+      "Capte le retour le plus vite possible, à deux mains.",
+      "Varie les angles et les hauteurs pour ne jamais savoir exactement où revient le ballon.",
+      "3 séries de 30 secondes, compte tes prises propres.",
+    ],
+    mistakes:
+      "Se tenir trop loin (le retour devient facile) ; rester statique entre les lancers ; laisser tomber les mains entre deux prises.",
+    equipment: ["ballon", "mur"],
+    minAge: 13,
+    positions: ["GB"],
+    variantEasy: "Recule à 4 m et lance moins fort.",
+    variantHard: "Utilise un mur irrégulier, lance dos au mur et retourne-toi au signal sonore du rebond, ou travaille à une main.",
+    durationMin: 5,
+  },
+];

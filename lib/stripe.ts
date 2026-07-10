@@ -1,33 +1,12 @@
-import Stripe from "stripe"
+import Stripe from "stripe";
 
-// Initialisation lazy : pas d'erreur au build si la clé n'est pas encore configurée
-let _stripe: Stripe | null = null
-export function getStripeClient(): Stripe {
+let _stripe: Stripe | null = null;
+
+export function stripe(): Stripe {
   if (!_stripe) {
-    const key = process.env.STRIPE_SECRET_KEY
-    if (!key) throw new Error("STRIPE_SECRET_KEY non configurée")
-    _stripe = new Stripe(key, { apiVersion: "2023-10-16" })
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) throw new Error("STRIPE_SECRET_KEY manquant");
+    _stripe = new Stripe(key, { apiVersion: "2023-10-16" as Stripe.LatestApiVersion });
   }
-  return _stripe
-}
-
-// Alias rétrocompatible pour les imports existants
-export const stripe = new Proxy({} as Stripe, {
-  get(_, prop) {
-    return (getStripeClient() as unknown as Record<string | symbol, unknown>)[prop]
-  },
-})
-
-// Price IDs à remplacer par tes vrais IDs Stripe (mode Test)
-export const STRIPE_PRICES = {
-  STARTER: process.env.STRIPE_PRICE_STARTER || "price_starter_placeholder",
-  PRO: process.env.STRIPE_PRICE_PRO || "price_pro_placeholder",
-  AGENCY_PLUS: process.env.STRIPE_PRICE_AGENCY_PLUS || "price_agency_plus_placeholder",
-} as const
-
-// Quotas d'emails "utiles" / mois (cf. SPEC §4). Agence+ plafonné (fair use).
-export const PLAN_QUOTAS: Record<string, number> = {
-  STARTER: 1000,
-  PRO: 3000,
-  AGENCY_PLUS: 12000,
+  return _stripe;
 }

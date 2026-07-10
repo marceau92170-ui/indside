@@ -1,78 +1,53 @@
-# ImmoMail — Agent IA Email pour agences immobilières
+# Progressa ⚽ — Ton préparateur perso
 
-SaaS B2B : un agent IA se connecte à la boîte Gmail d'une agence immobilière,
-**classe** les emails entrants, **rédige des brouillons** de réponse à valider, et
-**répond automatiquement** uniquement pour les cas sans risque (accusés de réception).
+App web d'entraînement foot personnalisé pour jeunes joueurs amateurs (13-17 ans, U14→U18).
+Programme hebdomadaire individuel généré par IA à partir d'une **bibliothèque de 60 exercices
+validés** (l'IA n'invente jamais un exercice), calé autour des entraînements club et du jour de
+match, avec adaptation chaque semaine selon les retours du joueur.
 
-Stack : Next.js (App Router) · Prisma + Postgres (Neon) · NextAuth · Gmail API ·
-API Anthropic (Claude) · déploiement Vercel.
+**Modèle** : freemium — gratuit (1 séance générique/sem + 10 exercices) · Premium 8,99 €/mois ou
+59 €/an (programme complet, adaptation hebdo, tests, carte joueur).
 
----
+## Stack
 
-## 🌙 Où en est le projet (récap de la nuit)
+- **Next.js 15 (App Router) + TypeScript**, déployé sur Vercel
+- **Postgres** (Neon / Vercel Postgres) + **Prisma**
+- **NextAuth** — magic link e-mail (zéro mot de passe), envoi via **Resend**
+- **API Anthropic** (`claude-sonnet-4-6`) — génération/adaptation des programmes, côté serveur
+  uniquement, sortie JSON validée **Zod**, fallback template si l'API est indisponible
+- **Stripe** — Checkout + Customer Portal + webhook
+- Direction artistique **« Nocturne city-stade »** : fond `#101823`, accent unique projecteur
+  `#D8F34E`, typos Archivo Black / Barlow Condensed / Inter, carte joueur SVG partageable
 
-### ✅ Fait et vérifié (le build passe sans erreur)
+## Démarrage
 
-**Phase 1 — Fondations**
-- Schéma de base complet (Agency, User, Mailbox, EmailMessage, Draft, AutomationRule, UsageLog)
-- Connexion email/mot de passe **réparée** (NextAuth en sessions JWT) + Google sign-in
-- OAuth Gmail (connexion d'une boîte, tokens chiffrés AES-256)
-- Ingestion des emails (cron `/api/cron/process-emails`, idempotent)
+```bash
+npm install
+cp .env.example .env   # remplir DATABASE_URL, NEXTAUTH_SECRET, ANTHROPIC_API_KEY…
+npx prisma db push     # crée les tables
+npm run db:seed        # seed des 60 exercices
+npm run dev
+```
 
-**Phase 2 — L'agent IA**
-- Classification Claude (catégories immo FR, extraction lead, JSON strict)
-- Génération de brouillons (ton configurable, prompts immo)
-- Moteur de règles + **règles par défaut créées à l'inscription** (préréglage prudent)
-- **Auto-réponses sûres par template** (jamais de texte libre généré en envoi auto :
-  respect de la règle d'or — rien d'engageant ne part tout seul)
+Sans `RESEND_API_KEY`, le lien magique de connexion est affiché dans la console serveur.
+En production, seed via `GET /api/admin/seed?secret=ADMIN_SECRET`.
 
-**Phase 3 — Produit (en grande partie)**
-- **Dashboard** : emails traités, leads, auto-réponses, temps économisé, répartition
-  par catégorie, activité récente
-- **File de validation** : email d'origine + réponse proposée, Approuver / Modifier /
-  Rejeter en un clic (envoi via Gmail)
-- **Règles & Paramètres** : toggles par catégorie, ton, signature, connexion Gmail
-- **Onboarding** d'accueil
-- **Landing page**, page **Tarifs** (3 plans), **politique de confidentialité** RGPD
-- **Données de démo** (`/api/dev/seed`) pour visualiser l'app sans brancher Gmail
+## Structure
 
-### ⏳ Reste à faire
-- **Mise en ligne Vercel** : le déploiement automatique ne se déclenchait pas
-  (voir ci-dessous). Le code, lui, compile parfaitement.
-- **Stripe** (paiement réel) : à faire ensemble, nécessite ton compte Stripe.
-- Tests en conditions réelles (vraie boîte Gmail + clé Anthropic).
+- `lib/data/` — les 60 exercices (technique, renforcement, explosivité, cardio, prévention, gardien)
+- `lib/ai/generateProgram.ts` — prompt système strict (interdits 13-14 ans, calendrier club) + validation Zod + contrôle "slug dans le catalogue"
+- `lib/program/templates.ts` — séance gratuite générique + fallback premium sans IA
+- `app/onboarding` — questionnaire 8 écrans (catégorie U14-U18 auto, 13 ligues FFF, consentement parental < 15 ans)
+- `app/(app)/` — semaine, séance (timer + difficulté), bibliothèque, tests, profil (carte joueur PNG), réglages
+- `app/api/cron/weekly` — régénération du dimanche soir (adaptation) · `app/api/cron/reminders` — rappel jour de séance
 
----
+## Crons Vercel
 
-## 🚀 Mettre en ligne (à faire au réveil)
+Configurés dans `vercel.json` (auth `Authorization: Bearer CRON_SECRET`) :
+- `0 18 * * 0` — génération des programmes de la semaine suivante
+- `0 15 * * *` — rappels de séance du jour
 
-Le projet Vercel `immomail` est créé, branché sur la branche `claude/cool-gauss-0nxro9`,
-avec les variables d'environnement. Pour déclencher un déploiement à jour :
+## RGPD / mineurs
 
-1. Ouvre dans ton navigateur le **Deploy Hook** (il construit la dernière version) :
-   `https://api.vercel.com/v1/integrations/deploy/prj_Xb9uazI9B3R9zTshr9l3Om3b1Zj9/tEMUudeCvf`
-   → tu dois voir `{"job":{"state":"PENDING"}}`
-2. Attends 2-3 minutes.
-3. Ouvre **https://immomail.vercel.app** :
-   - Si tu vois la landing **ImmoMail** → c'est en ligne ! Va sur `/register`.
-   - Sinon, regarde les déploiements et envoie le message d'erreur à Claude.
-
-Une fois connecté : sur le dashboard vide, clique **« Charger des données de
-démonstration »** pour voir l'agent en action immédiatement.
-
----
-
-## 🔑 Variables d'environnement
-
-Voir `.env.example`. Indispensables pour tourner en ligne :
-`DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `ENCRYPTION_KEY` (64 hex),
-`GOOGLE_CLIENT_ID/SECRET` (Gmail), `ANTHROPIC_API_KEY` (IA), `CRON_SECRET`.
-
----
-
-## 🧠 Règle d'or (sécurité produit)
-
-Tout ce qui engage l'agence (prix, dispo d'un bien, RDV, négociation) **ne part
-jamais automatiquement**. Les auto-réponses utilisent des **templates figés**
-(accusés de réception) ; l'IA générative ne sert que pour les brouillons relus par
-un humain. Cette contrainte est codée en dur dans `/api/cron/process-emails`.
+Consentement parental obligatoire sous 15 ans (e-mail parent + case), données minimales, zéro
+tracking tiers, suppression de compte en 1 clic (cascade complète + annulation Stripe).

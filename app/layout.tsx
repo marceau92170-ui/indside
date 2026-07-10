@@ -1,34 +1,38 @@
-import type { Metadata, Viewport } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { Providers } from "@/components/Providers"
+import type { Metadata, Viewport } from "next";
+import { Archivo_Black, Barlow_Condensed, Inter } from "next/font/google";
+import "./globals.css";
 
-const inter = Inter({
+const display = Archivo_Black({
+  weight: "400",
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-})
+  variable: "--font-display",
+});
+
+const condensed = Barlow_Condensed({
+  weight: ["600", "700"],
+  subsets: ["latin"],
+  variable: "--font-condensed",
+});
+
+const body = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+});
 
 export const metadata: Metadata = {
-  title: "ImmoMail — Agent IA email pour agences immobilières",
+  title: "Progressa — Ton préparateur perso",
   description:
-    "Classifiez, répondez et gérez vos emails immobiliers automatiquement grâce à l'IA. Vous validez en un clic, rien ne part sans vous.",
-}
+    "Programme d'entraînement foot personnalisé pour jeunes joueurs. Généré pour ton poste, ton âge, ton niveau. Séances de 20 à 40 min faisables seul.",
+};
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0b",
-}
+  themeColor: "#101823",
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={inter.variable}>
-      <body className="bg-ink-950 text-zinc-50 antialiased">
-        <Providers>{children}</Providers>
-      </body>
+    <html lang="fr" className={`${display.variable} ${condensed.variable} ${body.variable}`}>
+      <body>{children}</body>
     </html>
-  )
+  );
 }

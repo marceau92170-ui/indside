@@ -3,112 +3,71 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0b;
-  --foreground: #fafafa;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.011em;
-  font-feature-settings: "cv11", "ss01";
-  text-rendering: optimizeLegibility;
+  @apply bg-night text-chalk font-body antialiased;
 }
 
-::selection {
-  background: rgba(99, 102, 241, 0.3);
-  color: #fff;
-}
-
-/* Focus ring accessible et cohérent sur toute l'app */
-:focus-visible {
-  outline: 2px solid rgba(129, 140, 248, 0.7);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: none; /* les champs ont déjà leur ring Tailwind */
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
-}
-
-/* Chiffres alignés dans les stats et tableaux */
-.tabular-nums {
+/* Chiffres tabulaires pour toutes les stats */
+.tnum {
   font-variant-numeric: tabular-nums;
 }
 
-/* Gradient text helper */
-.gradient-text {
-  background: linear-gradient(120deg, #a5b4fc, #818cf8 40%, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Marquage terrain : rond central + lignes, unique motif de fond, très discret */
+.pitch-bg {
+  position: relative;
+  overflow: hidden;
+}
+.pitch-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+      circle at 50% 120%,
+      transparent 179px,
+      rgba(242, 244, 240, 0.05) 180px,
+      rgba(242, 244, 240, 0.05) 182px,
+      transparent 183px
+    ),
+    linear-gradient(to bottom, transparent calc(100% - 1px), rgba(242, 244, 240, 0.05) 100%);
 }
 
-/* Keyframes */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
+/* Animation signature : validation de séance (flash projecteur + incrément) */
+@keyframes glow-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(216, 243, 78, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 22px rgba(216, 243, 78, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(216, 243, 78, 0);
+  }
+}
+.glow-flash {
+  animation: glow-flash 0.9s ease-out 1;
+}
+
+@keyframes stat-pop {
+  0% {
     transform: translateY(8px);
+    opacity: 0;
   }
-  to {
-    opacity: 1;
+  100% {
     transform: translateY(0);
+    opacity: 1;
   }
 }
-
-.animate-fade-up {
-  animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+.stat-pop {
+  animation: stat-pop 0.45s ease-out 1;
 }
 
-/* Apparition en cascade pour les listes/grilles */
-.stagger > *:nth-child(1) { animation-delay: 0ms; }
-.stagger > *:nth-child(2) { animation-delay: 40ms; }
-.stagger > *:nth-child(3) { animation-delay: 80ms; }
-.stagger > *:nth-child(4) { animation-delay: 120ms; }
-.stagger > *:nth-child(5) { animation-delay: 160ms; }
-.stagger > *:nth-child(6) { animation-delay: 200ms; }
-
-/* Réduit les animations pour les utilisateurs qui le demandent */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .glow-flash,
+  .stat-pop {
+    animation: none;
   }
 }

@@ -7,99 +7,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Plan {
-  STARTER
-  PRO
-  AGENCY_PLUS
-}
-
-enum MailboxStatus {
-  ACTIVE
-  ERROR
-  DISCONNECTED
-}
-
-enum EmailProvider {
-  GMAIL
-}
-
-enum EmailCategory {
-  LEAD_ACHAT
-  LEAD_LOCATION
-  DEMANDE_VISITE
-  LOCATAIRE
-  PROPRIETAIRE
-  DOSSIER_PIECES
-  FOURNISSEUR
-  ADMIN
-  SPAM
-  AUTRE
-}
-
-enum Priority {
-  URGENT
-  NORMAL
-  BAS
-}
-
-enum EmailStatus {
-  NEW
-  CLASSIFIED
-  DRAFT_READY
-  AUTO_SENT
-  VALIDATED
-  IGNORED
-}
-
-enum DraftStatus {
-  PENDING
-  APPROVED
-  EDITED
-  REJECTED
-}
-
-enum AutoAction {
-  AUTO_REPLY
-  DRAFT_ONLY
-  LABEL_ONLY
-}
-
-model Agency {
-  id               String    @id @default(cuid())
-  name             String
-  plan             Plan      @default(STARTER)
-  stripeCustomerId String?   @unique
-  stripeSubId      String?   @unique
-  trialEndsAt      DateTime?
-  tone             String    @default("vouvoiement")
-  signature        String    @default("")
-  emailQuotaUsed   Int       @default(0)
-  emailQuotaMax    Int       @default(0)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  users           User[]
-  mailboxes       Mailbox[]
-  automationRules AutomationRule[]
-  usageLogs       UsageLog[]
-}
+// ---------- Auth (NextAuth) ----------
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  password      String?
-  emailVerified DateTime?
-  image         String?
-  agencyId      String?
-  agency        Agency?   @relation(fields: [agencyId], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  email           String    @unique
+  emailVerified   DateTime?
+  name            String?
+  image           String?
+  // RGPD mineurs
+  parentEmail     String?
+  parentConsentAt DateTime?
+  // Abonnement
+  plan             String  @default("free") // free | premium
+  stripeCustomerId String? @unique
 
-  accounts             Account[]
-  sessions             Session[]
-  resetToken           String?   @unique
-  resetTokenExpiresAt  DateTime?
+  createdAt DateTime @default(now())
+
+  accounts     Account[]
+  sessions     Session[]
+  profile      PlayerProfile?
+  programs     Program[]
+  sessionLogs  SessionLog[]
+  testResults  TestResult[]
+  badges       Badge[]
+  subscription Subscription?
 }
 
 model Account {
@@ -137,111 +69,137 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Mailbox {
-  id              String        @id @default(cuid())
-  agencyId        String
-  agency          Agency        @relation(fields: [agencyId], references: [id])
-  email           String
-  provider        EmailProvider @default(GMAIL)
-  accessTokenEnc  String        @db.Text
-  refreshTokenEnc String        @db.Text
-  tokenExpiresAt  DateTime?
-  historyId       String?
-  status          MailboxStatus @default(ACTIVE)
-  lastSyncAt      DateTime?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+// ---------- Profil joueur ----------
 
-  messages EmailMessage[]
+model PlayerProfile {
+  id        String @id @default(cuid())
+  userId    String @unique
+  firstName String
+  birthYear Int
+  position  String // GB | DC | LAT | MDF | MOF | AIL | ATT
+  levelType String // DISTRICT | REGIONAL | NATIONAL
+  division  String // ex: D3, R2, U17 National
+  region    String // clé de ligue (voir lib/constants)
+  district  String? // libellé libre du district
+  heightCm  Int
+  weightKg  Int
+  clubTrainingsPerWeek Int
+  matchDay  Int? // 0 = dimanche ... 6 = samedi, null = pas de match
+  equipment String[] // ballon | plots | mur | city | elastiques
+  goal      String // vitesse | technique | physique | endurance | frappe | polyvalent
+  weakness  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model EmailMessage {
-  id            String         @id @default(cuid())
-  mailboxId     String
-  mailbox       Mailbox        @relation(fields: [mailboxId], references: [id])
-  providerId    String
-  threadId      String?
-  from          String
-  subject       String
-  snippet       String?
-  bodyText      String?        @db.Text
-  category      EmailCategory?
-  priority      Priority?
-  extractedData Json?
-  confidence    Float?
-  status        EmailStatus    @default(NEW)
-  receivedAt    DateTime
-  processedAt   DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+// ---------- Bibliothèque d'exercices (seed, jamais générée par l'IA) ----------
 
-  draft Draft?
-
-  @@unique([mailboxId, providerId])
+model Exercise {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  category    String // technique | renforcement | explosivite | cardio | prevention | gardien
+  emoji       String
+  description String   @db.Text
+  steps       String[] // étapes d'exécution
+  mistakes    String   @db.Text // erreurs fréquentes
+  breathing   String? // consigne de respiration
+  equipment   String[] // ballon | plots | mur | elastiques | aucun
+  minAge      Int      @default(13)
+  positions   String[] // vide = tous postes ; sinon postes prioritaires
+  variantEasy String   @db.Text
+  variantHard String   @db.Text
+  durationMin Int      @default(5)
+  isFree      Boolean  @default(false) // accessible en plan gratuit (10 exercices)
 }
 
-model Draft {
-  id              String       @id @default(cuid())
-  emailMessageId  String       @unique
-  emailMessage    EmailMessage @relation(fields: [emailMessageId], references: [id])
-  content         String       @db.Text
-  editedContent   String?      @db.Text
-  status          DraftStatus  @default(PENDING)
-  providerDraftId String?
-  sentAt          DateTime?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+// ---------- Programme & séances ----------
+
+model Program {
+  id        String   @id @default(cuid())
+  userId    String
+  weekStart DateTime // lundi de la semaine
+  source    String   @default("ai") // ai | template
+  summary   String?  @db.Text
+  createdAt DateTime @default(now())
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions TrainingSession[]
+
+  @@index([userId, weekStart])
 }
 
-model AutomationRule {
-  id        String        @id @default(cuid())
-  agencyId  String
-  agency    Agency        @relation(fields: [agencyId], references: [id])
-  category  EmailCategory
-  action    AutoAction    @default(DRAFT_ONLY)
-  template  String?       @db.Text
-  enabled   Boolean       @default(true)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+model TrainingSession {
+  id          String @id @default(cuid())
+  programId   String
+  dayOfWeek   Int // 0 = dimanche ... 6 = samedi
+  title       String
+  durationMin Int
+  objective   String
+  advice      String @db.Text
+  blocks      Json // [{ exerciseId, sets, reps, rest, instruction }]
+  order       Int    @default(0)
 
-  @@unique([agencyId, category])
+  program Program      @relation(fields: [programId], references: [id], onDelete: Cascade)
+  logs    SessionLog[]
 }
 
-model UsageLog {
-  id             String   @id @default(cuid())
-  agencyId       String
-  agency         Agency   @relation(fields: [agencyId], references: [id])
-  type           String
-  model          String?
-  tokensIn       Int?
-  tokensOut      Int?
-  costEur        Float?
-  countedInQuota Boolean  @default(false)
-  emailsCount    Int?
-  metadata       Json?
-  createdAt      DateTime @default(now())
+model SessionLog {
+  id          String   @id @default(cuid())
+  sessionId   String
+  userId      String
+  status      String // done | skipped
+  difficulty  Int? // 1..5
+  completedAt DateTime @default(now())
+
+  session TrainingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+  @@index([userId, completedAt])
 }
 
-model PromoCode {
-  id           String    @id @default(cuid())
-  code         String    @unique
-  maxUses      Int       @default(1)
-  usedCount    Int       @default(0)
-  durationDays Int       @default(30)
-  plan         Plan      @default(PRO)
-  notes        String?
-  expiresAt    DateTime?
-  createdAt    DateTime  @default(now())
+// ---------- Tests d'évaluation ----------
 
-  redemptions PromoRedemption[]
+model TestResult {
+  id        String   @id @default(cuid())
+  userId    String
+  testType  String // jonglage | navette | planche | detente
+  value     Float
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, testType, createdAt])
 }
 
-model PromoRedemption {
-  id          String    @id @default(cuid())
-  promoCodeId String
-  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id])
-  agencyId    String
-  redeemedAt  DateTime  @default(now())
+// ---------- Gamification ----------
 
-  @@unique([agencyId])
+model Badge {
+  id       String   @id @default(cuid())
+  userId   String
+  key      String // first_session | serie_3 | serie_7 | sessions_10 | sessions_25 | first_test | test_progress
+  earnedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+}
+
+// ---------- Abonnement ----------
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  stripeSubscriptionId String    @unique
+  status               String // active | trialing | past_due | canceled
+  priceId              String?
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -1,142 +1,161 @@
-import Link from "next/link"
+import Link from "next/link";
+import { PlayerCard } from "@/components/PlayerCard";
+import { ButtonLink } from "@/components/ui";
 
-export default function HomePage() {
+// Landing — conversion jeune ET parent. Direction "Nocturne city-stade".
+export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-ink-950 text-white">
-
-      {/* Header */}
-      <header className="px-6 py-5 flex items-center justify-between max-w-4xl mx-auto w-full">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-[0_2px_8px_rgba(99,102,241,0.4)]">
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <span className="font-bold text-base tracking-tight">ImmoMail</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/login" className="text-sm text-zinc-400 hover:text-white transition-colors">
+    <main className="pitch-bg min-h-screen">
+      <div className="mx-auto w-full max-w-lg px-4 pb-16">
+        {/* header */}
+        <header className="flex items-center justify-between py-5">
+          <span className="font-display text-xl tracking-wider">PROGRESSA</span>
+          <Link
+            href="/connexion"
+            className="rounded-full border border-line px-4 py-1.5 text-sm font-semibold text-chalk hover:border-glow hover:text-glow"
+          >
             Connexion
           </Link>
-          <Link href="/pricing" className="text-sm bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-lg font-medium transition-all hover:shadow-glow">
-            Voir les tarifs
-          </Link>
-        </div>
-      </header>
+        </header>
 
-      {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center max-w-2xl mx-auto w-full relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[400px] bg-[radial-gradient(ellipse,rgba(99,102,241,0.12),transparent_70%)] pointer-events-none" />
+        {/* hero */}
+        <section className="pt-6 text-center">
+          <h1 className="font-condensed text-4xl font-bold uppercase leading-tight">
+            Ton programme perso
+            <br />
+            de préparateur.
+          </h1>
+          <p className="mx-auto mt-3 max-w-sm text-sm text-muted">
+            Généré pour <span className="font-semibold text-chalk">TON poste</span>,{" "}
+            <span className="font-semibold text-chalk">TON âge</span>,{" "}
+            <span className="font-semibold text-chalk">TON niveau</span>. Des séances de 20 à 40
+            minutes, faisables seul, calées autour de tes entraînements club.
+          </p>
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <ButtonLink href="/connexion" size="lg">
+              Créer mon programme gratuit
+            </ButtonLink>
+            <p className="text-xs text-muted">90 secondes pour répondre. Aucune carte demandée.</p>
+          </div>
 
-        <div className="inline-flex items-center gap-2 bg-brand/10 border border-brand/20 text-brand-hover text-xs font-medium px-3 py-1.5 rounded-full mb-8 relative animate-fade-up">
-          <span className="w-1.5 h-1.5 bg-brand-hover rounded-full" />
-          Réservé aux agences immobilières
-        </div>
+          <div className="mt-10 flex justify-center">
+            <PlayerCard
+              width={280}
+              data={{
+                firstName: "Rayan",
+                position: "AIL",
+                positionLabel: "Ailier",
+                category: "U16",
+                divisionLabel: "D3 — District des Hauts-de-Seine",
+                stats: [
+                  { label: "Jonglage", value: "61" },
+                  { label: "Navette", value: "11.2" },
+                  { label: "Planche", value: "95" },
+                  { label: "Détente", value: "43" },
+                ],
+              }}
+            />
+          </div>
+          <p className="mt-3 text-xs text-muted">
+            Ta carte joueur, avec tes vraies stats mesurées.
+          </p>
+        </section>
 
-        <h1 className="text-4xl md:text-[52px] font-bold leading-[1.1] tracking-tightest mb-6 relative animate-fade-up">
-          Votre boîte Gmail.<br />
-          <span className="gradient-text">Gérée par l&apos;IA.</span>
-        </h1>
+        {/* l'écart injuste */}
+        <section className="mt-14">
+          <h2 className="font-condensed text-2xl font-bold uppercase">
+            Lui, il s&apos;entraîne tous les jours.
+          </h2>
+          <p className="mt-2 text-sm text-muted">
+            En centre de formation, c&apos;est entraînement quotidien. Toi, c&apos;est 2 séances
+            club par semaine. La différence se joue sur ce que tu fais{" "}
+            <span className="font-semibold text-chalk">entre les entraînements</span> — à la maison,
+            au city, avec un ballon et un mur.
+          </p>
+        </section>
 
-        <p className="text-lg text-zinc-400 leading-relaxed mb-10 max-w-lg relative animate-fade-up">
-          ImmoMail lit vos emails, les classe et rédige les réponses.
-          Vous validez en un clic. Vos clients reçoivent une réponse le jour même.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center relative animate-fade-up">
-          <Link
-            href="/register"
-            className="bg-brand hover:bg-brand-hover text-white px-8 py-3.5 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-glow"
-          >
-            Créer mon compte gratuitement
-          </Link>
-          <Link
-            href="/pricing"
-            className="border border-line hover:border-line-strong bg-ink-900 text-zinc-300 hover:text-white px-8 py-3.5 rounded-xl text-sm font-medium transition-colors"
-          >
-            Voir les tarifs
-          </Link>
-        </div>
-
-        <p className="text-xs text-zinc-600 mt-5 relative">Accès sur invitation · Aucune carte bancaire requise pour commencer</p>
-
-        {/* Product preview (mockup statique) */}
-        <div className="mt-16 w-full relative animate-fade-up" aria-hidden="true">
-          <div className="absolute inset-x-0 -top-10 h-40 bg-[radial-gradient(ellipse,rgba(99,102,241,0.15),transparent_70%)] pointer-events-none" />
-          <div className="relative rounded-2xl border border-line bg-ink-900 shadow-card-lg overflow-hidden text-left">
-            {/* Barre fenêtre */}
-            <div className="flex items-center gap-1.5 px-4 py-3 border-b border-line bg-ink-900">
-              <span className="w-2.5 h-2.5 rounded-full bg-ink-800" />
-              <span className="w-2.5 h-2.5 rounded-full bg-ink-800" />
-              <span className="w-2.5 h-2.5 rounded-full bg-ink-800" />
-              <span className="ml-3 text-[11px] text-zinc-600">app.immomail — Brouillons à valider</span>
-            </div>
-            {/* Contenu mockup */}
-            <div className="p-4 sm:p-5 space-y-2.5">
-              {[
-                { cat: "Lead achat", catCls: "bg-indigo-500/10 text-indigo-300", subject: "Nouveau contact — Appartement T3 Lyon 3e", status: "Réponse prête", statusCls: "text-emerald-400", dot: "bg-emerald-400" },
-                { cat: "Demande de visite", catCls: "bg-amber-500/10 text-amber-400", subject: "Visite appartement rue Garibaldi", status: "À valider", statusCls: "text-amber-400", dot: "bg-amber-400" },
-                { cat: "Locataire", catCls: "bg-violet-500/10 text-violet-300", subject: "Problème chauffe-eau — 12 rue des Lilas", status: "À valider", statusCls: "text-amber-400", dot: "bg-amber-400" },
-              ].map((r) => (
-                <div key={r.subject} className="flex items-center gap-3 rounded-lg border border-line bg-ink-950/60 px-3.5 py-2.5">
-                  <span className={`hidden sm:inline-flex text-[10.5px] font-medium px-2 py-[3px] rounded-md shrink-0 ${r.catCls}`}>{r.cat}</span>
-                  <span className="text-[12.5px] text-zinc-200 truncate flex-1">{r.subject}</span>
-                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium shrink-0 ${r.statusCls}`}>
-                    <span className={`w-[5px] h-[5px] rounded-full ${r.dot}`} />
-                    {r.status}
-                  </span>
-                </div>
-              ))}
-              <div className="flex items-center justify-between pt-1.5">
-                <span className="text-[11px] text-zinc-600">L&apos;IA a rédigé 3 réponses — relisez et envoyez.</span>
-                <span className="inline-flex items-center gap-1.5 bg-brand text-white text-[11px] font-medium px-3 py-1.5 rounded-md">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
-                  Approuver &amp; envoyer
-                </span>
+        {/* comment ça marche */}
+        <section className="mt-10 space-y-3">
+          <h2 className="font-condensed text-2xl font-bold uppercase">Comment ça marche</h2>
+          {[
+            ["1", "Tu réponds à 8 questions", "Poste, catégorie, niveau (ta vraie division), gabarit, matériel, point faible."],
+            ["2", "Ton programme se génère", "Des séances composées uniquement d'exercices validés, jamais la veille de match."],
+            ["3", "Tu t'entraînes, ça s'adapte", "Tu notes chaque séance. La semaine suivante est ajustée. Tests mesurés toutes les 4 semaines."],
+          ].map(([n, title, desc]) => (
+            <div key={n} className="flex gap-4 rounded-card border border-line bg-surface p-4">
+              <span className="font-condensed text-3xl font-bold text-glow">{n}</span>
+              <div>
+                <p className="font-condensed text-lg font-bold uppercase leading-tight">{title}</p>
+                <p className="mt-1 text-sm text-muted">{desc}</p>
               </div>
             </div>
+          ))}
+        </section>
+
+        {/* anti-bullshit */}
+        <section className="mt-10 rounded-card border border-grass bg-grass/15 p-5">
+          <h2 className="font-condensed text-xl font-bold uppercase">
+            Pas de compléments. Pas de gadgets.
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            Un ballon, un mur, 25 minutes. Renforcement au poids du corps, technique, vitesse,
+            prévention des blessures. Adapté à ta catégorie : avant 15 ans, zéro charge, zéro
+            pliométrie intensive — c&apos;est non négociable.
+          </p>
+        </section>
+
+        {/* preuve */}
+        <section className="mt-10">
+          <h2 className="font-condensed text-2xl font-bold uppercase">La progression se mesure</h2>
+          <p className="mt-2 text-sm text-muted">
+            Jonglage max, navette 5×10 m, planche, détente verticale : 4 tests auto-mesurés toutes
+            les 4 semaines, avec graphiques. Passer de 34 à 61 jonglages en 3 semaines, ça ne se
+            discute pas.
+          </p>
+        </section>
+
+        {/* bloc parent */}
+        <section className="mt-12 rounded-card border border-line bg-surface p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-muted">Pour les parents</p>
+          <h2 className="mt-1 font-condensed text-xl font-bold uppercase">
+            Un coach individuel : 40 € la séance.
+            <br />
+            Progressa : 59 € l&apos;année.
+          </h2>
+          <ul className="mt-3 space-y-1.5 text-sm text-muted">
+            <li>• Séances conçues selon les standards de préparation physique des jeunes (13-17 ans).</li>
+            <li>• Consentement parental demandé à l&apos;inscription pour les moins de 15 ans.</li>
+            <li>• Abonnement souscrit par un parent ou tuteur légal, résiliable en 1 clic.</li>
+            <li>• Données minimales, pas de tracking publicitaire.</li>
+          </ul>
+        </section>
+
+        {/* CTA final */}
+        <section className="mt-12 text-center">
+          <h2 className="font-condensed text-3xl font-bold uppercase leading-tight">
+            La saison prochaine
+            <br />
+            commence maintenant.
+          </h2>
+          <div className="mt-5">
+            <ButtonLink href="/connexion" size="lg">
+              Commencer gratuitement
+            </ButtonLink>
           </div>
-        </div>
+          <p className="mt-3 text-xs text-muted">
+            Gratuit : 1 séance/semaine + 10 exercices. Premium : 8,99 €/mois ou 59 €/an.
+          </p>
+        </section>
 
-        {/* 3 steps */}
-        <div className="mt-20 grid grid-cols-3 gap-6 text-left w-full relative">
-          {[
-            { num: "1", title: "Connectez Gmail", desc: "2 clics, aucune installation." },
-            { num: "2", title: "L'IA classe et rédige", desc: "Lead, visite, locataire… réponse prête en secondes." },
-            { num: "3", title: "Vous envoyez", desc: "Vous relisez et cliquez. Rien ne part sans vous." },
-          ].map((s) => (
-            <div key={s.num} className="flex flex-col gap-3">
-              <span className="w-7 h-7 bg-brand/15 text-brand-hover text-xs font-bold rounded-lg flex items-center justify-center">{s.num}</span>
-              <h3 className="text-sm font-semibold">{s.title}</h3>
-              <p className="text-xs text-zinc-500 leading-relaxed">{s.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Stats */}
-        <div className="mt-16 pt-8 border-t border-line w-full flex flex-col sm:flex-row gap-6 justify-center text-center relative">
-          {[
-            { value: "< 1h", label: "Temps de réponse moyen" },
-            { value: "100%", label: "Contrôle humain conservé" },
-            { value: "0€", label: "Pour démarrer" },
-          ].map((s) => (
-            <div key={s.label} className="flex-1">
-              <p className="text-2xl font-bold tracking-tight">{s.value}</p>
-              <p className="text-xs text-zinc-500 mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="px-6 py-5 border-t border-line text-center text-xs text-zinc-600">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span>ImmoMail · Pour les agences immobilières françaises</span>
-          <Link href="/confidentialite" className="hover:text-zinc-400 transition-colors underline underline-offset-2">
-            Politique de confidentialité
-          </Link>
-        </div>
-      </footer>
-    </div>
-  )
+        <footer className="mt-16 border-t border-line pt-6 text-center text-xs text-muted">
+          <p className="mb-2 font-display text-sm tracking-wider text-chalk">PROGRESSA</p>
+          <p>
+            <Link href="/cgu" className="underline">CGU</Link> ·{" "}
+            <Link href="/confidentialite" className="underline">Confidentialité</Link> ·{" "}
+            <Link href="/connexion" className="underline">Connexion</Link>
+          </p>
+        </footer>
+      </div>
+    </main>
+  );
 }
