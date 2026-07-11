@@ -7,16 +7,21 @@ import { Button } from "@/components/ui";
 export function GenerateProgramButton({ label }: { label: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function generate() {
     setLoading(true);
-    setError(false);
+    setError(null);
     const res = await fetch("/api/program/generate", { method: "POST" });
     if (res.ok) {
       router.refresh();
+      setLoading(false);
+    } else if (res.status === 429) {
+      const data = await res.json().catch(() => null);
+      setError(data?.message ?? "Réessaie un peu plus tard.");
+      setLoading(false);
     } else {
-      setError(true);
+      setError("Échec, réessaie dans un instant.");
       setLoading(false);
     }
   }
@@ -26,7 +31,7 @@ export function GenerateProgramButton({ label }: { label: string }) {
       <Button onClick={generate} disabled={loading}>
         {loading ? "Génération…" : label}
       </Button>
-      {error && <p className="mt-2 text-xs text-red-400">Échec, réessaie dans un instant.</p>}
+      {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
     </div>
   );
 }

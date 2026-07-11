@@ -184,6 +184,18 @@ function extractJson(text: string): unknown {
   return JSON.parse(cleaned.slice(start, end + 1));
 }
 
+// Garantie "les séances sont vraies" : tout slug hors catalogue = rejet.
+// Extrait en fonction pure pour être testable sans appel réseau.
+export function assertSlugsInCatalog(program: GeneratedProgram, validSlugs: Set<string>): void {
+  for (const session of program.sessions) {
+    for (const block of session.blocks) {
+      if (!validSlugs.has(block.slug)) {
+        throw new Error(`Slug hors catalogue : ${block.slug}`);
+      }
+    }
+  }
+}
+
 export async function generateProgramWithAI(
   profile: PlayerProfile,
   allExercises: Exercise[],
@@ -224,15 +236,7 @@ export async function generateProgramWithAI(
       if (!textBlock || textBlock.type !== "text") throw new Error("Réponse vide");
 
       const parsed = ProgramSchema.parse(extractJson(textBlock.text));
-
-      // Garantie "les séances sont vraies" : tout slug hors catalogue = rejet
-      for (const session of parsed.sessions) {
-        for (const block of session.blocks) {
-          if (!validSlugs.has(block.slug)) {
-            throw new Error(`Slug hors catalogue : ${block.slug}`);
-          }
-        }
-      }
+      assertSlugsInCatalog(parsed, validSlugs);
       return parsed;
     } catch (err) {
       lastError = err;

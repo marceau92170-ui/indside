@@ -99,6 +99,10 @@ export default async function SemainePage() {
               repos ou récupération. Ton programme le sait.
             </p>
           )}
+
+          <Link href="/historique" className="mt-4 inline-block text-sm text-muted underline">
+            Voir mes semaines précédentes →
+          </Link>
         </>
       )}
 

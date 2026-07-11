@@ -19,10 +19,27 @@ const body = Inter({
   variable: "--font-body",
 });
 
+const TITLE = "Progressa — Ton préparateur perso";
+const DESCRIPTION =
+  "Programme d'entraînement foot personnalisé pour jeunes joueurs. Généré pour ton poste, ton âge, ton niveau. Séances de 20 à 40 min faisables seul.";
+
 export const metadata: Metadata = {
-  title: "Progressa — Ton préparateur perso",
-  description:
-    "Programme d'entraînement foot personnalisé pour jeunes joueurs. Généré pour ton poste, ton âge, ton niveau. Séances de 20 à 40 min faisables seul.",
+  metadataBase: process.env.NEXTAUTH_URL ? new URL(process.env.NEXTAUTH_URL) : undefined,
+  title: TITLE,
+  description: DESCRIPTION,
+  manifest: "/manifest.webmanifest",
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: "Progressa",
+    locale: "fr_FR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {

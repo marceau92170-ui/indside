@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "@/components/ui";
 import { PlayerCard } from "@/components/PlayerCard";
@@ -61,12 +61,41 @@ function ageOf(birthYear: number): number {
   return new Date().getFullYear() - birthYear;
 }
 
+// Un ado interrompu (appel, notif, batterie) ne doit pas repartir de zéro.
+const STORAGE_KEY = "progressa-onboarding-v1";
+
 export function OnboardingWizard({ birthYears }: { birthYears: number[] }) {
   const router = useRouter();
   const [s, setS] = useState<State>(INITIAL);
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restaure une session interrompue (localStorage) au premier rendu client.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { state?: Partial<State>; step?: number };
+        if (parsed.state) setS((prev) => ({ ...prev, ...parsed.state }));
+        if (typeof parsed.step === "number") setStep(parsed.step);
+      }
+    } catch {
+      // localStorage indisponible ou corrompu : on repart simplement de zéro
+    }
+    setHydrated(true);
+  }, []);
+
+  // Sauvegarde à chaque changement, une fois la restauration initiale faite.
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ state: s, step }));
+    } catch {
+      // quota dépassé ou navigation privée : tant pis, pas bloquant
+    }
+  }, [s, step, hydrated]);
 
   const isMinor15 = s.birthYear !== null && ageOf(s.birthYear) < 15;
 
@@ -130,6 +159,11 @@ export function OnboardingWizard({ birthYears }: { birthYears: number[] }) {
         }),
       });
       if (!res.ok) throw new Error(await res.text());
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {
+        // pas bloquant
+      }
       router.push("/semaine");
       router.refresh();
     } catch {

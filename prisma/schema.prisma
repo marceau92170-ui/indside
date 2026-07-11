@@ -32,6 +32,7 @@ model User {
   testResults  TestResult[]
   badges       Badge[]
   subscription Subscription?
+  pushSubscriptions PushSubscription[]
 }
 
 model Account {
@@ -125,6 +126,7 @@ model Program {
   source    String   @default("ai") // ai | template
   summary   String?  @db.Text
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // sert aussi au cooldown anti-spam de régénération manuelle
 
   user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   sessions TrainingSession[]
@@ -174,6 +176,21 @@ model TestResult {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, testType, createdAt])
+}
+
+// ---------- Notifications push (en plus des e-mails de rappel) ----------
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ---------- Gamification ----------

@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { mondayOfWeek } from "@/lib/categories";
 import { sendEmail } from "@/lib/email/resend";
+import { sendPushToUser } from "@/lib/push";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 // Cron quotidien : rappel aux joueurs qui ont une séance aujourd'hui et ne l'ont pas faite.
+// Envoie e-mail (toujours) + notification push (si le joueur l'a activée).
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -25,7 +27,8 @@ export async function GET(req: Request) {
     include: { program: { include: { user: { include: { profile: true } } } } },
   });
 
-  let sent = 0;
+  let emailSent = 0;
+  let pushSent = 0;
   for (const s of sessions) {
     const user = s.program.user;
     try {
@@ -39,11 +42,22 @@ export async function GET(req: Request) {
           <a href="${process.env.NEXTAUTH_URL}/seance/${s.id}" style="display:inline-block;background:#E12A3A;color:#fff;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;margin-top:12px">Lancer ma séance</a>
         </div>`,
       });
-      sent++;
+      emailSent++;
+    } catch {
+      // non bloquant
+    }
+
+    try {
+      const n = await sendPushToUser(user.id, {
+        title: `Séance du jour — ${s.durationMin} min`,
+        body: `${s.title}. ${s.objective}`,
+        url: `/seance/${s.id}`,
+      });
+      pushSent += n;
     } catch {
       // non bloquant
     }
   }
 
-  return NextResponse.json({ sent });
+  return NextResponse.json({ emailSent, pushSent });
 }

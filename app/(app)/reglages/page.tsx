@@ -7,6 +7,7 @@ import { goalLabel, positionLabel, DAYS_FR } from "@/lib/constants";
 import { Card } from "@/components/ui";
 import { ManageSubscriptionButton } from "@/components/CheckoutButtons";
 import { SignOutButton, DeleteAccountButton } from "@/components/AccountButtons";
+import { PushToggle } from "@/components/PushToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -61,10 +62,11 @@ export default async function ReglagesPage() {
 
       <Card className="mb-4">
         <h2 className="mb-2 font-condensed text-lg font-bold uppercase">Notifications</h2>
-        <p className="text-sm text-muted">
-          Un e-mail le jour de chaque séance et quand ta nouvelle semaine est prête. (Réglage fin à
-          venir.)
+        <p className="mb-3 text-sm text-muted">
+          Un e-mail le jour de chaque séance et quand ta nouvelle semaine est prête. Active aussi
+          les notifications push pour un rappel direct sur ton téléphone.
         </p>
+        <PushToggle vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || null} />
       </Card>
 
       <Card>
