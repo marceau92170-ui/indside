@@ -32,11 +32,11 @@ export async function GET(req: Request) {
       await sendEmail({
         to: user.email,
         subject: `Séance ${s.title.toLowerCase()} — ${s.durationMin} min — avant 20h ?`,
-        html: `<div style="background:#101823;padding:32px;font-family:Arial,sans-serif;border-radius:12px;color:#F2F4F0">
+        html: `<div style="background:#0C0D0F;padding:32px;font-family:Arial,sans-serif;border-radius:12px;color:#EDE9E0">
           <p style="font-size:22px;font-weight:900;letter-spacing:1px;margin:0 0 16px">PROGRESSA</p>
           <p>${user.profile?.firstName ?? ""}, c'est le jour de ta séance <strong>${s.title}</strong> (${s.durationMin} min).</p>
-          <p style="color:#8A94A3">${s.objective}</p>
-          <a href="${process.env.NEXTAUTH_URL}/seance/${s.id}" style="display:inline-block;background:#D8F34E;color:#101823;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;margin-top:12px">Lancer ma séance</a>
+          <p style="color:#93938D">${s.objective}</p>
+          <a href="${process.env.NEXTAUTH_URL}/seance/${s.id}" style="display:inline-block;background:#E12A3A;color:#fff;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;margin-top:12px">Lancer ma séance</a>
         </div>`,
       });
       sent++;

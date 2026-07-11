@@ -8,14 +8,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Direction artistique "Nocturne city-stade"
-        night: "#101823", // fond bleu nuit profond
-        surface: "#1A2432", // surface carte
-        chalk: "#F2F4F0", // blanc cassé (texte)
-        glow: "#D8F34E", // jaune-vert "lumière de projecteur" — CTA / actif uniquement
-        grass: "#23402E", // vert gazon sombre — touche secondaire
-        muted: "#8A94A3", // texte secondaire dérivé du fond
-        line: "#2A3648", // séparateurs / bordures
+        // Direction artistique "Carton rouge" — asphalte + rouge, un seul accent
+        night: "#0C0D0F", // asphalte quasi-noir
+        surface: "#17181A", // surface carte
+        chalk: "#EDE9E0", // blanc chaud (texte)
+        glow: "#E12A3A", // rouge carton — CTA / actif uniquement
+        grass: "#2A1417", // panel ember sombre — touche secondaire (boîtes de mise en avant)
+        muted: "#93938D", // texte secondaire dérivé du fond
+        line: "#2A2B2D", // séparateurs / bordures
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],

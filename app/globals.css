@@ -28,23 +28,23 @@ body {
   background-image: radial-gradient(
       circle at 50% 120%,
       transparent 179px,
-      rgba(242, 244, 240, 0.05) 180px,
-      rgba(242, 244, 240, 0.05) 182px,
+      rgba(237, 233, 224, 0.05) 180px,
+      rgba(237, 233, 224, 0.05) 182px,
       transparent 183px
     ),
-    linear-gradient(to bottom, transparent calc(100% - 1px), rgba(242, 244, 240, 0.05) 100%);
+    linear-gradient(to bottom, transparent calc(100% - 1px), rgba(237, 233, 224, 0.05) 100%);
 }
 
-/* Animation signature : validation de séance (flash projecteur + incrément) */
+/* Animation signature : validation de séance (flash carton rouge + incrément) */
 @keyframes glow-flash {
   0% {
-    box-shadow: 0 0 0 0 rgba(216, 243, 78, 0.55);
+    box-shadow: 0 0 0 0 rgba(225, 42, 58, 0.55);
   }
   70% {
-    box-shadow: 0 0 0 22px rgba(216, 243, 78, 0);
+    box-shadow: 0 0 0 22px rgba(225, 42, 58, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(216, 243, 78, 0);
+    box-shadow: 0 0 0 0 rgba(225, 42, 58, 0);
   }
 }
 .glow-flash {

@@ -380,7 +380,7 @@ export function OnboardingWizard({ birthYears }: { birthYears: number[] }) {
               type="checkbox"
               checked={s.parentConsent}
               onChange={(e) => set({ parentConsent: e.target.checked })}
-              className="mt-0.5 h-5 w-5 accent-[#D8F34E]"
+              className="mt-0.5 h-5 w-5 accent-[#E12A3A]"
             />
             <span>
               Mon parent (ou tuteur légal) est d&apos;accord pour que j&apos;utilise Progressa et

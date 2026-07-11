@@ -20,10 +20,10 @@ export async function sendEmail(opts: { to: string; subject: string; html: strin
 
 export function magicLinkEmail(url: string): string {
   return `
-  <div style="background:#101823;padding:32px;font-family:Arial,sans-serif;border-radius:12px;color:#F2F4F0">
+  <div style="background:#0C0D0F;padding:32px;font-family:Arial,sans-serif;border-radius:12px;color:#EDE9E0">
     <p style="font-size:22px;font-weight:900;letter-spacing:1px;margin:0 0 16px">PROGRESSA</p>
     <p style="margin:0 0 24px">Clique pour te connecter. Le lien est valable 24 h.</p>
-    <a href="${url}" style="display:inline-block;background:#D8F34E;color:#101823;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none">Me connecter</a>
-    <p style="color:#8A94A3;font-size:12px;margin-top:24px">Si tu n'as pas demandé ce lien, ignore cet e-mail.</p>
+    <a href="${url}" style="display:inline-block;background:#E12A3A;color:#fff;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none">Me connecter</a>
+    <p style="color:#93938D;font-size:12px;margin-top:24px">Si tu n'as pas demandé ce lien, ignore cet e-mail.</p>
   </div>`;
 }

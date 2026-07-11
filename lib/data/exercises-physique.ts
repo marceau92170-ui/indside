@@ -310,7 +310,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     category: "renforcement",
     emoji: "💪",
     description:
-      "Gainage latéral avec la jambe du dessus posée sur un support. LA référence scientifique pour renforcer les adducteurs et prévenir la pubalgie. Réservé aux 15 ans et plus.",
+      "Gainage latéral avec la jambe du dessus posée sur un support. Un exercice largement utilisé dans les clubs pour renforcer les adducteurs ; des études montrent une réduction du risque de douleur à l'aine chez les joueurs qui le pratiquent régulièrement. Réservé aux 15 ans et plus.",
     steps: [
       "Allongé sur le côté, avant-bras au sol, pose le genou de la jambe du dessus sur un banc ou une chaise (version courte).",
       "Décolle le bassin : ton corps est soutenu par l'avant-bras et le genou du dessus.",

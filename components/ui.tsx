@@ -19,7 +19,7 @@ const btnBase =
   "inline-flex items-center justify-center gap-2 rounded-lg font-condensed font-bold uppercase tracking-wide transition-colors disabled:opacity-40 disabled:pointer-events-none";
 
 const btnVariants = {
-  primary: "bg-glow text-night hover:bg-[#e4fb6b] active:bg-[#c8e340]",
+  primary: "bg-glow text-white hover:bg-[#f13d4d] active:bg-[#c22230]",
   ghost: "border border-line text-chalk hover:border-glow hover:text-glow",
   subtle: "bg-line/50 text-chalk hover:bg-line",
 } as const;
@@ -91,7 +91,7 @@ export function Tag({ children, active = false }: { children: ReactNode; active?
   return (
     <span
       className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
-        active ? "bg-glow text-night" : "bg-line/60 text-muted"
+        active ? "bg-glow text-white" : "bg-line/60 text-muted"
       }`}
     >
       {children}

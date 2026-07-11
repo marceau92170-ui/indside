@@ -1,5 +1,7 @@
 "use client";
 
+import { ExerciseIllustration } from "@/components/ExerciseIllustration";
+
 export type ExerciseView = {
   id: string;
   slug: string;
@@ -43,6 +45,13 @@ export function ExerciseDetail({
           <button onClick={onClose} className="text-2xl leading-none text-muted hover:text-chalk">
             ×
           </button>
+        </div>
+
+        <div className="mb-4">
+          <ExerciseIllustration slug={exercise.slug} category={exercise.category} />
+          <p className="mt-1.5 text-center text-[11px] text-muted">
+            Illustration animée — pas une vidéo, le mouvement est toujours correct.
+          </p>
         </div>
 
         <p className="mb-4 text-sm text-muted">{exercise.description}</p>

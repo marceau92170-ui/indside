@@ -28,15 +28,15 @@ export function ProgressChart({
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full" role="img" aria-label="Progression">
-      <path d={path} fill="none" stroke={improving ? "#D8F34E" : "#8A94A3"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={path} fill="none" stroke={improving ? "#E12A3A" : "#93938D"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {points.map((p, i) => (
         <circle
           key={i}
           cx={p.x}
           cy={p.y}
           r={i === points.length - 1 ? 4.5 : 3}
-          fill={i === points.length - 1 ? "#D8F34E" : "#2A3648"}
-          stroke="#F2F4F0"
+          fill={i === points.length - 1 ? "#E12A3A" : "#2A2B2D"}
+          stroke="#EDE9E0"
           strokeWidth={i === points.length - 1 ? 1.5 : 0.5}
         />
       ))}

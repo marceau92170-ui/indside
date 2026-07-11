@@ -16,8 +16,8 @@ match, avec adaptation chaque semaine selon les retours du joueur.
 - **API Anthropic** (`claude-sonnet-4-6`) — génération/adaptation des programmes, côté serveur
   uniquement, sortie JSON validée **Zod**, fallback template si l'API est indisponible
 - **Stripe** — Checkout + Customer Portal + webhook
-- Direction artistique **« Nocturne city-stade »** : fond `#101823`, accent unique projecteur
-  `#D8F34E`, typos Archivo Black / Barlow Condensed / Inter, carte joueur SVG partageable
+- Direction artistique **« Carton rouge »** : asphalte quasi-noir `#0C0D0F`, accent unique rouge
+  carton `#E12A3A`, typos Archivo Black / Barlow Condensed / Inter, carte joueur SVG partageable
 
 ## Démarrage
 

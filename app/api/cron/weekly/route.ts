@@ -35,10 +35,10 @@ export async function GET(req: Request) {
         await sendEmail({
           to: user.email,
           subject: "Ton programme de la semaine est prêt 🔥",
-          html: `<div style="background:#101823;padding:32px;font-family:Arial,sans-serif;border-radius:12px;color:#F2F4F0">
+          html: `<div style="background:#0C0D0F;padding:32px;font-family:Arial,sans-serif;border-radius:12px;color:#EDE9E0">
             <p style="font-size:22px;font-weight:900;letter-spacing:1px;margin:0 0 16px">PROGRESSA</p>
             <p>${user.profile?.firstName ?? ""}, ta nouvelle semaine d'entraînement est en ligne, calée autour de ton club.</p>
-            <a href="${process.env.NEXTAUTH_URL}/semaine" style="display:inline-block;background:#D8F34E;color:#101823;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;margin-top:12px">Voir ma semaine</a>
+            <a href="${process.env.NEXTAUTH_URL}/semaine" style="display:inline-block;background:#E12A3A;color:#fff;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;margin-top:12px">Voir ma semaine</a>
           </div>`,
         });
       } catch {
