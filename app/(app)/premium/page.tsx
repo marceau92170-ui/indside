@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 const INCLUDED = [
   "Programme hebdo 100 % personnalisé (poste, âge, niveau, matériel, calendrier club)",
   "Adaptation chaque semaine selon tes retours de séances",
+  "Ton programme évite automatiquement les zones où tu as signalé une douleur",
   "Les 60 exercices de la bibliothèque, expliqués pas à pas",
   "Tests d'évaluation + graphiques de progression",
   "Carte joueur avec tes vraies stats",
@@ -54,6 +55,7 @@ export default async function PremiumPage() {
         <ul className="space-y-1.5 text-sm text-muted">
           <li>• Un coach individuel coûte 30 à 50 € la séance. Ici : 59 € pour l&apos;année entière.</li>
           <li>• Séances conçues selon les standards de préparation des jeunes : poids du corps uniquement avant 15 ans, charge calée autour du club, prévention des blessures intégrée.</li>
+          <li>• Si ton enfant signale une douleur (genou, cheville...), le programme Premium s&apos;adapte tout seul pour ne pas aggraver la zone — pas besoin d&apos;y penser.</li>
           <li>• Résiliable à tout moment, en 1 clic, depuis l&apos;app.</li>
           <li>• Données minimales, aucun tracking publicitaire. <a href="/confidentialite" className="underline">Confidentialité</a></li>
         </ul>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
+import { isPremium } from "@/lib/plan";
 import { WellnessForm } from "@/components/WellnessForm";
 import { BodyMeasurementTracker } from "@/components/BodyMeasurementTracker";
 import { PainLogTracker } from "@/components/PainLogTracker";
@@ -48,6 +49,7 @@ export default async function SantePage() {
         />
         <BodyMeasurementTracker history={measurements.map((m) => ({ heightCm: m.heightCm, weightKg: m.weightKg }))} />
         <PainLogTracker
+          premium={isPremium(user)}
           entries={painEntries.map((p) => ({
             id: p.id,
             bodyPart: p.bodyPart,

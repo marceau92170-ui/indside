@@ -2,25 +2,28 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button, Card, Input } from "@/components/ui";
 
 type PainEntry = { id: string; bodyPart: string; intensity: number; note: string | null; resolved: boolean; date: string };
 
 const COMMON_ZONES = ["Genou", "Cheville", "Ischio-jambiers", "Adducteurs", "Mollet", "Dos", "Épaule", "Hanche"];
 
-export function PainLogTracker({ entries }: { entries: PainEntry[] }) {
+export function PainLogTracker({ entries, premium }: { entries: PainEntry[]; premium: boolean }) {
   const router = useRouter();
   const [bodyPart, setBodyPart] = useState("");
   const [intensity, setIntensity] = useState(2);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [warning, setWarning] = useState(false);
+  const [justLogged, setJustLogged] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!bodyPart.trim()) return;
     setSaving(true);
     setWarning(false);
+    setJustLogged(false);
     const res = await fetch("/api/pain-logs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -30,6 +33,7 @@ export function PainLogTracker({ entries }: { entries: PainEntry[] }) {
     if (res.ok) {
       const data = await res.json();
       if (data.recurring) setWarning(true);
+      setJustLogged(true);
       setBodyPart("");
       setNote("");
       setIntensity(2);
@@ -60,6 +64,16 @@ export function PainLogTracker({ entries }: { entries: PainEntry[] }) {
         <div className="mb-3 rounded-lg border border-glow bg-glow/10 p-3 text-xs">
           ⚠️ Cette zone revient souvent ces 2 dernières semaines. Ce n&apos;est pas anodin — parles-en
           à un parent, un éducateur, ou un professionnel de santé.
+        </div>
+      )}
+
+      {justLogged && !premium && (
+        <div className="mb-3 rounded-lg border border-line bg-night p-3 text-xs">
+          🔒 Enregistré. En <span className="font-bold text-glow">Premium</span>, ton prochain
+          programme aurait évité automatiquement cette zone — là, c&apos;est à toi d&apos;y penser.{" "}
+          <Link href="/premium" className="text-glow underline">
+            En savoir plus
+          </Link>
         </div>
       )}
 
@@ -97,6 +111,17 @@ export function PainLogTracker({ entries }: { entries: PainEntry[] }) {
           {saving ? "…" : "Signaler"}
         </Button>
       </form>
+
+      {!premium && unresolved.length > 0 && (
+        <div className="mb-3 rounded-lg border border-glow/40 bg-glow/5 p-3 text-xs">
+          🔒 {unresolved.length} gêne{unresolved.length > 1 ? "s" : ""} active{unresolved.length > 1 ? "s" : ""}, pas
+          encore prise{unresolved.length > 1 ? "s" : ""} en compte dans tes séances.{" "}
+          <Link href="/premium" className="font-bold text-glow underline">
+            Passer Premium
+          </Link>{" "}
+          pour que ton programme s&apos;adapte tout seul.
+        </div>
+      )}
 
       {unresolved.length > 0 && (
         <ul className="space-y-2">
