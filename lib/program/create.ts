@@ -34,7 +34,14 @@ export async function createWeeklyProgram(
 
   if (premium) {
     try {
-      generated = await generateProgramWithAI(profile, exercises, opts.feedback);
+      const unresolvedPain = await prisma.painLog.findMany({
+        where: { userId: user.id, resolved: false },
+        orderBy: { date: "desc" },
+        take: 5,
+      });
+      const injuryNotes = unresolvedPain.map((p) => `${p.bodyPart} (intensité ${p.intensity}/5${p.note ? `, ${p.note}` : ""})`);
+
+      generated = await generateProgramWithAI(profile, exercises, opts.feedback, injuryNotes);
       source = "ai";
     } catch (err) {
       console.error("Génération IA échouée, fallback template :", err);

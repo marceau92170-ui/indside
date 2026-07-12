@@ -8,6 +8,12 @@ match, avec adaptation chaque semaine selon les retours du joueur.
 **Modèle** : freemium — gratuit (1 séance générique/sem + 10 exercices) · Premium 8,99 €/mois ou
 59 €/an (programme complet, adaptation hebdo, tests, carte joueur).
 
+**Au-delà des séances** : objectifs personnels, carnet de match (buts/passes D./ressenti), suivi
+santé (check-in de forme quotidien façon pro, courbe de croissance taille/poids, carnet de
+douleurs avec alerte douce en cas de récidive), et des ressources vérifiées (la vraie filière
+fédérale française, nutrition/hydratation, préparation mentale). Les douleurs non résolues sont
+prises en compte par l'IA pour ne pas surcharger une zone sensible.
+
 ## Stack
 
 - **Next.js 15 (App Router) + TypeScript**, déployé sur Vercel, **PWA** (installable, manifest + icônes générées par code)
@@ -60,6 +66,7 @@ et la garantie "les séances sont vraies" (rejet d'un slug halluciné hors catal
 - `components/ExerciseIllustration.tsx` — 17 familles de mouvement animées, mappées sur les 60 exercices
 - `app/onboarding` — questionnaire 8 écrans (catégorie U14-U18 auto, 13 ligues FFF, consentement parental < 15 ans), état persisté en localStorage (résiste à une fermeture d'onglet)
 - `app/(app)/` — semaine, séance (timer + difficulté), historique des semaines passées, bibliothèque, tests, profil (carte joueur PNG + progression 6 mois + delta par test), réglages (dont notifications push)
+- `app/(app)/objectifs`, `/matchs`, `/sante`, `/ressources` — développement du joueur au-delà des séances : objectifs, carnet de match, check-in de forme + croissance + douleurs, contenu éducatif (filière pro, nutrition, mental)
 - `app/admin/stats` — tableau de bord interne (inscriptions, conversion Premium, séances loggées, badges) — 100% first-party, aucun tracker tiers. Accès : `?secret=ADMIN_SECRET`
 - `app/api/cron/weekly` — régénération du dimanche soir (adaptation) · `app/api/cron/reminders` — rappel jour de séance (e-mail + push)
 - `app/icon.tsx`, `app/apple-icon.tsx`, `app/opengraph-image.tsx`, `app/manifest.ts` — icônes et image de partage social générées par code (`next/og`), sans outil de génération d'image externe

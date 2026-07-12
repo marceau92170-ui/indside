@@ -65,6 +65,7 @@ RÈGLES DE COMPOSITION (NON NÉGOCIABLES) :
 6. Vocabulaire : tutoiement, direct, concret. Style vestiaire sans caricature.
 7. Prends en compte le point faible déclaré par le joueur : au moins un bloc par semaine doit l'attaquer frontalement.
 8. Si le joueur est gardien, la majorité des blocs techniques viennent de la catégorie "gardien".
+9. Si une gêne ou douleur non résolue est signalée (section DOULEURS SIGNALÉES ci-dessous si présente), évite tout exercice sollicitant directement cette zone cette semaine ; privilégie à la place des exercices de la catégorie "prevention" ciblant la zone concernée (mobilité douce, renforcement léger), jamais d'explosivité ni de charge dessus.
 
 FORMAT DE SORTIE : uniquement du JSON valide, sans texte autour, sans balises markdown, respectant exactement ce schéma :
 {
@@ -124,7 +125,8 @@ export type WeekFeedback = {
 function buildUserMessage(
   profile: PlayerProfile,
   exercises: Exercise[],
-  feedback?: WeekFeedback
+  feedback?: WeekFeedback,
+  injuryNotes?: string[]
 ): string {
   const category = categoryFromBirthYear(profile.birthYear);
   const age = ageFromBirthYear(profile.birthYear);
@@ -157,6 +159,11 @@ function buildUserMessage(
       .join("\n");
     parts.push(`BILAN DE LA SEMAINE PASSÉE (adapte la charge en conséquence — si tout était trop dur (4-5/5), allège ; si tout était facile (1-2/5), progresse ; si des séances ont été sautées, simplifie la logistique) :
 ${lines}`);
+  }
+
+  if (injuryNotes && injuryNotes.length > 0) {
+    parts.push(`DOULEURS SIGNALÉES (non résolues, via le carnet de santé du joueur) — n'aggrave jamais ces zones :
+${injuryNotes.map((n) => `- ${n}`).join("\n")}`);
   }
 
   parts.push(`CATALOGUE D'EXERCICES AUTORISÉS (les seuls utilisables, par slug) :
@@ -199,7 +206,8 @@ export function assertSlugsInCatalog(program: GeneratedProgram, validSlugs: Set<
 export async function generateProgramWithAI(
   profile: PlayerProfile,
   allExercises: Exercise[],
-  feedback?: WeekFeedback
+  feedback?: WeekFeedback,
+  injuryNotes?: string[]
 ): Promise<GeneratedProgram> {
   if (!process.env.ANTHROPIC_API_KEY) {
     throw new Error("ANTHROPIC_API_KEY manquant");
@@ -210,7 +218,7 @@ export async function generateProgramWithAI(
   const validSlugs = new Set(catalog.map((e) => e.slug));
   const persona = personaFromBirthYear(profile.birthYear);
   const system = buildSystemPrompt(persona);
-  const userMessage = buildUserMessage(profile, catalog, feedback);
+  const userMessage = buildUserMessage(profile, catalog, feedback, injuryNotes);
 
   let lastError: unknown;
   for (let attempt = 0; attempt < 2; attempt++) {

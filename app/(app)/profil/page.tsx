@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { categoryFromBirthYear } from "@/lib/categories";
@@ -7,6 +8,13 @@ import { computeStreak, totalDoneSessions } from "@/lib/gamification";
 import { DownloadableCard } from "@/components/DownloadableCard";
 import { MonthlyActivity } from "@/components/MonthlyActivity";
 import { Card } from "@/components/ui";
+
+const DEV_LINKS = [
+  { href: "/objectifs", emoji: "🎯", label: "Objectifs" },
+  { href: "/matchs", emoji: "📋", label: "Carnet de match" },
+  { href: "/sante", emoji: "🩺", label: "Suivi santé" },
+  { href: "/ressources", emoji: "📚", label: "Ressources" },
+];
 
 const MONTH_LABELS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
 
@@ -96,6 +104,18 @@ export default async function ProfilPage() {
           <p className="tnum font-condensed text-3xl font-bold text-glow">{total}</p>
           <p className="text-xs uppercase tracking-wide text-muted">Séances validées</p>
         </Card>
+      </div>
+
+      <h2 className="mb-2 mt-8 font-condensed text-xl font-bold uppercase">Progresser pour devenir pro</h2>
+      <div className="grid grid-cols-2 gap-2">
+        {DEV_LINKS.map((l) => (
+          <Link key={l.href} href={l.href}>
+            <Card className="text-center transition-colors hover:border-glow/60">
+              <p className="text-xl">{l.emoji}</p>
+              <p className="mt-1 font-condensed text-sm font-bold uppercase">{l.label}</p>
+            </Card>
+          </Link>
+        ))}
       </div>
 
       <h2 className="mb-2 mt-8 font-condensed text-xl font-bold uppercase">Activité (6 mois)</h2>

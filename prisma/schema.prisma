@@ -33,6 +33,11 @@ model User {
   badges       Badge[]
   subscription Subscription?
   pushSubscriptions PushSubscription[]
+  wellnessCheckins  WellnessCheckin[]
+  matchLogs         MatchLog[]
+  bodyMeasurements  BodyMeasurement[]
+  painLogs          PainLog[]
+  goals             Goal[]
 }
 
 model Account {
@@ -219,4 +224,89 @@ model Subscription {
   updatedAt            DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ---------- Progresser vers le pro : suivi au-delà des séances ----------
+
+// Check-in de forme quotidien (façon questionnaire de bien-être utilisé en pro) :
+// sommeil, énergie, courbatures, humeur. Un par jour et par joueur.
+model WellnessCheckin {
+  id           String   @id @default(cuid())
+  userId       String
+  date         DateTime // jour normalisé à minuit UTC (clé de dédoublonnage)
+  sleepHours   Float?
+  sleepQuality Int // 1-5
+  energy       Int // 1-5
+  soreness     Int // 1-5 (courbatures ressenties, 5 = beaucoup)
+  mood         Int // 1-5
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+// Carnet de match : la trace longitudinale de la progression en match réel.
+model MatchLog {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime
+  opponent      String?
+  competition   String?
+  minutesPlayed Int?
+  goals         Int      @default(0)
+  assists       Int      @default(0)
+  rating        Int? // ressenti perso /10
+  note          String?  @db.Text
+  focusNext     String?  @db.Text // "un truc à travailler la prochaine fois"
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+// Suivi de croissance : taille/poids dans le temps (utile en pleine puberté,
+// distinct des valeurs statiques saisies à l'inscription).
+model BodyMeasurement {
+  id       String   @id @default(cuid())
+  userId   String
+  date     DateTime @default(now())
+  heightCm Float
+  weightKg Float
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+// Carnet de douleurs/gênes — repérer une récidive avant qu'elle devienne une blessure.
+model PainLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  bodyPart  String
+  intensity Int // 1-5
+  note      String?  @db.Text
+  resolved  Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+// Objectifs personnels (au-delà du programme hebdo).
+model Goal {
+  id         String    @id @default(cuid())
+  userId     String
+  title      String
+  targetDate DateTime?
+  done       Boolean   @default(false)
+  doneAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

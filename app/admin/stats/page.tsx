@@ -37,6 +37,11 @@ export default async function AdminStatsPage({
     badgeGroups,
     juniorCount,
     seniorCount,
+    matchesLogged,
+    goalsActive,
+    goalsDone,
+    wellnessCheckins,
+    unresolvedPain,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { profile: { isNot: null } } }),
@@ -48,6 +53,11 @@ export default async function AdminStatsPage({
     prisma.badge.groupBy({ by: ["key"], _count: { key: true } }),
     prisma.playerProfile.count({ where: { birthYear: { gt: new Date().getFullYear() - 15 } } }),
     prisma.playerProfile.count({ where: { birthYear: { lte: new Date().getFullYear() - 15 } } }),
+    prisma.matchLog.count(),
+    prisma.goal.count({ where: { done: false } }),
+    prisma.goal.count({ where: { done: true } }),
+    prisma.wellnessCheckin.count({ where: { date: { gte: currentWeek } } }),
+    prisma.painLog.count({ where: { resolved: false } }),
   ]);
 
   // Inscriptions par semaine (8 dernières)
@@ -82,6 +92,10 @@ export default async function AdminStatsPage({
         <Stat label="Séances (total)" value={sessionsAllTime} />
         <Stat label="Junior (13-14)" value={juniorCount} />
         <Stat label="Senior (15-17)" value={seniorCount} />
+        <Stat label="Matchs loggés" value={matchesLogged} />
+        <Stat label="Objectifs actifs" value={goalsActive} sub={`${goalsDone} atteints`} />
+        <Stat label="Check-ins forme (sem.)" value={wellnessCheckins} />
+        <Stat label="Douleurs non résolues" value={unresolvedPain} />
       </div>
 
       <h2 className="mb-2 font-condensed text-xl font-bold uppercase">Inscriptions (8 semaines)</h2>
