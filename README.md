@@ -12,7 +12,10 @@ match, avec adaptation chaque semaine selon les retours du joueur.
 santé (check-in de forme quotidien façon pro, courbe de croissance taille/poids, carnet de
 douleurs avec alerte douce en cas de récidive), et des ressources vérifiées (la vraie filière
 fédérale française, nutrition/hydratation, préparation mentale). Les douleurs non résolues sont
-prises en compte par l'IA pour ne pas surcharger une zone sensible.
+prises en compte par l'IA pour ne pas surcharger une zone sensible. Si le joueur ne peut pas
+aller à son entraînement club/city, un bouton sur la séance la recompose à la volée avec des
+exercices de la bibliothèque faisables en espace réduit (balcon, hall, petite cour) — jamais
+d'exercice inventé, toujours le catalogue validé.
 
 ## Stack
 

@@ -18,6 +18,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Regarder le ballon en permanence ; taper le ballon au lieu de le toucher (il ne doit pas bouger) ; rester à plat sur le pied d'appui au lieu d'être sur la pointe.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Pose la main sur un mur pour l'équilibre et fais les touches sans sautiller.",
@@ -41,6 +42,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Se redresser complètement (tu perds la position de jeu) ; frapper le ballon au lieu de le rouler ; laisser le ballon s'éloigner à plus de la largeur des épaules.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Roule le ballon plus lentement et bloque-le 1 seconde à chaque passage.",
@@ -63,6 +65,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Toucher le ballon avec la pointe au lieu de l'intérieur du pied ; jambes tendues ; ballon qui s'éloigne parce que les touches sont trop fortes.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Un contrôle entre chaque touche : pousse, bloque, pousse.",
@@ -87,6 +90,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Grandes touches qui obligent à courir après le ballon ; n'utiliser que le pied fort ; regarder uniquement le ballon (lève la tête entre deux touches).",
     equipment: ["ballon", "plots"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Espace les plots de 6-7 m et ralentis dans les virages.",
@@ -109,6 +113,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Écraser le ballon au lieu de le rouler ; le pousser trop loin devant ; se pencher en arrière.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Roule le ballon sur place (avant-arrière) sans avancer.",
@@ -131,6 +136,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Toucher trop fort (le zigzag doit rester dans un couloir d'1 m) ; oublier de fléchir la jambe d'appui ; faire l'exercice uniquement du pied fort.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: ["AIL", "MOF", "ATT"],
     variantEasy: "Marque un temps d'arrêt entre l'intérieur et l'extérieur.",
@@ -153,6 +159,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Cheville molle (le ballon part dans tous les sens) ; frapper avec la pointe ; jongler trop haut ce qui casse le rythme.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Un rebond au sol autorisé entre chaque touche.",
@@ -176,6 +183,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Se pencher du mauvais côté ; abandonner après 3 échecs ; compenser en tournant le corps au lieu d'utiliser vraiment le pied faible.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Un rebond au sol entre chaque touche du pied faible.",
@@ -198,6 +206,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Cuisse inclinée qui envoie le ballon derrière ; tête en arrière sur les touches de front ; précipitation entre les surfaces.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Intercale un rebond au sol entre chaque surface.",
@@ -221,6 +230,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Contrôler et passer du même pied à chaque fois ; ballon contrôlé dans les pieds au lieu de devant soi ; frapper avec la pointe.",
     equipment: ["ballon", "mur"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Recule à 2 m et bloque complètement le ballon avant chaque passe.",
@@ -244,6 +254,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Rester statique entre les passes (les appuis doivent danser) ; frapper trop fort ; se tenir face au mur au lieu de légèrement de profil.",
     equipment: ["ballon", "mur"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: ["MDF", "MOF", "DC", "LAT"],
     variantEasy: "Reviens à 2 touches dès que tu perds le contrôle, puis repasse à 1 touche.",
@@ -266,6 +277,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Bloquer le ballon puis le pousser (2 gestes au lieu d'1) ; contrôle trop loin du corps ; toujours s'orienter du même côté.",
     equipment: ["ballon", "mur"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Laisse le ballon rebondir une fois au sol avant le contrôle orienté.",
@@ -288,6 +300,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Décomposer en deux gestes lents (le tirer-pousser doit être fluide) ; oublier de fléchir les jambes ; ballon poussé trop loin.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: ["MOF", "AIL", "ATT", "MDF"],
     variantEasy: "Marque une pause d'une seconde entre le tirage et la poussée.",
@@ -310,6 +323,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "S'appuyer trop fort sur le ballon ; pied d'appui à plat ; regarder ses pieds en permanence.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Fais l'exercice en marchant lentement vers l'avant.",
@@ -332,6 +346,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Passer le pied trop haut au-dessus du ballon (perte de temps) ; oublier la feinte du corps qui fait tout le geste ; faire le ciseau trop près du ballon et le toucher.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: ["AIL", "ATT", "MOF"],
     variantEasy: "Fais le geste sans ballon pour automatiser la coordination.",
@@ -354,6 +369,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Crochet en restant haut sur les jambes (le geste devient mou) ; toucher le ballon trop fort ; toujours crocheter du même côté.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Fais le crochet à l'arrêt : conduite, stop, crochet, repars en marchant.",
@@ -376,6 +392,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Oublier la feinte de frappe (sans elle, le geste ne trompe personne) ; pousser le ballon trop loin derrière soi ; pivoter avant d'avoir touché le ballon.",
     equipment: ["ballon"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: ["AIL", "ATT", "MOF", "LAT"],
     variantEasy: "Décompose : feinte, stop, passement, pivot, en marchant.",
@@ -398,6 +415,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     mistakes:
       "Lever la tête « pour faire semblant » sans rien regarder ; ralentir exagérément quand le regard se lève ; grandes touches pour se faciliter la tâche.",
     equipment: ["ballon", "plots"],
+    smallSpaceFriendly: true,
     minAge: 13,
     positions: [],
     variantEasy: "Un regard toutes les 3 touches au lieu de chaque touche.",

@@ -25,6 +25,7 @@ export type ExerciseSeed = {
   mistakes: string;
   breathing?: string;
   equipment: string[]; // ballon | plots | mur | elastiques | aucun
+  smallSpaceFriendly: boolean; // faisable dans un espace réduit (balcon, hall, petite cour) sans terrain ni grande distance de course
   minAge: number; // 13 = tous, 15 = interdit aux 13-14 ans
   positions: string[]; // vide = tous postes
   variantEasy: string;

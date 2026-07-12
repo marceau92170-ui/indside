@@ -28,6 +28,7 @@ export default async function BibliothequePage() {
     mistakes: ex.mistakes,
     breathing: ex.breathing,
     equipment: ex.equipment,
+    smallSpaceFriendly: ex.smallSpaceFriendly,
     minAge: ex.minAge,
     positions: ex.positions,
     variantEasy: ex.variantEasy,

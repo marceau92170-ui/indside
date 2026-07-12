@@ -13,6 +13,7 @@ export type ExerciseView = {
   mistakes: string;
   breathing?: string | null;
   equipment: string[];
+  smallSpaceFriendly?: boolean;
   minAge: number;
   positions: string[];
   variantEasy: string;

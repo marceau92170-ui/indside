@@ -36,6 +36,17 @@ describe("bibliothèque d'exercices", () => {
     const missing = ALL_EXERCISES.filter((e) => !(e.slug in ILLUSTRATION_MAP));
     assert.deepEqual(missing.map((e) => e.slug), []);
   });
+
+  test("assez d'exercices faisables en espace réduit pour composer une séance de secours", () => {
+    const smallSpace = ALL_EXERCISES.filter((e) => e.smallSpaceFriendly);
+    assert.ok(
+      smallSpace.length >= 20,
+      `seulement ${smallSpace.length} exercices espace réduit, trop peu pour varier les séances`
+    );
+    // Les catégories qui exigent une vraie distance de course ne doivent jamais être taguées.
+    const cardioSmallSpace = smallSpace.filter((e) => e.category === "cardio");
+    assert.equal(cardioSmallSpace.length, 0, "le cardio nécessite une vraie distance de course");
+  });
 });
 
 describe("garantie catalogue IA (les séances sont vraies)", () => {

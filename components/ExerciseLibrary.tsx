@@ -22,6 +22,7 @@ export function ExerciseLibrary({
 }) {
   const [cat, setCat] = useState("");
   const [equip, setEquip] = useState("");
+  const [smallSpaceOnly, setSmallSpaceOnly] = useState(false);
   const [open, setOpen] = useState<ExerciseView | null>(null);
 
   const filtered = useMemo(
@@ -29,9 +30,10 @@ export function ExerciseLibrary({
       exercises.filter(
         (ex) =>
           (!cat || ex.category === cat) &&
-          (!equip || ex.equipment.includes(equip))
+          (!equip || ex.equipment.includes(equip)) &&
+          (!smallSpaceOnly || ex.smallSpaceFriendly)
       ),
-    [exercises, cat, equip]
+    [exercises, cat, equip, smallSpaceOnly]
   );
 
   return (
@@ -52,6 +54,9 @@ export function ExerciseLibrary({
             {f.label}
           </FilterChip>
         ))}
+        <FilterChip active={smallSpaceOnly} onClick={() => setSmallSpaceOnly((v) => !v)}>
+          🏠 Espace réduit
+        </FilterChip>
       </div>
 
       <ul className="space-y-2">

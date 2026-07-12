@@ -45,6 +45,8 @@ export function SessionPlayer({ session, blocks }: { session: SessionInfo; block
   const [difficulty, setDifficulty] = useState<number | null>(null);
   const [result, setResult] = useState<{ streak: number; newBadges: string[] } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [adapting, setAdapting] = useState(false);
+  const [adaptError, setAdaptError] = useState<string | null>(null);
 
   // Timer de récupération
   const [timer, setTimer] = useState<number | null>(null);
@@ -85,6 +87,27 @@ export function SessionPlayer({ session, blocks }: { session: SessionInfo; block
       const data = await res.json();
       setResult({ streak: data.streak, newBadges: data.newBadges });
       setPhase("done");
+    }
+  }
+
+  async function adaptToSmallSpace() {
+    setAdapting(true);
+    setAdaptError(null);
+    const res = await fetch("/api/session/adapt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: session.id }),
+    });
+    setAdapting(false);
+    if (res.ok) {
+      router.refresh();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      setAdaptError(
+        data.error === "not_enough_exercises"
+          ? "Pas assez d'exercices d'espace réduit disponibles pour ton profil."
+          : "Impossible d'adapter la séance pour le moment."
+      );
     }
   }
 
@@ -215,6 +238,14 @@ export function SessionPlayer({ session, blocks }: { session: SessionInfo; block
         <Button onClick={() => setPhase("rate")} disabled={!allDone} size="lg" className="w-full">
           {allDone ? "Terminer la séance" : `${doneBlocks.size}/${blocks.length} blocs faits`}
         </Button>
+        <button
+          onClick={adaptToSmallSpace}
+          disabled={adapting}
+          className="w-full py-2 text-center text-xs text-muted underline"
+        >
+          {adapting ? "Adaptation…" : "Pas moyen d'aller au stade ? Adapter en petit espace"}
+        </button>
+        {adaptError && <p className="text-center text-xs text-glow">{adaptError}</p>}
         <button
           onClick={() => submit("skipped")}
           className="w-full py-2 text-center text-xs text-muted underline"

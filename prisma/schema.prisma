@@ -114,6 +114,7 @@ model Exercise {
   mistakes    String   @db.Text // erreurs fréquentes
   breathing   String? // consigne de respiration
   equipment   String[] // ballon | plots | mur | elastiques | aucun
+  smallSpaceFriendly Boolean @default(false) // faisable en espace réduit (balcon, hall, petite cour), sans terrain
   minAge      Int      @default(13)
   positions   String[] // vide = tous postes ; sinon postes prioritaires
   variantEasy String   @db.Text
