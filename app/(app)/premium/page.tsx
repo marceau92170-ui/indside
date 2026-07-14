@@ -9,6 +9,7 @@ const INCLUDED = [
   "Programme hebdo 100 % personnalisé (poste, âge, niveau, matériel, calendrier club)",
   "Adaptation chaque semaine selon tes retours de séances",
   "Ton programme évite automatiquement les zones où tu as signalé une douleur",
+  "Conseils nutrition & hydratation chaque semaine, calés sur tes matchs",
   "Les 60 exercices de la bibliothèque, expliqués pas à pas",
   "Tests d'évaluation + graphiques de progression",
   "Carte joueur avec tes vraies stats",

@@ -7,6 +7,8 @@ import { computeStreak } from "@/lib/gamification";
 import { DAYS_FR } from "@/lib/constants";
 import { Card, ButtonLink } from "@/components/ui";
 import { GenerateProgramButton } from "@/components/GenerateProgramButton";
+import { NutritionWeekCard } from "@/components/NutritionWeekCard";
+import { weeklyTip, matchTip } from "@/lib/data/nutrition";
 
 export const dynamic = "force-dynamic";
 
@@ -103,6 +105,14 @@ export default async function SemainePage() {
           <Link href="/historique" className="mt-4 inline-block text-sm text-muted underline">
             Voir mes semaines précédentes →
           </Link>
+
+          <div className="mt-6">
+            <NutritionWeekCard
+              premium={premium}
+              weekly={weeklyTip(weekStart)}
+              match={matchTip(user.profile.matchDay)}
+            />
+          </div>
         </>
       )}
 

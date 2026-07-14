@@ -1,11 +1,34 @@
 import Link from "next/link";
 import { PlayerCard } from "@/components/PlayerCard";
 import { ButtonLink } from "@/components/ui";
+import { SITE_URL } from "@/lib/site";
 
-// Landing — conversion jeune ET parent. Direction "Nocturne city-stade".
+// Landing — conversion jeune ET parent. Direction artistique « Carton rouge ».
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Progressa",
+  applicationCategory: "SportsApplication",
+  operatingSystem: "Web, iOS, Android",
+  url: SITE_URL,
+  description:
+    "Application d'entraînement de football personnalisé pour jeunes joueurs de 13 à 17 ans : programme hebdomadaire adapté au poste, à l'âge et au niveau, à faire seul entre les entraînements club.",
+  offers: [
+    { "@type": "Offer", price: "0", priceCurrency: "EUR", name: "Gratuit" },
+    { "@type": "Offer", price: "8.99", priceCurrency: "EUR", name: "Premium mensuel" },
+    { "@type": "Offer", price: "59", priceCurrency: "EUR", name: "Premium annuel" },
+  ],
+  audience: { "@type": "PeopleAudience", suggestedMinAge: 13, suggestedMaxAge: 17 },
+};
+
 export default function LandingPage() {
   return (
     <main className="pitch-bg min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto w-full max-w-lg px-4 pb-16">
         {/* header */}
         <header className="flex items-center justify-between py-5">
@@ -20,7 +43,10 @@ export default function LandingPage() {
 
         {/* hero */}
         <section className="pt-6 text-center">
-          <h1 className="font-condensed text-4xl font-bold uppercase leading-tight">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-glow">
+            Foot · 13-17 ans · à faire seul
+          </p>
+          <h1 className="mt-2 font-condensed text-4xl font-bold uppercase leading-tight">
             Ton programme perso
             <br />
             de préparateur.
@@ -37,6 +63,20 @@ export default function LandingPage() {
             </ButtonLink>
             <p className="text-xs text-muted">90 secondes pour répondre. Aucune carte demandée.</p>
           </div>
+
+          {/* bandeau chiffres — style tableau d'affichage */}
+          <dl className="mt-8 grid grid-cols-3 divide-x divide-line rounded-card border border-line bg-surface py-4">
+            {[
+              ["60", "exercices validés"],
+              ["4", "tests mesurés"],
+              ["0", "gadget, 0 complément"],
+            ].map(([n, label]) => (
+              <div key={label} className="px-2">
+                <dd className="tnum font-condensed text-3xl font-bold leading-none text-glow">{n}</dd>
+                <dt className="mt-1 text-[11px] uppercase tracking-wide text-muted">{label}</dt>
+              </div>
+            ))}
+          </dl>
 
           <div className="mt-10 flex justify-center">
             <PlayerCard
@@ -150,6 +190,7 @@ export default function LandingPage() {
         <footer className="mt-16 border-t border-line pt-6 text-center text-xs text-muted">
           <p className="mb-2 font-display text-sm tracking-wider text-chalk">PROGRESSA</p>
           <p>
+            <Link href="/faq" className="underline">FAQ</Link> ·{" "}
             <Link href="/cgu" className="underline">CGU</Link> ·{" "}
             <Link href="/confidentialite" className="underline">Confidentialité</Link> ·{" "}
             <Link href="/connexion" className="underline">Connexion</Link>

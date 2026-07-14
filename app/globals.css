@@ -10,6 +10,19 @@ body {
   @apply bg-night text-chalk font-body antialiased;
 }
 
+/* Sélection de texte aux couleurs de la marque */
+::selection {
+  background: rgba(225, 42, 58, 0.85);
+  color: #fff;
+}
+
+/* Anneau de focus clavier cohérent (accessibilité + finition) */
+:focus-visible {
+  outline: 2px solid #e12a3a;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* Chiffres tabulaires pour toutes les stats */
 .tnum {
   font-variant-numeric: tabular-nums;

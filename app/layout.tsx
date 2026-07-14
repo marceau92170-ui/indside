@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo_Black, Barlow_Condensed, Inter } from "next/font/google";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const display = Archivo_Black({
@@ -19,26 +20,48 @@ const body = Inter({
   variable: "--font-body",
 });
 
-const TITLE = "Progressa — Ton préparateur perso";
+const TITLE = "Progressa — Ton préparateur physique perso de foot";
 const DESCRIPTION =
-  "Programme d'entraînement foot personnalisé pour jeunes joueurs. Généré pour ton poste, ton âge, ton niveau. Séances de 20 à 40 min faisables seul.";
+  "Programme d'entraînement de football personnalisé pour jeunes joueurs de 13 à 17 ans. Généré pour ton poste, ton âge et ton niveau : des séances de 20 à 40 min faisables seul, calées autour de ton club. Gratuit pour commencer.";
 
 export const metadata: Metadata = {
-  metadataBase: process.env.NEXTAUTH_URL ? new URL(process.env.NEXTAUTH_URL) : undefined,
-  title: TITLE,
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s | Progressa",
+  },
   description: DESCRIPTION,
+  applicationName: "Progressa",
   manifest: "/manifest.webmanifest",
+  keywords: [
+    "entraînement foot jeune",
+    "programme football personnalisé",
+    "préparation physique football ado",
+    "exercices foot maison",
+    "progresser au foot 13 17 ans",
+    "travail individuel footballeur",
+    "s'entraîner seul football",
+  ],
+  authors: [{ name: "Progressa" }],
+  category: "sports",
+  alternates: { canonical: "/" },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
     siteName: "Progressa",
     locale: "fr_FR",
     type: "website",
+    url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
 };
 

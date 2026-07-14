@@ -79,6 +79,7 @@ export default async function ReglagesPage() {
       </Card>
 
       <p className="mt-6 text-center text-xs text-muted">
+        <Link href="/faq" className="underline">FAQ</Link> ·{" "}
         <Link href="/cgu" className="underline">CGU</Link> ·{" "}
         <Link href="/confidentialite" className="underline">Confidentialité</Link>
       </p>

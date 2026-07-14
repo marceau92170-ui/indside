@@ -136,7 +136,16 @@ export function SessionPlayer({ session, blocks }: { session: SessionInfo; block
         {session.alreadyLogged && !result && (
           <p className="text-sm text-muted">Cette séance est déjà dans ton historique.</p>
         )}
-        <Button className="mt-8" onClick={() => router.push("/semaine")}>
+        <div className="mt-6 w-full max-w-xs rounded-card border border-line bg-surface p-4 text-left">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-muted">
+            Récupération
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            💧 Bois de l&apos;eau et étire-toi 5 minutes. La récup fait partie de la séance — c&apos;est
+            là que le corps encaisse le travail.
+          </p>
+        </div>
+        <Button className="mt-6" onClick={() => router.push("/semaine")}>
           Retour à ma semaine
         </Button>
       </div>
