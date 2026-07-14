@@ -23,6 +23,7 @@ export async function GET(req: Request) {
       mistakes: ex.mistakes,
       breathing: ex.breathing ?? null,
       equipment: ex.equipment,
+      smallSpaceFriendly: ex.smallSpaceFriendly,
       minAge: ex.minAge,
       positions: ex.positions,
       variantEasy: ex.variantEasy,
