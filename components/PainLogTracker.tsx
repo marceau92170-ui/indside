@@ -112,6 +112,15 @@ export function PainLogTracker({ entries, premium }: { entries: PainEntry[]; pre
         </Button>
       </form>
 
+      <div className="mb-4 rounded-lg border border-line bg-night p-3 text-xs text-muted">
+        ⚕️ Cet outil aide ton programme à s&apos;adapter, mais il ne remplace pas un avis médical.
+        Une douleur qui persiste, qui revient, ou qui t&apos;empêche de jouer :{" "}
+        <span className="font-semibold text-chalk">
+          parles-en à un médecin, un kiné ou le staff de ton club
+        </span>
+        . En cas de douleur vive pendant un exercice, arrête-toi.
+      </div>
+
       {!premium && unresolved.length > 0 && (
         <div className="mb-3 rounded-lg border border-glow/40 bg-glow/5 p-3 text-xs">
           🔒 {unresolved.length} gêne{unresolved.length > 1 ? "s" : ""} active{unresolved.length > 1 ? "s" : ""}, pas
