@@ -314,14 +314,96 @@ const CATEGORY_FALLBACK: Record<string, keyof typeof ARCHETYPES> = {
   gardien: "dive",
 };
 
+// Le point clé à surveiller pour CHAQUE famille de mouvement — tiré des
+// consignes techniques de la bibliothèque. C'est ce qui transforme une animation
+// en vrai repère d'exécution.
+const COACHING_CUES: Record<keyof typeof ARCHETYPES, string> = {
+  squat: "Genoux dans l'axe des pieds, talons au sol, dos droit.",
+  "lunge-lateral": "Genou fléchi au-dessus de la cheville, buste droit.",
+  plank: "Corps aligné tête–bassin–talons. Ne creuse pas le dos.",
+  "mountain-climber": "Bassin bas et stable, comme en planche.",
+  "glute-bridge": "Serre les fessiers en haut, ne cambre pas le bas du dos.",
+  pushup: "Coudes à 45°, gainage serré, poitrine qui frôle le sol.",
+  jump: "Atterris en douceur, genoux fléchis dans l'axe.",
+  sprint: "Buste droit, appuis sous le bassin, bras rythmés.",
+  juggle: "Cheville verrouillée, ballon à hauteur de ceinture.",
+  dribble: "Petites touches, ballon proche, tête qui se lève.",
+  "wall-pass": "Intérieur du pied, contrôle orienté vers ta prochaine passe.",
+  dive: "Genou–hanche–épaule au sol, jamais le coude en premier.",
+  balance: "Genou légèrement fléchi, regard loin devant.",
+  mobility: "Amplitude progressive, souffle long, jamais d'à-coup.",
+  nordic: "Descends le plus lentement possible, corps aligné.",
+  superman: "Regarde le sol (nuque neutre), ne force pas sur les lombaires.",
+  "calf-raise": "Monte haut sur les pointes, descente lente et contrôlée.",
+};
+
+// Position d'arrivée d'un mouvement animé (2ᵉ image-clé de "a;b;a") — sert à
+// dessiner un « fantôme » du geste en extrême, pour visualiser l'amplitude.
+function ghost(v: string | undefined, fallback: string): string {
+  if (!v) return fallback;
+  const parts = v.split(";");
+  return parts[1] ?? parts[0] ?? fallback;
+}
+
+function GhostFigure({ archetype }: { archetype: Archetype }) {
+  return (
+    <g stroke="#EDE9E0" strokeOpacity="0.13" strokeWidth="6" strokeLinecap="round" fill="none">
+      {archetype.segments.map((seg, i) => {
+        if (seg.type === "circle") {
+          const b = seg.base ?? {};
+          const k = seg.keys ?? {};
+          return (
+            <circle
+              key={i}
+              cx={ghost(k.cx, b.cx ?? "100")}
+              cy={ghost(k.cy, b.cy ?? "65")}
+              r={seg.r}
+              fill="#EDE9E0"
+              fillOpacity="0.10"
+              stroke="none"
+            />
+          );
+        }
+        const b = seg.base ?? {};
+        const k = seg.keys ?? {};
+        return (
+          <line
+            key={i}
+            x1={ghost(k.x1, b.x1 ?? "100")}
+            y1={ghost(k.y1, b.y1 ?? "100")}
+            x2={ghost(k.x2, b.x2 ?? "100")}
+            y2={ghost(k.y2, b.y2 ?? "100")}
+          />
+        );
+      })}
+    </g>
+  );
+}
+
 function Stick({ archetype }: { archetype: Archetype }) {
   const dur = archetype.dur ?? DUR;
   return (
     <svg width="100%" height="100%" viewBox="0 0 200 220" role="presentation" aria-hidden="true">
-      {archetype.ground && (
-        <line x1="20" y1="205" x2="180" y2="205" stroke="#2A2B2D" strokeWidth="1" strokeDasharray="3 4" />
+      <defs>
+        <radialGradient id="ex-vignette" cx="50%" cy="42%" r="65%">
+          <stop offset="0%" stopColor="#17181A" />
+          <stop offset="100%" stopColor="#0C0D0F" />
+        </radialGradient>
+      </defs>
+      <rect x="0" y="0" width="200" height="220" fill="url(#ex-vignette)" />
+
+      {/* ombre au sol (figures debout) ou ligne de sol (figures au sol) */}
+      {archetype.ground ? (
+        <line x1="20" y1="205" x2="180" y2="205" stroke="#2A2B2D" strokeWidth="1.5" strokeDasharray="3 4" />
+      ) : (
+        <ellipse cx="100" cy="207" rx="46" ry="6" fill="#000" fillOpacity="0.35" />
       )}
-      <g stroke="#EDE9E0" strokeWidth="5" strokeLinecap="round" fill="none">
+
+      {/* fantôme de la position d'arrivée : montre l'amplitude du geste */}
+      <GhostFigure archetype={archetype} />
+
+      {/* figure animée */}
+      <g stroke="#EDE9E0" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none">
         {archetype.segments.map((seg, i) => {
           if (seg.type === "circle") {
             const base = seg.base ?? {};
@@ -356,11 +438,23 @@ function Stick({ archetype }: { archetype: Archetype }) {
 export function ExerciseIllustration({ slug, category }: { slug: string; category: string }) {
   const key = ILLUSTRATION_MAP[slug] ?? CATEGORY_FALLBACK[category] ?? "squat";
   const archetype = ARCHETYPES[key];
+  const cue = COACHING_CUES[key];
   return (
-    <div className="flex justify-center rounded-lg border border-line bg-night py-3">
-      <div className="h-40 w-40">
-        <Stick archetype={archetype} />
+    <div className="overflow-hidden rounded-lg border border-line bg-night">
+      <div className="flex justify-center">
+        <div className="aspect-square w-full max-w-[220px]">
+          <Stick archetype={archetype} />
+        </div>
       </div>
+      {cue && (
+        <div className="flex items-start gap-2 border-t border-line px-3 py-2.5">
+          <span aria-hidden="true" className="text-glow">👁</span>
+          <p className="text-xs leading-snug text-chalk">
+            <span className="font-semibold uppercase tracking-wide text-muted">À surveiller — </span>
+            {cue}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
