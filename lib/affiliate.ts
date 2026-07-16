@@ -1,0 +1,53 @@
+// Règles d'affiliation — centralisées et testées, car ça touche à l'argent.
+//
+// Deal validé avec le créateur :
+//  - Commission : 80% du PREMIER paiement de chaque joueur amené (une seule fois).
+//    Les renouvellements reviennent 100% au créateur.
+//  - Bonus de paliers CUMULATIFS, débloqués une fois (à vie), sur le CA total généré :
+//    500 € → +50 € ; 1000 € → +100 € de plus (soit 150 € au total à 1000 €).
+//  - Attribution : "premier lien gagne", fenêtre de 30 jours entre le clic et le paiement.
+//  - Paiement manuel, avec un délai anti-remboursement.
+
+export const COMMISSION_RATE = 0.8;
+
+// Fenêtre d'attribution : un clic reste valable 30 jours pour convertir en vente.
+export const ATTRIBUTION_WINDOW_DAYS = 30;
+
+// Délai avant de considérer une commission "à payer" : laisse passer les
+// remboursements (droit de rétractation) avant de verser l'argent à l'affilié.
+export const PAYOUT_HOLD_DAYS = 15;
+
+// Paliers de bonus cumulatifs, en euros de CA généré → bonus en euros.
+export const BONUS_TIERS: { thresholdEuros: number; bonusEuros: number }[] = [
+  { thresholdEuros: 500, bonusEuros: 50 },
+  { thresholdEuros: 1000, bonusEuros: 100 },
+];
+
+// Commission (en centimes) sur un paiement brut (en centimes).
+export function commissionCents(grossCents: number): number {
+  return Math.round(grossCents * COMMISSION_RATE);
+}
+
+// Bonus total (en euros) débloqué pour un CA généré (en centimes) — cumulatif.
+export function bonusEurosForRevenue(totalGrossCents: number): number {
+  const revenueEuros = totalGrossCents / 100;
+  return BONUS_TIERS.reduce(
+    (sum, tier) => (revenueEuros >= tier.thresholdEuros ? sum + tier.bonusEuros : sum),
+    0
+  );
+}
+
+// Prochain palier à atteindre (pour la jauge de motivation côté affilié), ou null si tout atteint.
+export function nextTier(totalGrossCents: number): { thresholdEuros: number; bonusEuros: number } | null {
+  const revenueEuros = totalGrossCents / 100;
+  return BONUS_TIERS.find((t) => revenueEuros < t.thresholdEuros) ?? null;
+}
+
+export function eurosFromCents(cents: number): number {
+  return Math.round(cents) / 100;
+}
+
+// Formate un montant en centimes en chaîne "12,34 €".
+export function formatEuros(cents: number): string {
+  return `${(cents / 100).toFixed(2).replace(".", ",")} €`;
+}

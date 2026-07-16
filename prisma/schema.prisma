@@ -22,6 +22,10 @@ model User {
   plan             String  @default("free") // free | premium
   stripeCustomerId String? @unique
 
+  // Affiliation
+  role            String  @default("user") // user | affiliate | admin
+  referredByCode  String? // code de l'affilié attribué (premier lien gagné, gravé à vie)
+
   createdAt DateTime @default(now())
 
   accounts     Account[]
@@ -38,6 +42,67 @@ model User {
   bodyMeasurements  BodyMeasurement[]
   painLogs          PainLog[]
   goals             Goal[]
+  affiliateProfile  Affiliate? @relation("AffiliateUser")
+}
+
+// ---------- Affiliation ----------
+
+// Un affilié (créateur/influenceur) avec son lien de parrainage unique.
+model Affiliate {
+  id          String   @id @default(cuid())
+  code        String   @unique // ex: "kevin" → progressafoot.fr/r/kevin
+  displayName String
+  email       String   @unique
+  userId      String?  @unique // compte de connexion de l'affilié (pour son dashboard)
+  createdAt   DateTime @default(now())
+
+  user        User?        @relation("AffiliateUser", fields: [userId], references: [id], onDelete: SetNull)
+  commissions Commission[]
+  clicks      LinkClick[]
+  payouts     Payout[]
+}
+
+// Une commission = 80% du PREMIER paiement d'un joueur attribué à un affilié.
+// Une seule par abonnement. Les renouvellements ne génèrent pas de commission.
+model Commission {
+  id                   String    @id @default(cuid())
+  affiliateCode        String
+  userId               String // le joueur qui a payé
+  plan                 String // monthly | annual
+  grossCents           Int // montant payé (centimes)
+  commissionCents      Int // 80% du brut (centimes)
+  stripeSubscriptionId String?  @unique // dédoublonnage : 1 commission par abonnement
+  refunded             Boolean  @default(false)
+  createdAt            DateTime @default(now())
+
+  affiliate Affiliate @relation(fields: [affiliateCode], references: [code], onDelete: Cascade)
+
+  @@index([affiliateCode])
+}
+
+// Registre des versements manuels faits à un affilié (commission + bonus confondus).
+// « Ce que tu lui dois » = tout ce qu'il a gagné (validé) − somme de ses versements.
+model Payout {
+  id            String   @id @default(cuid())
+  affiliateCode String
+  amountCents   Int
+  note          String?
+  createdAt     DateTime @default(now())
+
+  affiliate Affiliate @relation(fields: [affiliateCode], references: [code], onDelete: Cascade)
+
+  @@index([affiliateCode])
+}
+
+// Un clic sur un lien de parrainage (pour le suivi côté affilié).
+model LinkClick {
+  id            String   @id @default(cuid())
+  affiliateCode String
+  createdAt     DateTime @default(now())
+
+  affiliate Affiliate @relation(fields: [affiliateCode], references: [code], onDelete: Cascade)
+
+  @@index([affiliateCode, createdAt])
 }
 
 model Account {

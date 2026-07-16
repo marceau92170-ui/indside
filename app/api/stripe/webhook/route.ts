@@ -2,8 +2,42 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { commissionCents } from "@/lib/affiliate";
 
 export const dynamic = "force-dynamic";
+
+// Enregistre la commission d'affiliation sur le PREMIER paiement d'un joueur parrainé.
+// Idempotent : une seule commission par abonnement (clé stripeSubscriptionId).
+async function recordCommission(session: Stripe.Checkout.Session, sub: Stripe.Subscription) {
+  const userId =
+    (sub.metadata?.userId as string | undefined) ?? (session.metadata?.userId as string | undefined);
+  if (!userId) return;
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user?.referredByCode) return; // joueur non parrainé → rien
+
+  const affiliate = await prisma.affiliate.findUnique({ where: { code: user.referredByCode } });
+  if (!affiliate) return;
+
+  const gross = session.amount_total ?? 0;
+  if (gross <= 0) return;
+
+  const priceId = sub.items.data[0]?.price?.id;
+  const plan = priceId === process.env.STRIPE_PRICE_ANNUAL ? "annual" : "monthly";
+
+  await prisma.commission.upsert({
+    where: { stripeSubscriptionId: sub.id },
+    create: {
+      affiliateCode: affiliate.code,
+      userId,
+      plan,
+      grossCents: gross,
+      commissionCents: commissionCents(gross),
+      stripeSubscriptionId: sub.id,
+    },
+    update: {}, // déjà enregistrée : on ne double jamais une commission
+  });
+}
 
 async function upsertSubscription(sub: Stripe.Subscription) {
   const userId =
@@ -55,6 +89,7 @@ export async function POST(req: Request) {
       if (session.subscription) {
         const sub = await stripe().subscriptions.retrieve(session.subscription as string);
         await upsertSubscription(sub);
+        await recordCommission(session, sub);
       }
       break;
     }

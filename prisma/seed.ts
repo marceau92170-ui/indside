@@ -1,7 +1,37 @@
 import { PrismaClient } from "@prisma/client";
 import { ALL_EXERCISES } from "../lib/data/exercises";
+import { ADMIN_EMAILS, AFFILIATES } from "../lib/data/staff";
 
 const prisma = new PrismaClient();
+
+async function seedStaff() {
+  // Admins : Premium + rôle admin.
+  for (const email of ADMIN_EMAILS) {
+    const e = email.trim().toLowerCase();
+    await prisma.user.upsert({
+      where: { email: e },
+      create: { email: e, plan: "premium", role: "admin" },
+      update: { plan: "premium", role: "admin" },
+    });
+  }
+
+  // Affiliés : Premium + rôle affilié + code de parrainage + compte lié.
+  for (const a of AFFILIATES) {
+    const email = a.email.trim().toLowerCase();
+    const code = a.code.trim().toLowerCase();
+    const user = await prisma.user.upsert({
+      where: { email },
+      create: { email, plan: "premium", role: "affiliate" },
+      update: { plan: "premium", role: "affiliate" },
+    });
+    await prisma.affiliate.upsert({
+      where: { code },
+      create: { code, displayName: a.name, email, userId: user.id },
+      update: { displayName: a.name, email, userId: user.id },
+    });
+  }
+  console.log(`Staff : ${ADMIN_EMAILS.length} admin(s), ${AFFILIATES.length} affilié(s).`);
+}
 
 async function main() {
   console.log(`Seed de ${ALL_EXERCISES.length} exercices…`);
@@ -45,6 +75,7 @@ async function main() {
       },
     });
   }
+  await seedStaff();
   console.log("Seed terminé ✅");
 }
 
