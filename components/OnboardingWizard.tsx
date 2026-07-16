@@ -54,12 +54,16 @@ const INITIAL: State = {
 function categoryOf(birthYear: number): string {
   const now = new Date();
   const end = now.getMonth() >= 6 ? now.getFullYear() + 1 : now.getFullYear();
-  return `U${end - birthYear}`;
+  const u = end - birthYear;
+  return u > 18 ? "Senior" : `U${u}`;
 }
 
 function ageOf(birthYear: number): number {
   return new Date().getFullYear() - birthYear;
 }
+
+// Année de naissance représentative pour l'option « 18 ans et + » (amateurs, seniors, vétérans).
+const ADULT_BIRTH_YEAR = new Date().getFullYear() - 20;
 
 // Un ado interrompu (appel, notif, batterie) ne doit pas repartir de zéro.
 const STORAGE_KEY = "progressa-onboarding-v1";
@@ -209,9 +213,19 @@ export function OnboardingWizard({ birthYears }: { birthYears: number[] }) {
               </Choice>
             ))}
           </div>
+          <div className="mt-2">
+            <Choice
+              active={s.birthYear === ADULT_BIRTH_YEAR}
+              onClick={() => set({ birthYear: ADULT_BIRTH_YEAR })}
+            >
+              18 ans et + (adulte)
+            </Choice>
+          </div>
           {s.birthYear && (
             <p className="stat-pop mt-4 text-center font-condensed text-xl font-bold text-glow">
-              Tu joues en {categoryOf(s.birthYear)} 👊
+              {s.birthYear === ADULT_BIRTH_YEAR
+                ? "Catégorie Senior 👊"
+                : `Tu joues en ${categoryOf(s.birthYear)} 👊`}
             </p>
           )}
         </StepShell>

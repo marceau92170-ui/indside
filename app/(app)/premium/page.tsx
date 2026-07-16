@@ -1,5 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { isPremium } from "@/lib/plan";
+import { isAdult } from "@/lib/categories";
 import { Card } from "@/components/ui";
 import { CheckoutButtons, ManageSubscriptionButton } from "@/components/CheckoutButtons";
 
@@ -19,6 +20,7 @@ const INCLUDED = [
 export default async function PremiumPage() {
   const user = await currentUser();
   const premium = isPremium(user);
+  const adult = user?.profile ? isAdult(user.profile.birthYear) : false;
 
   if (premium) {
     return (
@@ -51,19 +53,32 @@ export default async function PremiumPage() {
 
       <CheckoutButtons />
 
-      <Card className="mt-6 border-grass bg-grass/15">
-        <p className="mb-1 font-condensed text-base font-bold uppercase">Pour les parents</p>
-        <ul className="space-y-1.5 text-sm text-muted">
-          <li>• Un coach individuel coûte 30 à 50 € la séance. Ici : 59 € pour l&apos;année entière.</li>
-          <li>• Séances conçues selon les standards de préparation des jeunes : poids du corps uniquement avant 15 ans, charge calée autour du club, prévention des blessures intégrée.</li>
-          <li>• Si ton enfant signale une douleur (genou, cheville...), le programme Premium s&apos;adapte tout seul pour ne pas aggraver la zone — pas besoin d&apos;y penser.</li>
-          <li>• Résiliable à tout moment, en 1 clic, depuis l&apos;app.</li>
-          <li>• Données minimales, aucun tracking publicitaire. <a href="/confidentialite" className="underline">Confidentialité</a></li>
-        </ul>
-        <p className="mt-3 text-xs text-muted">
-          Abonnement à souscrire par un parent ou tuteur légal.
-        </p>
-      </Card>
+      {adult ? (
+        <Card className="mt-6 border-grass bg-grass/15">
+          <p className="mb-1 font-condensed text-base font-bold uppercase">Bon à savoir</p>
+          <ul className="space-y-1.5 text-sm text-muted">
+            <li>• Un coach individuel coûte 30 à 50 € la séance. Ici : 59 € pour l&apos;année entière.</li>
+            <li>• Programme calé sur ton niveau, ton calendrier et ta prévention blessure.</li>
+            <li>• Si tu signales une douleur, le programme s&apos;adapte tout seul pour ne pas aggraver la zone.</li>
+            <li>• Résiliable à tout moment, en 1 clic, depuis l&apos;app.</li>
+            <li>• Données minimales, aucun tracking publicitaire. <a href="/confidentialite" className="underline">Confidentialité</a></li>
+          </ul>
+        </Card>
+      ) : (
+        <Card className="mt-6 border-grass bg-grass/15">
+          <p className="mb-1 font-condensed text-base font-bold uppercase">Pour les parents</p>
+          <ul className="space-y-1.5 text-sm text-muted">
+            <li>• Un coach individuel coûte 30 à 50 € la séance. Ici : 59 € pour l&apos;année entière.</li>
+            <li>• Séances conçues selon les standards de préparation des jeunes : poids du corps uniquement avant 15 ans, charge calée autour du club, prévention des blessures intégrée.</li>
+            <li>• Si ton enfant signale une douleur (genou, cheville...), le programme Premium s&apos;adapte tout seul pour ne pas aggraver la zone — pas besoin d&apos;y penser.</li>
+            <li>• Résiliable à tout moment, en 1 clic, depuis l&apos;app.</li>
+            <li>• Données minimales, aucun tracking publicitaire. <a href="/confidentialite" className="underline">Confidentialité</a></li>
+          </ul>
+          <p className="mt-3 text-xs text-muted">
+            Abonnement à souscrire par un parent ou tuteur légal.
+          </p>
+        </Card>
+      )}
     </div>
   );
 }

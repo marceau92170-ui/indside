@@ -9,7 +9,17 @@ export function seasonEndYear(now = new Date()): number {
 
 export function categoryFromBirthYear(birthYear: number, now = new Date()): string {
   const u = seasonEndYear(now) - birthYear;
-  return `U${u}`;
+  // Au-delà des catégories jeunes (U6→U18), on est en Senior (adultes 18+).
+  return u > 18 ? "Senior" : `U${u}`;
+}
+
+// Année de naissance représentative d'un adulte (18 ans et +), pour l'onboarding.
+export function adultBirthYear(now = new Date()): number {
+  return now.getFullYear() - 20;
+}
+
+export function isAdult(birthYear: number, now = new Date()): boolean {
+  return ageFromBirthYear(birthYear, now) >= 18;
 }
 
 export function ageFromBirthYear(birthYear: number, now = new Date()): number {

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
+import { isAdult } from "@/lib/categories";
 
 export const dynamic = "force-dynamic";
 
@@ -42,11 +43,13 @@ export async function POST(req: Request) {
     cancel_url: `${base}/premium`,
     metadata: { userId: user.id },
     subscription_data: { metadata: { userId: user.id } },
-    // Mineurs : l'abonnement est souscrit par un parent ou tuteur légal
+    // Mineurs : l'abonnement est souscrit par un parent ou tuteur légal.
     custom_text: {
       submit: {
         message:
-          "Abonnement à souscrire par un parent ou tuteur légal. Résiliable à tout moment en 1 clic depuis l'app.",
+          user.profile && isAdult(user.profile.birthYear)
+            ? "Résiliable à tout moment en 1 clic depuis l'app."
+            : "Abonnement à souscrire par un parent ou tuteur légal. Résiliable à tout moment en 1 clic depuis l'app.",
       },
     },
   });
