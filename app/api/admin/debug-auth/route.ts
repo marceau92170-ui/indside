@@ -28,6 +28,15 @@ export async function GET(req: Request) {
     accountTableError = String(e).slice(0, 300);
   }
 
+  // Dernière erreur d'authentification capturée (voir logger dans lib/auth.ts).
+  let lastAuthError: string | null = null;
+  try {
+    const row = await prisma.debugLog.findUnique({ where: { key: "last_auth_error" } });
+    lastAuthError = row?.value ?? null;
+  } catch {
+    lastAuthError = "(table DebugLog pas encore créée — attends le déploiement)";
+  }
+
   return NextResponse.json({
     googleClientId: id, // valeur publique (visible côté navigateur de toute façon)
     googleClientIdLength: id.length,
@@ -44,5 +53,6 @@ export async function GET(req: Request) {
     databaseUrlSet: Boolean(process.env.DATABASE_URL),
     accountTableOk,
     accountTableError,
+    lastAuthError,
   });
 }
