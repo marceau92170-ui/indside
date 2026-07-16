@@ -13,6 +13,8 @@ export const PREMIUM_EMAILS: string[] = [
   // Hemy : 2e orthographe possible de son email (i/l ambigu) — l'affilié "hemy"
   // porte la variante avec "l" ; celle-ci couvre la variante avec "i".
   "ihymnlord@gmail.com",
+  // Nymax : idem, variante avec "i" (l'affilié "nymax" porte celle avec "l").
+  "tonyrmig@icloud.com",
 ];
 
 export type AffiliateSeed = { code: string; name: string; email: string };
@@ -20,6 +22,7 @@ export type AffiliateSeed = { code: string; name: string; email: string };
 export const AFFILIATES: AffiliateSeed[] = [
   { code: "aaron", name: "Aaron", email: "nsuandaaron@gmail.com" }, // @aaroninh0o
   { code: "hemy", name: "Hemy", email: "lhymnlord@gmail.com" },
+  { code: "nymax", name: "Nymax", email: "tonyrmlg@icloud.com" }, // @nymax.foot
   // Affilié de TEST (à retirer après vérif du flux) — dashboard : marceau92170+test@gmail.com
   { code: "test", name: "Test", email: "marceau92170+test@gmail.com" },
 ];
