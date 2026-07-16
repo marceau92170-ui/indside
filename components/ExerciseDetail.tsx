@@ -26,9 +26,11 @@ export type ExerciseView = {
 export function ExerciseDetail({
   exercise,
   onClose,
+  premium = false,
 }: {
   exercise: ExerciseView;
   onClose: () => void;
+  premium?: boolean;
 }) {
   return (
     <div
@@ -49,9 +51,15 @@ export function ExerciseDetail({
         </div>
 
         <div className="mb-4">
-          <ExerciseIllustration slug={exercise.slug} category={exercise.category} />
+          <ExerciseIllustration
+            slug={exercise.slug}
+            category={exercise.category}
+            premium={premium}
+          />
           <p className="mt-1.5 text-center text-[11px] text-muted">
-            Illustration animée — pas une vidéo, le mouvement est toujours correct.
+            {premium
+              ? "Animation premium — le mouvement est toujours correct."
+              : "Illustration animée — pas une vidéo, le mouvement est toujours correct."}
           </p>
         </div>
 
