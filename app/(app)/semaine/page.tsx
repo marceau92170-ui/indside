@@ -30,6 +30,14 @@ export default async function SemainePage() {
   const todayDow = new Date().getDay();
   const premium = isPremium(user);
 
+  // Une séance "vide" (sans exercices) survient si le programme a été généré avant que
+  // la bibliothèque soit chargée. On propose alors de recharger la semaine.
+  const hasRealBlocks =
+    program?.sessions.some(
+      (s) => Array.isArray(s.blocks) && (s.blocks as unknown[]).length > 0
+    ) ?? false;
+  const needsGeneration = !program || !hasRealBlocks;
+
   return (
     <div>
       <div className="mb-4 flex items-end justify-between">
@@ -43,16 +51,18 @@ export default async function SemainePage() {
         </div>
       </div>
 
-      {!program && (
+      {needsGeneration && (
         <Card className="text-center">
           <p className="mb-3 text-sm text-muted">
-            Ton programme de la semaine n&apos;est pas encore généré.
+            {program
+              ? "Ta séance est prête à être générée avec les exercices. Lance ta semaine 👇"
+              : "Ton programme de la semaine n'est pas encore généré."}
           </p>
-          <GenerateProgramButton label="Générer ma semaine" />
+          <GenerateProgramButton label={program ? "Générer mes exercices" : "Générer ma semaine"} />
         </Card>
       )}
 
-      {program && (
+      {program && hasRealBlocks && (
         <>
           {program.summary && <p className="mb-4 text-sm text-muted">{program.summary}</p>}
           <ul className="space-y-3">
@@ -102,9 +112,12 @@ export default async function SemainePage() {
             </p>
           )}
 
-          <Link href="/historique" className="mt-4 inline-block text-sm text-muted underline">
-            Voir mes semaines précédentes →
-          </Link>
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <Link href="/historique" className="text-sm text-muted underline">
+              Voir mes semaines précédentes →
+            </Link>
+            <GenerateProgramButton label="Régénérer ma semaine" variant="link" />
+          </div>
 
           <div className="mt-6">
             <NutritionWeekCard
