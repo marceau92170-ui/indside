@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { ALL_EXERCISES } from "../lib/data/exercises";
-import { ADMIN_EMAILS, AFFILIATES } from "../lib/data/staff";
+import { ADMIN_EMAILS, PREMIUM_EMAILS, AFFILIATES } from "../lib/data/staff";
 
 const prisma = new PrismaClient();
 
@@ -12,6 +12,16 @@ async function seedStaff() {
       where: { email: e },
       create: { email: e, plan: "premium", role: "admin" },
       update: { plan: "premium", role: "admin" },
+    });
+  }
+
+  // Accès gratuits sans affiliation : Premium simple.
+  for (const email of PREMIUM_EMAILS) {
+    const e = email.trim().toLowerCase();
+    await prisma.user.upsert({
+      where: { email: e },
+      create: { email: e, plan: "premium" },
+      update: { plan: "premium" },
     });
   }
 
@@ -30,7 +40,9 @@ async function seedStaff() {
       update: { displayName: a.name, email, userId: user.id },
     });
   }
-  console.log(`Staff : ${ADMIN_EMAILS.length} admin(s), ${AFFILIATES.length} affilié(s).`);
+  console.log(
+    `Staff : ${ADMIN_EMAILS.length} admin(s), ${PREMIUM_EMAILS.length} accès gratuit(s), ${AFFILIATES.length} affilié(s).`
+  );
 }
 
 async function main() {
