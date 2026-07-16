@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 
-export function GenerateProgramButton({ label }: { label: string }) {
+export function GenerateProgramButton({
+  label,
+  variant = "primary",
+}: {
+  label: string;
+  variant?: "primary" | "link";
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +30,21 @@ export function GenerateProgramButton({ label }: { label: string }) {
       setError("Échec, réessaie dans un instant.");
       setLoading(false);
     }
+  }
+
+  if (variant === "link") {
+    return (
+      <span>
+        <button
+          onClick={generate}
+          disabled={loading}
+          className="text-sm text-muted underline disabled:opacity-60"
+        >
+          {loading ? "Régénération…" : label}
+        </button>
+        {error && <span className="ml-2 text-xs text-red-400">{error}</span>}
+      </span>
+    );
   }
 
   return (

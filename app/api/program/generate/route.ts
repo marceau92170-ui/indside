@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { createWeeklyProgram, feedbackForWeek } from "@/lib/program/create";
+import { isPremium } from "@/lib/plan";
 import { mondayOfWeek } from "@/lib/categories";
 
 export const dynamic = "force-dynamic";
@@ -19,8 +20,17 @@ export async function POST() {
   }
 
   const weekStart = mondayOfWeek();
-  const existing = await prisma.program.findFirst({ where: { userId: user.id, weekStart } });
-  if (existing) {
+  const existing = await prisma.program.findFirst({
+    where: { userId: user.id, weekStart },
+    include: { sessions: true },
+  });
+  // Le cooldown protège la facture API (génération IA = Premium). En gratuit, la
+  // séance est un template déterministe (coût nul) → on ne bloque pas la régénération.
+  // On ne bloque pas non plus si le programme actuel est cassé (séances sans exercices).
+  const hasRealBlocks = existing?.sessions.some(
+    (s) => Array.isArray(s.blocks) && (s.blocks as unknown[]).length > 0
+  );
+  if (existing && isPremium(user) && hasRealBlocks) {
     const elapsed = Date.now() - existing.updatedAt.getTime();
     if (elapsed < COOLDOWN_MS) {
       const retryAfterMin = Math.ceil((COOLDOWN_MS - elapsed) / 60000);
