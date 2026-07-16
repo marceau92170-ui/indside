@@ -2,15 +2,32 @@
 // Un mouvement mal dessiné se corrige une fois pour toutes ; une vidéo IA mal générée
 // apprendrait un mauvais geste à chaque joueur qui la regarde. D'où ce choix.
 //
-// Principe : un seul moteur de rendu (Stick) + un jeu de coordonnées par famille de
-// mouvement (Archetype). Chaque exercice de la bibliothèque est mappé vers la famille
-// la plus proche visuellement — aucun exercice n'est laissé sans illustration.
+// Principe : un seul jeu de coordonnées par famille de mouvement (Archetype), rendu de
+// deux façons :
+//   - gratuit  → figure « bâton » épurée (Stick)
+//   - premium  → même mouvement, mais personnage habillé façon appli de sport
+//     (maillot, peau, short, chaussures, cheveux, contour) — PremiumFigure.
+// Chaque exercice de la bibliothèque est mappé vers la famille la plus proche
+// visuellement — aucun exercice n'est laissé sans illustration.
+
+type BodyPart =
+  | "head"
+  | "torso"
+  | "hips"
+  | "thigh"
+  | "shin"
+  | "leg"
+  | "arm"
+  | "forearm"
+  | "foot"
+  | "ball"
+  | "prop";
 
 type Keyed = Partial<Record<"cx" | "cy" | "x1" | "y1" | "x2" | "y2", string>>;
 
 type Segment =
-  | { type: "circle"; r: number; fill?: string; base?: Keyed; keys?: Keyed }
-  | { type: "line"; base?: Keyed; keys?: Keyed };
+  | { type: "circle"; r: number; fill?: string; part?: BodyPart; base?: Keyed; keys?: Keyed }
+  | { type: "line"; part?: BodyPart; base?: Keyed; keys?: Keyed };
 
 type Archetype = { segments: Segment[]; dur?: string; ground?: boolean };
 
@@ -32,37 +49,37 @@ const ARCHETYPES: Record<string, Archetype> = {
   // flexion de jambes profonde : squats, chaise, fentes avant, squat jumps
   squat: {
     segments: [
-      { type: "circle", r: 10, base: {}, keys: { cx: loop("100", "90"), cy: loop("65", "103") } },
-      { type: "line", keys: { x1: loop("100", "85"), y1: loop("120", "165"), x2: loop("100", "95"), y2: loop("80", "118") } }, // torse
-      { type: "line", keys: { x1: loop("100", "85"), y1: loop("120", "165"), x2: loop("100", "108"), y2: loop("165", "178") } }, // cuisse
-      { type: "line", keys: { x1: loop("100", "108"), y1: loop("165", "178"), x2: "100", y2: "205" } }, // tibia
-      { type: "line", base: { x1: "88", y1: "205", x2: "118", y2: "205" } }, // pied
-      { type: "line", keys: { x1: loop("100", "95"), y1: loop("80", "118"), x2: loop("118", "148"), y2: loop("102", "128") } }, // bras
+      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: loop("100", "90"), cy: loop("65", "103") } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "85"), y1: loop("120", "165"), x2: loop("100", "95"), y2: loop("80", "118") } }, // torse
+      { type: "line", part: "thigh", keys: { x1: loop("100", "85"), y1: loop("120", "165"), x2: loop("100", "108"), y2: loop("165", "178") } }, // cuisse
+      { type: "line", part: "shin", keys: { x1: loop("100", "108"), y1: loop("165", "178"), x2: "100", y2: "205" } }, // tibia
+      { type: "line", part: "foot", base: { x1: "88", y1: "205", x2: "118", y2: "205" } }, // pied
+      { type: "line", part: "arm", keys: { x1: loop("100", "95"), y1: loop("80", "118"), x2: loop("118", "148"), y2: loop("102", "128") } }, // bras
     ],
   },
   // fente / pas latéral : fentes latérales, skater jumps, déplacements gardien
   "lunge-lateral": {
     segments: [
-      { type: "circle", r: 10, base: {}, keys: { cx: loop("100", "70"), cy: loop("65", "78") } },
-      { type: "line", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "76"), y2: loop("80", "93") } },
-      { type: "line", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "55"), y2: loop("165", "185") } },
-      { type: "line", keys: { x1: loop("100", "55"), y1: loop("165", "185"), x2: "45", y2: "205" } },
-      { type: "line", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "140"), y2: loop("150", "158") } },
-      { type: "line", keys: { x1: loop("100", "140"), y1: loop("150", "158"), x2: "150", y2: "205" } },
-      { type: "line", base: { x1: "32", y1: "205", x2: "58", y2: "205" } },
-      { type: "line", base: { x1: "138", y1: "205", x2: "164", y2: "205" } },
-      { type: "line", keys: { x1: loop("100", "76"), y1: loop("80", "93"), x2: loop("125", "100"), y2: loop("100", "70") } },
+      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: loop("100", "70"), cy: loop("65", "78") } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "76"), y2: loop("80", "93") } },
+      { type: "line", part: "thigh", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "55"), y2: loop("165", "185") } },
+      { type: "line", part: "shin", keys: { x1: loop("100", "55"), y1: loop("165", "185"), x2: "45", y2: "205" } },
+      { type: "line", part: "thigh", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "140"), y2: loop("150", "158") } },
+      { type: "line", part: "shin", keys: { x1: loop("100", "140"), y1: loop("150", "158"), x2: "150", y2: "205" } },
+      { type: "line", part: "foot", base: { x1: "32", y1: "205", x2: "58", y2: "205" } },
+      { type: "line", part: "foot", base: { x1: "138", y1: "205", x2: "164", y2: "205" } },
+      { type: "line", part: "arm", keys: { x1: loop("100", "76"), y1: loop("80", "93"), x2: loop("125", "100"), y2: loop("100", "70") } },
     ],
   },
   // gainage statique / dynamique : planche, planche latérale, copenhagen
   plank: {
     ground: true,
     segments: [
-      { type: "circle", r: 9, base: { cx: "50", cy: "138" } },
-      { type: "line", base: { x1: "60", y1: "140", x2: "115", y2: "150" } }, // torse
-      { type: "line", base: { x1: "115", y1: "150", x2: "150", y2: "155" } }, // hanche->cuisse
-      { type: "line", base: { x1: "150", y1: "155", x2: "182", y2: "160" } }, // jambe
-      { type: "line", keys: { y1: loop("100", "170"), x1: "58", x2: "50", y2: loop("112", "182") } }, // avant-bras (contact sol)
+      { type: "circle", r: 9, part: "head", base: { cx: "50", cy: "138" } },
+      { type: "line", part: "torso", base: { x1: "60", y1: "140", x2: "115", y2: "150" } }, // torse
+      { type: "line", part: "thigh", base: { x1: "115", y1: "150", x2: "150", y2: "155" } }, // hanche->cuisse
+      { type: "line", part: "shin", base: { x1: "150", y1: "155", x2: "182", y2: "160" } }, // jambe
+      { type: "line", part: "forearm", keys: { y1: loop("100", "170"), x1: "58", x2: "50", y2: loop("112", "182") } }, // avant-bras (contact sol)
     ],
     dur: "1.8s",
   },
@@ -70,23 +87,23 @@ const ARCHETYPES: Record<string, Archetype> = {
   "mountain-climber": {
     ground: true,
     segments: [
-      { type: "circle", r: 9, base: { cx: "48", cy: "138" } },
-      { type: "line", base: { x1: "58", y1: "140", x2: "110", y2: "150" } },
-      { type: "line", base: { x1: "58", y1: "128", x2: "58", y2: "175" } },
-      { type: "line", keys: { x1: loop("110", "112"), y1: loop("150", "150"), x2: loop("170", "125"), y2: loop("158", "175") } }, // cuisse animée
-      { type: "line", keys: { x1: loop("170", "125"), y1: loop("158", "175"), x2: loop("182", "142"), y2: loop("178", "180") } }, // tibia animé
+      { type: "circle", r: 9, part: "head", base: { cx: "48", cy: "138" } },
+      { type: "line", part: "torso", base: { x1: "58", y1: "140", x2: "110", y2: "150" } },
+      { type: "line", part: "arm", base: { x1: "58", y1: "128", x2: "58", y2: "175" } },
+      { type: "line", part: "thigh", keys: { x1: loop("110", "112"), y1: loop("150", "150"), x2: loop("170", "125"), y2: loop("158", "175") } }, // cuisse animée
+      { type: "line", part: "shin", keys: { x1: loop("170", "125"), y1: loop("158", "175"), x2: loop("182", "142"), y2: loop("178", "180") } }, // tibia animé
     ],
     dur: "1s",
   },
   // pont fessier : allongé, bascule du bassin
   "glute-bridge": {
     segments: [
-      { type: "circle", r: 9, base: { cx: "40", cy: "175" } },
-      { type: "line", base: { x1: "49", y1: "175", x2: "95", y2: "175" } }, // torse au sol
-      { type: "line", keys: { x1: "95", y1: "175", x2: "95", y2: loop("175", "150") } }, // hanche qui monte (segment vertical symbolique)
-      { type: "line", base: { x1: "95", y1: "175", x2: "130", y2: "165" } }, // cuisse
-      { type: "line", base: { x1: "130", y1: "165", x2: "130", y2: "205" } }, // tibia vertical (pied au sol)
-      { type: "line", base: { x1: "116", y1: "205", x2: "144", y2: "205" } },
+      { type: "circle", r: 9, part: "head", base: { cx: "40", cy: "175" } },
+      { type: "line", part: "torso", base: { x1: "49", y1: "175", x2: "95", y2: "175" } }, // torse au sol
+      { type: "line", part: "hips", keys: { x1: "95", y1: "175", x2: "95", y2: loop("175", "150") } }, // hanche qui monte (segment vertical symbolique)
+      { type: "line", part: "thigh", base: { x1: "95", y1: "175", x2: "130", y2: "165" } }, // cuisse
+      { type: "line", part: "shin", base: { x1: "130", y1: "165", x2: "130", y2: "205" } }, // tibia vertical (pied au sol)
+      { type: "line", part: "foot", base: { x1: "116", y1: "205", x2: "144", y2: "205" } },
     ],
     dur: "1.6s",
   },
@@ -94,107 +111,107 @@ const ARCHETYPES: Record<string, Archetype> = {
   pushup: {
     ground: true,
     segments: [
-      { type: "circle", r: 9, base: {}, keys: { cx: loop("50", "52"), cy: loop("150", "162") } },
-      { type: "line", keys: { x1: loop("60", "62"), y1: loop("152", "163"), x2: "150", y2: "170" } },
-      { type: "line", base: { x1: "150", y1: "170", x2: "182", y2: "178" } },
-      { type: "line", keys: { x1: loop("60", "62"), y1: loop("152", "163"), x2: loop("55", "40"), y2: loop("195", "185") } },
+      { type: "circle", r: 9, part: "head", base: {}, keys: { cx: loop("50", "52"), cy: loop("150", "162") } },
+      { type: "line", part: "torso", keys: { x1: loop("60", "62"), y1: loop("152", "163"), x2: "150", y2: "170" } },
+      { type: "line", part: "leg", base: { x1: "150", y1: "170", x2: "182", y2: "178" } },
+      { type: "line", part: "arm", keys: { x1: loop("60", "62"), y1: loop("152", "163"), x2: loop("55", "40"), y2: loop("195", "185") } },
     ],
     dur: "1.6s",
   },
   // saut vertical / horizontal : squat jumps, bondissements, détente
   jump: {
     segments: [
-      { type: "circle", r: 10, base: {}, keys: { cy: loop("103", "55") } },
-      { type: "line", keys: { x1: "100", y1: loop("165", "125"), x2: "100", y2: loop("118", "70") } }, // torse
-      { type: "line", keys: { x1: "100", y1: loop("165", "125"), x2: "100", y2: loop("178", "150") } }, // cuisse
-      { type: "line", keys: { x1: "100", y1: loop("178", "150"), x2: "100", y2: loop("205", "185") } }, // tibia
-      { type: "line", keys: { x2: "70", y2: loop("205", "185"), x1: "100", y1: loop("205", "185") } },
-      { type: "line", keys: { x1: "100", y1: loop("118", "70"), x2: "130", y2: loop("140", "50") } }, // bras levé au sommet
+      { type: "circle", r: 10, part: "head", base: {}, keys: { cy: loop("103", "55") } },
+      { type: "line", part: "torso", keys: { x1: "100", y1: loop("165", "125"), x2: "100", y2: loop("118", "70") } }, // torse
+      { type: "line", part: "thigh", keys: { x1: "100", y1: loop("165", "125"), x2: "100", y2: loop("178", "150") } }, // cuisse
+      { type: "line", part: "shin", keys: { x1: "100", y1: loop("178", "150"), x2: "100", y2: loop("205", "185") } }, // tibia
+      { type: "line", part: "foot", keys: { x2: "70", y2: loop("205", "185"), x1: "100", y1: loop("205", "185") } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: loop("118", "70"), x2: "130", y2: loop("140", "50") } }, // bras levé au sommet
     ],
     dur: "1.1s",
   },
   // course / montées de genoux / gammes / sprint / intermittent
   sprint: {
     segments: [
-      { type: "circle", r: 9, base: {}, keys: { cx: loop("95", "105"), cy: "62" } },
-      { type: "line", keys: { x1: loop("100", "108"), y1: "118", x2: loop("100", "112"), y2: "72" } },
-      { type: "line", keys: { x1: loop("100", "108"), y1: "118", x2: loop("125", "80"), y2: loop("150", "155") } }, // cuisse avant
-      { type: "line", keys: { x1: loop("125", "80"), y1: loop("150", "155"), x2: loop("110", "65"), y2: loop("195", "205") } },
-      { type: "line", keys: { x1: loop("100", "108"), y1: "118", x2: loop("78", "130"), y2: loop("150", "165") } }, // cuisse arrière
-      { type: "line", keys: { x1: loop("78", "130"), y1: loop("150", "165"), x2: loop("95", "150"), y2: loop("120", "175") } },
-      { type: "line", keys: { x1: loop("100", "112"), y1: "72", x2: loop("135", "90"), y2: loop("95", "60") } },
+      { type: "circle", r: 9, part: "head", base: {}, keys: { cx: loop("95", "105"), cy: "62" } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "108"), y1: "118", x2: loop("100", "112"), y2: "72" } },
+      { type: "line", part: "thigh", keys: { x1: loop("100", "108"), y1: "118", x2: loop("125", "80"), y2: loop("150", "155") } }, // cuisse avant
+      { type: "line", part: "shin", keys: { x1: loop("125", "80"), y1: loop("150", "155"), x2: loop("110", "65"), y2: loop("195", "205") } },
+      { type: "line", part: "thigh", keys: { x1: loop("100", "108"), y1: "118", x2: loop("78", "130"), y2: loop("150", "165") } }, // cuisse arrière
+      { type: "line", part: "shin", keys: { x1: loop("78", "130"), y1: loop("150", "165"), x2: loop("95", "150"), y2: loop("120", "175") } },
+      { type: "line", part: "arm", keys: { x1: loop("100", "112"), y1: "72", x2: loop("135", "90"), y2: loop("95", "60") } },
     ],
     dur: "0.85s",
   },
   // touches de balle au pied : jonglage, toe taps, foundations
   juggle: {
     segments: [
-      { type: "circle", r: 6, fill: "#E12A3A", keys: { cy: loop("100", "150") } }, // ballon
-      { type: "circle", r: 10, base: { cx: "100", cy: "62" } },
-      { type: "line", base: { x1: "100", y1: "72", x2: "100", y2: "118" } },
-      { type: "line", keys: { x1: "100", y1: "118", x2: loop("90", "108"), y2: loop("160", "158") } },
-      { type: "line", keys: { x1: loop("90", "108"), y1: loop("160", "158"), x2: loop("85", "100"), y2: loop("190", "178") } },
+      { type: "circle", r: 6, fill: "#E12A3A", part: "ball", keys: { cy: loop("100", "150") } }, // ballon
+      { type: "circle", r: 10, part: "head", base: { cx: "100", cy: "62" } },
+      { type: "line", part: "torso", base: { x1: "100", y1: "72", x2: "100", y2: "118" } },
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "118", x2: loop("90", "108"), y2: loop("160", "158") } },
+      { type: "line", part: "shin", keys: { x1: loop("90", "108"), y1: loop("160", "158"), x2: loop("85", "100"), y2: loop("190", "178") } },
     ],
     dur: "0.9s",
   },
   // conduite / dribble latéral : croquettes, v-cuts, crochet, cruyff, ciseaux
   dribble: {
     segments: [
-      { type: "circle", r: 6, fill: "#E12A3A", keys: { cx: loop("120", "80"), cy: "195" } }, // ballon
-      { type: "circle", r: 10, base: {}, keys: { cx: loop("98", "82") } },
-      { type: "line", keys: { x1: loop("100", "84"), y1: "118", x2: loop("100", "84"), y2: "72" } },
-      { type: "line", keys: { x1: loop("100", "84"), y1: "118", x2: loop("108", "70"), y2: "168" } },
-      { type: "line", keys: { x1: loop("108", "70"), y1: "168", x2: loop("120", "82"), y2: "205" } },
-      { type: "line", keys: { x1: loop("100", "84"), y1: "118", x2: loop("85", "60"), y2: "160" } },
-      { type: "line", keys: { x1: loop("85", "60"), y1: "160", x2: loop("70", "50"), y2: "205" } },
+      { type: "circle", r: 6, fill: "#E12A3A", part: "ball", keys: { cx: loop("120", "80"), cy: "195" } }, // ballon
+      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: loop("98", "82") } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "84"), y1: "118", x2: loop("100", "84"), y2: "72" } },
+      { type: "line", part: "thigh", keys: { x1: loop("100", "84"), y1: "118", x2: loop("108", "70"), y2: "168" } },
+      { type: "line", part: "shin", keys: { x1: loop("108", "70"), y1: "168", x2: loop("120", "82"), y2: "205" } },
+      { type: "line", part: "thigh", keys: { x1: loop("100", "84"), y1: "118", x2: loop("85", "60"), y2: "160" } },
+      { type: "line", part: "shin", keys: { x1: loop("85", "60"), y1: "160", x2: loop("70", "50"), y2: "205" } },
     ],
     dur: "1.3s",
   },
   // passe / frappe contre un mur
   "wall-pass": {
     segments: [
-      { type: "circle", r: 10, base: { cx: "90", cy: "65" } },
-      { type: "line", base: { x1: "90", y1: "75", x2: "95", y2: "118" } },
-      { type: "line", base: { x1: "95", y1: "118", x2: "90", y2: "165" } }, // jambe d'appui
-      { type: "line", base: { x1: "90", y1: "165", x2: "85", y2: "205" } },
-      { type: "line", keys: { x1: "95", y1: "118", x2: loop("120", "165"), y2: loop("140", "125") } }, // jambe frappe
-      { type: "line", base: { x1: "95", y1: "100", x2: "115", y2: "110" } },
-      { type: "line", base: { x1: "182", y1: "40", x2: "182", y2: "210" } }, // mur
+      { type: "circle", r: 10, part: "head", base: { cx: "90", cy: "65" } },
+      { type: "line", part: "torso", base: { x1: "90", y1: "75", x2: "95", y2: "118" } },
+      { type: "line", part: "thigh", base: { x1: "95", y1: "118", x2: "90", y2: "165" } }, // jambe d'appui
+      { type: "line", part: "shin", base: { x1: "90", y1: "165", x2: "85", y2: "205" } },
+      { type: "line", part: "leg", keys: { x1: "95", y1: "118", x2: loop("120", "165"), y2: loop("140", "125") } }, // jambe frappe
+      { type: "line", part: "arm", base: { x1: "95", y1: "100", x2: "115", y2: "110" } },
+      { type: "line", part: "prop", base: { x1: "182", y1: "40", x2: "182", y2: "210" } }, // mur
     ],
     dur: "1.4s",
   },
   // plongeon gardien
   dive: {
     segments: [
-      { type: "circle", r: 10, base: {}, keys: { cx: loop("100", "150"), cy: loop("80", "165") } },
-      { type: "line", keys: { x1: loop("100", "150"), y1: loop("90", "175"), x2: loop("100", "155"), y2: loop("140", "195") } },
-      { type: "line", keys: { x1: loop("100", "155"), y1: loop("140", "195"), x2: loop("115", "175"), y2: loop("175", "200") } },
-      { type: "line", keys: { x1: loop("100", "150"), y1: loop("90", "175"), x2: loop("70", "185"), y2: loop("105", "160") } },
+      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: loop("100", "150"), cy: loop("80", "165") } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "150"), y1: loop("90", "175"), x2: loop("100", "155"), y2: loop("140", "195") } },
+      { type: "line", part: "leg", keys: { x1: loop("100", "155"), y1: loop("140", "195"), x2: loop("115", "175"), y2: loop("175", "200") } },
+      { type: "line", part: "arm", keys: { x1: loop("100", "150"), y1: loop("90", "175"), x2: loop("70", "185"), y2: loop("105", "160") } },
     ],
     dur: "0.9s",
   },
   // équilibre / proprioception unipodal
   balance: {
     segments: [
-      { type: "circle", r: 10, base: { cx: "100", cy: "62" } },
-      { type: "line", base: { x1: "100", y1: "72", x2: "100", y2: "120" } },
-      { type: "line", base: { x1: "100", y1: "120", x2: "100", y2: "175" } },
-      { type: "line", base: { x1: "88", y1: "205", x2: "112", y2: "205" } },
-      { type: "line", base: { x1: "100", y1: "175", x2: "100", y2: "205" } },
-      { type: "line", keys: { x1: "100", y1: "120", x2: loop("130", "150"), y2: loop("150", "130") } }, // jambe libre qui oscille
-      { type: "line", keys: { x1: "100", y1: "80", x2: loop("70", "60"), y2: loop("100", "90") } },
+      { type: "circle", r: 10, part: "head", base: { cx: "100", cy: "62" } },
+      { type: "line", part: "torso", base: { x1: "100", y1: "72", x2: "100", y2: "120" } },
+      { type: "line", part: "leg", base: { x1: "100", y1: "120", x2: "100", y2: "175" } },
+      { type: "line", part: "foot", base: { x1: "88", y1: "205", x2: "112", y2: "205" } },
+      { type: "line", part: "shin", base: { x1: "100", y1: "175", x2: "100", y2: "205" } },
+      { type: "line", part: "leg", keys: { x1: "100", y1: "120", x2: loop("130", "150"), y2: loop("150", "130") } }, // jambe libre qui oscille
+      { type: "line", part: "arm", keys: { x1: "100", y1: "80", x2: loop("70", "60"), y2: loop("100", "90") } },
     ],
     dur: "2.6s",
   },
   // mobilité articulaire / étirements
   mobility: {
     segments: [
-      { type: "circle", r: 10, base: {}, keys: { cx: loop("100", "108") } },
-      { type: "line", keys: { x1: loop("100", "108"), y1: "72", x2: loop("100", "105"), y2: "125" } },
-      { type: "line", keys: { x1: loop("100", "105"), y1: "125", x2: loop("100", "130"), y2: loop("160", "150") } },
-      { type: "line", keys: { x1: loop("100", "130"), y1: loop("160", "150"), x2: loop("100", "125"), y2: "205" } },
-      { type: "line", base: { x1: "100", y1: "125", x2: "100", y2: "170" } },
-      { type: "line", base: { x1: "88", y1: "205", x2: "112", y2: "205" } },
+      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: loop("100", "108") } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "108"), y1: "72", x2: loop("100", "105"), y2: "125" } },
+      { type: "line", part: "thigh", keys: { x1: loop("100", "105"), y1: "125", x2: loop("100", "130"), y2: loop("160", "150") } },
+      { type: "line", part: "shin", keys: { x1: loop("100", "130"), y1: loop("160", "150"), x2: loop("100", "125"), y2: "205" } },
+      { type: "line", part: "leg", base: { x1: "100", y1: "125", x2: "100", y2: "170" } },
+      { type: "line", part: "foot", base: { x1: "88", y1: "205", x2: "112", y2: "205" } },
     ],
     dur: "2.4s",
   },
@@ -202,11 +219,11 @@ const ARCHETYPES: Record<string, Archetype> = {
   nordic: {
     ground: true,
     segments: [
-      { type: "circle", r: 9, base: {}, keys: { cx: loop("100", "150"), cy: loop("95", "130") } },
-      { type: "line", keys: { x1: loop("100", "150"), y1: loop("104", "138"), x2: "100", y2: "150" } },
-      { type: "line", base: { x1: "100", y1: "150", x2: "100", y2: "205" } },
-      { type: "line", base: { x1: "88", y1: "205", x2: "112", y2: "205" } },
-      { type: "line", keys: { x1: loop("100", "150"), y1: loop("104", "138"), x2: loop("70", "170"), y2: loop("130", "150") } },
+      { type: "circle", r: 9, part: "head", base: {}, keys: { cx: loop("100", "150"), cy: loop("95", "130") } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "150"), y1: loop("104", "138"), x2: "100", y2: "150" } },
+      { type: "line", part: "leg", base: { x1: "100", y1: "150", x2: "100", y2: "205" } },
+      { type: "line", part: "foot", base: { x1: "88", y1: "205", x2: "112", y2: "205" } },
+      { type: "line", part: "arm", keys: { x1: loop("100", "150"), y1: loop("104", "138"), x2: loop("70", "170"), y2: loop("130", "150") } },
     ],
     dur: "2.6s",
   },
@@ -214,21 +231,21 @@ const ARCHETYPES: Record<string, Archetype> = {
   superman: {
     ground: true,
     segments: [
-      { type: "circle", r: 9, base: {}, keys: { cx: loop("48", "50"), cy: loop("165", "155") } },
-      { type: "line", keys: { x1: loop("57", "59"), y1: loop("166", "156"), x2: "150", y2: "168" } },
-      { type: "line", keys: { x1: "150", y1: "168", x2: loop("182", "185"), y2: loop("178", "160") } },
-      { type: "line", keys: { x1: loop("57", "59"), y1: loop("166", "156"), x2: loop("28", "25"), y2: loop("178", "150") } },
+      { type: "circle", r: 9, part: "head", base: {}, keys: { cx: loop("48", "50"), cy: loop("165", "155") } },
+      { type: "line", part: "torso", keys: { x1: loop("57", "59"), y1: loop("166", "156"), x2: "150", y2: "168" } },
+      { type: "line", part: "leg", keys: { x1: "150", y1: "168", x2: loop("182", "185"), y2: loop("178", "160") } },
+      { type: "line", part: "arm", keys: { x1: loop("57", "59"), y1: loop("166", "156"), x2: loop("28", "25"), y2: loop("178", "150") } },
     ],
     dur: "2s",
   },
   // mollets : montée sur pointes
   "calf-raise": {
     segments: [
-      { type: "circle", r: 10, base: {}, keys: { cx: "100", cy: loop("70", "58") } },
-      { type: "line", keys: { x1: "100", y1: loop("80", "68"), x2: "100", y2: loop("140", "128") } },
-      { type: "line", keys: { x1: "100", y1: loop("140", "128"), x2: "100", y2: loop("178", "170") } },
-      { type: "line", keys: { x1: "100", y1: loop("178", "170"), x2: "100", y2: loop("205", "195") } },
-      { type: "line", base: { x1: "88", y1: "205", x2: "112", y2: "205" } },
+      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: "100", cy: loop("70", "58") } },
+      { type: "line", part: "torso", keys: { x1: "100", y1: loop("80", "68"), x2: "100", y2: loop("140", "128") } },
+      { type: "line", part: "thigh", keys: { x1: "100", y1: loop("140", "128"), x2: "100", y2: loop("178", "170") } },
+      { type: "line", part: "shin", keys: { x1: "100", y1: loop("178", "170"), x2: "100", y2: loop("205", "195") } },
+      { type: "line", part: "foot", base: { x1: "88", y1: "205", x2: "112", y2: "205" } },
     ],
     dur: "1.4s",
   },
@@ -435,7 +452,188 @@ function Stick({ archetype }: { archetype: Archetype }) {
   );
 }
 
-export function ExerciseIllustration({ slug, category }: { slug: string; category: string }) {
+// ---------- rendu premium : personnage habillé ----------
+
+const SKIN = "#E7B183";
+const JERSEY = "#E12A3A";
+const SHORTS = "#33404E";
+const SHOE = "#E9ECEF";
+const HAIR = "#211C19";
+const OUTLINE = "#0A0B0D";
+
+// Couleur + épaisseur du membre selon la partie du corps.
+const PART_STYLE: Record<BodyPart, { stroke: string; width: number }> = {
+  head: { stroke: SKIN, width: 0 }, // géré à part
+  torso: { stroke: JERSEY, width: 22 },
+  hips: { stroke: SHORTS, width: 20 },
+  thigh: { stroke: SHORTS, width: 17 },
+  shin: { stroke: SKIN, width: 13 },
+  leg: { stroke: SKIN, width: 15 },
+  arm: { stroke: SKIN, width: 13 },
+  forearm: { stroke: SKIN, width: 12 },
+  foot: { stroke: SHOE, width: 11 },
+  ball: { stroke: JERSEY, width: 0 }, // géré à part
+  prop: { stroke: "#3A3B3D", width: 6 },
+};
+
+// Décale chaque valeur d'un "a;b;a" (ou une valeur simple) — pour placer les
+// cheveux légèrement au-dessus du centre de la tête, en suivant l'animation.
+function shift(v: string | undefined, dy: number, fallback: string): string {
+  const src = v ?? fallback;
+  return src
+    .split(";")
+    .map((n) => String(Number(n) + dy))
+    .join(";");
+}
+
+function lineAnims(keys: Keyed | undefined, dur: string) {
+  if (!keys) return null;
+  return (
+    <>
+      {keys.x1 && <animate attributeName="x1" values={keys.x1} {...animAttrs(dur)} />}
+      {keys.y1 && <animate attributeName="y1" values={keys.y1} {...animAttrs(dur)} />}
+      {keys.x2 && <animate attributeName="x2" values={keys.x2} {...animAttrs(dur)} />}
+      {keys.y2 && <animate attributeName="y2" values={keys.y2} {...animAttrs(dur)} />}
+    </>
+  );
+}
+
+function PremiumFigure({ archetype }: { archetype: Archetype }) {
+  const dur = archetype.dur ?? DUR;
+  const segs = archetype.segments;
+  const limbs = segs.filter(
+    (s): s is Extract<Segment, { type: "line" }> => s.type === "line"
+  );
+  const heads = segs.filter((s) => s.type === "circle" && s.part === "head") as Extract<
+    Segment,
+    { type: "circle" }
+  >[];
+  const balls = segs.filter((s) => s.type === "circle" && s.part === "ball") as Extract<
+    Segment,
+    { type: "circle" }
+  >[];
+
+  function limbStroke(seg: Extract<Segment, { type: "line" }>) {
+    const style = PART_STYLE[seg.part ?? "leg"];
+    const base = seg.base ?? {};
+    return {
+      x1: base.x1 ?? "100",
+      y1: base.y1 ?? "100",
+      x2: base.x2 ?? "100",
+      y2: base.y2 ?? "100",
+      style,
+      keys: seg.keys,
+    };
+  }
+
+  return (
+    <svg width="100%" height="100%" viewBox="0 0 200 220" role="presentation" aria-hidden="true">
+      <defs>
+        <radialGradient id="ex-vignette-pro" cx="50%" cy="40%" r="72%">
+          <stop offset="0%" stopColor="#2B313A" />
+          <stop offset="70%" stopColor="#1B1F25" />
+          <stop offset="100%" stopColor="#14161A" />
+        </radialGradient>
+      </defs>
+      <rect x="0" y="0" width="200" height="220" fill="url(#ex-vignette-pro)" />
+
+      {archetype.ground ? (
+        <line x1="18" y1="206" x2="182" y2="206" stroke="#3A424D" strokeWidth="2" strokeLinecap="round" />
+      ) : (
+        <ellipse cx="100" cy="208" rx="48" ry="6.5" fill="#000" fillOpacity="0.34" />
+      )}
+
+      {/* passe 1 : contour sombre (donne le rendu "flat illustration") */}
+      <g stroke={OUTLINE} strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.9">
+        {limbs.map((seg, i) => {
+          const l = limbStroke(seg);
+          return (
+            <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} strokeWidth={l.style.width + 5}>
+              {lineAnims(l.keys, dur)}
+            </line>
+          );
+        })}
+        {heads.map((seg, i) => {
+          const b = seg.base ?? {};
+          return (
+            <circle key={`ho${i}`} cx={b.cx ?? "100"} cy={b.cy ?? "65"} r={seg.r + 3} fill={OUTLINE} stroke="none">
+              {seg.keys?.cx && <animate attributeName="cx" values={seg.keys.cx} {...animAttrs(dur)} />}
+              {seg.keys?.cy && <animate attributeName="cy" values={seg.keys.cy} {...animAttrs(dur)} />}
+            </circle>
+          );
+        })}
+      </g>
+
+      {/* passe 2 : membres colorés */}
+      <g strokeLinecap="round" strokeLinejoin="round" fill="none">
+        {limbs.map((seg, i) => {
+          const l = limbStroke(seg);
+          return (
+            <line
+              key={i}
+              x1={l.x1}
+              y1={l.y1}
+              x2={l.x2}
+              y2={l.y2}
+              stroke={l.style.stroke}
+              strokeWidth={l.style.width}
+            >
+              {lineAnims(l.keys, dur)}
+            </line>
+          );
+        })}
+      </g>
+
+      {/* têtes : cheveux (légèrement au-dessus) puis visage peau */}
+      {heads.map((seg, i) => {
+        const b = seg.base ?? {};
+        const hairCy = shift(seg.keys?.cy, -4, b.cy ?? "65");
+        const hairCx = seg.keys?.cx ?? b.cx ?? "100";
+        return (
+          <g key={`h${i}`}>
+            <circle cx={b.cx ?? "100"} cy={shift(undefined, -4, b.cy ?? "65")} r={seg.r + 1} fill={HAIR} stroke="none">
+              {seg.keys?.cx && <animate attributeName="cx" values={hairCx} {...animAttrs(dur)} />}
+              <animate attributeName="cy" values={hairCy} {...animAttrs(dur)} />
+            </circle>
+            <circle cx={b.cx ?? "100"} cy={b.cy ?? "65"} r={seg.r + 2} fill={SKIN} stroke="none">
+              {seg.keys?.cx && <animate attributeName="cx" values={seg.keys.cx} {...animAttrs(dur)} />}
+              {seg.keys?.cy && <animate attributeName="cy" values={seg.keys.cy} {...animAttrs(dur)} />}
+            </circle>
+          </g>
+        );
+      })}
+
+      {/* ballon (blanc, liseré sombre + petit pentagone central) */}
+      {balls.map((seg, i) => {
+        const b = seg.base ?? {};
+        const cxAnim = seg.keys?.cx && <animate attributeName="cx" values={seg.keys.cx} {...animAttrs(dur)} />;
+        const cyAnim = seg.keys?.cy && <animate attributeName="cy" values={seg.keys.cy} {...animAttrs(dur)} />;
+        return (
+          <g key={`b${i}`}>
+            <circle cx={b.cx ?? "100"} cy={b.cy ?? "100"} r={seg.r} fill="#F4F5F6" stroke={OUTLINE} strokeWidth="1.5">
+              {cxAnim}
+              {cyAnim}
+            </circle>
+            <circle cx={b.cx ?? "100"} cy={b.cy ?? "100"} r={seg.r * 0.34} fill="#1B1F25">
+              {seg.keys?.cx && <animate attributeName="cx" values={seg.keys.cx} {...animAttrs(dur)} />}
+              {seg.keys?.cy && <animate attributeName="cy" values={seg.keys.cy} {...animAttrs(dur)} />}
+            </circle>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+export function ExerciseIllustration({
+  slug,
+  category,
+  premium = false,
+}: {
+  slug: string;
+  category: string;
+  premium?: boolean;
+}) {
   const key = ILLUSTRATION_MAP[slug] ?? CATEGORY_FALLBACK[category] ?? "squat";
   const archetype = ARCHETYPES[key];
   const cue = COACHING_CUES[key];
@@ -443,7 +641,7 @@ export function ExerciseIllustration({ slug, category }: { slug: string; categor
     <div className="overflow-hidden rounded-lg border border-line bg-night">
       <div className="flex justify-center">
         <div className="aspect-square w-full max-w-[220px]">
-          <Stick archetype={archetype} />
+          {premium ? <PremiumFigure archetype={archetype} /> : <Stick archetype={archetype} />}
         </div>
       </div>
       {cue && (

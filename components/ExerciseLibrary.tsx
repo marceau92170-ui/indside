@@ -16,9 +16,11 @@ const EQUIPMENT_FILTERS = [
 export function ExerciseLibrary({
   exercises,
   categories,
+  premium = false,
 }: {
   exercises: ExerciseView[];
   categories: Cat[];
+  premium?: boolean;
 }) {
   const [cat, setCat] = useState("");
   const [equip, setEquip] = useState("");
@@ -89,7 +91,7 @@ export function ExerciseLibrary({
         <p className="py-8 text-center text-sm text-muted">Aucun exercice pour ces filtres.</p>
       )}
 
-      {open && <ExerciseDetail exercise={open} onClose={() => setOpen(null)} />}
+      {open && <ExerciseDetail exercise={open} onClose={() => setOpen(null)} premium={premium} />}
     </div>
   );
 }
