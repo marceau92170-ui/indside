@@ -16,6 +16,5 @@ export const PREMIUM_EMAILS: string[] = [
 export type AffiliateSeed = { code: string; name: string; email: string };
 
 export const AFFILIATES: AffiliateSeed[] = [
-  // Rempli dès que le créateur envoie la liste (Prénom — email — code).
-  // Exemple : { code: "kevin", name: "Kevin", email: "kevin@gmail.com" },
+  { code: "aaron", name: "Aaron", email: "nsuandaaron@gmail.com" }, // @aaroninh0o
 ];
