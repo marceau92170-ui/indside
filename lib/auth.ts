@@ -47,6 +47,8 @@ if (googleEnabled) {
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as NextAuthOptions["adapter"],
   session: { strategy: "database" },
+  // Temporaire : logs détaillés pour diagnostiquer l'échec de connexion Google.
+  debug: true,
   pages: {
     signIn: "/connexion",
     verifyRequest: "/connexion/verifier",
