@@ -47,37 +47,6 @@ if (googleEnabled) {
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as NextAuthOptions["adapter"],
   session: { strategy: "database" },
-  // Temporaire : logs détaillés pour diagnostiquer l'échec de connexion Google.
-  debug: true,
-  // Temporaire : on persiste la dernière erreur d'auth en base pour la lire
-  // via /api/admin/debug-auth (les logs Vercel tronquent le message).
-  logger: {
-    error(code, metadata) {
-      try {
-        const err = (metadata as { error?: unknown })?.error ?? metadata;
-        const message =
-          err instanceof Error
-            ? `${err.name}: ${err.message}\n${err.stack ?? ""}`
-            : JSON.stringify(err);
-        void prisma.debugLog
-          .upsert({
-            where: { key: "last_auth_error" },
-            create: { key: "last_auth_error", value: `[${code}] ${message}`.slice(0, 4000) },
-            update: { value: `[${code}] ${message}`.slice(0, 4000) },
-          })
-          .catch(() => {});
-      } catch {
-        // best-effort : ne jamais casser l'auth à cause du diagnostic
-      }
-      console.error(`[next-auth][error][${code}]`, metadata);
-    },
-    warn(code) {
-      console.warn(`[next-auth][warn][${code}]`);
-    },
-    debug(code, metadata) {
-      console.log(`[next-auth][debug][${code}]`, metadata);
-    },
-  },
   pages: {
     signIn: "/connexion",
     verifyRequest: "/connexion/verifier",

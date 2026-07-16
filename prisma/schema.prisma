@@ -75,14 +75,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Journal de diagnostic temporaire (capture la dernière erreur d'auth).
-model DebugLog {
-  key       String   @id
-  value     String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 // ---------- Profil joueur ----------
 
 model PlayerProfile {
