@@ -10,7 +10,9 @@ export const ADMIN_EMAILS: string[] = ["marceau92170@gmail.com"];
 // Accès Premium gratuit à vie, SANS affiliation (potes, testeurs, staff non-affilié).
 // Ajoute simplement l'email ici.
 export const PREMIUM_EMAILS: string[] = [
-  // "pote@gmail.com",
+  // Hemy : 2e orthographe possible de son email (i/l ambigu) — l'affilié "hemy"
+  // porte la variante avec "l" ; celle-ci couvre la variante avec "i".
+  "ihymnlord@gmail.com",
 ];
 
 export type AffiliateSeed = { code: string; name: string; email: string };
