@@ -20,4 +20,6 @@ export type AffiliateSeed = { code: string; name: string; email: string };
 export const AFFILIATES: AffiliateSeed[] = [
   { code: "aaron", name: "Aaron", email: "nsuandaaron@gmail.com" }, // @aaroninh0o
   { code: "hemy", name: "Hemy", email: "lhymnlord@gmail.com" },
+  // Affilié de TEST (à retirer après vérif du flux) — dashboard : marceau92170+test@gmail.com
+  { code: "test", name: "Test", email: "marceau92170+test@gmail.com" },
 ];
