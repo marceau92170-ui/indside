@@ -29,6 +29,19 @@ async function seedStaff() {
   for (const a of AFFILIATES) {
     const email = a.email.trim().toLowerCase();
     const code = a.code.trim().toLowerCase();
+
+    // Lien "maison" (bio du créateur) : suivi seul, pas de compte/rôle à créer,
+    // pas de commission. On ne touche PAS l'utilisateur (l'email peut être celui
+    // de l'admin — on ne veut surtout pas écraser son rôle).
+    if (a.house) {
+      await prisma.affiliate.upsert({
+        where: { code },
+        create: { code, displayName: a.name, email, isHouse: true },
+        update: { displayName: a.name, isHouse: true },
+      });
+      continue;
+    }
+
     const user = await prisma.user.upsert({
       where: { email },
       create: { email, plan: "premium", role: "affiliate" },
@@ -37,7 +50,7 @@ async function seedStaff() {
     await prisma.affiliate.upsert({
       where: { code },
       create: { code, displayName: a.name, email, userId: user.id },
-      update: { displayName: a.name, email, userId: user.id },
+      update: { displayName: a.name, email, userId: user.id, isHouse: false },
     });
   }
   console.log(

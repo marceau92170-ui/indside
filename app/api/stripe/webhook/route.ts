@@ -18,6 +18,7 @@ async function recordCommission(session: Stripe.Checkout.Session, sub: Stripe.Su
 
   const affiliate = await prisma.affiliate.findUnique({ where: { code: user.referredByCode } });
   if (!affiliate) return;
+  if (affiliate.isHouse) return; // lien "maison" : on suit la vente mais aucune commission
 
   const gross = session.amount_total ?? 0;
   if (gross <= 0) return;

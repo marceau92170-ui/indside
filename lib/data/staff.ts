@@ -17,9 +17,14 @@ export const PREMIUM_EMAILS: string[] = [
   "tonyrmig@icloud.com",
 ];
 
-export type AffiliateSeed = { code: string; name: string; email: string };
+// house = lien "maison" du créateur (ex: bio TikTok). On suit clics/inscriptions/ventes
+// pour mesurer l'efficacité du canal, mais SANS commission ni bonus (l'argent revient
+// au créateur, ce ne serait pas une dépense).
+export type AffiliateSeed = { code: string; name: string; email: string; house?: boolean };
 
 export const AFFILIATES: AffiliateSeed[] = [
+  // Lien "maison" du créateur (bio TikTok @... 10K) — suivi sans commission.
+  { code: "officiel", name: "TikTok officiel", email: "marceau92170@gmail.com", house: true },
   { code: "aaron", name: "Aaron", email: "nsuandaaron@gmail.com" }, // @aaroninh0o
   { code: "hemy", name: "Hemy", email: "lhymnlord@gmail.com" },
   { code: "nymax", name: "Nymax", email: "tonyrmlg@icloud.com" }, // @nymax.foot

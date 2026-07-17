@@ -54,6 +54,7 @@ model Affiliate {
   displayName String
   email       String   @unique
   userId      String?  @unique // compte de connexion de l'affilié (pour son dashboard)
+  isHouse     Boolean  @default(false) // lien "maison" (chaînes du créateur) : suivi sans commission
   createdAt   DateTime @default(now())
 
   user        User?        @relation("AffiliateUser", fields: [userId], references: [id], onDelete: SetNull)
