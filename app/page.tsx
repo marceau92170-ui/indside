@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PlayerCard } from "@/components/PlayerCard";
 import { ButtonLink } from "@/components/ui";
+import { SiteFooter } from "@/components/SiteFooter";
 import { SITE_URL } from "@/lib/site";
 
 // Landing — conversion jeune ET parent. Direction artistique « Carton rouge ».
@@ -187,15 +188,7 @@ export default function LandingPage() {
           </p>
         </section>
 
-        <footer className="mt-16 border-t border-line pt-6 text-center text-xs text-muted">
-          <p className="mb-2 font-display text-sm tracking-wider text-chalk">PROGRESSA</p>
-          <p>
-            <Link href="/faq" className="underline">FAQ</Link> ·{" "}
-            <Link href="/cgu" className="underline">CGU</Link> ·{" "}
-            <Link href="/confidentialite" className="underline">Confidentialité</Link> ·{" "}
-            <Link href="/connexion" className="underline">Connexion</Link>
-          </p>
-        </footer>
+        <SiteFooter />
       </div>
     </main>
   );

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { LEGAL } from "@/lib/data/legal";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = { title: "CGU — Progressa" };
 
@@ -57,9 +59,18 @@ export default function CGUPage() {
         </section>
         <section>
           <h2>6. Contact</h2>
-          <p>Pour toute question : via l&apos;adresse e-mail indiquée sur la page d&apos;accueil.</p>
+          <p>
+            Pour toute question :{" "}
+            <a href={`mailto:${LEGAL.contactEmail}`} className="text-glow underline">
+              {LEGAL.contactEmail}
+            </a>
+            . Voir aussi les{" "}
+            <Link href="/mentions-legales" className="text-glow underline">mentions légales</Link>.
+          </p>
         </section>
       </div>
+
+      <SiteFooter />
     </main>
   );
 }

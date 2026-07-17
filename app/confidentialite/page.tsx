@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata = { title: "Confidentialité — Progressa" };
 
@@ -68,6 +69,8 @@ export default function ConfidentialitePage() {
           </p>
         </section>
       </div>
+
+      <SiteFooter />
     </main>
   );
 }
