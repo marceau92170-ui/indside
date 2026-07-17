@@ -11,6 +11,7 @@ import {
   LEVEL_TYPES,
   POSITIONS,
   DAYS_FR,
+  divisionsFor,
 } from "@/lib/constants";
 
 type State = {
@@ -262,7 +263,10 @@ export function OnboardingWizard({ birthYears }: { birthYears: number[] }) {
             <>
               <p className="mb-2 mt-5 font-condensed text-lg font-bold uppercase">Ta division ?</p>
               <div className="flex flex-wrap gap-2">
-                {LEVEL_TYPES.find((l) => l.key === s.levelType)!.divisions.map((d) => (
+                {divisionsFor(
+                  s.levelType,
+                  s.birthYear !== null && ageOf(s.birthYear) >= 18
+                ).map((d) => (
                   <Choice key={d} active={s.division === d} onClick={() => set({ division: d })}>
                     {d}
                   </Choice>

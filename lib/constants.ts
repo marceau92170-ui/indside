@@ -55,9 +55,27 @@ export const LEVEL_TYPES = [
     key: "NATIONAL",
     label: "National",
     divisions: ["U17 National", "U19 National"],
-    hint: "Championnats nationaux de jeunes",
+    hint: "Championnats nationaux (jeunes ou seniors)",
   },
 ] as const;
+
+// Divisions nationales SENIORS (adultes) — remplacent les championnats de jeunes
+// quand le joueur a coché « 18 ans et + ». Élargit l'app au foot adulte.
+export const SENIOR_NATIONAL_DIVISIONS = [
+  "National 1",
+  "National 2",
+  "National 3",
+  "Ligue 2",
+  "Ligue 1",
+] as const;
+
+// Divisions proposées selon le niveau choisi et l'âge. Seul le National change
+// entre jeunes (U17/U19) et adultes (N1-N3, Ligue) ; District et Régional sont
+// identiques pour les deux.
+export function divisionsFor(levelType: string, adult: boolean): readonly string[] {
+  if (levelType === "NATIONAL" && adult) return SENIOR_NATIONAL_DIVISIONS;
+  return LEVEL_TYPES.find((l) => l.key === levelType)?.divisions ?? [];
+}
 
 export const GOALS = [
   { key: "vitesse", label: "Vitesse & explosivité", emoji: "⚡" },
