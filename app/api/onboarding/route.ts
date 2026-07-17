@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { createWeeklyProgram } from "@/lib/program/create";
-import { ageFromBirthYear, eligibleBirthYears } from "@/lib/categories";
+import { ageFromBirthYear, isEligibleBirthYear } from "@/lib/categories";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60; // génération IA incluse
@@ -38,8 +38,10 @@ export async function POST(req: Request) {
   }
   const data = parsed.data;
 
-  if (!eligibleBirthYears().includes(data.birthYear)) {
-    return NextResponse.json({ error: "birthYear hors cible (U14-U18)" }, { status: 400 });
+  // Cible acceptée : catégories jeunes U14-U18, OU adultes 18 ans et + (option
+  // « 18 ans et + » ouverte pour les affiliés).
+  if (!isEligibleBirthYear(data.birthYear)) {
+    return NextResponse.json({ error: "birthYear hors cible" }, { status: 400 });
   }
 
   // Obligation légale française : consentement parental sous 15 ans

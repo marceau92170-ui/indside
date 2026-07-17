@@ -5,6 +5,8 @@ import {
   ageFromBirthYear,
   personaFromBirthYear,
   eligibleBirthYears,
+  isEligibleBirthYear,
+  isAdult,
   mondayOfWeek,
   nextMonday,
 } from "../lib/categories";
@@ -39,6 +41,24 @@ describe("categories", () => {
     const years = eligibleBirthYears(REF);
     assert.equal(years.length, 5);
     assert.deepEqual(years, [2013, 2012, 2011, 2010, 2009]);
+  });
+
+  test("isEligibleBirthYear accepte les jeunes U14-U18 ET les adultes 18+", () => {
+    // jeunes ciblés
+    assert.equal(isEligibleBirthYear(2010, REF), true); // U17
+    assert.equal(isEligibleBirthYear(2013, REF), true); // U14
+    // adulte (option « 18 ans et + ») — c'était le bug : refusé côté serveur
+    assert.equal(isEligibleBirthYear(2006, REF), true); // 20 ans
+    assert.equal(isEligibleBirthYear(2008, REF), true); // 18 ans
+    assert.equal(isEligibleBirthYear(1996, REF), true); // 30 ans
+    // hors cible : trop jeune (moins de 13 ans) ou absurde
+    assert.equal(isEligibleBirthYear(2015, REF), false); // 11 ans
+    assert.equal(isEligibleBirthYear(1950, REF), false); // 76 ans
+  });
+
+  test("isAdult : vrai à partir de 18 ans", () => {
+    assert.equal(isAdult(2006, REF), true); // 20 ans
+    assert.equal(isAdult(2009, REF), false); // 17 ans
   });
 
   test("mondayOfWeek renvoie bien un lundi", () => {

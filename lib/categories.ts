@@ -41,6 +41,14 @@ export function eligibleBirthYears(now = new Date()): number[] {
   return years.sort((a, b) => b - a);
 }
 
+// Année de naissance acceptée à l'inscription : jeunes U14-U18 OU adultes 18+
+// (option ouverte pour les affiliés). Borne haute raisonnable à 60 ans.
+export function isEligibleBirthYear(birthYear: number, now = new Date()): boolean {
+  const age = ageFromBirthYear(birthYear, now);
+  if (age > 60) return false;
+  return eligibleBirthYears(now).includes(birthYear) || age >= 18;
+}
+
 // Lundi de la semaine courante (UTC) — clé des programmes hebdo
 export function mondayOfWeek(d = new Date()): Date {
   const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
