@@ -15,6 +15,9 @@ export const PREMIUM_EMAILS: string[] = [
   "ihymnlord@gmail.com",
   // Nymax : idem, variante avec "i" (l'affilié "nymax" porte celle avec "l").
   "tonyrmig@icloud.com",
+  // Samy (water44) : testeur — partenariat à caler par téléphone. Accès gratuit
+  // en attendant ; on lui créera un lien d'affilié si le partenariat se confirme.
+  "samy.water44@gmail.com",
 ];
 
 // house = lien "maison" du créateur (ex: bio TikTok). On suit clics/inscriptions/ventes
