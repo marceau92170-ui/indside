@@ -35,10 +35,20 @@ export async function POST(req: Request) {
   }
 
   const base = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+
+  // Réduction affilié : si le joueur est venu par un lien de parrainage et qu'un
+  // coupon est configuré, on l'applique automatiquement (aucun code à taper).
+  // Le coupon doit être en durée « une seule fois » côté Stripe → il ne réduit
+  // que le PREMIER paiement, jamais les renouvellements.
+  const coupon = process.env.STRIPE_COUPON_AFFILIATE;
+  const discounts =
+    user.referredByCode && coupon ? [{ coupon }] : undefined;
+
   const session = await s.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
     line_items: [{ price: priceId, quantity: 1 }],
+    ...(discounts ? { discounts } : {}),
     success_url: `${base}/premium/merci`,
     cancel_url: `${base}/premium`,
     metadata: { userId: user.id },
