@@ -149,8 +149,13 @@ const ARCHETYPES: Record<string, Archetype> = {
       { type: "circle", r: 6, fill: "#E12A3A", part: "ball", keys: { cy: loop("100", "150") } }, // ballon
       { type: "circle", r: 10, part: "head", base: { cx: "100", cy: "62" } },
       { type: "line", part: "torso", base: { x1: "100", y1: "72", x2: "100", y2: "118" } },
-      { type: "line", part: "thigh", keys: { x1: "100", y1: "118", x2: loop("90", "108"), y2: loop("160", "158") } },
-      { type: "line", part: "shin", keys: { x1: loop("90", "108"), y1: loop("160", "158"), x2: loop("85", "100"), y2: loop("190", "178") } },
+      // jambe d'appui plantée au sol (sinon la figure semble flotter)
+      { type: "line", part: "thigh", base: { x1: "100", y1: "118", x2: "112", y2: "165" } },
+      { type: "line", part: "shin", base: { x1: "112", y1: "165", x2: "112", y2: "205" } },
+      { type: "line", part: "foot", base: { x1: "100", y1: "205", x2: "126", y2: "205" } },
+      // jambe qui touche le ballon (animée)
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "118", x2: loop("90", "100"), y2: loop("160", "150") } },
+      { type: "line", part: "shin", keys: { x1: loop("90", "100"), y1: loop("160", "150"), x2: loop("85", "96"), y2: loop("190", "165") } },
     ],
     dur: "0.9s",
   },
@@ -456,7 +461,9 @@ function Stick({ archetype }: { archetype: Archetype }) {
 
 const SKIN = "#E7B183";
 const JERSEY = "#E12A3A";
-const SHORTS = "#33404E";
+// Short assez clair pour bien se détacher du fond sombre : sinon la cuisse
+// (qui utilise cette couleur) disparaît et le corps semble « cassé »/flottant.
+const SHORTS = "#5C6E85";
 const SHOE = "#E9ECEF";
 const HAIR = "#211C19";
 const OUTLINE = "#0A0B0D";

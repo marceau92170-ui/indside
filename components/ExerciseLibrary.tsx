@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ExerciseDetail, type ExerciseView } from "./ExerciseDetail";
+import { QuickSessionPlayer } from "./QuickSessionPlayer";
 
 type Cat = { key: string; label: string; emoji: string };
 
@@ -12,6 +13,9 @@ const EQUIPMENT_FILTERS = [
   { key: "mur", label: "Mur" },
   { key: "plots", label: "Plots" },
 ];
+
+// Nombre d'exercices max dans une séance flash (pour rester ~20-30 min).
+const MAX_SESSION = 6;
 
 export function ExerciseLibrary({
   exercises,
@@ -26,6 +30,7 @@ export function ExerciseLibrary({
   const [equip, setEquip] = useState("");
   const [smallSpaceOnly, setSmallSpaceOnly] = useState(false);
   const [open, setOpen] = useState<ExerciseView | null>(null);
+  const [sessionOn, setSessionOn] = useState(false);
 
   const filtered = useMemo(
     () =>
@@ -37,6 +42,20 @@ export function ExerciseLibrary({
       ),
     [exercises, cat, equip, smallSpaceOnly]
   );
+
+  // Exercices réellement faisables (débloqués + adaptés à l'âge) pour la séance flash.
+  const playable = useMemo(
+    () => filtered.filter((ex) => !ex.locked && !ex.tooYoung),
+    [filtered]
+  );
+  const sessionExercises = useMemo(() => playable.slice(0, MAX_SESSION), [playable]);
+  const lockedCount = filtered.length - playable.length;
+
+  // Titre de la séance à partir des filtres actifs.
+  const catLabel = categories.find((c) => c.key === cat)?.label;
+  const equipLabel = EQUIPMENT_FILTERS.find((f) => f.key === equip && f.key)?.label;
+  const sessionTitle =
+    [catLabel, equipLabel].filter(Boolean).join(" · ") || "Séance complète";
 
   return (
     <div>
@@ -60,6 +79,31 @@ export function ExerciseLibrary({
           🏠 Espace réduit
         </FilterChip>
       </div>
+
+      {/* Lancer une vraie séance guidée à partir des filtres choisis */}
+      {sessionExercises.length >= 2 && (
+        <button
+          onClick={() => setSessionOn(true)}
+          className="mb-4 flex w-full items-center justify-between rounded-card border border-glow bg-glow/10 px-4 py-3 text-left transition-colors hover:bg-glow/20"
+        >
+          <span>
+            <span className="block font-condensed text-lg font-bold uppercase leading-tight">
+              ▶ Lancer la séance
+            </span>
+            <span className="block text-xs text-muted">
+              {sessionTitle} · {sessionExercises.length} exercices enchaînés
+            </span>
+          </span>
+          <span className="shrink-0 rounded-full bg-glow px-3 py-1.5 font-condensed text-sm font-bold text-night">
+            C&apos;est parti
+          </span>
+        </button>
+      )}
+      {sessionExercises.length < 2 && lockedCount > 0 && (
+        <p className="mb-4 rounded-card border border-glow/30 bg-surface px-4 py-3 text-xs text-muted">
+          Passe Premium pour lancer une séance guidée avec ces {filtered.length} exercices.
+        </p>
+      )}
 
       <ul className="space-y-2">
         {filtered.map((ex) => (
@@ -92,6 +136,15 @@ export function ExerciseLibrary({
       )}
 
       {open && <ExerciseDetail exercise={open} onClose={() => setOpen(null)} premium={premium} />}
+
+      {sessionOn && (
+        <QuickSessionPlayer
+          title={sessionTitle}
+          exercises={sessionExercises}
+          premium={premium}
+          onClose={() => setSessionOn(false)}
+        />
+      )}
     </div>
   );
 }
