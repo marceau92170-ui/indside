@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
+import { isPremium } from "@/lib/plan";
 import { SessionPlayer, type SessionBlock } from "@/components/SessionPlayer";
 import { DAYS_FR } from "@/lib/constants";
 
@@ -73,6 +74,7 @@ export default async function SeancePage({ params }: { params: Promise<{ id: str
         alreadyLogged: session.logs.length > 0,
       }}
       blocks={blocks}
+      premium={isPremium(user)}
     />
   );
 }

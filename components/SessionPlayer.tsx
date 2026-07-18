@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card } from "@/components/ui";
 import { ExerciseDetail, type ExerciseView } from "@/components/ExerciseDetail";
+import { ExerciseIllustration } from "@/components/ExerciseIllustration";
 import { badgeInfo } from "@/lib/constants";
 
 export type SessionBlock = {
@@ -35,7 +36,15 @@ function parseRest(text: string): number {
   return total || 45;
 }
 
-export function SessionPlayer({ session, blocks }: { session: SessionInfo; blocks: SessionBlock[] }) {
+export function SessionPlayer({
+  session,
+  blocks,
+  premium = false,
+}: {
+  session: SessionInfo;
+  blocks: SessionBlock[];
+  premium?: boolean;
+}) {
   const router = useRouter();
   const [doneBlocks, setDoneBlocks] = useState<Set<number>>(new Set());
   const [detail, setDetail] = useState<ExerciseView | null>(null);
@@ -212,18 +221,31 @@ export function SessionPlayer({ session, blocks }: { session: SessionInfo; block
           return (
             <li key={i}>
               <Card className={done ? "border-glow/40 opacity-70" : ""}>
-                <div className="mb-2 flex items-start justify-between gap-2">
-                  <button onClick={() => setDetail(b.exercise)} className="text-left">
-                    <p className="font-condensed text-lg font-bold leading-tight underline decoration-line underline-offset-4">
-                      {i + 1}. {b.exercise.emoji} {b.exercise.name}
-                    </p>
-                  </button>
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <p className="font-condensed text-lg font-bold leading-tight">
+                    {i + 1}. {b.exercise.emoji} {b.exercise.name}
+                  </p>
                   <span className="tnum shrink-0 rounded bg-line/60 px-2 py-1 font-condensed text-sm font-bold">
                     {b.sets} × {b.reps}
                   </span>
                 </div>
-                <p className="mb-1 text-sm">{b.instruction}</p>
+
+                {/* Démonstration animée du mouvement, directement dans la séance */}
+                <ExerciseIllustration
+                  slug={b.exercise.slug}
+                  category={b.exercise.category}
+                  premium={premium}
+                />
+
+                <p className="mb-1 mt-3 text-sm">{b.instruction}</p>
                 <p className="mb-3 text-xs text-muted">Récup : {b.rest} entre les séries</p>
+
+                <button
+                  onClick={() => setDetail(b.exercise)}
+                  className="mb-2 w-full rounded-lg border border-line py-2 text-center text-xs font-semibold text-muted hover:border-glow/50 hover:text-chalk"
+                >
+                  📖 Étapes détaillées & erreurs à éviter
+                </button>
                 <Button
                   variant={done ? "subtle" : "ghost"}
                   size="sm"
@@ -263,7 +285,9 @@ export function SessionPlayer({ session, blocks }: { session: SessionInfo; block
         </button>
       </div>
 
-      {detail && <ExerciseDetail exercise={detail} onClose={() => setDetail(null)} />}
+      {detail && (
+        <ExerciseDetail exercise={detail} onClose={() => setDetail(null)} premium={premium} />
+      )}
     </div>
   );
 }

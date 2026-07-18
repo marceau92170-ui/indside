@@ -9,13 +9,6 @@ import { DownloadableCard } from "@/components/DownloadableCard";
 import { MonthlyActivity } from "@/components/MonthlyActivity";
 import { Card } from "@/components/ui";
 
-const DEV_LINKS = [
-  { href: "/objectifs", emoji: "🎯", label: "Objectifs" },
-  { href: "/matchs", emoji: "📋", label: "Carnet de match" },
-  { href: "/sante", emoji: "🩺", label: "Suivi santé" },
-  { href: "/ressources", emoji: "📚", label: "Ressources" },
-];
-
 const MONTH_LABELS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
 
 export const dynamic = "force-dynamic";
@@ -29,16 +22,52 @@ export default async function ProfilPage() {
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
   sixMonthsAgo.setDate(1);
 
-  const [results, badges, streak, total, recentLogs] = await Promise.all([
-    prisma.testResult.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
-    prisma.badge.findMany({ where: { userId: user.id } }),
-    computeStreak(user.id),
-    totalDoneSessions(user.id),
-    prisma.sessionLog.findMany({
-      where: { userId: user.id, status: "done", completedAt: { gte: sixMonthsAgo } },
-      select: { completedAt: true },
-    }),
-  ]);
+  const [results, badges, streak, total, recentLogs, goalsOpen, matchCount, painsOpen] =
+    await Promise.all([
+      prisma.testResult.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
+      prisma.badge.findMany({ where: { userId: user.id } }),
+      computeStreak(user.id),
+      totalDoneSessions(user.id),
+      prisma.sessionLog.findMany({
+        where: { userId: user.id, status: "done", completedAt: { gte: sixMonthsAgo } },
+        select: { completedAt: true },
+      }),
+      prisma.goal.count({ where: { userId: user.id, done: false } }),
+      prisma.matchLog.count({ where: { userId: user.id } }),
+      prisma.painLog.count({ where: { userId: user.id, resolved: false } }),
+    ]);
+
+  // Outils de progression (au-delà des séances) — avec un aperçu de ce qu'ils contiennent.
+  const devLinks = [
+    {
+      href: "/objectifs",
+      emoji: "🎯",
+      label: "Objectifs",
+      desc: "Fixe tes objectifs et coche-les au fur et à mesure",
+      badge: goalsOpen > 0 ? `${goalsOpen} en cours` : "À définir",
+    },
+    {
+      href: "/matchs",
+      emoji: "📋",
+      label: "Carnet de match",
+      desc: "Note chaque match : buts, passes, ressenti, à travailler",
+      badge: matchCount > 0 ? `${matchCount} noté${matchCount > 1 ? "s" : ""}` : "Commence ici",
+    },
+    {
+      href: "/sante",
+      emoji: "🩺",
+      label: "Suivi santé",
+      desc: "Douleurs, sommeil, forme du jour, croissance",
+      badge: painsOpen > 0 ? `${painsOpen} douleur${painsOpen > 1 ? "s" : ""}` : "À jour",
+    },
+    {
+      href: "/ressources",
+      emoji: "📚",
+      label: "Ressources",
+      desc: "Nutrition, mental, et la vraie filière vers le pro",
+      badge: "Guides",
+    },
+  ];
 
   const latestByType = new Map<string, number>();
   for (const r of results) {
@@ -106,13 +135,28 @@ export default async function ProfilPage() {
         </Card>
       </div>
 
-      <h2 className="mb-2 mt-8 font-condensed text-xl font-bold uppercase">Progresser pour devenir pro</h2>
-      <div className="grid grid-cols-2 gap-2">
-        {DEV_LINKS.map((l) => (
-          <Link key={l.href} href={l.href}>
-            <Card className="text-center transition-colors hover:border-glow/60">
-              <p className="text-xl">{l.emoji}</p>
-              <p className="mt-1 font-condensed text-sm font-bold uppercase">{l.label}</p>
+      <h2 className="mb-1 mt-8 font-condensed text-xl font-bold uppercase">Progresser pour devenir pro</h2>
+      <p className="mb-3 text-xs text-muted">
+        Le foot, c&apos;est plus que les séances. Ici tu notes, tu suis et tu apprends — c&apos;est
+        ce qui fait la différence sur la durée. Appuie pour ouvrir.
+      </p>
+      <div className="space-y-2">
+        {devLinks.map((l) => (
+          <Link key={l.href} href={l.href} className="block">
+            <Card className="flex items-center gap-3 transition-colors hover:border-glow/60">
+              <span className="text-2xl" aria-hidden="true">
+                {l.emoji}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="font-condensed text-base font-bold uppercase leading-tight">
+                  {l.label}
+                </p>
+                <p className="text-[11px] leading-tight text-muted">{l.desc}</p>
+              </div>
+              <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">
+                {l.badge}
+              </span>
+              <span className="shrink-0 text-lg text-muted">→</span>
             </Card>
           </Link>
         ))}
