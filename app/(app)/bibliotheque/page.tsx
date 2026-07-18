@@ -9,13 +9,14 @@ import { ageFromBirthYear } from "@/lib/categories";
 export const dynamic = "force-dynamic";
 
 export default async function BibliothequePage() {
-  const user = await currentUser();
+  // Les exercices ne dépendent pas de l'utilisateur → on lance les deux requêtes
+  // en parallèle au lieu de l'une après l'autre.
+  const [user, exercises] = await Promise.all([
+    currentUser(),
+    prisma.exercise.findMany({ orderBy: [{ category: "asc" }, { name: "asc" }] }),
+  ]);
   const premium = isPremium(user);
   const age = user?.profile ? ageFromBirthYear(user.profile.birthYear) : 16;
-
-  const exercises = await prisma.exercise.findMany({
-    orderBy: [{ category: "asc" }, { name: "asc" }],
-  });
 
   const visible = exercises.map((ex) => ({
     id: ex.id,

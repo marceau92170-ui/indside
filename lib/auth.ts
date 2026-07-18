@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { NextAuthOptions } from "next-auth";
 import type { Provider } from "next-auth/providers/index";
 import { getServerSession } from "next-auth";
@@ -62,12 +63,13 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-export function auth() {
-  return getServerSession(authOptions);
-}
+// cache() = mémorisé le temps d'UNE requête serveur. Le layout ET la page
+// appellent auth()/currentUser() : sans cache, ça faisait 2 décodages de session
+// + 2 requêtes base identiques par navigation. Avec cache, une seule fois.
+export const auth = cache(() => getServerSession(authOptions));
 
 // Récupère l'utilisateur connecté avec profil + abonnement, ou null.
-export async function currentUser() {
+export const currentUser = cache(async () => {
   const session = await auth();
   const email = session?.user?.email;
   if (!email) return null;
@@ -75,4 +77,4 @@ export async function currentUser() {
     where: { email },
     include: { profile: true, subscription: true },
   });
-}
+});
