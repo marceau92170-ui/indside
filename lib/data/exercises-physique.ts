@@ -223,7 +223,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "mountain-climbers",
-    name: "Mountain climbers",
+    name: "Grimpeur au sol (mountain climbers)",
     category: "renforcement",
     emoji: "💪",
     description:
@@ -319,7 +319,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "copenhagen-plank",
-    name: "Copenhagen plank (version courte)",
+    name: "Gainage des adducteurs — Copenhagen (court)",
     category: "renforcement",
     emoji: "💪",
     description:
@@ -347,7 +347,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
 export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
   {
     slug: "squat-jumps",
-    name: "Squat jumps",
+    name: "Squats sautés",
     category: "explosivite",
     emoji: "⚡",
     description:
@@ -395,7 +395,7 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "skater-jumps",
-    name: "Skater jumps (sauts latéraux)",
+    name: "Sauts latéraux (skater jumps)",
     category: "explosivite",
     emoji: "⚡",
     description:

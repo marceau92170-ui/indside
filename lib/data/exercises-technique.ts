@@ -4,7 +4,7 @@ import type { ExerciseSeed } from "./types";
 export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   {
     slug: "toe-taps",
-    name: "Toe taps",
+    name: "Touches rapides sur le ballon (toe taps)",
     category: "technique",
     emoji: "⚽",
     description:
@@ -51,7 +51,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "foundations",
-    name: "Foundations (touches intérieur pied)",
+    name: "Touches intérieur du pied (foundations)",
     category: "technique",
     emoji: "⚽",
     description:
@@ -99,7 +99,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "sole-rolls",
-    name: "Sole rolls (roulettes semelle en avançant)",
+    name: "Roulettes sous la semelle (sole rolls)",
     category: "technique",
     emoji: "⚽",
     description:
@@ -286,7 +286,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "v-cuts",
-    name: "V-cuts (tirer-pousser en V)",
+    name: "Tirer-pousser en V (v-cuts)",
     category: "technique",
     emoji: "⚽",
     description:
@@ -309,7 +309,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "pull-push",
-    name: "Pull-push (semelle avant-arrière)",
+    name: "Semelle avant-arrière (pull-push)",
     category: "technique",
     emoji: "⚽",
     description:
@@ -378,7 +378,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "cruyff-turn",
-    name: "Cruyff turn",
+    name: "Crochet Cruyff (dans le dos)",
     category: "technique",
     emoji: "⚽",
     description:

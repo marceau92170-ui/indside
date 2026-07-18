@@ -4,7 +4,7 @@ import type { ExerciseSeed } from "./types";
 export const CARDIO_EXERCISES: ExerciseSeed[] = [
   {
     slug: "fartlek-15",
-    name: "Fartlek 15 minutes",
+    name: "Course à allures variées (fartlek, 15 min)",
     category: "cardio",
     emoji: "🫁",
     description:
@@ -28,7 +28,7 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "intermittent-30-30",
-    name: "Intermittent 30/30",
+    name: "Fractionné 30-30 (30 s vite / 30 s lent)",
     category: "cardio",
     emoji: "🫁",
     description:
@@ -77,7 +77,7 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "gamme-progressive",
-    name: "Progressives 60-80-100 %",
+    name: "Accélérations progressives (60-80-100 %)",
     category: "cardio",
     emoji: "🫁",
     description:
@@ -153,7 +153,7 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "proprioception-yeux-fermes",
-    name: "Proprioception yeux fermés",
+    name: "Équilibre yeux fermés (proprioception)",
     category: "prevention",
     emoji: "🛡️",
     description:
@@ -176,7 +176,7 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "nordic-hamstring-assiste",
-    name: "Nordic hamstring assisté",
+    name: "Ischio-jambiers nordiques (nordic hamstring)",
     category: "prevention",
     emoji: "🛡️",
     description:
