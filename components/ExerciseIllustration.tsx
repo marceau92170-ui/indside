@@ -159,16 +159,20 @@ const ARCHETYPES: Record<string, Archetype> = {
     ],
     dur: "0.9s",
   },
-  // conduite / dribble latéral : croquettes, v-cuts, crochet, cruyff, ciseaux
+  // conduite / dribble : croquettes, v-cuts, crochet, cruyff, ciseaux, navette
+  // Joueur penché en avant, une jambe d'appui (pied posé), une jambe qui pousse le
+  // ballon devant, un bras tendu pour l'équilibre. Le ballon fait un va-et-vient.
   dribble: {
     segments: [
-      { type: "circle", r: 6, fill: "#E12A3A", part: "ball", keys: { cx: loop("120", "80"), cy: "195" } }, // ballon
-      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: loop("98", "82") } },
-      { type: "line", part: "torso", keys: { x1: loop("100", "84"), y1: "118", x2: loop("100", "84"), y2: "72" } },
-      { type: "line", part: "thigh", keys: { x1: loop("100", "84"), y1: "118", x2: loop("108", "70"), y2: "168" } },
-      { type: "line", part: "shin", keys: { x1: loop("108", "70"), y1: "168", x2: loop("120", "82"), y2: "205" } },
-      { type: "line", part: "thigh", keys: { x1: loop("100", "84"), y1: "118", x2: loop("85", "60"), y2: "160" } },
-      { type: "line", part: "shin", keys: { x1: loop("85", "60"), y1: "160", x2: loop("70", "50"), y2: "205" } },
+      { type: "circle", r: 6, fill: "#E12A3A", part: "ball", base: { cy: "199" }, keys: { cx: loop("126", "104") } }, // ballon
+      { type: "circle", r: 10, part: "head", base: { cx: "98", cy: "60" } },
+      { type: "line", part: "torso", base: { x1: "100", y1: "120", x2: "104", y2: "72" } }, // torse penché
+      { type: "line", part: "arm", base: { x1: "103", y1: "88", x2: "126", y2: "100" } }, // bras équilibre
+      { type: "line", part: "thigh", base: { x1: "100", y1: "120", x2: "88", y2: "160" } }, // cuisse d'appui
+      { type: "line", part: "shin", base: { x1: "88", y1: "160", x2: "84", y2: "205" } }, // tibia d'appui
+      { type: "line", part: "foot", base: { x1: "72", y1: "205", x2: "96", y2: "205" } }, // pied posé
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "120", x2: loop("112", "104"), y2: loop("158", "162") } }, // cuisse avant
+      { type: "line", part: "shin", keys: { x1: loop("112", "104"), y1: loop("158", "162"), x2: loop("120", "100"), y2: "200" } }, // tibia qui pousse
     ],
     dur: "1.3s",
   },
@@ -645,11 +649,9 @@ export function ExerciseIllustration({
   const archetype = ARCHETYPES[key];
   const cue = COACHING_CUES[key];
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-night">
-      <div className="flex justify-center">
-        <div className="aspect-square w-full max-w-[220px]">
-          {premium ? <PremiumFigure archetype={archetype} /> : <Stick archetype={archetype} />}
-        </div>
+    <div className="mx-auto max-w-[280px] overflow-hidden rounded-lg border border-line bg-night">
+      <div className="aspect-square w-full">
+        {premium ? <PremiumFigure archetype={archetype} /> : <Stick archetype={archetype} />}
       </div>
       {cue && (
         <div className="flex items-start gap-2 border-t border-line px-3 py-2.5">
