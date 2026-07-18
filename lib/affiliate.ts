@@ -12,8 +12,13 @@
 //  - Attribution : "premier lien gagne", fenêtre de 30 jours entre le clic et le paiement.
 //  - Paiement manuel, avec un délai anti-remboursement.
 
-export const COMMISSION_RATE = 0.8; // mensuel
-export const COMMISSION_RATE_ANNUAL = 0.4; // annuel
+export const COMMISSION_RATE = 0.8; // mensuel (toujours)
+export const COMMISSION_RATE_ANNUAL = 0.4; // annuel, APRÈS le mois de lancement
+
+// Offre de lancement : pendant les 30 premiers jours de chaque affilié (à partir de
+// sa 1ère vidéo / date de démarrage), l'annuel est AUSSI payé à 80%. Après, il passe
+// à 40%. Le mensuel, lui, reste à 80% en permanence.
+export const LAUNCH_WINDOW_DAYS = 30;
 
 // Fenêtre d'attribution : un clic reste valable 30 jours pour convertir en vente.
 export const ATTRIBUTION_WINDOW_DAYS = 30;
@@ -30,15 +35,32 @@ export const BONUS_TIERS: { thresholdEuros: number; bonusEuros: number }[] = [
 
 export type Plan = "monthly" | "annual";
 
-// Taux de commission selon le plan payé.
-export function commissionRate(plan: Plan): number {
-  return plan === "annual" ? COMMISSION_RATE_ANNUAL : COMMISSION_RATE;
+// La vente tombe-t-elle dans le mois de lancement de l'affilié ?
+export function isWithinLaunchWindow(
+  promoStart: Date,
+  now: Date = new Date()
+): boolean {
+  const end = new Date(promoStart);
+  end.setDate(end.getDate() + LAUNCH_WINDOW_DAYS);
+  return now.getTime() <= end.getTime();
 }
 
-// Commission (en centimes) sur un paiement brut (en centimes), selon le plan.
-// Le plan par défaut est "monthly" (rétrocompatibilité).
-export function commissionCents(grossCents: number, plan: Plan = "monthly"): number {
-  return Math.round(grossCents * commissionRate(plan));
+// Taux de commission selon le plan payé et la période :
+// - mensuel : 80% toujours ;
+// - annuel : 80% pendant le mois de lancement, 40% ensuite.
+export function commissionRate(plan: Plan, withinLaunch = false): number {
+  if (plan === "annual" && !withinLaunch) return COMMISSION_RATE_ANNUAL;
+  return COMMISSION_RATE;
+}
+
+// Commission (en centimes) sur un paiement brut (en centimes), selon le plan
+// et la période de lancement. Le plan par défaut est "monthly".
+export function commissionCents(
+  grossCents: number,
+  plan: Plan = "monthly",
+  withinLaunch = false
+): number {
+  return Math.round(grossCents * commissionRate(plan, withinLaunch));
 }
 
 // Bonus total (en euros) débloqué pour un CA généré (en centimes) — cumulatif.

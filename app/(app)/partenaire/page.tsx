@@ -45,9 +45,10 @@ export default async function PartenairePage() {
       <CopyLink url={link} />
       <p className="mt-2 text-xs text-muted">
         Partage ce lien. Toute personne qui clique puis s&apos;abonne dans les 30 jours te rapporte
-        <span className="font-semibold text-chalk"> 80% de son 1er paiement mensuel</span> (soit
-        7,19 €) ou <span className="font-semibold text-chalk">40% sur un abonnement annuel</span>{" "}
-        (soit 23,60 €).
+        <span className="font-semibold text-chalk"> 80% de son 1er paiement mensuel</span> (7,19 €).
+        Sur un abonnement annuel :{" "}
+        <span className="font-semibold text-chalk">80% pendant ton mois de lancement</span> (47,20 €),
+        puis 40% ensuite (23,60 €). Bonus paliers en plus.
       </p>
 
       <div className="mt-6 grid grid-cols-2 gap-3">

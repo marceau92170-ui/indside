@@ -4,6 +4,7 @@ import {
   commissionCents,
   bonusEurosForRevenue,
   nextTier,
+  isWithinLaunchWindow,
   COMMISSION_RATE,
   COMMISSION_RATE_ANNUAL,
 } from "../lib/affiliate";
@@ -16,11 +17,28 @@ describe("commission d'affiliation", () => {
     assert.equal(commissionCents(0), 0);
   });
 
-  test("annuel : 40% du paiement (protège la marge sur le gros paiement)", () => {
+  test("annuel APRÈS le mois de lancement : 40% (protège la marge)", () => {
     assert.equal(COMMISSION_RATE_ANNUAL, 0.4);
-    assert.equal(commissionCents(5900, "annual"), 2360); // 59€ → 23,60€
-    // au taux mensuel, l'annuel aurait donné 47,20€ (le piège qu'on corrige)
-    assert.notEqual(commissionCents(5900, "annual"), 4720);
+    assert.equal(commissionCents(5900, "annual"), 2360); // 59€ → 23,60€ (hors lancement)
+    assert.equal(commissionCents(5900, "annual", false), 2360);
+  });
+
+  test("annuel PENDANT le mois de lancement : 80% (offre de lancement)", () => {
+    assert.equal(commissionCents(5900, "annual", true), 4720); // 59€ → 47,20€
+    // le mensuel reste à 80% quelle que soit la période
+    assert.equal(commissionCents(899, "monthly", true), 719);
+    assert.equal(commissionCents(899, "monthly", false), 719);
+  });
+});
+
+describe("fenêtre de lancement (annuel à 80% pendant 30 j)", () => {
+  const start = new Date("2026-07-01T00:00:00Z");
+  test("dans les 30 jours → true", () => {
+    assert.equal(isWithinLaunchWindow(start, new Date("2026-07-01T12:00:00Z")), true);
+    assert.equal(isWithinLaunchWindow(start, new Date("2026-07-25T00:00:00Z")), true);
+  });
+  test("après 30 jours → false", () => {
+    assert.equal(isWithinLaunchWindow(start, new Date("2026-08-05T00:00:00Z")), false);
   });
 });
 

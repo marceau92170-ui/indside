@@ -23,7 +23,17 @@ export const PREMIUM_EMAILS: string[] = [
 // house = lien "maison" du créateur (ex: bio TikTok). On suit clics/inscriptions/ventes
 // pour mesurer l'efficacité du canal, mais SANS commission ni bonus (l'argent revient
 // au créateur, ce ne serait pas une dépense).
-export type AffiliateSeed = { code: string; name: string; email: string; house?: boolean };
+//
+// startDate = date de la 1ère vidéo de l'affilié (format "AAAA-MM-JJ"). Elle démarre son
+// mois de lancement : pendant 30 jours, l'ANNUEL est payé à 80% (comme le mensuel) ;
+// après, l'annuel passe à 40%. Si absent → on prend la date d'ajout de l'affilié.
+export type AffiliateSeed = {
+  code: string;
+  name: string;
+  email: string;
+  house?: boolean;
+  startDate?: string;
+};
 
 export const AFFILIATES: AffiliateSeed[] = [
   // Lien "maison" du créateur (bio TikTok @... 10K) — suivi sans commission.

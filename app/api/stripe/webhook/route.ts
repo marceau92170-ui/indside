@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { commissionCents } from "@/lib/affiliate";
+import { commissionCents, isWithinLaunchWindow } from "@/lib/affiliate";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +26,10 @@ async function recordCommission(session: Stripe.Checkout.Session, sub: Stripe.Su
   const priceId = sub.items.data[0]?.price?.id;
   const plan = priceId === process.env.STRIPE_PRICE_ANNUAL ? "annual" : "monthly";
 
+  // Offre de lancement : annuel à 80% pendant les 30 premiers jours de l'affilié.
+  const promoStart = affiliate.promoStartsAt ?? affiliate.createdAt;
+  const withinLaunch = isWithinLaunchWindow(promoStart);
+
   await prisma.commission.upsert({
     where: { stripeSubscriptionId: sub.id },
     create: {
@@ -33,7 +37,7 @@ async function recordCommission(session: Stripe.Checkout.Session, sub: Stripe.Su
       userId,
       plan,
       grossCents: gross,
-      commissionCents: commissionCents(gross, plan),
+      commissionCents: commissionCents(gross, plan, withinLaunch),
       stripeSubscriptionId: sub.id,
     },
     update: {}, // déjà enregistrée : on ne double jamais une commission

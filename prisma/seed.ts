@@ -47,10 +47,11 @@ async function seedStaff() {
       create: { email, plan: "premium", role: "affiliate" },
       update: { plan: "premium", role: "affiliate" },
     });
+    const promoStartsAt = a.startDate ? new Date(`${a.startDate}T00:00:00Z`) : undefined;
     await prisma.affiliate.upsert({
       where: { code },
-      create: { code, displayName: a.name, email, userId: user.id },
-      update: { displayName: a.name, email, userId: user.id, isHouse: false },
+      create: { code, displayName: a.name, email, userId: user.id, promoStartsAt },
+      update: { displayName: a.name, email, userId: user.id, isHouse: false, promoStartsAt },
     });
   }
   console.log(
