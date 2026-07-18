@@ -33,7 +33,7 @@ async function recordCommission(session: Stripe.Checkout.Session, sub: Stripe.Su
       userId,
       plan,
       grossCents: gross,
-      commissionCents: commissionCents(gross),
+      commissionCents: commissionCents(gross, plan),
       stripeSubscriptionId: sub.id,
     },
     update: {}, // déjà enregistrée : on ne double jamais une commission

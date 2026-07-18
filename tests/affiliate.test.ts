@@ -5,14 +5,22 @@ import {
   bonusEurosForRevenue,
   nextTier,
   COMMISSION_RATE,
+  COMMISSION_RATE_ANNUAL,
 } from "../lib/affiliate";
 
 describe("commission d'affiliation", () => {
-  test("80% du 1er paiement, arrondi au centime", () => {
+  test("mensuel : 80% du 1er paiement, arrondi au centime", () => {
     assert.equal(COMMISSION_RATE, 0.8);
-    assert.equal(commissionCents(899), 719); // 8,99€ → 7,19€
-    assert.equal(commissionCents(5900), 4720); // 59€ → 47,20€
+    assert.equal(commissionCents(899), 719); // 8,99€ → 7,19€ (défaut mensuel)
+    assert.equal(commissionCents(899, "monthly"), 719);
     assert.equal(commissionCents(0), 0);
+  });
+
+  test("annuel : 40% du paiement (protège la marge sur le gros paiement)", () => {
+    assert.equal(COMMISSION_RATE_ANNUAL, 0.4);
+    assert.equal(commissionCents(5900, "annual"), 2360); // 59€ → 23,60€
+    // au taux mensuel, l'annuel aurait donné 47,20€ (le piège qu'on corrige)
+    assert.notEqual(commissionCents(5900, "annual"), 4720);
   });
 });
 

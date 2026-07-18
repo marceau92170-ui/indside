@@ -1,14 +1,19 @@
 // Règles d'affiliation — centralisées et testées, car ça touche à l'argent.
 //
 // Deal validé avec le créateur :
-//  - Commission : 80% du PREMIER paiement de chaque joueur amené (une seule fois).
-//    Les renouvellements reviennent 100% au créateur.
+//  - Commission MENSUEL : 80% du PREMIER paiement (8,99 €) → l'affilié prend ~7,19 €,
+//    les renouvellements (mois 2 et +) reviennent 100% au créateur.
+//  - Commission ANNUEL : 40% du paiement (59 €) → l'affilié prend ~23,60 €. Taux plus
+//    bas car l'annuel est un gros paiement unique sans renouvellement avant 12 mois ;
+//    à 80% le créateur ne gardait presque rien et l'affilié était incité à ne pousser
+//    que l'annuel. À 40% l'affilié gagne quand même 3× plus qu'un mensuel.
 //  - Bonus de paliers CUMULATIFS, débloqués une fois (à vie), sur le CA total généré :
 //    500 € → +50 € ; 1000 € → +100 € de plus (soit 150 € au total à 1000 €).
 //  - Attribution : "premier lien gagne", fenêtre de 30 jours entre le clic et le paiement.
 //  - Paiement manuel, avec un délai anti-remboursement.
 
-export const COMMISSION_RATE = 0.8;
+export const COMMISSION_RATE = 0.8; // mensuel
+export const COMMISSION_RATE_ANNUAL = 0.4; // annuel
 
 // Fenêtre d'attribution : un clic reste valable 30 jours pour convertir en vente.
 export const ATTRIBUTION_WINDOW_DAYS = 30;
@@ -23,9 +28,17 @@ export const BONUS_TIERS: { thresholdEuros: number; bonusEuros: number }[] = [
   { thresholdEuros: 1000, bonusEuros: 100 },
 ];
 
-// Commission (en centimes) sur un paiement brut (en centimes).
-export function commissionCents(grossCents: number): number {
-  return Math.round(grossCents * COMMISSION_RATE);
+export type Plan = "monthly" | "annual";
+
+// Taux de commission selon le plan payé.
+export function commissionRate(plan: Plan): number {
+  return plan === "annual" ? COMMISSION_RATE_ANNUAL : COMMISSION_RATE;
+}
+
+// Commission (en centimes) sur un paiement brut (en centimes), selon le plan.
+// Le plan par défaut est "monthly" (rétrocompatibilité).
+export function commissionCents(grossCents: number, plan: Plan = "monthly"): number {
+  return Math.round(grossCents * commissionRate(plan));
 }
 
 // Bonus total (en euros) débloqué pour un CA généré (en centimes) — cumulatif.
