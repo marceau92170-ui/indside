@@ -36,6 +36,7 @@ export const AFFILIATES: AffiliateSeed[] = [
   { code: "theo", name: "Théo", email: "theofootoff@gmail.com" },
   { code: "remi", name: "Rémi", email: "remi.tesor@outlook.fr" },
   { code: "asko", name: "Asko", email: "aouahrani@icloud.com" },
+  { code: "gamby", name: "SportxGamby", email: "mazine.namane1@gmail.com" },
   // Affilié de TEST (à retirer après vérif du flux) — dashboard : marceau92170+test@gmail.com
   { code: "test", name: "Test", email: "marceau92170+test@gmail.com" },
 ];
