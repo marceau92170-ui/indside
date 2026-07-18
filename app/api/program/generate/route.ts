@@ -26,11 +26,15 @@ export async function POST() {
   });
   // Le cooldown protège la facture API (génération IA = Premium). En gratuit, la
   // séance est un template déterministe (coût nul) → on ne bloque pas la régénération.
-  // On ne bloque pas non plus si le programme actuel est cassé (séances sans exercices).
-  const hasRealBlocks = existing?.sessions.some(
-    (s) => Array.isArray(s.blocks) && (s.blocks as unknown[]).length > 0
-  );
-  if (existing && isPremium(user) && hasRealBlocks) {
+  // On ne bloque pas non plus si le programme actuel est incomplet : cassé (séances
+  // sans exercices) OU trop maigre pour un Premium (< 2 séances, ex : resté sur la
+  // version gratuite) — il doit pouvoir générer son vrai programme tout de suite.
+  const realCount =
+    existing?.sessions.filter(
+      (s) => Array.isArray(s.blocks) && (s.blocks as unknown[]).length > 0
+    ).length ?? 0;
+  const isComplete = realCount >= 2;
+  if (existing && isPremium(user) && isComplete) {
     const elapsed = Date.now() - existing.updatedAt.getTime();
     if (elapsed < COOLDOWN_MS) {
       const retryAfterMin = Math.ceil((COOLDOWN_MS - elapsed) / 60000);

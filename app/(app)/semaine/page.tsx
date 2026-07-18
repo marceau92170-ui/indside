@@ -31,14 +31,18 @@ export default async function SemainePage() {
   const todayDow = new Date().getDay();
   const premium = isPremium(user);
 
-  // Une séance "vide" (sans exercices) survient si le programme a été généré avant que
-  // la bibliothèque soit chargée. On propose alors de recharger la semaine.
   const realSessions =
     program?.sessions.filter(
       (s) => Array.isArray(s.blocks) && (s.blocks as unknown[]).length > 0
     ) ?? [];
   const hasRealBlocks = realSessions.length > 0;
-  const needsGeneration = !program || !hasRealBlocks;
+
+  // Un Premium doit avoir un VRAI programme (≥ 2 séances). S'il est resté coincé sur
+  // la séance "gratuite" (1 seule, générée avant l'abonnement), on lui propose bien
+  // en évidence de générer son programme complet.
+  const premiumThin = premium && hasRealBlocks && realSessions.length < 2;
+  const needsGeneration = !program || !hasRealBlocks || premiumThin;
+  const showFull = hasRealBlocks && !premiumThin;
 
   const doneCount = realSessions.filter((s) => s.logs[0]?.status === "done").length;
   const totalCount = realSessions.length;
@@ -46,7 +50,18 @@ export default async function SemainePage() {
 
   const category = categoryFromBirthYear(user.profile.birthYear);
 
-  // Petit mot personnalisé selon l'avancement — enlève le côté "vide / robot".
+  // ----- Guidage "Aujourd'hui" : on dit clairement quoi faire -----
+  const matchDay = user.profile.matchDay;
+  const todaySession = realSessions.find((s) => s.dayOfWeek === todayDow);
+  const todayDone = todaySession?.logs[0]?.status === "done";
+  const isMatchToday = matchDay === todayDow;
+  const isEveOfMatch =
+    matchDay !== null && matchDay !== undefined && (todayDow + 1) % 7 === matchDay;
+  // Prochaine séance à venir dans la semaine (jour ≥ aujourd'hui, non faite).
+  const nextSession = realSessions.find(
+    (s) => s.dayOfWeek >= todayDow && s.logs[0]?.status !== "done" && s.id !== todaySession?.id
+  );
+
   const motivation =
     totalCount === 0
       ? ""
@@ -62,31 +77,78 @@ export default async function SemainePage() {
       <div className="mb-4">
         <h1 className="font-condensed text-3xl font-bold uppercase leading-none">Ma semaine</h1>
         <p className="mt-1 text-sm text-muted">
-          Salut {user.profile.firstName} 👊{" "}
-          <span className="text-line">·</span> {positionLabel(user.profile.position)}{" "}
-          <span className="text-line">·</span> {category}
+          Salut {user.profile.firstName} 👊 <span className="text-line">·</span>{" "}
+          {positionLabel(user.profile.position)} <span className="text-line">·</span> {category}
         </p>
       </div>
 
-      {/* Bandeau de stats — donne un vrai côté "tableau de bord" */}
+      {/* Bandeau de stats */}
       <div className="mb-4 grid grid-cols-3 gap-2">
         <StatTile label="Série" value={`${streak}`} suffix="🔥" accent />
         <StatTile label="Cette semaine" value={totalCount ? `${doneCount}/${totalCount}` : "—"} />
         <StatTile label="Total séances" value={`${allTimeDone}`} />
       </div>
 
+      {/* Guidage "Aujourd'hui" : la première chose qu'on voit → on sait quoi faire */}
+      {showFull && (
+        <Card className="mb-5 border-glow">
+          <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-glow">
+            Aujourd&apos;hui · {DAYS_FR[todayDow]}
+          </p>
+          {isMatchToday ? (
+            <p className="text-sm">
+              ⚽ <span className="font-semibold">Jour de match.</span> Pas de séance : repose-toi et
+              donne tout sur le terrain. Bon match !
+            </p>
+          ) : todaySession && todayDone ? (
+            <p className="text-sm">
+              ✅ <span className="font-semibold">Séance du jour faite.</span> Énorme — hydrate-toi et
+              étire-toi, la récup fait partie du travail.
+            </p>
+          ) : todaySession ? (
+            <>
+              <p className="mb-2 text-sm">
+                🎯 <span className="font-semibold">Ta séance du jour :</span> {todaySession.title}{" "}
+                <span className="text-muted">· {todaySession.durationMin} min</span>
+              </p>
+              <ButtonLink href={`/seance/${todaySession.id}`} size="sm">
+                Commencer ma séance →
+              </ButtonLink>
+            </>
+          ) : isEveOfMatch ? (
+            <p className="text-sm">
+              😴 <span className="font-semibold">Veille de match.</span> Repos ou récup légère
+              aujourd&apos;hui — sois frais demain.
+            </p>
+          ) : nextSession ? (
+            <>
+              <p className="mb-2 text-sm">
+                🌙 <span className="font-semibold">Repos aujourd&apos;hui.</span> Ta prochaine séance :{" "}
+                {nextSession.title}{" "}
+                <span className="text-muted">· {DAYS_FR[nextSession.dayOfWeek]}</span>
+              </p>
+              <ButtonLink href={`/seance/${nextSession.id}`} size="sm" variant="ghost">
+                Voir la séance
+              </ButtonLink>
+            </>
+          ) : (
+            <p className="text-sm">
+              🌙 <span className="font-semibold">Repos aujourd&apos;hui.</span> Récupère bien — tu as
+              tout donné cette semaine.
+            </p>
+          )}
+        </Card>
+      )}
+
       {/* Barre de progression de la semaine */}
-      {totalCount > 0 && (
+      {showFull && totalCount > 0 && (
         <div className="mb-5">
           <div className="mb-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-muted">
             <span>Progression de la semaine</span>
             <span className="tnum">{pct}%</span>
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-line/60">
-            <div
-              className="h-full rounded-full bg-glow transition-all"
-              style={{ width: `${pct}%` }}
-            />
+            <div className="h-full rounded-full bg-glow transition-all" style={{ width: `${pct}%` }} />
           </div>
           {motivation && <p className="mt-2 text-xs text-chalk">{motivation}</p>}
         </div>
@@ -95,17 +157,27 @@ export default async function SemainePage() {
       {needsGeneration && (
         <Card className="text-center">
           <p className="mb-3 text-sm text-muted">
-            {program
-              ? "Ta séance est prête à être générée avec les exercices. Lance ta semaine 👇"
-              : "Ton programme de la semaine n'est pas encore généré."}
+            {premiumThin
+              ? "Tu es Premium 🎉 Génère ton programme complet : 3 séances personnalisées, calées sur ton poste, ton niveau et ton calendrier."
+              : program
+                ? "Ta séance est prête à être générée avec les exercices. Lance ta semaine 👇"
+                : "Ton programme de la semaine n'est pas encore généré."}
           </p>
-          <GenerateProgramButton label={program ? "Générer mes exercices" : "Générer ma semaine"} />
+          <GenerateProgramButton
+            label={
+              premiumThin
+                ? "Générer mon programme complet"
+                : program
+                  ? "Générer mes exercices"
+                  : "Générer ma semaine"
+            }
+          />
         </Card>
       )}
 
-      {program && hasRealBlocks && (
+      {showFull && (
         <>
-          {program.summary && (
+          {program?.summary && (
             <div className="mb-4 flex gap-2 rounded-card border-l-2 border-glow bg-surface/60 px-3 py-2.5">
               <span aria-hidden="true">🎯</span>
               <p className="text-xs leading-snug text-muted">{program.summary}</p>
@@ -113,7 +185,7 @@ export default async function SemainePage() {
           )}
 
           <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted">
-            Tes séances
+            Tes séances de la semaine
           </p>
           <ul className="space-y-3">
             {realSessions.map((s) => {
@@ -162,12 +234,12 @@ export default async function SemainePage() {
             })}
           </ul>
 
-          {user.profile.matchDay !== null && (
+          {matchDay !== null && matchDay !== undefined && (
             <p className="mt-4 flex items-start gap-2 rounded-card bg-surface/60 px-3 py-2 text-xs text-muted">
               <span aria-hidden="true">⚽</span>
               <span>
-                Match le {DAYS_FR[user.profile.matchDay].toLowerCase()} — la veille, c&apos;est repos
-                ou récupération. Ton programme le sait.
+                Match le {DAYS_FR[matchDay].toLowerCase()} — la veille, c&apos;est repos ou
+                récupération. Ton programme le sait.
               </span>
             </p>
           )}
@@ -183,7 +255,7 @@ export default async function SemainePage() {
             <NutritionWeekCard
               premium={premium}
               weekly={weeklyTip(weekStart)}
-              match={matchTip(user.profile.matchDay)}
+              match={matchTip(matchDay)}
             />
           </div>
         </>
