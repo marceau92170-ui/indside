@@ -57,18 +57,20 @@ const ARCHETYPES: Record<string, Archetype> = {
       { type: "line", part: "arm", keys: { x1: loop("100", "95"), y1: loop("80", "118"), x2: loop("118", "148"), y2: loop("102", "128") } }, // bras
     ],
   },
-  // fente / pas latéral : fentes latérales, skater jumps, déplacements gardien
+  // fente latérale : une jambe fléchie (appui, genou au-dessus du pied), l'autre
+  // tendue sur le côté, buste penché vers la jambe d'appui, bras en avant.
   "lunge-lateral": {
     segments: [
-      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: loop("100", "70"), cy: loop("65", "78") } },
-      { type: "line", part: "torso", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "76"), y2: loop("80", "93") } },
-      { type: "line", part: "thigh", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "55"), y2: loop("165", "185") } },
-      { type: "line", part: "shin", keys: { x1: loop("100", "55"), y1: loop("165", "185"), x2: "45", y2: "205" } },
-      { type: "line", part: "thigh", keys: { x1: loop("100", "72"), y1: loop("120", "140"), x2: loop("100", "140"), y2: loop("150", "158") } },
-      { type: "line", part: "shin", keys: { x1: loop("100", "140"), y1: loop("150", "158"), x2: "150", y2: "205" } },
-      { type: "line", part: "foot", base: { x1: "32", y1: "205", x2: "58", y2: "205" } },
-      { type: "line", part: "foot", base: { x1: "138", y1: "205", x2: "164", y2: "205" } },
-      { type: "line", part: "arm", keys: { x1: loop("100", "76"), y1: loop("80", "93"), x2: loop("125", "100"), y2: loop("100", "70") } },
+      { type: "circle", r: 10, part: "head", keys: { cx: loop("100", "74"), cy: loop("65", "80") } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "74"), y1: loop("120", "140"), x2: loop("100", "78"), y2: loop("80", "95") } },
+      // jambe fléchie (appui)
+      { type: "line", part: "thigh", keys: { x1: loop("100", "74"), y1: loop("120", "140"), x2: loop("90", "58"), y2: loop("160", "176") } },
+      { type: "line", part: "shin", keys: { x1: loop("90", "58"), y1: loop("160", "176"), x2: loop("88", "54"), y2: "205" } },
+      { type: "line", part: "foot", keys: { x1: loop("76", "42"), y1: "205", x2: loop("100", "66"), y2: "205" } },
+      // jambe tendue (opposée) qui reste au sol
+      { type: "line", part: "leg", keys: { x1: loop("100", "74"), y1: loop("120", "140"), x2: loop("108", "150"), y2: loop("205", "203") } },
+      { type: "line", part: "foot", keys: { x1: loop("96", "138"), y1: "205", x2: loop("120", "164"), y2: "205" } },
+      { type: "line", part: "arm", keys: { x1: loop("100", "78"), y1: loop("88", "100"), x2: loop("122", "104"), y2: loop("100", "114") } },
     ],
   },
   // gainage statique / dynamique : planche, planche latérale, copenhagen
@@ -118,15 +120,17 @@ const ARCHETYPES: Record<string, Archetype> = {
     ],
     dur: "1.6s",
   },
-  // saut vertical / horizontal : squat jumps, bondissements, détente
+  // saut : flexion (bas) → envol bras en l'air, genoux fléchis, pieds décollés.
   jump: {
     segments: [
-      { type: "circle", r: 10, part: "head", base: {}, keys: { cy: loop("103", "55") } },
-      { type: "line", part: "torso", keys: { x1: "100", y1: loop("165", "125"), x2: "100", y2: loop("118", "70") } }, // torse
-      { type: "line", part: "thigh", keys: { x1: "100", y1: loop("165", "125"), x2: "100", y2: loop("178", "150") } }, // cuisse
-      { type: "line", part: "shin", keys: { x1: "100", y1: loop("178", "150"), x2: "100", y2: loop("205", "185") } }, // tibia
-      { type: "line", part: "foot", keys: { x2: "70", y2: loop("205", "185"), x1: "100", y1: loop("205", "185") } },
-      { type: "line", part: "arm", keys: { x1: "100", y1: loop("118", "70"), x2: "130", y2: loop("140", "50") } }, // bras levé au sommet
+      { type: "circle", r: 10, part: "head", base: { cx: "100" }, keys: { cy: loop("95", "48") } },
+      { type: "line", part: "torso", keys: { x1: "100", y1: loop("150", "108"), x2: "100", y2: loop("108", "60") } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: loop("118", "70"), x2: loop("124", "120"), y2: loop("138", "38") } }, // bras qui monte
+      { type: "line", part: "arm", keys: { x1: "100", y1: loop("118", "70"), x2: loop("76", "80"), y2: loop("138", "38") } },
+      { type: "line", part: "thigh", keys: { x1: "100", y1: loop("150", "108"), x2: loop("110", "118"), y2: loop("182", "150") } },
+      { type: "line", part: "shin", keys: { x1: loop("110", "118"), y1: loop("182", "150"), x2: loop("104", "122"), y2: loop("205", "172") } }, // pied qui décolle
+      { type: "line", part: "thigh", keys: { x1: "100", y1: loop("150", "108"), x2: loop("90", "82"), y2: loop("182", "150") } },
+      { type: "line", part: "shin", keys: { x1: loop("90", "82"), y1: loop("182", "150"), x2: loop("96", "78"), y2: loop("205", "172") } },
     ],
     dur: "1.1s",
   },
@@ -189,15 +193,18 @@ const ARCHETYPES: Record<string, Archetype> = {
     ],
     dur: "1.4s",
   },
-  // plongeon gardien
+  // plongeon gardien : détente latérale, bras tendus vers le ballon en haut.
   dive: {
     segments: [
-      { type: "circle", r: 10, part: "head", base: {}, keys: { cx: loop("100", "150"), cy: loop("80", "165") } },
-      { type: "line", part: "torso", keys: { x1: loop("100", "150"), y1: loop("90", "175"), x2: loop("100", "155"), y2: loop("140", "195") } },
-      { type: "line", part: "leg", keys: { x1: loop("100", "155"), y1: loop("140", "195"), x2: loop("115", "175"), y2: loop("175", "200") } },
-      { type: "line", part: "arm", keys: { x1: loop("100", "150"), y1: loop("90", "175"), x2: loop("70", "185"), y2: loop("105", "160") } },
+      { type: "circle", r: 6, fill: "#E12A3A", part: "ball", keys: { cx: loop("150", "185"), cy: loop("75", "48") } }, // ballon
+      { type: "circle", r: 10, part: "head", keys: { cx: loop("110", "148"), cy: loop("120", "86") } },
+      { type: "line", part: "torso", keys: { x1: loop("100", "112"), y1: loop("160", "150"), x2: loop("112", "146"), y2: loop("128", "96") } },
+      { type: "line", part: "arm", keys: { x1: loop("112", "146"), y1: loop("128", "96"), x2: loop("135", "176"), y2: loop("110", "60") } },
+      { type: "line", part: "arm", keys: { x1: loop("112", "146"), y1: loop("128", "96"), x2: loop("128", "168"), y2: loop("122", "82") } },
+      { type: "line", part: "leg", keys: { x1: loop("100", "112"), y1: loop("160", "150"), x2: loop("84", "58"), y2: loop("192", "176") } },
+      { type: "line", part: "leg", keys: { x1: loop("100", "112"), y1: loop("160", "150"), x2: loop("92", "66"), y2: loop("200", "192") } },
     ],
-    dur: "0.9s",
+    dur: "1.1s",
   },
   // équilibre / proprioception unipodal
   balance: {
