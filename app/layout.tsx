@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo_Black, Barlow_Condensed, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -74,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={`${display.variable} ${condensed.variable} ${body.variable}`}>
       <body>
-        {children}
+        <PostHogProvider>{children}</PostHogProvider>
         {/* Web Analytics Vercel : mesure TOUT le trafic (toutes sources : TikTok,
             Google, Instagram, direct…), sans cookie ni donnée perso (RGPD-friendly).
             Visible sur vercel.com → onglet Analytics. */}
