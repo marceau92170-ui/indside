@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo_Black, Barlow_Condensed, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -72,7 +73,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${display.variable} ${condensed.variable} ${body.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Web Analytics Vercel : mesure TOUT le trafic (toutes sources : TikTok,
+            Google, Instagram, direct…), sans cookie ni donnée perso (RGPD-friendly).
+            Visible sur vercel.com → onglet Analytics. */}
+        <Analytics />
+      </body>
     </html>
   );
 }
