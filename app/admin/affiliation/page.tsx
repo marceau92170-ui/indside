@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { allAffiliateStats } from "@/lib/affiliate-stats";
@@ -41,8 +42,18 @@ export default async function AdminAffiliationPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-1 font-condensed text-3xl font-bold uppercase">Affiliation — Admin</h1>
-      <p className="mb-6 text-sm text-muted">Vue globale et détail par affilié. Données 100% first-party.</p>
+      <div className="mb-6 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="mb-1 font-condensed text-3xl font-bold uppercase">Affiliation — Admin</h1>
+          <p className="text-sm text-muted">Vue globale et détail par affilié. Données 100% first-party.</p>
+        </div>
+        <Link
+          href="/admin/feedback"
+          className="shrink-0 rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-muted hover:border-glow hover:text-glow"
+        >
+          💬 Retours
+        </Link>
+      </div>
 
       {/* Vue globale */}
       <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">

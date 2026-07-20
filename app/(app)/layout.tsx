@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </header>
 
       <main className="flex-1 px-4 pb-24 pt-2">{children}</main>
+
+      <FeedbackWidget />
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 backdrop-blur">
         <div className="mx-auto flex max-w-lg items-stretch justify-between">

@@ -7,6 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------- Retour utilisateurs (idées / bugs / avis) ----------
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String? // rempli si connecté
+  email     String? // email de contact laissé par la personne (facultatif)
+  message   String   @db.Text
+  page      String? // page depuis laquelle l'avis a été envoyé
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // ---------- Auth (NextAuth) ----------
 
 model User {
