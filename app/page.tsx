@@ -14,13 +14,13 @@ const jsonLd = {
   operatingSystem: "Web, iOS, Android",
   url: SITE_URL,
   description:
-    "Application d'entraînement de football personnalisé pour jeunes joueurs de 13 à 17 ans : programme hebdomadaire adapté au poste, à l'âge et au niveau, à faire seul entre les entraînements club.",
+    "Application d'entraînement de football personnalisé, pour ados comme adultes : programme hebdomadaire adapté au poste, à l'âge et au niveau, à faire seul entre les entraînements club.",
   offers: [
     { "@type": "Offer", price: "0", priceCurrency: "EUR", name: "Gratuit" },
     { "@type": "Offer", price: "8.99", priceCurrency: "EUR", name: "Premium mensuel" },
     { "@type": "Offer", price: "59", priceCurrency: "EUR", name: "Premium annuel" },
   ],
-  audience: { "@type": "PeopleAudience", suggestedMinAge: 13, suggestedMaxAge: 17 },
+  audience: { "@type": "PeopleAudience", suggestedMinAge: 13 },
 };
 
 export default function LandingPage() {
@@ -45,7 +45,7 @@ export default function LandingPage() {
         {/* hero */}
         <section className="pt-6 text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-glow">
-            Foot · 13-17 ans · à faire seul
+            Foot · ados & adultes · à faire seul
           </p>
           <h1 className="mt-2 font-condensed text-4xl font-bold uppercase leading-tight">
             Ton programme perso
@@ -55,8 +55,9 @@ export default function LandingPage() {
           <p className="mx-auto mt-3 max-w-sm text-sm text-muted">
             Généré pour <span className="font-semibold text-chalk">TON poste</span>,{" "}
             <span className="font-semibold text-chalk">TON âge</span>,{" "}
-            <span className="font-semibold text-chalk">TON niveau</span>. Des séances de 20 à 40
-            minutes, faisables seul, calées autour de tes entraînements club.
+            <span className="font-semibold text-chalk">TON niveau</span>. Ados comme adultes, du
+            district à la Ligue. Des séances de 20 à 40 minutes, faisables seul, calées autour de
+            tes entraînements club.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3">
             <ButtonLink href="/connexion" size="lg">
@@ -108,8 +109,8 @@ export default function LandingPage() {
             Lui, il s&apos;entraîne tous les jours.
           </h2>
           <p className="mt-2 text-sm text-muted">
-            En centre de formation, c&apos;est entraînement quotidien. Toi, c&apos;est 2 séances
-            club par semaine. La différence se joue sur ce que tu fais{" "}
+            Au-dessus de toi, ça s&apos;entraîne tous les jours. Toi, c&apos;est 2 à 3 séances club
+            par semaine. La différence se joue sur ce que tu fais{" "}
             <span className="font-semibold text-chalk">entre les entraînements</span> — à la maison,
             au city, avec un ballon et un mur.
           </p>

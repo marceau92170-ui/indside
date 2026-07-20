@@ -24,7 +24,7 @@ const body = Inter({
 
 const TITLE = "Progressa — Ton préparateur physique perso de foot";
 const DESCRIPTION =
-  "Programme d'entraînement de football personnalisé pour jeunes joueurs de 13 à 17 ans. Généré pour ton poste, ton âge et ton niveau : des séances de 20 à 40 min faisables seul, calées autour de ton club. Gratuit pour commencer.";
+  "Programme d'entraînement de football personnalisé, pour ados comme adultes. Généré pour ton poste, ton âge et ton niveau : des séances de 20 à 40 min faisables seul, calées autour de ton club. Gratuit pour commencer.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
