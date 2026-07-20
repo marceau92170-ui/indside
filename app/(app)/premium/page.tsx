@@ -6,16 +6,24 @@ import { CheckoutButtons, ManageSubscriptionButton } from "@/components/Checkout
 
 export const dynamic = "force-dynamic";
 
-const INCLUDED = [
-  "Programme hebdo 100 % personnalisé (poste, âge, niveau, matériel, calendrier club)",
-  "Adaptation chaque semaine selon tes retours de séances",
-  "Ton programme évite automatiquement les zones où tu as signalé une douleur",
-  "Conseils nutrition & hydratation chaque semaine, calés sur tes matchs",
-  "Les 60 exercices de la bibliothèque, expliqués pas à pas",
-  "Tests d'évaluation + graphiques de progression",
-  "Carte joueur avec tes vraies stats",
-  "Badges et séries pour tenir sur la durée",
+// Comparatif Gratuit vs Premium. free/premium : "yes" (✓), "no" (—) ou un texte.
+const COMPARE: { label: string; free: string; premium: string }[] = [
+  { label: "Programme de la semaine", free: "1 séance générique", premium: "Complet · jusqu'à 3 séances" },
+  { label: "100 % personnalisé (poste, âge, niveau, matériel, calendrier club)", free: "no", premium: "yes" },
+  { label: "S'adapte chaque semaine à tes retours (IA)", free: "no", premium: "yes" },
+  { label: "Évite tout seul tes zones de douleur (IA)", free: "no", premium: "yes" },
+  { label: "Exercices de la bibliothèque", free: "10", premium: "60" },
+  { label: "Tests d'évaluation + graphiques de progression", free: "no", premium: "yes" },
+  { label: "Conseils nutrition & hydratation calés sur tes matchs", free: "no", premium: "yes" },
+  { label: "Carte joueur avec tes vraies stats", free: "no", premium: "yes" },
+  { label: "Badges & séries pour tenir dans la durée", free: "yes", premium: "yes" },
 ];
+
+function CompareCell({ value }: { value: string }) {
+  if (value === "yes") return <span className="text-glow">✓</span>;
+  if (value === "no") return <span className="text-muted">—</span>;
+  return <span>{value}</span>;
+}
 
 export default async function PremiumPage() {
   const user = await currentUser();
@@ -52,15 +60,33 @@ export default async function PremiumPage() {
         </div>
       )}
 
-      <Card className="mb-5">
-        <ul className="space-y-2">
-          {INCLUDED.map((item) => (
-            <li key={item} className="flex gap-2 text-sm">
-              <span className="text-glow">✓</span> {item}
-            </li>
-          ))}
-        </ul>
-      </Card>
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted">
+        Gratuit vs Premium
+      </p>
+      <div className="mb-5 overflow-hidden rounded-card border border-line">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-line bg-surface text-[11px] font-bold uppercase tracking-wide">
+              <th className="px-3 py-2.5 text-left text-muted">Ce que tu débloques</th>
+              <th className="px-2 py-2.5 text-center text-muted">Gratuit</th>
+              <th className="px-2 py-2.5 text-center text-glow">Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARE.map((r) => (
+              <tr key={r.label} className="border-b border-line last:border-0">
+                <td className="px-3 py-2.5 text-xs leading-snug">{r.label}</td>
+                <td className="px-2 py-2.5 text-center text-xs text-muted">
+                  <CompareCell value={r.free} />
+                </td>
+                <td className="bg-glow/5 px-2 py-2.5 text-center text-xs font-semibold">
+                  <CompareCell value={r.premium} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <CheckoutButtons />
 
