@@ -154,7 +154,25 @@ export function SessionPlayer({
             là que le corps encaisse le travail.
           </p>
         </div>
-        <Button className="mt-6" onClick={() => router.push("/semaine")}>
+        {!premium && (
+          <div className="mt-6 w-full max-w-xs rounded-card border border-glow/40 bg-glow/5 p-4 text-left">
+            <p className="font-condensed text-base font-bold uppercase text-glow">
+              Sur ta lancée ? 🔥
+            </p>
+            <p className="mt-1 text-sm text-muted">
+              Les joueurs Premium enchaînent <strong>3 séances</strong> cette semaine, calées sur ton
+              poste et ton match. Essaie 7 jours gratuits — sans payer maintenant.
+            </p>
+            <Button className="mt-3 w-full" onClick={() => router.push("/premium")}>
+              Débloquer la suite — 7 j gratuits
+            </Button>
+          </div>
+        )}
+        <Button
+          variant={premium ? "primary" : "ghost"}
+          className="mt-4"
+          onClick={() => router.push("/semaine")}
+        >
           Retour à ma semaine
         </Button>
       </div>

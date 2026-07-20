@@ -5,6 +5,7 @@ import { isPremium } from "@/lib/plan";
 import { mondayOfWeek, categoryFromBirthYear } from "@/lib/categories";
 import { computeStreak, totalDoneSessions } from "@/lib/gamification";
 import { DAYS_FR, positionLabel } from "@/lib/constants";
+import { lockedTeasers } from "@/lib/teaser";
 import { Card, ButtonLink } from "@/components/ui";
 import { GenerateProgramButton } from "@/components/GenerateProgramButton";
 import { NutritionWeekCard } from "@/components/NutritionWeekCard";
@@ -261,19 +262,57 @@ export default async function SemainePage() {
         </>
       )}
 
-      {!premium && (
-        <Card className="mt-6 border-glow/30">
-          <p className="mb-1 font-condensed text-lg font-bold uppercase">
-            Une seule séance par semaine ?
+      {!premium && user.profile && (
+        <div className="mt-6">
+          <p className="mb-2 font-condensed text-lg font-bold uppercase">
+            Ton programme complet t&apos;attend
           </p>
           <p className="mb-3 text-sm text-muted">
-            En Premium : programme complet personnalisé (poste, calendrier, point faible), adapté
-            chaque semaine selon tes retours.
+            {positionLabel(user.profile.position)} · calé sur ton poste, ton objectif et ton match.
+            Débloque-le pour cette semaine 👇
           </p>
-          <ButtonLink href="/premium" size="sm">
-            Débloquer mon programme complet
-          </ButtonLink>
-        </Card>
+
+          <ul className="space-y-2">
+            {lockedTeasers({
+              position: user.profile.position,
+              goal: user.profile.goal,
+              matchDay: user.profile.matchDay,
+            }).map((t, i) => (
+              <li key={i}>
+                <Link href="/premium" className="block">
+                  <Card className="relative overflow-hidden border-line/60">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 blur-[3px] select-none">
+                        <p className="truncate font-condensed text-base font-bold uppercase">
+                          {t.day} · {t.title}
+                        </p>
+                        <p className="truncate text-xs text-muted">
+                          {t.focus} · {t.duration} min
+                        </p>
+                      </div>
+                      <span className="shrink-0 rounded-full bg-glow/15 px-2.5 py-1 text-xs font-bold text-glow">
+                        🔒 Premium
+                      </span>
+                    </div>
+                  </Card>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <Card className="mt-3 border-glow/40 bg-glow/5">
+            <p className="mb-1 font-condensed text-base font-bold uppercase text-glow">
+              7 jours gratuits
+            </p>
+            <p className="mb-3 text-sm text-muted">
+              Débloque tout ton programme perso, adapté chaque semaine. Sans payer maintenant,
+              résiliable en 1 clic.
+            </p>
+            <ButtonLink href="/premium" size="sm">
+              Débloquer mon programme complet
+            </ButtonLink>
+          </Card>
+        </div>
       )}
     </div>
   );
