@@ -25,6 +25,7 @@ model Feedback {
 model User {
   id              String    @id @default(cuid())
   email           String    @unique
+  clerkId         String?   @unique // identifiant Clerk (rempli à la 1ère connexion Clerk)
   emailVerified   DateTime?
   name            String?
   image           String?

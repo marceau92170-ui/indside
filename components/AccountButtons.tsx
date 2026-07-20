@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { signOut } from "next-auth/react";
+import { useClerk } from "@clerk/nextjs";
 import { Button } from "@/components/ui";
 
 export function SignOutButton() {
+  const { signOut } = useClerk();
   return (
-    <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: "/" })}>
+    <Button variant="ghost" size="sm" onClick={() => signOut({ redirectUrl: "/" })}>
       Me déconnecter
     </Button>
   );
 }
 
 export function DeleteAccountButton() {
+  const { signOut } = useClerk();
   const [confirming, setConfirming] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +22,7 @@ export function DeleteAccountButton() {
     setLoading(true);
     const res = await fetch("/api/account/delete", { method: "POST" });
     if (res.ok) {
-      await signOut({ callbackUrl: "/" });
+      await signOut({ redirectUrl: "/" });
     } else {
       setLoading(false);
     }

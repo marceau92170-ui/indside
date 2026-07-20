@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo_Black, Barlow_Condensed, Inter } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { SITE_URL } from "@/lib/site";
@@ -73,14 +74,26 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${display.variable} ${condensed.variable} ${body.variable}`}>
-      <body>
-        <PostHogProvider>{children}</PostHogProvider>
-        {/* Web Analytics Vercel : mesure TOUT le trafic (toutes sources : TikTok,
-            Google, Instagram, direct…), sans cookie ni donnée perso (RGPD-friendly).
-            Visible sur vercel.com → onglet Analytics. */}
-        <Analytics />
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "#E12A3A",
+          colorBackground: "#16181b",
+          colorForeground: "#ece8df",
+          colorInput: "#0c0d0f",
+          colorInputForeground: "#ece8df",
+        },
+      }}
+    >
+      <html lang="fr" className={`${display.variable} ${condensed.variable} ${body.variable}`}>
+        <body>
+          <PostHogProvider>{children}</PostHogProvider>
+          {/* Web Analytics Vercel : mesure TOUT le trafic (toutes sources : TikTok,
+              Google, Instagram, direct…), sans cookie ni donnée perso (RGPD-friendly).
+              Visible sur vercel.com → onglet Analytics. */}
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
