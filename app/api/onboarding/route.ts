@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { createWeeklyProgram } from "@/lib/program/create";
 import { ageFromBirthYear, isEligibleBirthYear } from "@/lib/categories";
+import { sendEmail } from "@/lib/email/resend";
+import { welcomeEmail } from "@/lib/email/nurture";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60; // génération IA incluse
@@ -88,6 +90,15 @@ export async function POST(req: Request) {
     include: { profile: true, subscription: true },
   });
   await createWeeklyProgram(fresh);
+
+  // E-mail de bienvenue (une seule fois par joueur — garde-fou EmailEvent).
+  try {
+    await prisma.emailEvent.create({ data: { userId: user.id, key: "welcome" } });
+    const { subject, html } = welcomeEmail(data.firstName);
+    await sendEmail({ to: fresh.parentEmail ?? fresh.email, subject, html });
+  } catch {
+    // déjà envoyé (contrainte unique) ou erreur d'envoi → non bloquant
+  }
 
   return NextResponse.json({ ok: true });
 }

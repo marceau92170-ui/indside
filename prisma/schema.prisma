@@ -57,6 +57,20 @@ model User {
   painLogs          PainLog[]
   goals             Goal[]
   affiliateProfile  Affiliate? @relation("AffiliateUser")
+  emailEvents       EmailEvent[]
+}
+
+// Journal des e-mails automatiques (bienvenue, relances nurture…).
+// Garantit qu'on n'envoie jamais deux fois le même e-mail à un joueur.
+model EmailEvent {
+  id     String   @id @default(cuid())
+  userId String
+  key    String // welcome | nurture_d1 | nurture_d3
+  sentAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
 }
 
 // ---------- Affiliation ----------

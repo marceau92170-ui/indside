@@ -36,8 +36,11 @@ export function CheckoutButtons() {
         </p>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Card className="flex flex-col items-center border-glow">
-          <p className="mb-1 text-xs font-bold uppercase tracking-wide text-glow">Le plus choisi</p>
+        <Card className="relative flex flex-col items-center border-glow">
+          <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 animate-pulse rounded-full bg-glow px-3 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow">
+            ★ Meilleure offre
+          </span>
+          <p className="mb-1 mt-1 text-xs font-bold uppercase tracking-wide text-glow">Le plus choisi</p>
           <p className="tnum font-condensed text-3xl font-bold">{PRICING.annual.amount}</p>
           <p className="mb-3 text-xs text-muted">{PRICING.annual.period} · {PRICING.annual.saving}</p>
           <Button onClick={() => checkout("annual")} disabled={loading !== null} className="w-full">
