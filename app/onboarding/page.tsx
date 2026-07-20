@@ -12,12 +12,14 @@ export default async function OnboardingPage({
 }) {
   const { edit } = await searchParams;
   const user = await currentUser();
-  if (!user) redirect("/connexion");
-  if (user.profile && edit !== "1") redirect("/semaine");
+  // Accessible SANS compte : on répond aux questions d'abord, on crée le compte
+  // à la fin pour sauvegarder (bien meilleure conversion). Un joueur déjà inscrit
+  // (avec profil) est renvoyé sur sa semaine, sauf s'il vient modifier son profil.
+  if (user?.profile && edit !== "1") redirect("/semaine");
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-lg px-4 py-6">
-      <OnboardingWizard birthYears={eligibleBirthYears()} />
+      <OnboardingWizard birthYears={eligibleBirthYears()} authed={Boolean(user)} />
     </main>
   );
 }

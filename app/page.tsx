@@ -60,7 +60,7 @@ export default function LandingPage() {
             tes entraînements club.
           </p>
           <div className="mt-6 flex flex-col items-center gap-3">
-            <ButtonLink href="/connexion" size="lg">
+            <ButtonLink href="/onboarding" size="lg">
               Créer mon programme gratuit
             </ButtonLink>
             <p className="text-xs text-muted">90 secondes pour répondre. Aucune carte demandée.</p>
@@ -180,7 +180,7 @@ export default function LandingPage() {
             commence maintenant.
           </h2>
           <div className="mt-5">
-            <ButtonLink href="/connexion" size="lg">
+            <ButtonLink href="/onboarding" size="lg">
               Commencer gratuitement
             </ButtonLink>
           </div>
@@ -196,7 +196,7 @@ export default function LandingPage() {
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-night/95 backdrop-blur">
         <div className="mx-auto max-w-lg px-4 py-3">
           <Link
-            href="/connexion"
+            href="/onboarding"
             className="block w-full rounded-full bg-glow px-6 py-3 text-center font-condensed text-lg font-bold uppercase tracking-wide text-night"
           >
             Créer mon programme gratuit

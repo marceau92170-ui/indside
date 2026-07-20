@@ -69,7 +69,13 @@ const ADULT_BIRTH_YEAR = new Date().getFullYear() - 20;
 // Un ado interrompu (appel, notif, batterie) ne doit pas repartir de zéro.
 const STORAGE_KEY = "progressa-onboarding-v1";
 
-export function OnboardingWizard({ birthYears }: { birthYears: number[] }) {
+export function OnboardingWizard({
+  birthYears,
+  authed = false,
+}: {
+  birthYears: number[];
+  authed?: boolean;
+}) {
   const router = useRouter();
   const [s, setS] = useState<State>(INITIAL);
   const [step, setStep] = useState(0);
@@ -138,6 +144,12 @@ export function OnboardingWizard({ birthYears }: { birthYears: number[] }) {
   }, [step, s, isMinor15]);
 
   async function finish() {
+    // Pas encore de compte : les réponses sont déjà gardées (localStorage).
+    // On envoie créer le compte ; au retour (connecté), le joueur finalise ici même.
+    if (!authed) {
+      router.push("/connexion");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -480,8 +492,18 @@ export function OnboardingWizard({ birthYears }: { birthYears: number[] }) {
           </div>
           {error && <p className="mb-3 text-sm text-red-400">{error}</p>}
           <Button onClick={finish} disabled={submitting} size="lg" className="w-full">
-            {submitting ? "Génération de ton programme…" : "Générer mon programme 🔥"}
+            {submitting
+              ? "Génération de ton programme…"
+              : authed
+                ? "Générer mon programme 🔥"
+                : "Créer mon compte & recevoir mon programme 🔥"}
           </Button>
+          {!authed && !submitting && (
+            <p className="mt-2 text-xs text-muted">
+              Tes réponses sont gardées. Connexion en 1 geste (Google ou email), gratuit, sans
+              carte.
+            </p>
+          )}
           {submitting && (
             <p className="mt-3 text-xs text-muted">
               Ton préparateur compose ta semaine… (quelques secondes)
