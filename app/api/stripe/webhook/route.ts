@@ -55,11 +55,12 @@ async function upsertSubscription(sub: Stripe.Subscription) {
   const currentPeriodEnd = sub.current_period_end
     ? new Date(sub.current_period_end * 1000)
     : null;
+  const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000) : null;
 
   await prisma.subscription.upsert({
     where: { stripeSubscriptionId: sub.id },
-    create: { userId, stripeSubscriptionId: sub.id, status, priceId, currentPeriodEnd },
-    update: { status, priceId, currentPeriodEnd },
+    create: { userId, stripeSubscriptionId: sub.id, status, priceId, currentPeriodEnd, trialEnd },
+    update: { status, priceId, currentPeriodEnd, trialEnd },
   });
 
   await prisma.user.update({

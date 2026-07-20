@@ -4,6 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { isAdult } from "@/lib/categories";
+import { SITE_URL } from "@/lib/site";
+
+// Durée de l'essai gratuit (carte demandée, débit uniquement à la fin si non résilié).
+export const TRIAL_DAYS = 7;
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +38,7 @@ export async function POST(req: Request) {
     await prisma.user.update({ where: { id: user.id }, data: { stripeCustomerId: customerId } });
   }
 
-  const base = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  const base = SITE_URL;
 
   // Réduction affilié : si le joueur est venu par un lien de parrainage et qu'un
   // coupon est configuré, on l'applique automatiquement (aucun code à taper).
@@ -44,6 +48,8 @@ export async function POST(req: Request) {
   const discounts =
     user.referredByCode && coupon ? [{ coupon }] : undefined;
 
+  const adult = user.profile ? isAdult(user.profile.birthYear) : true;
+
   const session = await s.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
@@ -52,14 +58,19 @@ export async function POST(req: Request) {
     success_url: `${base}/premium/merci`,
     cancel_url: `${base}/premium`,
     metadata: { userId: user.id },
-    subscription_data: { metadata: { userId: user.id } },
+    // Essai gratuit de 7 jours : la carte est enregistrée mais rien n'est débité
+    // avant la fin de l'essai. Résiliation en 1 clic → aucun débit.
+    payment_method_collection: "always",
+    subscription_data: {
+      metadata: { userId: user.id },
+      trial_period_days: TRIAL_DAYS,
+    },
     // Mineurs : l'abonnement est souscrit par un parent ou tuteur légal.
     custom_text: {
       submit: {
-        message:
-          user.profile && isAdult(user.profile.birthYear)
-            ? "Résiliable à tout moment en 1 clic depuis l'app."
-            : "Abonnement à souscrire par un parent ou tuteur légal. Résiliable à tout moment en 1 clic depuis l'app.",
+        message: adult
+          ? `Gratuit pendant ${TRIAL_DAYS} jours, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app — aucun débit si tu résilies avant la fin de l'essai.`
+          : `Gratuit pendant ${TRIAL_DAYS} jours. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app — aucun débit si résiliation avant la fin de l'essai.`,
       },
     },
   });

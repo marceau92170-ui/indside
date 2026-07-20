@@ -302,6 +302,8 @@ model Subscription {
   status               String // active | trialing | past_due | canceled
   priceId              String?
   currentPeriodEnd     DateTime?
+  trialEnd             DateTime? // fin de l'essai gratuit (si en essai)
+  trialReminderSent    Boolean   @default(false) // mail « ton essai se termine » déjà envoyé ?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
