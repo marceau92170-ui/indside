@@ -41,8 +41,11 @@ export function ConnexionForm({ googleEnabled }: { googleEnabled: boolean }) {
 
   return (
     <Card className="p-6">
-      <h1 className="mb-1 font-condensed text-2xl font-bold uppercase">Connexion</h1>
-      <p className="mb-6 text-sm text-muted">Crée ton compte ou reconnecte-toi en un geste.</p>
+      <h1 className="mb-1 font-condensed text-2xl font-bold uppercase">On commence 💪</h1>
+      <p className="mb-6 text-sm text-muted">
+        Ton compte se crée en un geste, sans mot de passe. C&apos;est gratuit, aucune carte
+        demandée — juste ton email pour retrouver ton programme.
+      </p>
 
       {googleEnabled && (
         <>

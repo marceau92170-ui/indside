@@ -30,7 +30,7 @@ export default function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto w-full max-w-lg px-4 pb-16">
+      <div className="mx-auto w-full max-w-lg px-4 pb-28">
         {/* header */}
         <header className="flex items-center justify-between py-5">
           <span className="font-display text-xl tracking-wider">PROGRESSA</span>
@@ -190,6 +190,21 @@ export default function LandingPage() {
         </section>
 
         <SiteFooter />
+      </div>
+
+      {/* CTA collant : toujours à portée de pouce pendant le scroll (trafic mobile) */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-night/95 backdrop-blur">
+        <div className="mx-auto max-w-lg px-4 py-3">
+          <Link
+            href="/connexion"
+            className="block w-full rounded-full bg-glow px-6 py-3 text-center font-condensed text-lg font-bold uppercase tracking-wide text-night"
+          >
+            Créer mon programme gratuit
+          </Link>
+          <p className="mt-1.5 text-center text-[11px] text-muted">
+            90 secondes · gratuit · sans carte
+          </p>
+        </div>
       </div>
     </main>
   );
