@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "@/components/ui";
-import { PlayerCard } from "@/components/PlayerCard";
+import { lockedTeasers } from "@/lib/teaser";
 import {
   EQUIPMENT,
   GOALS,
@@ -12,6 +12,8 @@ import {
   POSITIONS,
   DAYS_FR,
   divisionsFor,
+  positionLabel,
+  goalLabel,
 } from "@/lib/constants";
 
 type State = {
@@ -63,6 +65,21 @@ function ageOf(birthYear: number): number {
   return new Date().getFullYear() - birthYear;
 }
 
+// Estimation de départ (déterministe, sans IA) pour l'écran de révélation.
+// Honnête : c'est une base, elle se précisera avec les vrais tests.
+function startingProfile(s: State): { rating: number; stats: { label: string; value: number }[] } {
+  const lvl = s.levelType === "NATIONAL" ? 8 : s.levelType === "REGIONAL" ? 4 : 1;
+  const boost = (keys: string[], base: number) => Math.min(90, base + lvl + (keys.includes(s.goal) ? 6 : 0));
+  const stats = [
+    { label: "Vitesse", value: boost(["vitesse", "polyvalent"], 66) },
+    { label: "Physique", value: boost(["physique", "endurance", "polyvalent"], 64) },
+    { label: "Technique", value: boost(["technique", "frappe", "polyvalent"], 63) },
+    { label: "Mental", value: boost(["polyvalent"], 68) },
+  ];
+  const rating = Math.round(stats.reduce((a, b) => a + b.value, 0) / stats.length);
+  return { rating, stats };
+}
+
 // Année de naissance représentative pour l'option « 18 ans et + » (amateurs, seniors, vétérans).
 const ADULT_BIRTH_YEAR = new Date().getFullYear() - 20;
 
@@ -82,6 +99,8 @@ export function OnboardingWizard({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  // Écran final : "analyze" (animation de calcul) → "show" (révélation carte + programme).
+  const [reveal, setReveal] = useState<"analyze" | "show">("analyze");
 
   // Restaure une session interrompue (localStorage) au premier rendu client.
   useEffect(() => {
@@ -114,6 +133,18 @@ export function OnboardingWizard({
   const totalSteps = 8 + (isMinor15 ? 1 : 0);
 
   const set = (patch: Partial<State>) => setS((prev) => ({ ...prev, ...patch }));
+
+  // À l'arrivée sur l'écran final : joue l'animation d'analyse (~2,6 s) puis révèle.
+  useEffect(() => {
+    if (step === totalSteps) {
+      setReveal("analyze");
+      const reduce =
+        typeof window !== "undefined" &&
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      const t = setTimeout(() => setReveal("show"), reduce ? 200 : 2600);
+      return () => clearTimeout(t);
+    }
+  }, [step, totalSteps]);
 
   const canNext = useMemo(() => {
     switch (step) {
@@ -458,58 +489,18 @@ export function OnboardingWizard({
         </StepShell>
       )}
 
-      {step === totalSteps && s.birthYear && (
-        <div className="text-center">
-          <h2 className="mb-1 font-condensed text-2xl font-bold uppercase">Ta carte joueur</h2>
-          <p className="mb-4 text-sm text-muted">
-            Tes stats se rempliront avec tes premiers tests.
-          </p>
-          <div className="mb-6 flex justify-center">
-            <PlayerCard
-              data={{
-                firstName: s.firstName,
-                position: s.position,
-                positionLabel: POSITIONS.find((p) => p.key === s.position)?.label ?? s.position,
-                category: categoryOf(s.birthYear),
-                divisionLabel:
-                  s.levelType === "NATIONAL"
-                    ? s.division
-                    : `${s.division} — ${
-                        s.levelType === "REGIONAL"
-                          ? `Ligue ${LEAGUES.find((l) => l.key === s.region)?.name ?? ""}`
-                          : s.district
-                            ? `District ${s.district}`
-                            : LEAGUES.find((l) => l.key === s.region)?.name ?? ""
-                      }`,
-                stats: [
-                  { label: "Jonglage", value: "—" },
-                  { label: "Navette", value: "—" },
-                  { label: "Planche", value: "—" },
-                  { label: "Détente", value: "—" },
-                ],
-              }}
-            />
-          </div>
-          {error && <p className="mb-3 text-sm text-red-400">{error}</p>}
-          <Button onClick={finish} disabled={submitting} size="lg" className="w-full">
-            {submitting
-              ? "Génération de ton programme…"
-              : authed
-                ? "Générer mon programme 🔥"
-                : "Créer mon compte & recevoir mon programme 🔥"}
-          </Button>
-          {!authed && !submitting && (
-            <p className="mt-2 text-xs text-muted">
-              Tes réponses sont gardées. Connexion en 1 geste (Google ou email), gratuit, sans
-              carte.
-            </p>
-          )}
-          {submitting && (
-            <p className="mt-3 text-xs text-muted">
-              Ton préparateur compose ta semaine… (quelques secondes)
-            </p>
-          )}
-        </div>
+      {step === totalSteps && s.birthYear && reveal === "analyze" && (
+        <AnalyzeScreen state={s} />
+      )}
+
+      {step === totalSteps && s.birthYear && reveal === "show" && (
+        <RevealScreen
+          state={s}
+          authed={authed}
+          submitting={submitting}
+          error={error}
+          onFinish={finish}
+        />
       )}
 
       {step < totalSteps && (
@@ -527,6 +518,179 @@ export function OnboardingWizard({
             {step === lastQuestionStep ? "Voir ma carte" : "Continuer"}
           </Button>
         </div>
+      )}
+    </div>
+  );
+}
+
+// Écran d'analyse : donne l'impression qu'un vrai préparateur compose le programme.
+function AnalyzeScreen({ state: s }: { state: State }) {
+  const [bar, setBar] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setBar(100), 60);
+    return () => clearTimeout(t);
+  }, []);
+
+  const lines = [
+    `Profil de ${positionLabel(s.position)} analysé`,
+    s.matchDay !== null && s.matchDay !== undefined
+      ? `Calendrier calé sur ton match du ${DAYS_FR[s.matchDay].toLowerCase()}`
+      : "Séances réparties sur ta semaine",
+    `Exercices choisis pour ${goalLabel(s.goal).toLowerCase()}`,
+    s.birthYear ? `Adapté à ton niveau ${categoryOf(s.birthYear)} · ${s.division}` : "Programme ajusté à ton niveau",
+  ];
+
+  return (
+    <div className="flex min-h-[52vh] flex-col items-center justify-center text-center">
+      <div className="relative mb-7 h-24 w-24">
+        <div className="absolute inset-0 rounded-full border-2 border-line" />
+        <div
+          className="absolute inset-0 animate-spin rounded-full"
+          style={{
+            background:
+              "conic-gradient(from 0deg, transparent 0deg, rgba(225,42,58,.55) 60deg, transparent 120deg)",
+            animationDuration: "1.1s",
+          }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center text-3xl">⚽</div>
+      </div>
+      <h2 className="mb-6 font-condensed text-2xl font-bold uppercase">
+        On construit ton programme…
+      </h2>
+      <div className="mb-6 flex w-full max-w-xs flex-col gap-3 text-left">
+        {lines.map((line, i) => (
+          <div
+            key={i}
+            className="ob-rise flex items-center gap-3 text-sm"
+            style={{ animationDelay: `${300 + i * 480}ms` }}
+          >
+            <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-glow text-[11px] font-black text-white">
+              ✓
+            </span>
+            <span className="text-chalk">{line}</span>
+          </div>
+        ))}
+      </div>
+      <div className="h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-line">
+        <div
+          className="h-full rounded-full bg-glow transition-[width] ease-linear"
+          style={{ width: `${bar}%`, transitionDuration: "2200ms" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Révélation : la carte joueur + le programme perso, AVANT l'inscription (sunk-cost).
+function RevealScreen({
+  state: s,
+  authed,
+  submitting,
+  error,
+  onFinish,
+}: {
+  state: State;
+  authed: boolean;
+  submitting: boolean;
+  error: string | null;
+  onFinish: () => void;
+}) {
+  const { rating, stats } = startingProfile(s);
+  const [filled, setFilled] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setFilled(true), 480);
+    return () => clearTimeout(t);
+  }, []);
+
+  const teasers = lockedTeasers({ position: s.position, goal: s.goal, matchDay: s.matchDay });
+  const category = s.birthYear ? categoryOf(s.birthYear) : "";
+  const league = LEAGUES.find((l) => l.key === s.region)?.name ?? "";
+  const sub = [category, s.division, s.goal ? `objectif ${goalLabel(s.goal).toLowerCase()}` : ""]
+    .filter(Boolean)
+    .join(" · ");
+
+  return (
+    <div>
+      <p className="mb-1 text-center font-condensed text-sm font-bold uppercase tracking-widest text-glow">
+        Ton programme est prêt 🔥
+      </p>
+      <h2 className="ob-rise mb-4 text-center font-condensed text-2xl font-bold uppercase">
+        Voilà <span className="text-glow">ta</span> carte joueur
+      </h2>
+
+      {/* Carte joueur */}
+      <div className="ob-pop ob-shine relative mx-auto max-w-xs overflow-hidden rounded-2xl border border-line bg-gradient-to-b from-surface to-night p-4 shadow-xl">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="font-condensed text-5xl font-bold leading-none tnum">{rating}</p>
+            <p className="mt-1 text-[10px] uppercase tracking-widest text-muted">Estimation de départ</p>
+          </div>
+          <span className="rounded-lg bg-glow px-2.5 py-1 font-condensed text-xs font-bold uppercase tracking-wide text-white">
+            {positionLabel(s.position)}
+          </span>
+        </div>
+        <p className="mt-3 font-condensed text-2xl font-bold uppercase">{s.firstName}</p>
+        {sub && <p className="text-xs text-muted">{sub}</p>}
+        <div className="mt-3 flex flex-col gap-2">
+          {stats.map((st) => (
+            <div key={st.label} className="flex items-center gap-2 text-[11px]">
+              <span className="w-16 uppercase tracking-wide text-muted">{st.label}</span>
+              <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-night">
+                <span
+                  className="block h-full rounded-full bg-gradient-to-r from-glow to-[#ff5763] transition-[width] duration-700 ease-out"
+                  style={{ width: filled ? `${st.value}%` : "0%" }}
+                />
+              </span>
+              <span className="w-6 text-right font-bold tnum">{st.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Programme perso */}
+      <div className="ob-rise mt-4 rounded-xl border border-line bg-surface p-4" style={{ animationDelay: "250ms" }}>
+        <p className="mb-2 font-condensed text-sm font-bold uppercase tracking-wide text-glow">
+          3 séances rien que pour toi cette semaine
+        </p>
+        <ul>
+          {teasers.map((t, i) => (
+            <li
+              key={i}
+              className="flex items-center justify-between gap-2 border-t border-line py-2 first:border-t-0"
+            >
+              <div className={`min-w-0 ${i === 0 ? "" : "select-none blur-[2.5px]"}`}>
+                <p className="truncate font-condensed text-sm font-bold uppercase">
+                  <span className="text-muted">{t.day.slice(0, 3)} · </span>
+                  {t.title}
+                </p>
+                <p className="truncate text-[11px] text-muted">
+                  {t.duration} min · {t.focus}
+                </p>
+              </div>
+              <span className="flex-none text-xs">{i === 0 ? "🔓" : "🔒"}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {error && <p className="mt-3 text-center text-sm text-red-400">{error}</p>}
+
+      <Button onClick={onFinish} disabled={submitting} size="lg" className="mt-5 w-full">
+        {submitting
+          ? "Génération de ton programme…"
+          : authed
+            ? "Générer mon programme 🔥"
+            : "Créer mon compte & recevoir mon programme 🔥"}
+      </Button>
+      {!authed && !submitting && (
+        <p className="mt-2 text-center text-xs text-muted">
+          Tes réponses sont gardées. Connexion en 1 geste (Google ou email), gratuit, sans carte.
+        </p>
+      )}
+      {submitting && (
+        <p className="mt-3 text-center text-xs text-muted">
+          Ton préparateur compose ta semaine… (quelques secondes)
+        </p>
       )}
     </div>
   );
