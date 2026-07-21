@@ -2,6 +2,10 @@ import Link from "next/link";
 import { PlayerCard } from "@/components/PlayerCard";
 import { ButtonLink } from "@/components/ui";
 import { SiteFooter } from "@/components/SiteFooter";
+import { PhoneDemo } from "@/components/PhoneDemo";
+import { TrustStrip, SocialProof } from "@/components/SocialProof";
+import { unstable_cache } from "next/cache";
+import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/site";
 
 // Landing — conversion jeune ET parent. Direction artistique « Carton rouge ».
@@ -23,7 +27,16 @@ const jsonLd = {
   audience: { "@type": "PeopleAudience", suggestedMinAge: 13 },
 };
 
-export default function LandingPage() {
+// Compteur de joueurs mis en cache 1 h : évite un appel base à chaque visite
+// de la landing (la page la plus consultée).
+const getPlayerCount = unstable_cache(
+  async () => prisma.user.count(),
+  ["landing-player-count"],
+  { revalidate: 3600 },
+);
+
+export default async function LandingPage() {
+  const playerCount = await getPlayerCount().catch(() => 0);
   return (
     <main className="pitch-bg min-h-screen">
       <script
@@ -64,6 +77,16 @@ export default function LandingPage() {
               Créer mon programme gratuit
             </ButtonLink>
             <p className="text-xs text-muted">90 secondes pour répondre. Aucune carte demandée.</p>
+          </div>
+
+          <TrustStrip playerCount={playerCount} />
+
+          {/* aperçu du produit dans un téléphone (au-dessus de la ligne de flottaison) */}
+          <div className="mt-9">
+            <PhoneDemo />
+            <p className="mt-3 text-xs text-muted">
+              L&apos;app : ta semaine, tes séances, ta progression — calées sur ton poste.
+            </p>
           </div>
 
           {/* bandeau chiffres — style tableau d'affichage */}
@@ -155,6 +178,9 @@ export default function LandingPage() {
             discute pas.
           </p>
         </section>
+
+        {/* preuve sociale (coach + témoignages réels — masqué tant que vide) */}
+        <SocialProof />
 
         {/* bloc parent */}
         <section className="mt-12 rounded-card border border-line bg-surface p-5">
