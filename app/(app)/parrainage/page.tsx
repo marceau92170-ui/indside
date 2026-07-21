@@ -2,7 +2,12 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { isPremium } from "@/lib/plan";
 import { SITE_URL } from "@/lib/site";
-import { getOrCreateInviteCode, countReferrals, REFERRAL_REWARD_DAYS, REFERRAL_MAX_DAYS } from "@/lib/referral";
+import {
+  getOrCreateInviteCode,
+  countReferrals,
+  REFERRAL_FRIENDS_PER_WEEK,
+  REFERRAL_MAX_WEEKS,
+} from "@/lib/referral";
 import { InviteShare } from "@/components/InviteShare";
 import { Card } from "@/components/ui";
 
@@ -15,6 +20,7 @@ export default async function ParrainagePage() {
   const code = await getOrCreateInviteCode(user.id);
   const url = `${SITE_URL}/invite/${code}`;
   const referrals = await countReferrals(code);
+  const weeksEarned = Math.min(Math.floor(referrals / REFERRAL_FRIENDS_PER_WEEK), REFERRAL_MAX_WEEKS);
   const premium = isPremium(user);
   const until =
     user.premiumUntil && user.premiumUntil > new Date()
@@ -25,9 +31,9 @@ export default async function ParrainagePage() {
     <div className="mx-auto max-w-lg">
       <h1 className="mb-1 font-condensed text-3xl font-bold uppercase">Invite ton équipe</h1>
       <p className="mb-5 text-sm text-muted">
-        Chaque coéquipier qui crée son programme via ton lien te rapporte{" "}
+        {REFERRAL_FRIENDS_PER_WEEK} coéquipiers qui créent leur programme via ton lien ={" "}
         <span className="font-semibold text-chalk">1 semaine de Premium offerte</span>. Cumulable
-        jusqu&apos;à {REFERRAL_MAX_DAYS / 7} semaines.
+        jusqu&apos;à {REFERRAL_MAX_WEEKS} semaines.
       </p>
 
       <Card className="mb-4">
@@ -45,10 +51,10 @@ export default async function ParrainagePage() {
             </div>
             <div>
               <p className="font-condensed text-3xl font-bold text-glow tnum">
-                {referrals * REFERRAL_REWARD_DAYS / 7}
+                {weeksEarned}
               </p>
               <p className="text-[11px] uppercase tracking-wide text-muted">
-                semaine{referrals > 1 ? "s" : ""} gagnée{referrals > 1 ? "s" : ""}
+                semaine{weeksEarned > 1 ? "s" : ""} gagnée{weeksEarned > 1 ? "s" : ""}
               </p>
             </div>
           </div>
@@ -64,8 +70,12 @@ export default async function ParrainagePage() {
         <h2 className="font-condensed text-lg font-bold uppercase">Comment ça marche</h2>
         {[
           ["1", "Partage ton lien", "À tes coéquipiers, sur ton groupe d'équipe, en story…"],
-          ["2", "Ton pote crée son programme", "Il répond aux questions et reçoit son programme perso."],
-          ["3", "Tu gagnes 1 semaine Premium", "Créditée automatiquement dès qu'il a fini son inscription."],
+          ["2", "Tes potes créent leur programme", "Ils répondent aux questions et reçoivent leur programme perso."],
+          [
+            "3",
+            `Tous les ${REFERRAL_FRIENDS_PER_WEEK} potes : 1 semaine`,
+            `Premium crédité automatiquement, jusqu'à ${REFERRAL_MAX_WEEKS} semaines gratuites.`,
+          ],
         ].map(([n, t, d]) => (
           <div key={n} className="flex gap-4 rounded-card border border-line bg-surface p-4">
             <span className="font-condensed text-2xl font-bold text-glow">{n}</span>
@@ -79,8 +89,8 @@ export default async function ParrainagePage() {
 
       {!premium && (
         <p className="mt-5 text-center text-xs text-muted">
-          Astuce : {REFERRAL_MAX_DAYS / 7} potes = {REFERRAL_MAX_DAYS / 7} semaines de Premium gratuites,
-          de quoi tester tout le programme complet sans payer.
+          Astuce : {REFERRAL_MAX_WEEKS * REFERRAL_FRIENDS_PER_WEEK} potes = {REFERRAL_MAX_WEEKS} semaines
+          de Premium gratuites, de quoi tester tout le programme complet sans payer.
         </p>
       )}
     </div>

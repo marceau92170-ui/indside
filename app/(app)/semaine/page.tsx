@@ -323,7 +323,7 @@ export default async function SemainePage() {
               Invite ton équipe 🤝
             </p>
             <p className="text-sm text-muted">
-              1 pote inscrit = 1 semaine de Premium offerte.
+              3 potes inscrits = 1 semaine de Premium offerte.
             </p>
           </div>
           <span className="flex-none text-glow" aria-hidden="true">→</span>
