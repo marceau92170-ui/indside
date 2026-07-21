@@ -4,8 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { createWeeklyProgram } from "@/lib/program/create";
 import { ageFromBirthYear, isEligibleBirthYear } from "@/lib/categories";
+import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/email/resend";
 import { welcomeEmail } from "@/lib/email/nurture";
+import { grantReferralReward } from "@/lib/referral";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60; // génération IA incluse
@@ -98,6 +100,21 @@ export async function POST(req: Request) {
     await sendEmail({ to: fresh.parentEmail ?? fresh.email, subject, html });
   } catch {
     // déjà envoyé (contrainte unique) ou erreur d'envoi → non bloquant
+  }
+
+  // Parrainage entre joueurs : si le filleul vient d'un lien d'invitation, on
+  // grave le lien (une seule fois) et on offre 1 semaine de Premium au parrain.
+  try {
+    const inviteCode = (await cookies()).get("invite_code")?.value?.toUpperCase();
+    if (inviteCode && fresh.inviteCode !== inviteCode) {
+      const claimed = await prisma.user.updateMany({
+        where: { id: user.id, inviteRewardGranted: false, invitedByCode: null },
+        data: { invitedByCode: inviteCode, inviteRewardGranted: true },
+      });
+      if (claimed.count === 1) await grantReferralReward(inviteCode);
+    }
+  } catch {
+    // non bloquant
   }
 
   return NextResponse.json({ ok: true });
