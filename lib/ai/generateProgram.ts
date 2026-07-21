@@ -226,6 +226,9 @@ export async function generateProgramWithAI(
       const response = await client.messages.create({
         model: "claude-sonnet-5",
         max_tokens: 6000,
+        // Tâche structurée (JSON) : pas besoin de « réflexion » — désactivée pour
+        // une génération rapide (quelques secondes au lieu de ~30 s).
+        thinking: { type: "disabled" },
         system,
         messages: [
           {
