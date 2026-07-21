@@ -7,7 +7,8 @@ import { isAdult } from "@/lib/categories";
 import { SITE_URL } from "@/lib/site";
 
 // Durée de l'essai gratuit (carte demandée, débit uniquement à la fin si non résilié).
-export const TRIAL_DAYS = 7;
+// NB : pas d'`export` — un fichier de route Next.js n'autorise que GET/POST/dynamic/etc.
+const TRIAL_DAYS = 7;
 
 export const dynamic = "force-dynamic";
 
