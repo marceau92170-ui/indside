@@ -5,6 +5,8 @@ import { TEST_TYPES } from "@/lib/constants";
 import { ProgressChart } from "@/components/ProgressChart";
 import { TestRecorder } from "@/components/TestRecorder";
 import { Card, ButtonLink } from "@/components/ui";
+import { SITE_URL } from "@/lib/site";
+import { getOrCreateInviteCode } from "@/lib/referral";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +14,8 @@ export default async function TestsPage() {
   const user = await currentUser();
   if (!user) return null;
   const premium = isPremium(user);
+  // Lien perso pour partager un record (nourrit le parrainage).
+  const inviteUrl = premium ? `${SITE_URL}/invite/${await getOrCreateInviteCode(user.id)}` : undefined;
 
   const results = await prisma.testResult.findMany({
     where: { userId: user.id },
@@ -74,7 +78,14 @@ export default async function TestsPage() {
                 </p>
               )}
 
-              <TestRecorder testType={t.key} unit={t.unit} locked={!premium} />
+              <TestRecorder
+                testType={t.key}
+                unit={t.unit}
+                label={t.label}
+                timed={t.unit === "s"}
+                inviteUrl={inviteUrl}
+                locked={!premium}
+              />
             </Card>
           );
         })}
