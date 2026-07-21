@@ -49,7 +49,7 @@ export default async function LandingPage() {
           <span className="font-display text-xl tracking-wider">PROGRESSA</span>
           <Link
             href="/connexion"
-            className="rounded-full border border-line px-4 py-1.5 text-sm font-semibold text-chalk hover:border-glow hover:text-glow"
+            className="rounded-lg border border-line bg-surface/40 px-4 py-1.5 text-sm font-semibold text-chalk transition-colors hover:border-glow hover:text-glow"
           >
             Connexion
           </Link>
@@ -219,11 +219,11 @@ export default async function LandingPage() {
       </div>
 
       {/* CTA collant : toujours à portée de pouce pendant le scroll (trafic mobile) */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-night/95 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-night/90 backdrop-blur-md">
         <div className="mx-auto max-w-lg px-4 py-3">
           <Link
             href="/onboarding"
-            className="block w-full rounded-full bg-glow px-6 py-3 text-center font-condensed text-lg font-bold uppercase tracking-wide text-night"
+            className="block w-full rounded-xl bg-glow px-6 py-3.5 text-center font-condensed text-lg font-bold uppercase tracking-wide text-white shadow-lg shadow-glow/25 transition-all duration-150 hover:bg-[#f13d4d] hover:shadow-glow/40 active:scale-[.99] active:bg-[#c22230]"
           >
             Créer mon programme gratuit
           </Link>

@@ -16,17 +16,19 @@ export function Card({
 }
 
 const btnBase =
-  "inline-flex items-center justify-center gap-2 rounded-lg font-condensed font-bold uppercase tracking-wide transition-colors disabled:opacity-40 disabled:pointer-events-none";
+  "inline-flex select-none items-center justify-center gap-2 rounded-xl font-condensed font-bold uppercase tracking-wide transition-all duration-150 active:scale-[.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glow/50 focus-visible:ring-offset-2 focus-visible:ring-offset-night disabled:opacity-40 disabled:pointer-events-none disabled:active:scale-100";
 
 const btnVariants = {
-  primary: "bg-glow text-white hover:bg-[#f13d4d] active:bg-[#c22230]",
-  ghost: "border border-line text-chalk hover:border-glow hover:text-glow",
+  primary:
+    "bg-glow text-white shadow-lg shadow-glow/25 hover:bg-[#f13d4d] hover:shadow-glow/40 hover:-translate-y-px active:bg-[#c22230] active:shadow-md",
+  ghost:
+    "border border-line bg-surface/40 text-chalk hover:border-glow hover:bg-glow/5 hover:text-glow",
   subtle: "bg-line/50 text-chalk hover:bg-line",
 } as const;
 
 const btnSizes = {
   md: "px-5 py-3 text-base",
-  sm: "px-3 py-2 text-sm",
+  sm: "px-3.5 py-2 text-sm",
   lg: "px-7 py-4 text-lg",
 } as const;
 
