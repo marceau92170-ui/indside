@@ -647,10 +647,12 @@ export function ExerciseIllustration({
   slug,
   category,
   premium = false,
+  showCue = true,
 }: {
   slug: string;
   category: string;
   premium?: boolean;
+  showCue?: boolean;
 }) {
   const key = ILLUSTRATION_MAP[slug] ?? CATEGORY_FALLBACK[category] ?? "squat";
   const archetype = ARCHETYPES[key];
@@ -660,7 +662,7 @@ export function ExerciseIllustration({
       <div className="aspect-square w-full">
         {premium ? <PremiumFigure archetype={archetype} /> : <Stick archetype={archetype} />}
       </div>
-      {cue && (
+      {showCue && cue && (
         <div className="flex items-start gap-2 border-t border-line px-3 py-2.5">
           <span aria-hidden="true" className="text-glow">👁</span>
           <p className="text-xs leading-snug text-chalk">

@@ -3,6 +3,7 @@ import { isPremium } from "@/lib/plan";
 import { isAdult } from "@/lib/categories";
 import { Card } from "@/components/ui";
 import { CheckoutButtons, ManageSubscriptionButton } from "@/components/CheckoutButtons";
+import { ExerciseIllustration } from "@/components/ExerciseIllustration";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,8 @@ const COMPARE: { label: string; free: string; premium: string }[] = [
   { label: "S'adapte chaque semaine à tes retours (IA)", free: "no", premium: "yes" },
   { label: "Évite tout seul tes zones de douleur (IA)", free: "no", premium: "yes" },
   { label: "Exercices de la bibliothèque", free: "10", premium: "60" },
+  { label: "Démonstrations en personnage réaliste (pas en bonhomme)", free: "no", premium: "yes" },
+  { label: "Conseils du coach à chaque exercice", free: "no", premium: "yes" },
   { label: "Tests d'évaluation + graphiques de progression", free: "no", premium: "yes" },
   { label: "Conseils nutrition & hydratation calés sur tes matchs", free: "no", premium: "yes" },
   { label: "Carte joueur avec tes vraies stats", free: "no", premium: "yes" },
@@ -87,6 +90,29 @@ export default async function PremiumPage() {
           </tbody>
         </table>
       </div>
+
+      {/* La différence se VOIT : bonhomme bâton (gratuit) vs personnage réaliste (Premium) */}
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted">
+        Vois la différence
+      </p>
+      <div className="mb-2 grid grid-cols-2 gap-3">
+        <div>
+          <p className="mb-1.5 text-center text-xs font-bold uppercase tracking-wide text-muted">
+            Gratuit
+          </p>
+          <ExerciseIllustration slug="conduite-en-huit" category="U16" premium={false} showCue={false} />
+        </div>
+        <div className="rounded-xl">
+          <p className="mb-1.5 text-center text-xs font-bold uppercase tracking-wide text-glow">
+            Premium
+          </p>
+          <ExerciseIllustration slug="conduite-en-huit" category="U16" premium showCue={false} />
+        </div>
+      </div>
+      <p className="mb-6 text-center text-xs text-muted">
+        Démonstrations en <span className="text-chalk">personnage réaliste</span>, gestes détaillés
+        et conseils du coach à chaque exercice.
+      </p>
 
       <CheckoutButtons />
 
