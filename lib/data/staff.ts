@@ -48,6 +48,10 @@ export const AFFILIATES: AffiliateSeed[] = [
   { code: "asko", name: "Asko", email: "aouahrani@icloud.com" },
   { code: "gamby", name: "SportxGamby", email: "mazine.namane1@gmail.com" },
   { code: "enzo", name: "Enzo", email: "enzobonichot807@gmail.com" },
+  // Samy (water44) : créateur payé au FIXE (150 €/mois) → 0 commission, 0 bonus.
+  // "house" = on suit clics/inscrits/ventes/CA de son lien, sans rien lui devoir par vente.
+  // Il garde son Premium gratuit (déjà dans PREMIUM_EMAILS) pour filmer l'app.
+  { code: "sam", name: "Samy (water44)", email: "samy.water44@gmail.com", house: true },
   // Affilié de TEST (à retirer après vérif du flux) — dashboard : marceau92170+test@gmail.com
   { code: "test", name: "Test", email: "marceau92170+test@gmail.com" },
 ];
