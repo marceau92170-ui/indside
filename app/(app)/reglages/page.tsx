@@ -21,6 +21,19 @@ export default async function ReglagesPage() {
     <div>
       <h1 className="mb-4 font-condensed text-3xl font-bold uppercase">Réglages</h1>
 
+      <Card className="mb-4 border-glow/30">
+        <h2 className="mb-1 font-condensed text-lg font-bold uppercase">Donne ton avis ⭐</h2>
+        <p className="mb-3 text-sm text-muted">
+          Ton retour honnête aide les prochains joueurs à se lancer. 30 secondes.
+        </p>
+        <Link
+          href="/avis"
+          className="inline-flex rounded-lg bg-glow px-4 py-2 text-sm font-bold uppercase tracking-wide text-white hover:bg-[#f13d4d]"
+        >
+          Laisser un avis
+        </Link>
+      </Card>
+
       <Card className="mb-4">
         <h2 className="mb-2 font-condensed text-lg font-bold uppercase">Mon profil</h2>
         <dl className="space-y-1 text-sm">

@@ -64,6 +64,7 @@ model User {
   goals             Goal[]
   affiliateProfile  Affiliate? @relation("AffiliateUser")
   emailEvents       EmailEvent[]
+  review            Review?
 }
 
 // Journal des e-mails automatiques (bienvenue, relances nurture…).
@@ -413,4 +414,23 @@ model Goal {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// ---------- Avis / témoignages (soumis par les utilisateurs, modérés) ----------
+// UNIQUEMENT du vrai : un avis vient d'un utilisateur connecté, et n'est publié
+// qu'après validation manuelle (status = approved). Un avis par utilisateur.
+model Review {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  rating      Int // 1 à 5
+  text        String
+  displayName String // prénom (pas de nom complet — RGPD mineurs)
+  meta        String // ex : "Ailier · U16"
+  status      String   @default("pending") // pending | approved | rejected
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
 }

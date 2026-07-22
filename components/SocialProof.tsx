@@ -1,4 +1,5 @@
-import { TESTIMONIALS, COACH_ENDORSEMENT, PLAYER_COUNT_THRESHOLD } from "@/lib/data/social";
+import { prisma } from "@/lib/prisma";
+import { COACH_ENDORSEMENT, PLAYER_COUNT_THRESHOLD } from "@/lib/data/social";
 
 // Bandeau de confiance : chiffres et gages VRAIS (jamais de faux avis).
 export function TrustStrip({ playerCount }: { playerCount: number }) {
@@ -18,11 +19,21 @@ export function TrustStrip({ playerCount }: { playerCount: number }) {
   );
 }
 
-// Endorsement coach + témoignages réels. Rien ne s'affiche tant que ce n'est pas rempli.
-export function SocialProof() {
+// Endorsement coach + avis RÉELS (soumis par des utilisateurs, validés en modération).
+// Rien ne s'affiche tant qu'il n'y a ni coach ni avis approuvé — jamais de faux avis.
+export async function SocialProof() {
+  const reviews = await prisma.review
+    .findMany({
+      where: { status: "approved" },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+      select: { id: true, rating: true, text: true, displayName: true, meta: true },
+    })
+    .catch(() => [] as { id: string; rating: number; text: string; displayName: string; meta: string }[]);
+
   const hasCoach = COACH_ENDORSEMENT.name.trim().length > 0;
-  const hasTestimonials = TESTIMONIALS.length > 0;
-  if (!hasCoach && !hasTestimonials) return null;
+  const hasReviews = reviews.length > 0;
+  if (!hasCoach && !hasReviews) return null;
 
   return (
     <section className="mt-12 space-y-4">
@@ -33,9 +44,7 @@ export function SocialProof() {
           <p className="text-[11px] font-bold uppercase tracking-widest text-glow">
             Validé par un coach
           </p>
-          <blockquote className="mt-2 text-sm text-chalk">
-            « {COACH_ENDORSEMENT.quote} »
-          </blockquote>
+          <blockquote className="mt-2 text-sm text-chalk">« {COACH_ENDORSEMENT.quote} »</blockquote>
           <figcaption className="mt-2 text-xs text-muted">
             <span className="font-semibold text-chalk">{COACH_ENDORSEMENT.name}</span> —{" "}
             {COACH_ENDORSEMENT.role}
@@ -44,13 +53,17 @@ export function SocialProof() {
         </figure>
       )}
 
-      {hasTestimonials && (
+      {hasReviews && (
         <div className="grid gap-3 sm:grid-cols-2">
-          {TESTIMONIALS.map((t, i) => (
-            <figure key={i} className="rounded-card border border-line bg-surface p-4">
-              <blockquote className="text-sm text-chalk">« {t.quote} »</blockquote>
+          {reviews.map((r) => (
+            <figure key={r.id} className="rounded-card border border-line bg-surface p-4">
+              <div className="mb-1 text-glow" aria-label={`${r.rating} sur 5`}>
+                {"★".repeat(r.rating)}
+                <span className="text-line">{"★".repeat(5 - r.rating)}</span>
+              </div>
+              <blockquote className="text-sm text-chalk">« {r.text} »</blockquote>
               <figcaption className="mt-2 text-xs text-muted">
-                <span className="font-semibold text-chalk">{t.name}</span> · {t.meta}
+                <span className="font-semibold text-chalk">{r.displayName}</span> · {r.meta}
               </figcaption>
             </figure>
           ))}
