@@ -9,6 +9,7 @@ export function SiteFooter() {
     <footer className="mt-16 border-t border-line pt-6 text-center text-xs text-muted">
       <p className="mb-2 font-display text-sm tracking-wider text-chalk">PROGRESSA</p>
       <p className="mb-2 flex flex-wrap justify-center gap-x-2 gap-y-1">
+        <Link href="/exercices" className="underline">Exercices</Link> ·{" "}
         <Link href="/faq" className="underline">FAQ</Link> ·{" "}
         <Link href="/mentions-legales" className="underline">Mentions légales</Link> ·{" "}
         <Link href="/cgv" className="underline">CGV</Link> ·{" "}

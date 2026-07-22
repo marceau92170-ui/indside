@@ -89,6 +89,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <html lang="fr" className={`${display.variable} ${condensed.variable} ${body.variable}`}>
         <body>
+          {/* Données structurées Organization : aide Google à comprendre la marque
+              (nom, logo, site) et à afficher un panneau de connaissance. */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                name: "Progressa",
+                url: SITE_URL,
+                logo: `${SITE_URL}/api/pwa-icon?size=512`,
+                description: DESCRIPTION,
+                sameAs: [] as string[],
+              }),
+            }}
+          />
           <PostHogProvider>{children}</PostHogProvider>
           {/* Web Analytics Vercel : mesure TOUT le trafic (toutes sources : TikTok,
               Google, Instagram, direct…), sans cookie ni donnée perso (RGPD-friendly).
