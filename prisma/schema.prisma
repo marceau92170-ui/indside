@@ -44,7 +44,8 @@ model User {
   // Parrainage entre joueurs
   inviteCode          String?  @unique // code perso à partager avec ses coéquipiers
   invitedByCode       String? // code du pote qui l'a invité (gravé une fois)
-  inviteRewardGranted Boolean  @default(false) // récompense déjà versée au parrain ?
+  inviteRewardGranted Boolean  @default(false) // récompense d'inscription déjà versée au parrain ?
+  paidInviteRewardGranted Boolean @default(false) // récompense "filleul abonné" déjà versée (1x, au 1er paiement) ?
 
   createdAt DateTime @default(now())
 

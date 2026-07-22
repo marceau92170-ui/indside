@@ -7,6 +7,11 @@ export const REFERRAL_REWARD_DAYS = 7;
 export const REFERRAL_MAX_WEEKS = 4;
 export const REFERRAL_MAX_DAYS = REFERRAL_MAX_WEEKS * REFERRAL_REWARD_DAYS; // 28 j
 
+// Bonus plus fort : un filleul qui S'ABONNE (vrai paiement) rapporte 2 semaines
+// au parrain (au lieu d'1 pour une simple inscription). Récompense une seule fois,
+// au premier vrai paiement du filleul.
+export const PAID_REFERRAL_REWARD_DAYS = 14;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sans I/O/0/1 (lisible)
 
@@ -63,6 +68,44 @@ export async function grantReferralReward(inviterCode: string): Promise<void> {
   await prisma.user.update({
     where: { id: inviter.id },
     data: { premiumUntil: new Date(capped) },
+  });
+}
+
+// Bonus « filleul abonné » : quand un joueur parrainé effectue son PREMIER vrai
+// paiement, on offre 2 semaines de Premium à son parrain. Déclenché depuis le
+// webhook Stripe (invoice.payment_succeeded). Idempotent : un verrou atomique
+// (updateMany sur le flag) garantit une seule récompense, même si l'événement
+// est rejoué ou arrive en double.
+export async function grantPaidReferralReward(payerUserId: string): Promise<void> {
+  const payer = await prisma.user.findUnique({
+    where: { id: payerUserId },
+    select: { invitedByCode: true, paidInviteRewardGranted: true },
+  });
+  if (!payer?.invitedByCode || payer.paidInviteRewardGranted) return;
+
+  // Verrou atomique : on "réclame" la récompense. Si 0 ligne modifiée, c'est
+  // qu'un autre traitement l'a déjà fait → on s'arrête (jamais de double crédit).
+  const claim = await prisma.user.updateMany({
+    where: { id: payerUserId, paidInviteRewardGranted: false },
+    data: { paidInviteRewardGranted: true },
+  });
+  if (claim.count === 0) return;
+
+  const inviter = await prisma.user.findUnique({
+    where: { inviteCode: payer.invitedByCode },
+    select: { id: true, premiumUntil: true },
+  });
+  if (!inviter) return; // code d'invitation inconnu → personne à récompenser
+
+  const now = Date.now();
+  const base =
+    inviter.premiumUntil && inviter.premiumUntil.getTime() > now
+      ? inviter.premiumUntil.getTime()
+      : now;
+
+  await prisma.user.update({
+    where: { id: inviter.id },
+    data: { premiumUntil: new Date(base + PAID_REFERRAL_REWARD_DAYS * DAY_MS) },
   });
 }
 

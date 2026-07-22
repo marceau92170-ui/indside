@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { commissionCents, isWithinLaunchWindow } from "@/lib/affiliate";
+import { grantPaidReferralReward } from "@/lib/referral";
 
 export const dynamic = "force-dynamic";
 
@@ -133,6 +134,12 @@ export async function POST(req: Request) {
           const sub = await stripe().subscriptions.retrieve(subId);
           await upsertSubscription(sub);
           await recordSale(sub, invoice.amount_paid ?? 0);
+          // Parrainage entre joueurs : le parrain gagne 2 semaines quand son
+          // filleul effectue son 1er vrai paiement (idempotent côté fonction).
+          const payerId =
+            (sub.metadata?.userId as string | undefined) ??
+            (await userIdFromCustomer(sub.customer as string));
+          if (payerId) await grantPaidReferralReward(payerId);
         }
       }
       break;

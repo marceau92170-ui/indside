@@ -7,6 +7,7 @@ import {
   countReferrals,
   REFERRAL_FRIENDS_PER_WEEK,
   REFERRAL_MAX_WEEKS,
+  PAID_REFERRAL_REWARD_DAYS,
 } from "@/lib/referral";
 import { InviteShare } from "@/components/InviteShare";
 import { Card } from "@/components/ui";
@@ -30,11 +31,22 @@ export default async function ParrainagePage() {
   return (
     <div className="mx-auto max-w-lg">
       <h1 className="mb-1 font-condensed text-3xl font-bold uppercase">Invite ton équipe</h1>
-      <p className="mb-5 text-sm text-muted">
+      <p className="mb-4 text-sm text-muted">
         {REFERRAL_FRIENDS_PER_WEEK} coéquipiers qui créent leur programme via ton lien ={" "}
         <span className="font-semibold text-chalk">1 semaine de Premium offerte</span>. Cumulable
         jusqu&apos;à {REFERRAL_MAX_WEEKS} semaines.
       </p>
+
+      <Card className="mb-4 border-glow/40 bg-glow/5">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-glow">Bonus abonné 🔥</p>
+        <p className="mt-1 text-sm text-chalk">
+          Un pote qui passe <span className="font-semibold">Premium</span> via ton lien ={" "}
+          <span className="font-semibold text-glow">
+            {Math.round(PAID_REFERRAL_REWARD_DAYS / 7)} semaines offertes
+          </span>{" "}
+          d&apos;un coup. Le meilleur moyen de rester Premium gratuitement.
+        </p>
+      </Card>
 
       <Card className="mb-4">
         <InviteShare url={url} />
