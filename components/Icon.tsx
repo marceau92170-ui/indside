@@ -88,14 +88,20 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <path d="M9.2 12l2 2 3.6-3.8" />
     </>
   ),
-  // gant (spécifique gardien)
+  // gant (spécifique gardien) — 4 doigts, pouce, bande de serrage
   gardien: (
     <>
-      <path d="M8 21v-5" />
-      <path d="M16 21v-6" />
-      <path d="M8 16V9a1.6 1.6 0 0 1 3.2 0M11.2 9V7.4a1.6 1.6 0 0 1 3.2 0V9M14.4 9a1.6 1.6 0 0 1 1.6 1.6V15" />
-      <path d="M8 12.5 6.2 10a1.5 1.5 0 0 1 2.4-1.8" />
-      <path d="M8 21h8" />
+      {/* les 4 doigts (bord supérieur festonné) */}
+      <path d="M7 12.5V8.7a1.25 1.25 0 0 1 2.5 0v3.8" />
+      <path d="M9.5 12.5V7.9a1.25 1.25 0 0 1 2.5 0v4.6" />
+      <path d="M12 12.5V7.9a1.25 1.25 0 0 1 2.5 0v4.6" />
+      <path d="M14.5 12.5V8.7a1.25 1.25 0 0 1 2.5 0v3.8" />
+      {/* paume + poignet */}
+      <path d="M7 12.5v8h10v-8" />
+      {/* pouce */}
+      <path d="M7 15.1 5.5 13.6a1.25 1.25 0 0 1 1.6-1.9" />
+      {/* bande de serrage */}
+      <path d="M7 17.4h10" />
     </>
   ),
   // calendrier (semaine)
