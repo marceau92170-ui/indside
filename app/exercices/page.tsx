@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ALL_EXERCISES, CATEGORY_INFO } from "@/lib/data/exercises";
 import type { ExerciseCategory } from "@/lib/data/types";
 import { SiteFooter } from "@/components/SiteFooter";
+import { Icon, type IconName } from "@/components/Icon";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -90,18 +91,22 @@ export default function ExercicesHubPage() {
             <a
               key={g.cat}
               href={`#${g.cat}`}
-              className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-chalk hover:border-glow hover:text-glow"
+              className="flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-chalk hover:border-glow hover:text-glow"
             >
-              {g.info.emoji} {g.info.label}
+              <Icon name={g.cat as IconName} className="h-4 w-4" />
+              {g.info.label}
             </a>
           ))}
         </div>
 
         {byCategory.map((g) => (
           <section key={g.cat} id={g.cat} className="mt-10 scroll-mt-4">
-            <h2 className="mb-3 font-condensed text-2xl font-bold uppercase">
-              {g.info.emoji} {g.info.label}
-              <span className="ml-2 text-sm font-semibold text-muted">{g.items.length} exercices</span>
+            <h2 className="mb-3 flex items-center gap-2 font-condensed text-2xl font-bold uppercase">
+              <span className="text-glow">
+                <Icon name={g.cat as IconName} className="h-6 w-6" />
+              </span>
+              {g.info.label}
+              <span className="ml-1 text-sm font-semibold text-muted">{g.items.length} exercices</span>
             </h2>
             <div className="grid gap-2 sm:grid-cols-2">
               {g.items.map((e) => (
@@ -110,7 +115,9 @@ export default function ExercicesHubPage() {
                   href={`/exercices/${e.slug}`}
                   className="group flex items-start gap-3 rounded-card border border-line bg-surface p-3 transition-colors hover:border-glow"
                 >
-                  <span className="text-xl leading-none">{e.emoji}</span>
+                  <span className="mt-0.5 text-glow">
+                    <Icon name={e.category as IconName} className="h-5 w-5" />
+                  </span>
                   <span className="min-w-0">
                     <span className="block font-condensed font-bold uppercase leading-tight text-chalk group-hover:text-glow">
                       {e.name}

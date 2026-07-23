@@ -67,9 +67,9 @@ export default async function MatchsPage() {
               </div>
               <p className="text-xs text-muted">{m.date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</p>
               <p className="tnum mt-1 text-sm">
-                ⚽ {m.goals} but(s) · 🎯 {m.assists} passe(s) D.{m.minutesPlayed !== null ? ` · ⏱️ ${m.minutesPlayed} min` : ""}
+                {m.goals} but(s) · {m.assists} passe(s) D.{m.minutesPlayed !== null ? ` · ${m.minutesPlayed} min` : ""}
               </p>
-              {m.focusNext && <p className="mt-2 text-xs text-muted">👉 À travailler : {m.focusNext}</p>}
+              {m.focusNext && <p className="mt-2 text-xs text-muted">À travailler : {m.focusNext}</p>}
             </Card>
           </li>
         ))}

@@ -81,7 +81,7 @@ export default async function ProgrammePostePage({
 
         <section>
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-glow">
-            {p.emoji} Entraînement par poste
+            Entraînement par poste
           </p>
           <h1 className="mt-2 font-condensed text-3xl font-bold uppercase leading-tight sm:text-4xl">
             Programme de foot pour {p.label.toLowerCase()}
@@ -158,7 +158,7 @@ export default async function ProgrammePostePage({
                 href={`/programme/${o.slug}`}
                 className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-chalk hover:border-glow hover:text-glow"
               >
-                {o.emoji} {o.label}
+                {o.label}
               </Link>
             ))}
           </div>

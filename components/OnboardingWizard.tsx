@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "@/components/ui";
+import { Icon } from "@/components/Icon";
 import { lockedTeasers } from "@/lib/teaser";
 import {
   EQUIPMENT,
@@ -268,8 +269,8 @@ export function OnboardingWizard({
           {s.birthYear && (
             <p className="stat-pop mt-4 text-center font-condensed text-xl font-bold text-glow">
               {s.birthYear === ADULT_BIRTH_YEAR
-                ? "Catégorie Senior 👊"
-                : `Tu joues en ${categoryOf(s.birthYear)} 👊`}
+                ? "Catégorie Senior"
+                : `Tu joues en ${categoryOf(s.birthYear)}`}
             </p>
           )}
         </StepShell>
@@ -438,7 +439,7 @@ export function OnboardingWizard({
           <div className="grid grid-cols-2 gap-2">
             {GOALS.map((g) => (
               <Choice key={g.key} active={s.goal === g.key} onClick={() => set({ goal: g.key })} full>
-                <span className="mr-1">{g.emoji}</span> {g.label}
+                {g.label}
               </Choice>
             ))}
           </div>
@@ -552,7 +553,9 @@ function AnalyzeScreen({ state: s }: { state: State }) {
             animationDuration: "1.1s",
           }}
         />
-        <div className="absolute inset-0 flex items-center justify-center text-3xl">⚽</div>
+        <div className="absolute inset-0 flex items-center justify-center text-glow">
+          <Icon name="technique" className="h-8 w-8" />
+        </div>
       </div>
       <h2 className="mb-6 font-condensed text-2xl font-bold uppercase">
         On construit ton programme…
@@ -612,7 +615,7 @@ function RevealScreen({
   return (
     <div>
       <p className="mb-1 text-center font-condensed text-sm font-bold uppercase tracking-widest text-glow">
-        Ton programme est prêt 🔥
+        Ton programme est prêt
       </p>
       <h2 className="ob-rise mb-4 text-center font-condensed text-2xl font-bold uppercase">
         Voilà <span className="text-glow">ta</span> carte joueur
@@ -667,7 +670,9 @@ function RevealScreen({
                   {t.duration} min · {t.focus}
                 </p>
               </div>
-              <span className="flex-none text-xs">{i === 0 ? "🔓" : "🔒"}</span>
+              <span className="flex-none text-muted">
+                {i === 0 ? <Icon name="check" className="h-4 w-4 text-glow" /> : <Icon name="lock" className="h-3.5 w-3.5" />}
+              </span>
             </li>
           ))}
         </ul>
@@ -679,8 +684,8 @@ function RevealScreen({
         {submitting
           ? "Génération de ton programme…"
           : authed
-            ? "Générer mon programme 🔥"
-            : "Créer mon compte & recevoir mon programme 🔥"}
+            ? "Générer mon programme"
+            : "Créer mon compte & recevoir mon programme"}
       </Button>
       {!authed && !submitting && (
         <p className="mt-2 text-center text-xs text-muted">

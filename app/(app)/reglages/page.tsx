@@ -22,7 +22,7 @@ export default async function ReglagesPage() {
       <h1 className="mb-4 font-condensed text-3xl font-bold uppercase">Réglages</h1>
 
       <Card className="mb-4 border-glow/30">
-        <h2 className="mb-1 font-condensed text-lg font-bold uppercase">Donne ton avis ⭐</h2>
+        <h2 className="mb-1 font-condensed text-lg font-bold uppercase">Donne ton avis</h2>
         <p className="mb-3 text-sm text-muted">
           Ton retour honnête aide les prochains joueurs à se lancer. 30 secondes.
         </p>

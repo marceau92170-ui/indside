@@ -34,7 +34,7 @@ export default async function AdminFeedbackPage() {
 
       {feedbacks.length === 0 ? (
         <p className="rounded-card border border-line bg-surface p-6 text-center text-sm text-muted">
-          Aucun retour pour le moment. La petite bulle 💬 dans l&apos;app permet à chacun d&apos;en
+          Aucun retour pour le moment. La petite bulle dans l&apos;app permet à chacun d&apos;en
           envoyer.
         </p>
       ) : (

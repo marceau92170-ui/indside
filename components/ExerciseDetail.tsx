@@ -1,6 +1,7 @@
 "use client";
 
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
+import { Icon, type IconName } from "@/components/Icon";
 
 export type ExerciseView = {
   id: string;
@@ -42,8 +43,11 @@ export function ExerciseDetail({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-start justify-between gap-3">
-          <h2 className="font-condensed text-2xl font-bold uppercase leading-tight">
-            {exercise.emoji} {exercise.name}
+          <h2 className="flex items-start gap-2 font-condensed text-2xl font-bold uppercase leading-tight">
+            <span className="mt-0.5 shrink-0 text-glow">
+              <Icon name={exercise.category as IconName} className="h-6 w-6" />
+            </span>
+            {exercise.name}
           </h2>
           <button onClick={onClose} className="text-2xl leading-none text-muted hover:text-chalk">
             ×

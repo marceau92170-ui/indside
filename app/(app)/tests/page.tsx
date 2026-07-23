@@ -56,9 +56,7 @@ export default async function TestsPage() {
           return (
             <Card key={t.key}>
               <div className="mb-1 flex items-center justify-between">
-                <h2 className="font-condensed text-xl font-bold uppercase">
-                  {t.emoji} {t.label}
-                </h2>
+                <h2 className="font-condensed text-xl font-bold uppercase">{t.label}</h2>
                 {latest !== null && (
                   <p className="tnum font-condensed text-2xl font-bold text-glow">
                     {Number(latest.toFixed(1))} <span className="text-xs text-muted">{t.unit}</span>

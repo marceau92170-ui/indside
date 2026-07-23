@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "@/components/ui";
+import { Icon } from "@/components/Icon";
 
 type SaveResult = { isBest?: boolean; isFirst?: boolean; delta?: number | null };
 
@@ -117,7 +118,11 @@ export function TestRecorder({
   }
 
   if (locked) {
-    return <p className="text-xs text-muted">🔒 Enregistrement réservé aux membres Premium.</p>;
+    return (
+      <p className="flex items-center gap-1.5 text-xs text-muted">
+        <Icon name="lock" className="h-3.5 w-3.5" /> Enregistrement réservé aux membres Premium.
+      </p>
+    );
   }
 
   // Célébration record / première mesure
@@ -127,7 +132,7 @@ export function TestRecorder({
         {celebration.record ? (
           <>
             <p className="font-condensed text-2xl font-bold uppercase text-glow">
-              Record battu ! 🔥
+              Record battu !
             </p>
             {celebration.delta !== null && (
               <p className="stat-pop mt-1 font-condensed text-3xl font-bold tnum">
@@ -137,7 +142,7 @@ export function TestRecorder({
             <p className="mt-1 text-sm text-muted">Ta carte joueur monte. Continue comme ça.</p>
             <div className="mt-3 flex flex-col gap-2">
               <Button size="sm" onClick={shareRecord}>
-                Partager mon record 🔥
+                Partager mon record
               </Button>
               <button
                 type="button"
@@ -150,7 +155,7 @@ export function TestRecorder({
           </>
         ) : (
           <>
-            <p className="font-condensed text-xl font-bold uppercase">Première mesure enregistrée 💪</p>
+            <p className="font-condensed text-xl font-bold uppercase">Première mesure enregistrée</p>
             <p className="mt-1 text-sm text-muted">
               C&apos;est ton point de départ. Refais le test dans 4 semaines pour voir ta progression.
             </p>

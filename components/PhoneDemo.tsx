@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Icon } from "@/components/Icon";
 
 // Aperçu du produit dans un cadre de téléphone (la vraie app, pas une pub).
 // Anime discrètement quand il entre à l'écran — montre la valeur en un coup d'œil.
@@ -36,12 +37,12 @@ export function PhoneDemo() {
             </span>
             <span className="text-[10px] text-muted">Latéral · U17</span>
           </div>
-          <p className="mt-0.5 text-[11px] text-muted">Salut Rayan 👊</p>
+          <p className="mt-0.5 text-[11px] text-muted">Salut Rayan</p>
 
           {/* stat tiles */}
           <div className="mt-3 grid grid-cols-3 gap-1.5">
             {[
-              ["5", "série 🔥"],
+              ["5", "série"],
               ["2/3", "semaine"],
               ["23", "séances"],
             ].map(([n, l]) => (
@@ -90,7 +91,7 @@ export function PhoneDemo() {
               </p>
               <p className="text-[9px] text-muted">28 min</p>
             </div>
-            <span className="text-[10px]">🔒</span>
+            <Icon name="lock" className="h-3 w-3 text-muted" />
           </div>
         </div>
       </div>

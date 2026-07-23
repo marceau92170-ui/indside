@@ -9,7 +9,6 @@ export default function VerifierPage() {
           PROGRESSA
         </Link>
         <Card className="p-6 text-center">
-          <p className="mb-2 text-4xl">📬</p>
           <h1 className="mb-2 font-condensed text-2xl font-bold uppercase">Vérifie tes mails</h1>
           <p className="text-muted">
             Ton lien de connexion est parti. Clique dessus depuis ton téléphone, tu arrives direct

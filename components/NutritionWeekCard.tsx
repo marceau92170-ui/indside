@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { NutritionTip } from "@/lib/data/nutrition";
+import { Icon } from "@/components/Icon";
 
 // Carte "Nutrition de la semaine" — Premium.
 // Pour les gratuits : aperçu flouté + incitation à passer Premium.
@@ -19,11 +20,13 @@ export function NutritionWeekCard({
           <p className="text-[11px] font-bold uppercase tracking-widest text-muted">
             Nutrition de la semaine
           </p>
-          <p className="mt-1 font-condensed text-lg font-bold">{weekly.emoji} {weekly.title}</p>
+          <p className="mt-1 font-condensed text-lg font-bold">{weekly.title}</p>
           <p className="mt-1 text-sm text-muted line-clamp-2">{weekly.body}</p>
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-night/40 text-center">
-          <p className="text-sm font-semibold">🔒 Conseils nutrition inclus dans Premium</p>
+          <p className="flex items-center gap-1.5 text-sm font-semibold">
+            <Icon name="lock" className="h-4 w-4" /> Conseils nutrition inclus dans Premium
+          </p>
           <Link
             href="/premium"
             className="rounded-full bg-glow px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-white"
@@ -42,9 +45,7 @@ export function NutritionWeekCard({
           <p className="text-[11px] font-bold uppercase tracking-widest text-glow">
             Rappel nutrition
           </p>
-          <p className="mt-1 font-condensed text-lg font-bold">
-            {match.emoji} {match.title}
-          </p>
+          <p className="mt-1 font-condensed text-lg font-bold">{match.title}</p>
           <p className="mt-1 text-sm text-muted">{match.body}</p>
         </div>
       )}
@@ -57,9 +58,7 @@ export function NutritionWeekCard({
             tout voir
           </Link>
         </div>
-        <p className="mt-1 font-condensed text-lg font-bold">
-          {weekly.emoji} {weekly.title}
-        </p>
+        <p className="mt-1 font-condensed text-lg font-bold">{weekly.title}</p>
         <p className="mt-1 text-sm text-muted">{weekly.body}</p>
       </div>
     </div>

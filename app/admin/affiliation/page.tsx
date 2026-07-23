@@ -51,7 +51,7 @@ export default async function AdminAffiliationPage() {
           href="/admin/feedback"
           className="shrink-0 rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-muted hover:border-glow hover:text-glow"
         >
-          💬 Retours
+          Retours
         </Link>
       </div>
 

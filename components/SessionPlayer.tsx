@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button, Card } from "@/components/ui";
 import { ExerciseDetail, type ExerciseView } from "@/components/ExerciseDetail";
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
+import { Icon } from "@/components/Icon";
 import { badgeInfo } from "@/lib/constants";
 
 export type SessionBlock = {
@@ -125,20 +126,20 @@ export function SessionPlayer({
   if (phase === "done") {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-        <div className="glow-flash mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-glow text-4xl">
-          ✓
+        <div className="glow-flash mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-glow text-white">
+          <Icon name="check" className="h-11 w-11" strokeWidth={2.4} />
         </div>
         <h1 className="mb-2 font-condensed text-3xl font-bold uppercase">Séance validée.</h1>
         {result && (
           <p className="stat-pop mb-1 font-condensed text-xl font-bold text-glow">
-            +1 sur ta série → {result.streak} 🔥
+            +1 sur ta série → {result.streak}
           </p>
         )}
         {result?.newBadges.map((key) => {
           const b = badgeInfo(key);
           return b ? (
             <p key={key} className="stat-pop mt-2 rounded-full border border-glow/40 px-4 py-1.5 text-sm">
-              {b.emoji} Badge débloqué : <span className="font-bold">{b.label}</span>
+              Badge débloqué : <span className="font-bold">{b.label}</span>
             </p>
           ) : null;
         })}
@@ -150,14 +151,14 @@ export function SessionPlayer({
             Récupération
           </p>
           <p className="mt-1 text-sm text-muted">
-            💧 Bois de l&apos;eau et étire-toi 5 minutes. La récup fait partie de la séance — c&apos;est
+            Bois de l&apos;eau et étire-toi 5 minutes. La récup fait partie de la séance — c&apos;est
             là que le corps encaisse le travail.
           </p>
         </div>
         {!premium && (
           <div className="mt-6 w-full max-w-xs rounded-card border border-glow/40 bg-glow/5 p-4 text-left">
             <p className="font-condensed text-base font-bold uppercase text-glow">
-              Sur ta lancée ? 🔥
+              Sur ta lancée ?
             </p>
             <p className="mt-1 text-sm text-muted">
               Les joueurs Premium enchaînent <strong>3 séances</strong> cette semaine, calées sur ton
@@ -241,7 +242,7 @@ export function SessionPlayer({
               <Card className={done ? "border-glow/40 opacity-70" : ""}>
                 <div className="mb-3 flex items-start justify-between gap-2">
                   <p className="font-condensed text-lg font-bold leading-tight">
-                    {i + 1}. {b.exercise.emoji} {b.exercise.name}
+                    {i + 1}. {b.exercise.name}
                   </p>
                   <span className="tnum shrink-0 rounded bg-line/60 px-2 py-1 font-condensed text-sm font-bold">
                     {b.sets} × {b.reps}
@@ -262,7 +263,7 @@ export function SessionPlayer({
                   onClick={() => setDetail(b.exercise)}
                   className="mb-2 w-full rounded-lg border border-line py-2 text-center text-xs font-semibold text-muted hover:border-glow/50 hover:text-chalk"
                 >
-                  📖 Étapes détaillées & erreurs à éviter
+                  Étapes détaillées &amp; erreurs à éviter
                 </button>
                 <Button
                   variant={done ? "subtle" : "ghost"}

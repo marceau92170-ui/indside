@@ -7,7 +7,7 @@ type Existing = { rating: number; text: string; status: string } | null;
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "En attente de validation",
-  approved: "Publié ✅",
+  approved: "Publié ✓",
   rejected: "Non retenu",
 };
 
@@ -46,7 +46,7 @@ export function ReviewForm({ existing }: { existing?: Existing }) {
   if (state === "done") {
     return (
       <Card className="border-glow/30 text-center">
-        <p className="font-condensed text-lg font-bold uppercase">Merci ! 🙏</p>
+        <p className="font-condensed text-lg font-bold uppercase">Merci !</p>
         <p className="mt-1 text-sm text-muted">
           Ton avis a bien été envoyé. Il sera publié après une rapide validation.
         </p>

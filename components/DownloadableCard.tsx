@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PlayerCard, type PlayerCardData } from "@/components/PlayerCard";
 import { Button } from "@/components/ui";
+import { Icon } from "@/components/Icon";
 
 // Rend la carte joueur en PNG et propose le partage natif (TikTok/Instagram/Snap) —
 // c'est le levier d'acquisition organique visé par le produit, la friction ici compte.
@@ -87,8 +88,15 @@ export function DownloadableCard({ data }: { data: PlayerCardData }) {
       <div ref={ref}>
         <PlayerCard data={data} />
       </div>
-      <Button variant="ghost" size="sm" className="mt-4" onClick={shareOrDownload} disabled={busy}>
-        {busy ? "Préparation…" : canNativeShare ? "📤 Partager ma carte" : "⬇️ Télécharger ma carte"}
+      <Button variant="ghost" size="sm" className="mt-4 inline-flex items-center gap-2" onClick={shareOrDownload} disabled={busy}>
+        {busy ? (
+          "Préparation…"
+        ) : (
+          <>
+            <Icon name={canNativeShare ? "share" : "download"} className="h-4 w-4" />
+            {canNativeShare ? "Partager ma carte" : "Télécharger ma carte"}
+          </>
+        )}
       </Button>
     </div>
   );

@@ -19,7 +19,23 @@ export type IconName =
   | "player"
   | "settings"
   | "home"
-  | "lock";
+  | "lock"
+  // divers app
+  | "share"
+  | "download"
+  | "target"
+  | "notebook"
+  | "health"
+  | "book"
+  | "flame"
+  | "trophy"
+  | "badgeCheck"
+  | "trendingUp"
+  | "chat"
+  | "timer"
+  | "alert"
+  | "gift"
+  | "check";
 
 export function Icon({
   name,
@@ -130,4 +146,97 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
     </>
   ),
+  // partager
+  share: (
+    <>
+      <path d="M12 15V4M8.5 7.5 12 4l3.5 3.5" />
+      <path d="M5 12v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6" />
+    </>
+  ),
+  // télécharger
+  download: (
+    <>
+      <path d="M12 4v11M8.5 11.5 12 15l3.5-3.5" />
+      <path d="M5 20h14" />
+    </>
+  ),
+  // cible (objectifs)
+  target: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="3.6" />
+    </>
+  ),
+  // carnet (carnet de match)
+  notebook: (
+    <>
+      <rect x="6" y="3" width="13" height="18" rx="2" />
+      <path d="M6 3v18" />
+      <path d="M10 8h5M10 12h5" />
+    </>
+  ),
+  // cœur (suivi santé)
+  health: <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />,
+  // livre (ressources)
+  book: (
+    <>
+      <path d="M6.5 4H17a1 1 0 0 1 1 1v13H8a2 2 0 0 0-2 2V5a1 1 0 0 1 .5-1z" />
+      <path d="M6 20a2 2 0 0 1 2-2h10" />
+    </>
+  ),
+  // flamme (série)
+  flame: <path d="M12 3c.5 3 4 4.2 4 8a4 4 0 0 1-8 0c0-1.6.6-2.6 1.2-3.2.2 1 .9 1.6 1.5 1.6C10 8.2 11 5.4 12 3z" />,
+  // trophée
+  trophy: (
+    <>
+      <path d="M8 4h8v5a4 4 0 0 1-8 0z" />
+      <path d="M8 5.5H5.5v1A2.5 2.5 0 0 0 8 9M16 5.5h2.5v1A2.5 2.5 0 0 1 16 9" />
+      <path d="M12 13v3M9 20h6M10.5 20l.6-4M13.5 20l-.6-4" />
+    </>
+  ),
+  // pastille validée (badge obtenu)
+  badgeCheck: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M8.5 12l2.5 2.5 4.5-5" />
+    </>
+  ),
+  // courbe montante (progression mesurée)
+  trendingUp: (
+    <>
+      <path d="M3 17l6-6 4 4 7-7" />
+      <path d="M15 8h5v5" />
+    </>
+  ),
+  // bulle (feedback)
+  chat: (
+    <>
+      <path d="M4 5.5h16v10H9l-4 3v-3H4z" />
+      <path d="M8 9.5h8M8 12.5h5" />
+    </>
+  ),
+  // chronomètre
+  timer: (
+    <>
+      <circle cx="12" cy="13" r="8" />
+      <path d="M12 13V8.5M9.5 3h5M18.5 6.5l1.5-1.5" />
+    </>
+  ),
+  // alerte (triangle)
+  alert: (
+    <>
+      <path d="M12 4l9 15.5H3z" />
+      <path d="M12 10v4.5M12 17.5h.01" />
+    </>
+  ),
+  // cadeau (offre)
+  gift: (
+    <>
+      <rect x="4" y="9" width="16" height="11" rx="1.5" />
+      <path d="M4 13h16M12 9v11" />
+      <path d="M12 9S10.5 4 8 5.2 9.5 9 12 9zM12 9s1.5-5 4-3.8S14.5 9 12 9z" />
+    </>
+  ),
+  // coche seule
+  check: <path d="M5 12.5l4.5 4.5L19 6.5" />,
 };

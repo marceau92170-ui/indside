@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Icon } from "./Icon";
 
-// Petit bouton flottant « 💬 » présent partout dans l'app : n'importe qui
+// Petit bouton flottant présent partout dans l'app : n'importe qui
 // (abonné ou pas) peut envoyer une idée, un bug, un avis. Le message part par
 // email au créateur ET est sauvegardé en base (visible dans l'admin).
 export function FeedbackWidget() {
@@ -47,9 +48,9 @@ export function FeedbackWidget() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Donner mon avis"
-        className="fixed bottom-20 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-glow/50 bg-surface text-lg shadow-lg hover:bg-glow hover:text-night"
+        className="fixed bottom-20 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-glow/50 bg-surface text-chalk shadow-lg hover:bg-glow hover:text-night"
       >
-        💬
+        <Icon name="chat" className="h-5 w-5" />
       </button>
 
       {open && (
@@ -76,7 +77,6 @@ export function FeedbackWidget() {
 
             {status === "sent" ? (
               <div className="py-6 text-center">
-                <p className="mb-2 text-3xl">🙏</p>
                 <p className="font-condensed text-lg font-bold uppercase">Merci pour ton retour !</p>
                 <p className="mt-1 text-sm text-muted">
                   Chaque idée compte pour rendre l&apos;app meilleure.

@@ -9,6 +9,7 @@ import { lockedTeasers } from "@/lib/teaser";
 import { Card, ButtonLink } from "@/components/ui";
 import { GenerateProgramButton } from "@/components/GenerateProgramButton";
 import { QuickDoneButton } from "@/components/QuickDoneButton";
+import { Icon } from "@/components/Icon";
 import { NutritionWeekCard } from "@/components/NutritionWeekCard";
 import { weeklyTip, matchTip } from "@/lib/data/nutrition";
 
@@ -86,7 +87,7 @@ export default async function SemainePage() {
 
       {/* Bandeau de stats */}
       <div className="mb-4 grid grid-cols-3 gap-2">
-        <StatTile label="Série" value={`${streak}`} suffix="🔥" accent />
+        <StatTile label="Série" value={`${streak}`} accent />
         <StatTile label="Cette semaine" value={totalCount ? `${doneCount}/${totalCount}` : "—"} />
         <StatTile label="Total séances" value={`${allTimeDone}`} />
       </div>
@@ -160,9 +161,9 @@ export default async function SemainePage() {
         <Card className="text-center">
           <p className="mb-3 text-sm text-muted">
             {premiumThin
-              ? "Tu es Premium 🎉 Génère ton programme complet : 3 séances personnalisées, calées sur ton poste, ton niveau et ton calendrier."
+              ? "Tu es Premium. Génère ton programme complet : 3 séances personnalisées, calées sur ton poste, ton niveau et ton calendrier."
               : program
-                ? "Ta séance est prête à être générée avec les exercices. Lance ta semaine 👇"
+                ? "Ta séance est prête à être générée avec les exercices. Lance ta semaine."
                 : "Ton programme de la semaine n'est pas encore généré."}
           </p>
           <GenerateProgramButton
@@ -215,7 +216,7 @@ export default async function SemainePage() {
                             {s.title}
                           </p>
                           <p className="mt-0.5 text-xs text-muted">
-                            ⏱ {s.durationMin} min · {s.objective}
+                            {s.durationMin} min · {s.objective}
                           </p>
                         </div>
                         <span className="shrink-0 rounded-full bg-line/50 px-2.5 py-1 text-sm text-chalk">
@@ -269,7 +270,7 @@ export default async function SemainePage() {
           </p>
           <p className="mb-3 text-sm text-muted">
             {positionLabel(user.profile.position)} · calé sur ton poste, ton objectif et ton match.
-            Débloque-le pour cette semaine 👇
+            Débloque-le pour cette semaine.
           </p>
 
           <ul className="space-y-2">
@@ -290,8 +291,8 @@ export default async function SemainePage() {
                           {t.focus} · {t.duration} min
                         </p>
                       </div>
-                      <span className="shrink-0 rounded-full bg-glow/15 px-2.5 py-1 text-xs font-bold text-glow">
-                        🔒 Premium
+                      <span className="flex shrink-0 items-center gap-1 rounded-full bg-glow/15 px-2.5 py-1 text-xs font-bold text-glow">
+                        <Icon name="lock" className="h-3.5 w-3.5" /> Premium
                       </span>
                     </div>
                   </Card>

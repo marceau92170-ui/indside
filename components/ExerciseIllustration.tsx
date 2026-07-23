@@ -727,7 +727,6 @@ export function ExerciseIllustration({
       </div>
       {showCue && cue && (
         <div className="flex items-start gap-2 border-t border-line px-3 py-2.5">
-          <span aria-hidden="true" className="text-glow">👁</span>
           <p className="text-xs leading-snug text-chalk">
             <span className="font-semibold uppercase tracking-wide text-muted">À surveiller — </span>
             {cue}

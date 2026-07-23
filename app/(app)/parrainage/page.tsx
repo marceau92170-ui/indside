@@ -38,7 +38,7 @@ export default async function ParrainagePage() {
       </p>
 
       <Card className="mb-4 border-glow/40 bg-glow/5">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-glow">Bonus abonné 🔥</p>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-glow">Bonus abonné</p>
         <p className="mt-1 text-sm text-chalk">
           Un pote qui passe <span className="font-semibold">Premium</span> via ton lien ={" "}
           <span className="font-semibold text-glow">
@@ -72,7 +72,7 @@ export default async function ParrainagePage() {
           </div>
           {until && (
             <p className="mt-3 text-center text-sm text-chalk">
-              🎉 Premium offert jusqu&apos;au <span className="font-semibold">{until}</span>
+              Premium offert jusqu&apos;au <span className="font-semibold">{until}</span>
             </p>
           )}
         </Card>

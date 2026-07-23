@@ -8,6 +8,18 @@ import { computeStreak, totalDoneSessions } from "@/lib/gamification";
 import { DownloadableCard } from "@/components/DownloadableCard";
 import { MonthlyActivity } from "@/components/MonthlyActivity";
 import { Card } from "@/components/ui";
+import { Icon, type IconName } from "@/components/Icon";
+
+// Picto de chaque badge (remplace les emojis) — clé badge → icône ligne.
+const BADGE_ICON: Record<string, IconName> = {
+  first_session: "badgeCheck",
+  serie_3: "flame",
+  serie_7: "explosivite",
+  sessions_10: "dumbbell",
+  sessions_25: "trophy",
+  first_test: "chart",
+  test_progress: "trendingUp",
+};
 
 const MONTH_LABELS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
 
@@ -38,31 +50,31 @@ export default async function ProfilPage() {
     ]);
 
   // Outils de progression (au-delà des séances) — avec un aperçu de ce qu'ils contiennent.
-  const devLinks = [
+  const devLinks: { href: string; icon: IconName; label: string; desc: string; badge: string }[] = [
     {
       href: "/objectifs",
-      emoji: "🎯",
+      icon: "target",
       label: "Objectifs",
       desc: "Fixe tes objectifs et coche-les au fur et à mesure",
       badge: goalsOpen > 0 ? `${goalsOpen} en cours` : "À définir",
     },
     {
       href: "/matchs",
-      emoji: "📋",
+      icon: "notebook",
       label: "Carnet de match",
       desc: "Note chaque match : buts, passes, ressenti, à travailler",
       badge: matchCount > 0 ? `${matchCount} noté${matchCount > 1 ? "s" : ""}` : "Commence ici",
     },
     {
       href: "/sante",
-      emoji: "🩺",
+      icon: "health",
       label: "Suivi santé",
       desc: "Douleurs, sommeil, forme du jour, croissance",
       badge: painsOpen > 0 ? `${painsOpen} douleur${painsOpen > 1 ? "s" : ""}` : "À jour",
     },
     {
       href: "/ressources",
-      emoji: "📚",
+      icon: "book",
       label: "Ressources",
       desc: "Nutrition, mental, et la vraie filière vers le pro",
       badge: "Guides",
@@ -127,7 +139,7 @@ export default async function ProfilPage() {
       <div className="mt-6 grid grid-cols-2 gap-3">
         <Card className="text-center">
           <p className="tnum font-condensed text-3xl font-bold text-glow">{streak}</p>
-          <p className="text-xs uppercase tracking-wide text-muted">Série en cours 🔥</p>
+          <p className="text-xs uppercase tracking-wide text-muted">Série en cours</p>
         </Card>
         <Card className="text-center">
           <p className="tnum font-condensed text-3xl font-bold text-glow">{total}</p>
@@ -144,8 +156,8 @@ export default async function ProfilPage() {
         {devLinks.map((l) => (
           <Link key={l.href} href={l.href} className="block">
             <Card className="flex items-center gap-3 transition-colors hover:border-glow/60">
-              <span className="text-2xl" aria-hidden="true">
-                {l.emoji}
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-night text-glow">
+                <Icon name={l.icon} className="h-5 w-5" />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="font-condensed text-base font-bold uppercase leading-tight">
@@ -174,9 +186,7 @@ export default async function ProfilPage() {
             {progressionByType.map((p) => (
               <Card key={p.key} className="flex items-center justify-between">
                 <div>
-                  <p className="font-condensed text-sm font-bold uppercase">
-                    {p.emoji} {p.label}
-                  </p>
+                  <p className="font-condensed text-sm font-bold uppercase">{p.label}</p>
                   <p className="tnum text-xs text-muted">
                     {Number(p.first.toFixed(1))} → {Number(p.last.toFixed(1))} {p.unit}
                   </p>
@@ -206,8 +216,10 @@ export default async function ProfilPage() {
                 has ? "border-glow/50 bg-surface" : "border-line bg-surface/50 opacity-45"
               }`}
             >
-              <p className="text-xl">{b.emoji}</p>
-              <p className="font-condensed text-sm font-bold uppercase">{b.label}</p>
+              <span className={has ? "text-glow" : "text-muted"}>
+                <Icon name={BADGE_ICON[b.key] ?? "badgeCheck"} className="h-6 w-6" />
+              </span>
+              <p className="mt-1.5 font-condensed text-sm font-bold uppercase">{b.label}</p>
               <p className="mt-0.5 text-[11px] leading-tight text-muted">{b.desc}</p>
             </li>
           );

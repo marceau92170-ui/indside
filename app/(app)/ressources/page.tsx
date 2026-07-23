@@ -1,24 +1,25 @@
 import Link from "next/link";
 import { Card } from "@/components/ui";
+import { Icon, type IconName } from "@/components/Icon";
 
 export const dynamic = "force-dynamic";
 
-const ARTICLES = [
+const ARTICLES: { slug: string; icon: IconName; title: string; desc: string }[] = [
   {
     slug: "filiere-pro",
-    emoji: "🎯",
+    icon: "trendingUp",
     title: "Le vrai chemin vers le pro",
     desc: "Comment fonctionne la détection en France, les âges clés, ce qui compte vraiment.",
   },
   {
     slug: "nutrition",
-    emoji: "🍽️",
+    icon: "health",
     title: "Nutrition & hydratation",
     desc: "Ce qu'il faut manger et boire avant, pendant, après — sans complément inutile.",
   },
   {
     slug: "mental",
-    emoji: "🧠",
+    icon: "target",
     title: "Préparation mentale",
     desc: "Gérer la pression, rester concentré, transformer l'échec en information.",
   },
@@ -38,11 +39,14 @@ export default function RessourcesPage() {
         {ARTICLES.map((a) => (
           <li key={a.slug}>
             <Link href={`/ressources/${a.slug}`}>
-              <Card className="transition-colors hover:border-glow/60">
-                <p className="font-condensed text-xl font-bold leading-tight">
-                  {a.emoji} {a.title}
-                </p>
-                <p className="mt-1 text-sm text-muted">{a.desc}</p>
+              <Card className="flex items-start gap-3 transition-colors hover:border-glow/60">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-night text-glow">
+                  <Icon name={a.icon} className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="font-condensed text-xl font-bold leading-tight">{a.title}</p>
+                  <p className="mt-1 text-sm text-muted">{a.desc}</p>
+                </div>
               </Card>
             </Link>
           </li>

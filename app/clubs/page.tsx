@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/SiteFooter";
+import { Icon } from "@/components/Icon";
 import { LEGAL } from "@/lib/data/legal";
 import { SITE_URL } from "@/lib/site";
 
@@ -83,13 +84,15 @@ export default function ClubsPage() {
 
         {/* win-win-win */}
         <section className="mt-12 grid gap-3 sm:grid-cols-3">
-          {[
-            ["⚽", "Vos joueurs", "Ils s'entraînent entre les séances et progressent — moins de blessures, plus de niveau."],
-            ["💰", "Votre club", "Une commission par famille abonnée pour financer goûters, tournois, matériel."],
-            ["🆓", "Votre budget", "Zéro coût, zéro engagement. Le club ne paie rien, jamais."],
-          ].map(([emoji, title, desc]) => (
+          {([
+            ["technique", "Vos joueurs", "Ils s'entraînent entre les séances et progressent — moins de blessures, plus de niveau."],
+            ["trendingUp", "Votre club", "Une commission par famille abonnée pour financer goûters, tournois, matériel."],
+            ["badgeCheck", "Votre budget", "Zéro coût, zéro engagement. Le club ne paie rien, jamais."],
+          ] as const).map(([icon, title, desc]) => (
             <div key={title} className="rounded-card border border-line bg-surface p-4 text-center">
-              <div className="text-3xl">{emoji}</div>
+              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-lg border border-line bg-night text-glow">
+                <Icon name={icon} className="h-6 w-6" />
+              </div>
               <p className="mt-2 font-condensed text-lg font-bold uppercase">{title}</p>
               <p className="mt-1 text-sm text-muted">{desc}</p>
             </div>
@@ -131,10 +134,10 @@ export default function ClubsPage() {
         <section className="mt-10">
           <h2 className="font-condensed text-2xl font-bold uppercase">Ce que reçoit votre club</h2>
           <ul className="mt-3 space-y-2 text-sm text-muted">
-            <li>✅ Un <span className="font-semibold text-chalk">lien dédié</span> + un suivi transparent des abonnements générés.</li>
-            <li>✅ Une <span className="font-semibold text-chalk">commission reversée</span> à la caisse pour chaque famille abonnée.</li>
-            <li>✅ Un <span className="font-semibold text-chalk">accès Premium gratuit pour les coachs</span> (ils voient les exercices et le suivi).</li>
-            <li>✅ Des <span className="font-semibold text-chalk">jeunes qui progressent</span> — un vrai plus pour retenir et faire grandir vos licenciés.</li>
+            <li className="flex gap-2"><span className="text-glow">✓</span><span>Un <span className="font-semibold text-chalk">lien dédié</span> + un suivi transparent des abonnements générés.</span></li>
+            <li className="flex gap-2"><span className="text-glow">✓</span><span>Une <span className="font-semibold text-chalk">commission reversée</span> à la caisse pour chaque famille abonnée.</span></li>
+            <li className="flex gap-2"><span className="text-glow">✓</span><span>Un <span className="font-semibold text-chalk">accès Premium gratuit pour les coachs</span> (ils voient les exercices et le suivi).</span></li>
+            <li className="flex gap-2"><span className="text-glow">✓</span><span>Des <span className="font-semibold text-chalk">jeunes qui progressent</span> — un vrai plus pour retenir et faire grandir vos licenciés.</span></li>
           </ul>
         </section>
 

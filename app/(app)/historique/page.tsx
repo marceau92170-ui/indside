@@ -65,8 +65,15 @@ export default async function HistoriquePage() {
                     const isSkipped = log?.status === "skipped";
                     return (
                       <li key={s.id} className="flex items-center justify-between text-sm">
-                        <span className={isDone ? "" : "text-muted"}>
-                          {isDone ? "✅" : isSkipped ? "⏭️" : "⬜"} {DAYS_FR[s.dayOfWeek]} — {s.title}
+                        <span className={`flex items-center gap-1.5 ${isDone ? "" : "text-muted"}`}>
+                          <span
+                            className={
+                              isDone ? "text-glow" : isSkipped ? "text-muted" : "text-line"
+                            }
+                          >
+                            {isDone ? "✓" : isSkipped ? "—" : "○"}
+                          </span>
+                          {DAYS_FR[s.dayOfWeek]} — {s.title}
                         </span>
                         {isDone && log?.difficulty && (
                           <span className="tnum text-xs text-muted">{log.difficulty}/5</span>

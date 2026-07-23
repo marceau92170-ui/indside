@@ -109,9 +109,7 @@ export default async function AdminStatsPage({
           const info = badgeInfo(key);
           return (
             <li key={key} className="rounded-card border border-line bg-surface p-3">
-              <p className="text-sm">
-                {info?.emoji} {info?.label ?? key}
-              </p>
+              <p className="text-sm">{info?.label ?? key}</p>
               <p className="tnum font-condensed text-xl font-bold text-glow">{count}</p>
             </li>
           );

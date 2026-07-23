@@ -4,6 +4,7 @@ import { isAdult } from "@/lib/categories";
 import { Card } from "@/components/ui";
 import { CheckoutButtons, ManageSubscriptionButton } from "@/components/CheckoutButtons";
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
+import { Icon } from "@/components/Icon";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +57,7 @@ export default async function PremiumPage() {
 
       {hasReferralDiscount && (
         <div className="mb-5 flex items-center gap-2 rounded-card border border-glow bg-glow/10 px-4 py-3">
-          <span className="text-xl">🎁</span>
+          <Icon name="gift" className="h-5 w-5 shrink-0 text-glow" />
           <p className="text-sm font-semibold">
             -10 % appliqués automatiquement grâce à ton lien — la remise se voit au paiement.
           </p>

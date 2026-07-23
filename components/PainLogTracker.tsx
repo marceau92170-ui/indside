@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, Card, Input } from "@/components/ui";
+import { Icon } from "@/components/Icon";
 
 type PainEntry = { id: string; bodyPart: string; intensity: number; note: string | null; resolved: boolean; date: string };
 
@@ -61,15 +62,18 @@ export function PainLogTracker({ entries, premium }: { entries: PainEntry[]; pre
       </p>
 
       {warning && (
-        <div className="mb-3 rounded-lg border border-glow bg-glow/10 p-3 text-xs">
-          ⚠️ Cette zone revient souvent ces 2 dernières semaines. Ce n&apos;est pas anodin — parles-en
-          à un parent, un éducateur, ou un professionnel de santé.
+        <div className="mb-3 flex gap-2 rounded-lg border border-glow bg-glow/10 p-3 text-xs">
+          <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0 text-glow" />
+          <span>
+            Cette zone revient souvent ces 2 dernières semaines. Ce n&apos;est pas anodin — parles-en
+            à un parent, un éducateur, ou un professionnel de santé.
+          </span>
         </div>
       )}
 
       {justLogged && !premium && (
         <div className="mb-3 rounded-lg border border-line bg-night p-3 text-xs">
-          🔒 Enregistré. En <span className="font-bold text-glow">Premium</span>, ton prochain
+          Enregistré. En <span className="font-bold text-glow">Premium</span>, ton prochain
           programme aurait évité automatiquement cette zone — là, c&apos;est à toi d&apos;y penser.{" "}
           <Link href="/premium" className="text-glow underline">
             En savoir plus
@@ -113,7 +117,7 @@ export function PainLogTracker({ entries, premium }: { entries: PainEntry[]; pre
       </form>
 
       <div className="mb-4 rounded-lg border border-line bg-night p-3 text-xs text-muted">
-        ⚕️ Cet outil aide ton programme à s&apos;adapter, mais il ne remplace pas un avis médical.
+        Cet outil aide ton programme à s&apos;adapter, mais il ne remplace pas un avis médical.
         Une douleur qui persiste, qui revient, ou qui t&apos;empêche de jouer :{" "}
         <span className="font-semibold text-chalk">
           parles-en à un médecin, un kiné ou le staff de ton club
@@ -123,7 +127,7 @@ export function PainLogTracker({ entries, premium }: { entries: PainEntry[]; pre
 
       {!premium && unresolved.length > 0 && (
         <div className="mb-3 rounded-lg border border-glow/40 bg-glow/5 p-3 text-xs">
-          🔒 {unresolved.length} gêne{unresolved.length > 1 ? "s" : ""} active{unresolved.length > 1 ? "s" : ""}, pas
+          {unresolved.length} gêne{unresolved.length > 1 ? "s" : ""} active{unresolved.length > 1 ? "s" : ""}, pas
           encore prise{unresolved.length > 1 ? "s" : ""} en compte dans tes séances.{" "}
           <Link href="/premium" className="font-bold text-glow underline">
             Passer Premium
@@ -153,7 +157,7 @@ export function PainLogTracker({ entries, premium }: { entries: PainEntry[]; pre
         </ul>
       )}
       {unresolved.length === 0 && entries.length > 0 && (
-        <p className="text-xs text-muted">Rien à signaler en ce moment. 👍</p>
+        <p className="text-xs text-muted">Rien à signaler en ce moment.</p>
       )}
     </Card>
   );

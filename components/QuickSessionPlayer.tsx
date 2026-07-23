@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui";
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
+import { Icon } from "@/components/Icon";
 import type { ExerciseView } from "@/components/ExerciseDetail";
 
 // Séance « flash » : on enchaîne les exercices filtrés comme une vraie séance de sport,
@@ -84,8 +85,8 @@ export function QuickSessionPlayer({
     return (
       <Shell onClose={onClose}>
         <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-          <div className="glow-flash mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-glow text-4xl">
-            💪
+          <div className="glow-flash mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-glow text-white">
+            <Icon name="check" className="h-11 w-11" strokeWidth={2.4} />
           </div>
           <h2 className="mb-2 font-condensed text-3xl font-bold uppercase">Séance terminée !</h2>
           <p className="mb-1 text-sm text-muted">
@@ -94,7 +95,7 @@ export function QuickSessionPlayer({
           <div className="mt-6 w-full max-w-xs rounded-card border border-line bg-surface p-4 text-left">
             <p className="text-[11px] font-bold uppercase tracking-widest text-muted">Récupération</p>
             <p className="mt-1 text-sm text-muted">
-              💧 Bois de l&apos;eau et étire-toi 5 minutes. C&apos;est là que le corps encaisse le travail.
+              Bois de l&apos;eau et étire-toi 5 minutes. C&apos;est là que le corps encaisse le travail.
             </p>
           </div>
           <Button className="mt-6" onClick={onClose}>
@@ -118,7 +119,7 @@ export function QuickSessionPlayer({
             {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, "0")}
           </p>
           <p className="mb-6 text-sm text-muted">
-            Prochain : <span className="font-semibold text-chalk">{ex.emoji} {ex.name}</span>
+            Prochain : <span className="font-semibold text-chalk">{ex.name}</span>
           </p>
           <Button variant="ghost" onClick={skipRest}>
             Passer la récup →
@@ -132,9 +133,7 @@ export function QuickSessionPlayer({
   return (
     <Shell onClose={onClose}>
       <Progress index={index} total={exercises.length} />
-      <h2 className="mb-1 font-condensed text-2xl font-bold uppercase leading-tight">
-        {ex.emoji} {ex.name}
-      </h2>
+      <h2 className="mb-1 font-condensed text-2xl font-bold uppercase leading-tight">{ex.name}</h2>
       <p className="mb-3 font-condensed text-lg font-bold text-glow">
         {presc.sets} × {presc.reps}
       </p>

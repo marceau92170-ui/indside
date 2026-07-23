@@ -1,15 +1,16 @@
 import { ButtonLink } from "@/components/ui";
 import { GenerateProgramButton } from "@/components/GenerateProgramButton";
+import { Icon } from "@/components/Icon";
 
 export const dynamic = "force-dynamic";
 
 export default function MerciPage() {
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-      <div className="glow-flash mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-glow text-4xl">
-        🔥
+      <div className="glow-flash mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-glow text-white">
+        <Icon name="check" className="h-11 w-11" strokeWidth={2.4} />
       </div>
-      <h1 className="mb-2 font-condensed text-3xl font-bold uppercase">Ton essai a commencé 🎉</h1>
+      <h1 className="mb-2 font-condensed text-3xl font-bold uppercase">Ton essai a commencé</h1>
       <p className="mb-2 max-w-sm text-sm text-muted">
         7 jours gratuits, tout est débloqué (l&apos;activation prend parfois quelques secondes).
         Génère ton programme complet et attaque dès maintenant.
