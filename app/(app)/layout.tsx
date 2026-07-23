@@ -4,16 +4,9 @@ import { cookies } from "next/headers";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
+import { AppNav } from "@/components/AppNav";
 
 export const dynamic = "force-dynamic";
-
-const NAV = [
-  { href: "/semaine", label: "Semaine", emoji: "📅" },
-  { href: "/bibliotheque", label: "Exos", emoji: "⚽" },
-  { href: "/tests", label: "Tests", emoji: "📊" },
-  { href: "/profil", label: "Profil", emoji: "🎴" },
-  { href: "/reglages", label: "Réglages", emoji: "⚙️" },
-];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
@@ -50,7 +43,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               href="/admin/affiliation"
               className="rounded-full border border-glow/40 px-3 py-1 text-xs font-semibold text-glow hover:bg-glow hover:text-night"
             >
-              📊 Admin
+              Admin
             </Link>
           )}
           {user.role === "affiliate" && (
@@ -58,7 +51,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               href="/partenaire"
               className="rounded-full border border-glow/40 px-3 py-1 text-xs font-semibold text-glow hover:bg-glow hover:text-night"
             >
-              💸 Partenaire
+              Partenaire
             </Link>
           )}
           <Link
@@ -74,20 +67,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       <FeedbackWidget />
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 backdrop-blur">
-        <div className="mx-auto flex max-w-lg items-stretch justify-between">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold text-muted hover:text-glow"
-            >
-              <span className="text-lg leading-none">{item.emoji}</span>
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </nav>
+      <AppNav />
     </div>
   );
 }

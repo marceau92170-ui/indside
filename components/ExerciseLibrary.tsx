@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ExerciseDetail, type ExerciseView } from "./ExerciseDetail";
 import { QuickSessionPlayer } from "./QuickSessionPlayer";
+import { Icon, type IconName } from "./Icon";
 
 type Cat = { key: string; label: string; emoji: string };
 
@@ -65,7 +66,10 @@ export function ExerciseLibrary({
         </FilterChip>
         {categories.map((c) => (
           <FilterChip key={c.key} active={cat === c.key} onClick={() => setCat(c.key)}>
-            {c.emoji} {c.label}
+            <span className="flex items-center gap-1.5">
+              <Icon name={c.key as IconName} className="h-4 w-4" />
+              {c.label}
+            </span>
           </FilterChip>
         ))}
       </div>
@@ -76,7 +80,10 @@ export function ExerciseLibrary({
           </FilterChip>
         ))}
         <FilterChip active={smallSpaceOnly} onClick={() => setSmallSpaceOnly((v) => !v)}>
-          🏠 Espace réduit
+          <span className="flex items-center gap-1.5">
+            <Icon name="home" className="h-4 w-4" />
+            Espace réduit
+          </span>
         </FilterChip>
       </div>
 
@@ -114,18 +121,25 @@ export function ExerciseLibrary({
                 ex.locked ? "opacity-50" : "hover:border-glow/60"
               }`}
             >
-              <div className="flex items-center justify-between gap-2">
-                <div>
-                  <p className="font-condensed text-lg font-bold leading-tight">
-                    {ex.emoji} {ex.name}
-                  </p>
+              <div className="flex items-center gap-3">
+                <span
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-night ${
+                    ex.locked ? "text-muted" : "text-glow"
+                  }`}
+                >
+                  <Icon name={ex.category as IconName} className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-condensed text-lg font-bold leading-tight">{ex.name}</p>
                   <p className="mt-0.5 text-xs text-muted">
                     ~{ex.durationMin} min
                     {ex.minAge >= 15 && " · 15 ans+"}
                     {ex.tooYoung && " · pas encore pour ta catégorie"}
                   </p>
                 </div>
-                <span className="shrink-0 text-lg">{ex.locked ? "🔒" : "→"}</span>
+                <span className="shrink-0 text-muted">
+                  {ex.locked ? <Icon name="lock" className="h-4 w-4" /> : "→"}
+                </span>
               </div>
             </button>
           </li>
