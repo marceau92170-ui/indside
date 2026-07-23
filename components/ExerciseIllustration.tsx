@@ -95,7 +95,7 @@ const ARCHETYPES: Record<string, Archetype> = {
       { type: "line", part: "thigh", keys: { x1: loop("110", "112"), y1: loop("150", "150"), x2: loop("170", "125"), y2: loop("158", "175") } }, // cuisse animée
       { type: "line", part: "shin", keys: { x1: loop("170", "125"), y1: loop("158", "175"), x2: loop("182", "142"), y2: loop("178", "180") } }, // tibia animé
     ],
-    dur: "1s",
+    dur: "1.35s",
   },
   // pont fessier : allongé, bascule du bassin
   "glute-bridge": {
@@ -132,7 +132,7 @@ const ARCHETYPES: Record<string, Archetype> = {
       { type: "line", part: "thigh", keys: { x1: "100", y1: loop("150", "108"), x2: loop("90", "82"), y2: loop("182", "150") } },
       { type: "line", part: "shin", keys: { x1: loop("90", "82"), y1: loop("182", "150"), x2: loop("96", "78"), y2: loop("205", "172") } },
     ],
-    dur: "1.1s",
+    dur: "1.45s",
   },
   // course / montées de genoux / gammes / sprint / intermittent
   sprint: {
@@ -145,7 +145,7 @@ const ARCHETYPES: Record<string, Archetype> = {
       { type: "line", part: "shin", keys: { x1: loop("78", "130"), y1: loop("150", "165"), x2: loop("95", "150"), y2: loop("120", "175") } },
       { type: "line", part: "arm", keys: { x1: loop("100", "112"), y1: "72", x2: loop("135", "90"), y2: loop("95", "60") } },
     ],
-    dur: "0.85s",
+    dur: "1.15s",
   },
   // touches de balle au pied : jonglage, toe taps, foundations
   juggle: {
@@ -161,7 +161,7 @@ const ARCHETYPES: Record<string, Archetype> = {
       { type: "line", part: "thigh", keys: { x1: "100", y1: "118", x2: loop("90", "100"), y2: loop("160", "150") } },
       { type: "line", part: "shin", keys: { x1: loop("90", "100"), y1: loop("160", "150"), x2: loop("85", "96"), y2: loop("190", "165") } },
     ],
-    dur: "0.9s",
+    dur: "1.2s",
   },
   // conduite / dribble : croquettes, v-cuts, crochet, cruyff, ciseaux, navette
   // Joueur penché en avant, une jambe d'appui (pied posé), une jambe qui pousse le
@@ -204,7 +204,7 @@ const ARCHETYPES: Record<string, Archetype> = {
       { type: "line", part: "leg", keys: { x1: loop("100", "112"), y1: loop("160", "150"), x2: loop("84", "58"), y2: loop("192", "176") } },
       { type: "line", part: "leg", keys: { x1: loop("100", "112"), y1: loop("160", "150"), x2: loop("92", "66"), y2: loop("200", "192") } },
     ],
-    dur: "1.1s",
+    dur: "1.45s",
   },
   // équilibre / proprioception unipodal
   balance: {
