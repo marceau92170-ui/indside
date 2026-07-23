@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ExerciseDetail, type ExerciseView } from "./ExerciseDetail";
 import { QuickSessionPlayer } from "./QuickSessionPlayer";
 import { Icon, type IconName } from "./Icon";
+import { categoryColor } from "@/lib/data/types";
 
 type Cat = { key: string; label: string; emoji: string };
 
@@ -64,14 +65,27 @@ export function ExerciseLibrary({
         <FilterChip active={cat === ""} onClick={() => setCat("")}>
           Tous
         </FilterChip>
-        {categories.map((c) => (
-          <FilterChip key={c.key} active={cat === c.key} onClick={() => setCat(c.key)}>
-            <span className="flex items-center gap-1.5">
+        {categories.map((c) => {
+          const col = categoryColor(c.key);
+          const active = cat === c.key;
+          return (
+            <button
+              key={c.key}
+              onClick={() => setCat(c.key)}
+              style={
+                active
+                  ? { backgroundColor: `${col}22`, color: col, borderColor: `${col}66` }
+                  : { color: col }
+              }
+              className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                active ? "" : "border-transparent bg-line/50"
+              }`}
+            >
               <Icon name={c.key as IconName} className="h-4 w-4" />
-              {c.label}
-            </span>
-          </FilterChip>
-        ))}
+              <span className={active ? "" : "text-muted"}>{c.label}</span>
+            </button>
+          );
+        })}
       </div>
       <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
         {EQUIPMENT_FILTERS.map((f) => (
@@ -123,9 +137,18 @@ export function ExerciseLibrary({
             >
               <div className="flex items-center gap-3">
                 <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-night ${
-                    ex.locked ? "text-muted" : "text-glow"
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
+                    ex.locked ? "border-line bg-night text-muted" : ""
                   }`}
+                  style={
+                    ex.locked
+                      ? undefined
+                      : {
+                          color: categoryColor(ex.category),
+                          backgroundColor: `${categoryColor(ex.category)}14`,
+                          borderColor: `${categoryColor(ex.category)}33`,
+                        }
+                  }
                 >
                   <Icon name={ex.category as IconName} className="h-5 w-5" />
                 </span>

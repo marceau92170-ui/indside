@@ -2,6 +2,7 @@
 
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
 import { Icon, type IconName } from "@/components/Icon";
+import { categoryColor } from "@/lib/data/types";
 
 export type ExerciseView = {
   id: string;
@@ -44,7 +45,7 @@ export function ExerciseDetail({
       >
         <div className="mb-3 flex items-start justify-between gap-3">
           <h2 className="flex items-start gap-2 font-condensed text-2xl font-bold uppercase leading-tight">
-            <span className="mt-0.5 shrink-0 text-glow">
+            <span className="mt-0.5 shrink-0" style={{ color: categoryColor(exercise.category) }}>
               <Icon name={exercise.category as IconName} className="h-6 w-6" />
             </span>
             {exercise.name}

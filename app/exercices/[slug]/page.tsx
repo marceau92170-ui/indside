@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ALL_EXERCISES, CATEGORY_INFO } from "@/lib/data/exercises";
+import { categoryColor } from "@/lib/data/types";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Icon, type IconName } from "@/components/Icon";
 import { SITE_URL } from "@/lib/site";
@@ -122,7 +123,10 @@ export default async function ExercicePage({
           <span className="text-line">/</span> {ex.name}
         </nav>
 
-        <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-glow">
+        <p
+          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em]"
+          style={{ color: categoryColor(ex.category) }}
+        >
           <Icon name={ex.category as IconName} className="h-4 w-4" />
           {cat.label}
         </p>
@@ -220,7 +224,7 @@ export default async function ExercicePage({
                   href={`/exercices/${e.slug}`}
                   className="group flex items-center gap-3 rounded-card border border-line bg-surface p-3 hover:border-glow"
                 >
-                  <span className="text-glow">
+                  <span style={{ color: categoryColor(e.category) }}>
                     <Icon name={e.category as IconName} className="h-5 w-5" />
                   </span>
                   <span className="font-condensed font-bold uppercase leading-tight text-chalk group-hover:text-glow">

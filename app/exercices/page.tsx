@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ALL_EXERCISES, CATEGORY_INFO } from "@/lib/data/exercises";
 import type { ExerciseCategory } from "@/lib/data/types";
+import { categoryColor } from "@/lib/data/types";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Icon, type IconName } from "@/components/Icon";
 import { SITE_URL } from "@/lib/site";
@@ -91,9 +92,11 @@ export default function ExercicesHubPage() {
             <a
               key={g.cat}
               href={`#${g.cat}`}
-              className="flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-chalk hover:border-glow hover:text-glow"
+              className="flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-chalk hover:border-glow"
             >
-              <Icon name={g.cat as IconName} className="h-4 w-4" />
+              <span style={{ color: categoryColor(g.cat) }}>
+                <Icon name={g.cat as IconName} className="h-4 w-4" />
+              </span>
               {g.info.label}
             </a>
           ))}
@@ -102,7 +105,7 @@ export default function ExercicesHubPage() {
         {byCategory.map((g) => (
           <section key={g.cat} id={g.cat} className="mt-10 scroll-mt-4">
             <h2 className="mb-3 flex items-center gap-2 font-condensed text-2xl font-bold uppercase">
-              <span className="text-glow">
+              <span style={{ color: categoryColor(g.cat) }}>
                 <Icon name={g.cat as IconName} className="h-6 w-6" />
               </span>
               {g.info.label}
@@ -115,7 +118,7 @@ export default function ExercicesHubPage() {
                   href={`/exercices/${e.slug}`}
                   className="group flex items-start gap-3 rounded-card border border-line bg-surface p-3 transition-colors hover:border-glow"
                 >
-                  <span className="mt-0.5 text-glow">
+                  <span className="mt-0.5" style={{ color: categoryColor(e.category) }}>
                     <Icon name={e.category as IconName} className="h-5 w-5" />
                   </span>
                   <span className="min-w-0">
