@@ -8,6 +8,7 @@ import { DAYS_FR, positionLabel } from "@/lib/constants";
 import { lockedTeasers } from "@/lib/teaser";
 import { Card, ButtonLink } from "@/components/ui";
 import { GenerateProgramButton } from "@/components/GenerateProgramButton";
+import { QuickDoneButton } from "@/components/QuickDoneButton";
 import { NutritionWeekCard } from "@/components/NutritionWeekCard";
 import { weeklyTip, matchTip } from "@/lib/data/nutrition";
 
@@ -195,12 +196,12 @@ export default async function SemainePage() {
               const done = log?.status === "done";
               return (
                 <li key={s.id}>
-                  <Link href={`/seance/${s.id}`}>
-                    <Card
-                      className={`transition-colors hover:border-glow/60 ${
-                        isToday && !done ? "border-glow" : ""
-                      } ${done ? "opacity-60" : ""}`}
-                    >
+                  <Card
+                    className={`transition-colors hover:border-glow/60 ${
+                      isToday && !done ? "border-glow" : ""
+                    } ${done ? "opacity-60" : ""}`}
+                  >
+                    <Link href={`/seance/${s.id}`} className="block">
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold uppercase tracking-widest text-muted">
@@ -208,11 +209,6 @@ export default async function SemainePage() {
                             {isToday && !done && (
                               <span className="ml-2 rounded-full bg-glow px-2 py-0.5 text-[10px] text-night">
                                 Aujourd&apos;hui
-                              </span>
-                            )}
-                            {done && (
-                              <span className="ml-2 rounded-full border border-glow/40 px-2 py-0.5 text-[10px] text-glow">
-                                Fait ✓
                               </span>
                             )}
                           </p>
@@ -228,8 +224,17 @@ export default async function SemainePage() {
                           →
                         </span>
                       </div>
-                    </Card>
-                  </Link>
+                    </Link>
+                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-line/60 pt-3">
+                      <Link
+                        href={`/seance/${s.id}`}
+                        className="text-xs font-semibold text-muted underline-offset-2 hover:text-chalk hover:underline"
+                      >
+                        Lancer la séance guidée
+                      </Link>
+                      <QuickDoneButton sessionId={s.id} done={done} />
+                    </div>
+                  </Card>
                 </li>
               );
             })}

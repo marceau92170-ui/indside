@@ -163,6 +163,66 @@ const ARCHETYPES: Record<string, Archetype> = {
     ],
     dur: "1.2s",
   },
+  // touches rapides du dessus du ballon : toe taps, semelles alternées.
+  // Le ballon reste AU SOL ; les pieds tapent le dessus l'un après l'autre.
+  "ball-taps": {
+    segments: [
+      // ballon posé au sol (statique) au niveau des pieds
+      { type: "circle", r: 8, fill: "#E12A3A", part: "ball", base: { cx: "100", cy: "197" } },
+      { type: "circle", r: 10, part: "head", base: { cx: "100", cy: "60" } },
+      { type: "line", part: "torso", base: { x1: "100", y1: "70", x2: "100", y2: "116" } },
+      // jambe gauche : commence sur le ballon (dessus), puis redescend au sol
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "116", x2: loop("94", "88"), y2: loop("150", "160") } },
+      { type: "line", part: "shin", keys: { x1: loop("94", "88"), y1: loop("150", "160"), x2: loop("96", "84"), y2: loop("189", "205") } },
+      { type: "line", part: "foot", keys: { x1: loop("86", "74"), y1: loop("190", "205"), x2: loop("106", "98"), y2: loop("191", "205") } },
+      // jambe droite : phase opposée (au sol, puis sur le ballon)
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "116", x2: loop("112", "106"), y2: loop("160", "150") } },
+      { type: "line", part: "shin", keys: { x1: loop("112", "106"), y1: loop("160", "150"), x2: loop("116", "104"), y2: loop("205", "189") } },
+      { type: "line", part: "foot", keys: { x1: loop("104", "94"), y1: loop("205", "190"), x2: loop("128", "114"), y2: loop("205", "191") } },
+      // bras d'équilibre
+      { type: "line", part: "arm", keys: { x1: "100", y1: "88", x2: loop("124", "76"), y2: loop("104", "104") } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: "88", x2: loop("76", "124"), y2: loop("104", "104") } },
+    ],
+    dur: "0.75s",
+  },
+  // montées de genoux : sur place, le genou monte HAUT devant (cuisse ~horizontale).
+  "high-knees": {
+    segments: [
+      { type: "circle", r: 9, part: "head", base: { cx: "100", cy: "60" } },
+      { type: "line", part: "torso", base: { x1: "100", y1: "70", x2: "100", y2: "118" } },
+      // jambe gauche : genou haut devant → appui au sol
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "118", x2: loop("126", "94"), y2: loop("122", "160") } },
+      { type: "line", part: "shin", keys: { x1: loop("126", "94"), y1: loop("122", "160"), x2: loop("120", "90"), y2: loop("150", "205") } },
+      { type: "line", part: "foot", keys: { x1: loop("116", "80"), y1: loop("152", "205"), x2: loop("134", "100"), y2: loop("150", "205") } },
+      // jambe droite : phase opposée
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "118", x2: loop("78", "122"), y2: loop("160", "122") } },
+      { type: "line", part: "shin", keys: { x1: loop("78", "122"), y1: loop("160", "122"), x2: loop("80", "116"), y2: loop("205", "150") } },
+      { type: "line", part: "foot", keys: { x1: loop("70", "112"), y1: loop("205", "152"), x2: loop("90", "130"), y2: loop("205", "150") } },
+      // bras qui pompent (opposés aux jambes)
+      { type: "line", part: "arm", keys: { x1: "100", y1: "88", x2: loop("74", "126"), y2: loop("100", "80") } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: "88", x2: loop("126", "74"), y2: loop("80", "100") } },
+    ],
+    dur: "0.85s",
+  },
+  // talons-fesses : sur place, le talon remonte DERRIÈRE vers les fessiers.
+  "heel-flicks": {
+    segments: [
+      { type: "circle", r: 9, part: "head", base: { cx: "100", cy: "60" } },
+      { type: "line", part: "torso", base: { x1: "100", y1: "70", x2: "100", y2: "118" } },
+      // jambe gauche : cuisse ~verticale, le tibia se replie, talon vers la fesse
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "118", x2: loop("94", "90"), y2: loop("156", "162") } },
+      { type: "line", part: "shin", keys: { x1: loop("94", "90"), y1: loop("156", "162"), x2: loop("108", "86"), y2: loop("126", "205") } },
+      { type: "line", part: "foot", keys: { x1: loop("98", "76"), y1: loop("124", "205"), x2: loop("118", "98"), y2: loop("130", "205") } },
+      // jambe droite : phase opposée
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "118", x2: loop("106", "110"), y2: loop("162", "156") } },
+      { type: "line", part: "shin", keys: { x1: loop("106", "110"), y1: loop("162", "156"), x2: loop("92", "114"), y2: loop("205", "126") } },
+      { type: "line", part: "foot", keys: { x1: loop("82", "104"), y1: loop("205", "124"), x2: loop("104", "124"), y2: loop("205", "130") } },
+      // bras qui pompent
+      { type: "line", part: "arm", keys: { x1: "100", y1: "88", x2: loop("74", "126"), y2: loop("100", "82") } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: "88", x2: loop("126", "74"), y2: loop("82", "100") } },
+    ],
+    dur: "0.85s",
+  },
   // conduite / dribble : croquettes, v-cuts, crochet, cruyff, ciseaux, navette
   // Joueur penché en avant, une jambe d'appui (pied posé), une jambe qui pousse le
   // ballon devant, un bras tendu pour l'équilibre. Le ballon fait un va-et-vient.
@@ -271,9 +331,9 @@ const ARCHETYPES: Record<string, Archetype> = {
 
 export const ILLUSTRATION_MAP: Record<string, keyof typeof ARCHETYPES> = {
   // technique / conduite
-  "toe-taps": "juggle",
-  "semelles-alternees": "juggle",
-  foundations: "juggle",
+  "toe-taps": "ball-taps",
+  "semelles-alternees": "ball-taps",
+  foundations: "ball-taps",
   "conduite-en-huit": "dribble",
   "sole-rolls": "dribble",
   croquettes: "dribble",
@@ -310,8 +370,8 @@ export const ILLUSTRATION_MAP: Record<string, keyof typeof ARCHETYPES> = {
   "skater-jumps": "lunge-lateral",
   "sprints-courts": "sprint",
   "departs-varies": "sprint",
-  "montees-genoux": "sprint",
-  "talons-fesses": "sprint",
+  "montees-genoux": "high-knees",
+  "talons-fesses": "heel-flicks",
   "gammes-athletiques": "sprint",
   "bondissements-horizontaux": "jump",
   "appuis-rapides": "sprint",
@@ -360,6 +420,9 @@ const COACHING_CUES: Record<keyof typeof ARCHETYPES, string> = {
   jump: "Atterris en douceur, genoux fléchis dans l'axe.",
   sprint: "Buste droit, appuis sous le bassin, bras rythmés.",
   juggle: "Cheville verrouillée, ballon à hauteur de ceinture.",
+  "ball-taps": "Semelle sur le dessus du ballon, appuis rapides, reste sur la pointe.",
+  "high-knees": "Monte les genoux à hauteur du bassin, sur l'avant du pied, buste droit.",
+  "heel-flicks": "Les talons montent vers les fessiers, genoux vers le sol, buste droit.",
   dribble: "Petites touches, ballon proche, tête qui se lève.",
   "wall-pass": "Intérieur du pied, contrôle orienté vers ta prochaine passe.",
   dive: "Genou–hanche–épaule au sol, jamais le coude en premier.",
