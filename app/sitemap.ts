@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { ALL_EXERCISES } from "@/lib/data/exercises";
+import { POSITIONS_SEO } from "@/lib/data/positions-seo";
 
 // Pages publiques indexables (pas les pages derrière connexion).
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -28,7 +29,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     freq: "monthly" as const,
   }));
 
-  return [...staticRoutes, ...exerciseRoutes].map((r) => ({
+  const positionRoutes = POSITIONS_SEO.map((p) => ({
+    path: `/programme/${p.slug}`,
+    priority: 0.8,
+    freq: "monthly" as const,
+  }));
+
+  return [...staticRoutes, ...exerciseRoutes, ...positionRoutes].map((r) => ({
     url: `${SITE_URL}${r.path}`,
     lastModified: now,
     changeFrequency: r.freq,
