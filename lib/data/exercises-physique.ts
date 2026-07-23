@@ -53,7 +53,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "planche-dynamique",
-    name: "Planche dynamique (commando)",
+    name: "Planche dynamique",
     category: "renforcement",
     emoji: "💪",
     description:
@@ -150,7 +150,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "pont-fessier",
-    name: "Pont fessier (hip thrust au sol)",
+    name: "Pont fessier (au sol)",
     category: "renforcement",
     emoji: "💪",
     description:
@@ -223,7 +223,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "mountain-climbers",
-    name: "Grimpeur au sol (mountain climbers)",
+    name: "Grimpeur au sol",
     category: "renforcement",
     emoji: "💪",
     description:
@@ -247,7 +247,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "superman",
-    name: "Superman (extension dorsale)",
+    name: "Superman (renforcement du dos)",
     category: "renforcement",
     emoji: "💪",
     description:
@@ -319,7 +319,7 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "copenhagen-plank",
-    name: "Gainage des adducteurs — Copenhagen (court)",
+    name: "Gainage des adducteurs (intérieur des cuisses)",
     category: "renforcement",
     emoji: "💪",
     description:
@@ -395,7 +395,7 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "skater-jumps",
-    name: "Sauts latéraux (skater jumps)",
+    name: "Sauts latéraux d'un pied à l'autre",
     category: "explosivite",
     emoji: "⚡",
     description:
@@ -517,7 +517,7 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "gammes-athletiques",
-    name: "Gammes athlétiques complètes",
+    name: "Gammes de course athlétique",
     category: "explosivite",
     emoji: "⚡",
     description:
@@ -566,7 +566,7 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "appuis-rapides",
-    name: "Appuis rapides au sol (fast feet)",
+    name: "Appuis rapides au sol",
     category: "explosivite",
     emoji: "⚡",
     description:

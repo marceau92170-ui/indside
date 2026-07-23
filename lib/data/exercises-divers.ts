@@ -4,7 +4,7 @@ import type { ExerciseSeed } from "./types";
 export const CARDIO_EXERCISES: ExerciseSeed[] = [
   {
     slug: "fartlek-15",
-    name: "Course à allures variées (fartlek, 15 min)",
+    name: "Course à allures variées (15 min)",
     category: "cardio",
     emoji: "🫁",
     description:
@@ -101,7 +101,7 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "pyramide-30-45-60",
-    name: "Pyramide 30-45-60",
+    name: "Pyramide de course (30-45-60 s)",
     category: "cardio",
     emoji: "🫁",
     description:
@@ -129,7 +129,7 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
 export const PREVENTION_EXERCISES: ExerciseSeed[] = [
   {
     slug: "equilibre-unipodal",
-    name: "Équilibre unipodal",
+    name: "Équilibre sur une jambe",
     category: "prevention",
     emoji: "🛡️",
     description:
@@ -153,7 +153,7 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "proprioception-yeux-fermes",
-    name: "Équilibre yeux fermés (proprioception)",
+    name: "Équilibre sur une jambe, yeux fermés",
     category: "prevention",
     emoji: "🛡️",
     description:
@@ -176,7 +176,7 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "nordic-hamstring-assiste",
-    name: "Ischio-jambiers nordiques (nordic hamstring)",
+    name: "Ischio-jambiers (arrière de la cuisse)",
     category: "prevention",
     emoji: "🛡️",
     description:
@@ -224,7 +224,7 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "mobilite-hanches",
-    name: "Mobilité hanches (90/90 et fentes dynamiques)",
+    name: "Mobilité des hanches",
     category: "prevention",
     emoji: "🛡️",
     description:
@@ -248,7 +248,7 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "mollets-excentrique",
-    name: "Mollets excentriques (protection tendon d'Achille)",
+    name: "Mollets (protège le tendon d'Achille)",
     category: "prevention",
     emoji: "🛡️",
     description:

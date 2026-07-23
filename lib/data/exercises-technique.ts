@@ -4,7 +4,7 @@ import type { ExerciseSeed } from "./types";
 export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   {
     slug: "toe-taps",
-    name: "Touches rapides sur le ballon (toe taps)",
+    name: "Touches rapides sur le ballon",
     category: "technique",
     emoji: "⚽",
     description:
@@ -28,7 +28,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "semelles-alternees",
-    name: "Semelles alternées (rolls latéraux)",
+    name: "Semelles alternées (gauche-droite)",
     category: "technique",
     emoji: "⚽",
     description:
@@ -51,7 +51,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "foundations",
-    name: "Touches intérieur du pied (foundations)",
+    name: "Touches avec l'intérieur du pied",
     category: "technique",
     emoji: "⚽",
     description:
@@ -99,7 +99,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "sole-rolls",
-    name: "Roulettes sous la semelle (sole rolls)",
+    name: "Rouler le ballon sous la semelle",
     category: "technique",
     emoji: "⚽",
     description:
@@ -286,7 +286,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "v-cuts",
-    name: "Tirer-pousser en V (v-cuts)",
+    name: "Tirer-pousser le ballon en V",
     category: "technique",
     emoji: "⚽",
     description:
@@ -309,7 +309,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "pull-push",
-    name: "Semelle avant-arrière (pull-push)",
+    name: "Semelle avant-arrière",
     category: "technique",
     emoji: "⚽",
     description:
@@ -401,7 +401,7 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   },
   {
     slug: "conduite-tete-levee",
-    name: "Conduite tête levée (scan)",
+    name: "Conduite balle au pied, tête levée",
     category: "technique",
     emoji: "⚽",
     description:
