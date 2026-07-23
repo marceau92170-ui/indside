@@ -4,6 +4,7 @@ import { ButtonLink } from "@/components/ui";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PhoneDemo } from "@/components/PhoneDemo";
 import { TrustStrip, SocialProof } from "@/components/SocialProof";
+import { Reveal } from "@/components/Reveal";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/site";
@@ -48,6 +49,11 @@ export default async function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {/* Sans JavaScript : on force l'affichage des blocs (jamais de contenu caché). */}
+      <noscript>
+        <style>{`.reveal{opacity:1 !important;transform:none !important;}`}</style>
+      </noscript>
+
       <div className="mx-auto w-full max-w-lg px-4 pb-28">
         {/* header */}
         <header className="flex items-center justify-between py-5">
@@ -60,165 +66,182 @@ export default async function LandingPage() {
           </Link>
         </header>
 
-        {/* hero */}
-        <section className="pt-6 text-center">
+        {/* hero — l'œil doit tomber sur le titre puis le bouton */}
+        <section className="pt-8 text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-glow">
             Foot · ados & adultes · à faire seul
           </p>
-          <h1 className="mt-2 font-condensed text-4xl font-bold uppercase leading-tight">
+          <h1 className="mt-3 font-condensed text-4xl font-bold uppercase leading-[1.05] sm:text-5xl">
             Ton programme perso
             <br />
             de préparateur.
           </h1>
-          <p className="mx-auto mt-3 max-w-sm text-sm text-muted">
+          <p className="mx-auto mt-4 max-w-sm text-sm text-muted">
             Généré pour <span className="font-semibold text-chalk">TON poste</span>,{" "}
             <span className="font-semibold text-chalk">TON âge</span>,{" "}
-            <span className="font-semibold text-chalk">TON niveau</span>. Ados comme adultes, du
-            district à la Ligue. Des séances de 20 à 40 minutes, faisables seul, calées autour de
-            tes entraînements club.
+            <span className="font-semibold text-chalk">TON niveau</span>. Des séances de 20 à 40 min,
+            faisables seul, calées autour de tes entraînements club.
           </p>
-          <div className="mt-6 flex flex-col items-center gap-3">
-            <ButtonLink href="/onboarding" size="lg">
-              Créer mon programme gratuit
+          <div className="mt-7 flex flex-col items-center gap-3">
+            <ButtonLink href="/onboarding" size="lg" className="cta-pulse w-full max-w-xs sm:w-auto">
+              Créer mon programme gratuit →
             </ButtonLink>
             <p className="text-xs text-muted">90 secondes pour répondre. Aucune carte demandée.</p>
           </div>
 
           <TrustStrip playerCount={playerCount} />
 
-          {/* aperçu du produit dans un téléphone (au-dessus de la ligne de flottaison) */}
-          <div className="mt-9">
+          {/* aperçu du produit dans un téléphone */}
+          <Reveal className="mt-12">
             <PhoneDemo />
             <p className="mt-3 text-xs text-muted">
               L&apos;app : ta semaine, tes séances, ta progression — calées sur ton poste.
             </p>
-          </div>
+          </Reveal>
 
           {/* bandeau chiffres — style tableau d'affichage */}
-          <dl className="mt-8 grid grid-cols-3 divide-x divide-line rounded-card border border-line bg-surface py-4">
-            {[
-              ["60", "exercices validés"],
-              ["4", "tests mesurés"],
-              ["0", "gadget, 0 complément"],
-            ].map(([n, label]) => (
-              <div key={label} className="px-2">
-                <dd className="tnum font-condensed text-3xl font-bold leading-none text-glow">{n}</dd>
-                <dt className="mt-1 text-[11px] uppercase tracking-wide text-muted">{label}</dt>
-              </div>
-            ))}
-          </dl>
+          <Reveal className="mt-8">
+            <dl className="grid grid-cols-3 divide-x divide-line rounded-card border border-line bg-surface py-4">
+              {[
+                ["60", "exercices validés"],
+                ["4", "tests mesurés"],
+                ["0", "gadget, 0 complément"],
+              ].map(([n, label]) => (
+                <div key={label} className="px-2">
+                  <dd className="tnum font-condensed text-3xl font-bold leading-none text-glow">{n}</dd>
+                  <dt className="mt-1 text-[11px] uppercase tracking-wide text-muted">{label}</dt>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
 
-          <div className="mt-10 flex justify-center">
-            <PlayerCard
-              width={280}
-              data={{
-                firstName: "Rayan",
-                position: "AIL",
-                positionLabel: "Ailier",
-                category: "U16",
-                divisionLabel: "D3 — District des Hauts-de-Seine",
-                stats: [
-                  { label: "Jonglage", value: "61" },
-                  { label: "Navette", value: "11.2" },
-                  { label: "Planche", value: "95" },
-                  { label: "Détente", value: "43" },
-                ],
-              }}
-            />
-          </div>
-          <p className="mt-3 text-xs text-muted">
-            Ta carte joueur, avec tes vraies stats mesurées.
-          </p>
+          <Reveal className="mt-12">
+            <div className="flex justify-center">
+              <PlayerCard
+                width={280}
+                data={{
+                  firstName: "Rayan",
+                  position: "AIL",
+                  positionLabel: "Ailier",
+                  category: "U16",
+                  divisionLabel: "D3 — District des Hauts-de-Seine",
+                  stats: [
+                    { label: "Jonglage", value: "61" },
+                    { label: "Navette", value: "11.2" },
+                    { label: "Planche", value: "95" },
+                    { label: "Détente", value: "43" },
+                  ],
+                }}
+              />
+            </div>
+            <p className="mt-3 text-center text-xs text-muted">
+              Ta carte joueur, avec tes vraies stats mesurées.
+            </p>
+          </Reveal>
         </section>
 
         {/* l'écart injuste */}
-        <section className="mt-14">
-          <h2 className="font-condensed text-2xl font-bold uppercase">
-            Lui, il s&apos;entraîne tous les jours.
-          </h2>
-          <p className="mt-2 text-sm text-muted">
-            Au-dessus de toi, ça s&apos;entraîne tous les jours. Toi, c&apos;est 2 à 3 séances club
-            par semaine. La différence se joue sur ce que tu fais{" "}
-            <span className="font-semibold text-chalk">entre les entraînements</span> — à la maison,
-            au city, avec un ballon et un mur.
-          </p>
-        </section>
+        <Reveal>
+          <section className="mt-16">
+            <h2 className="font-condensed text-2xl font-bold uppercase">
+              Lui, il s&apos;entraîne tous les jours.
+            </h2>
+            <p className="mt-2 text-sm text-muted">
+              Au-dessus de toi, ça s&apos;entraîne tous les jours. Toi, c&apos;est 2 à 3 séances club
+              par semaine. La différence se joue sur ce que tu fais{" "}
+              <span className="font-semibold text-chalk">entre les entraînements</span> — à la maison,
+              au city, avec un ballon et un mur.
+            </p>
+          </section>
+        </Reveal>
 
         {/* comment ça marche */}
-        <section className="mt-10 space-y-3">
-          <h2 className="font-condensed text-2xl font-bold uppercase">Comment ça marche</h2>
-          {[
-            ["1", "Tu réponds à 8 questions", "Poste, catégorie, niveau (ta vraie division), gabarit, matériel, point faible."],
-            ["2", "Ton programme se génère", "Des séances composées uniquement d'exercices validés, jamais la veille de match."],
-            ["3", "Tu t'entraînes, ça s'adapte", "Tu notes chaque séance. La semaine suivante est ajustée. Tests mesurés toutes les 4 semaines."],
-          ].map(([n, title, desc]) => (
-            <div key={n} className="flex gap-4 rounded-card border border-line bg-surface p-4">
-              <span className="font-condensed text-3xl font-bold text-glow">{n}</span>
-              <div>
-                <p className="font-condensed text-lg font-bold uppercase leading-tight">{title}</p>
-                <p className="mt-1 text-sm text-muted">{desc}</p>
+        <Reveal>
+          <section className="mt-12 space-y-3">
+            <h2 className="font-condensed text-2xl font-bold uppercase">Comment ça marche</h2>
+            {[
+              ["1", "Tu réponds à 8 questions", "Poste, catégorie, niveau (ta vraie division), gabarit, matériel, point faible."],
+              ["2", "Ton programme se génère", "Des séances composées uniquement d'exercices validés, jamais la veille de match."],
+              ["3", "Tu t'entraînes, ça s'adapte", "Tu notes chaque séance. La semaine suivante est ajustée. Tests mesurés toutes les 4 semaines."],
+            ].map(([n, title, desc]) => (
+              <div key={n} className="flex gap-4 rounded-card border border-line bg-surface p-4">
+                <span className="font-condensed text-3xl font-bold text-glow">{n}</span>
+                <div>
+                  <p className="font-condensed text-lg font-bold uppercase leading-tight">{title}</p>
+                  <p className="mt-1 text-sm text-muted">{desc}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </section>
+            ))}
+          </section>
+        </Reveal>
 
         {/* anti-bullshit */}
-        <section className="mt-10 rounded-card border border-grass bg-grass/15 p-5">
-          <h2 className="font-condensed text-xl font-bold uppercase">
-            Pas de compléments. Pas de gadgets.
-          </h2>
-          <p className="mt-1 text-sm text-muted">
-            Un ballon, un mur, 25 minutes. Renforcement au poids du corps, technique, vitesse,
-            prévention des blessures. Adapté à ta catégorie : avant 15 ans, zéro charge, zéro
-            pliométrie intensive — c&apos;est non négociable.
-          </p>
-        </section>
+        <Reveal>
+          <section className="mt-12 rounded-card border border-grass bg-grass/15 p-5">
+            <h2 className="font-condensed text-xl font-bold uppercase">
+              Pas de compléments. Pas de gadgets.
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              Un ballon, un mur, 25 minutes. Renforcement au poids du corps, technique, vitesse,
+              prévention des blessures. Adapté à ta catégorie : avant 15 ans, zéro charge, zéro
+              pliométrie intensive — c&apos;est non négociable.
+            </p>
+          </section>
+        </Reveal>
 
         {/* preuve */}
-        <section className="mt-10">
-          <h2 className="font-condensed text-2xl font-bold uppercase">La progression se mesure</h2>
-          <p className="mt-2 text-sm text-muted">
-            Jonglage max, navette 5×10 m, planche, détente verticale : 4 tests auto-mesurés toutes
-            les 4 semaines, avec graphiques. Passer de 34 à 61 jonglages en 3 semaines, ça ne se
-            discute pas.
-          </p>
-        </section>
+        <Reveal>
+          <section className="mt-12">
+            <h2 className="font-condensed text-2xl font-bold uppercase">La progression se mesure</h2>
+            <p className="mt-2 text-sm text-muted">
+              Jonglage max, navette 5×10 m, planche, détente verticale : 4 tests auto-mesurés toutes
+              les 4 semaines, avec graphiques. Passer de 34 à 61 jonglages en 3 semaines, ça ne se
+              discute pas.
+            </p>
+          </section>
+        </Reveal>
 
-        {/* preuve sociale (coach + témoignages réels — masqué tant que vide) */}
-        <SocialProof />
+        {/* preuve sociale (coach + avis réels — masqué tant que vide) */}
+        <Reveal>
+          <SocialProof />
+        </Reveal>
 
         {/* bloc parent */}
-        <section className="mt-12 rounded-card border border-line bg-surface p-5">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted">Pour les parents</p>
-          <h2 className="mt-1 font-condensed text-xl font-bold uppercase">
-            Un coach individuel : 40 € la séance.
-            <br />
-            Progressa : 59 € l&apos;année.
-          </h2>
-          <ul className="mt-3 space-y-1.5 text-sm text-muted">
-            <li>• Séances conçues selon les standards de préparation physique des jeunes (13-17 ans).</li>
-            <li>• Consentement parental demandé à l&apos;inscription pour les moins de 15 ans.</li>
-            <li>• Abonnement souscrit par un parent ou tuteur légal, résiliable en 1 clic.</li>
-            <li>• Données minimales, pas de tracking publicitaire.</li>
-          </ul>
-        </section>
+        <Reveal>
+          <section className="mt-12 rounded-card border border-line bg-surface p-5">
+            <p className="text-xs font-bold uppercase tracking-widest text-muted">Pour les parents</p>
+            <h2 className="mt-1 font-condensed text-xl font-bold uppercase">
+              Un coach individuel : 40 € la séance.
+              <br />
+              Progressa : 59 € l&apos;année.
+            </h2>
+            <ul className="mt-3 space-y-1.5 text-sm text-muted">
+              <li>• Séances conçues selon les standards de préparation physique des jeunes (13-17 ans).</li>
+              <li>• Consentement parental demandé à l&apos;inscription pour les moins de 15 ans.</li>
+              <li>• Abonnement souscrit par un parent ou tuteur légal, résiliable en 1 clic.</li>
+              <li>• Données minimales, pas de tracking publicitaire.</li>
+            </ul>
+          </section>
+        </Reveal>
 
         {/* CTA final */}
-        <section className="mt-12 text-center">
-          <h2 className="font-condensed text-3xl font-bold uppercase leading-tight">
-            La saison prochaine
-            <br />
-            commence maintenant.
-          </h2>
-          <div className="mt-5">
-            <ButtonLink href="/onboarding" size="lg">
-              Commencer gratuitement
-            </ButtonLink>
-          </div>
-          <p className="mt-3 text-xs text-muted">
-            Gratuit : 1 séance/semaine + 10 exercices. Premium : 8,99 €/mois ou 59 €/an.
-          </p>
-        </section>
+        <Reveal>
+          <section className="mt-14 text-center">
+            <h2 className="font-condensed text-3xl font-bold uppercase leading-tight">
+              La saison prochaine
+              <br />
+              commence maintenant.
+            </h2>
+            <div className="mt-6">
+              <ButtonLink href="/onboarding" size="lg" className="w-full max-w-xs sm:w-auto">
+                Commencer gratuitement →
+              </ButtonLink>
+            </div>
+            <p className="mt-3 text-xs text-muted">
+              Gratuit : 1 séance/semaine + 10 exercices. Premium : 8,99 €/mois ou 59 €/an.
+            </p>
+          </section>
+        </Reveal>
 
         <SiteFooter />
       </div>

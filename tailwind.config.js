@@ -9,8 +9,8 @@ module.exports = {
     extend: {
       colors: {
         // Direction artistique "Carton rouge" — asphalte + rouge, un seul accent
-        night: "#0C0D0F", // asphalte quasi-noir
-        surface: "#17181A", // surface carte
+        night: "#15171C", // charbon adouci (moins dur que le noir pur)
+        surface: "#1F2228", // surface carte (garde le contraste avec le fond)
         chalk: "#EDE9E0", // blanc chaud (texte)
         glow: "#E12A3A", // rouge carton — CTA / actif uniquement
         grass: "#2A1417", // panel ember sombre — touche secondaire (boîtes de mise en avant)
