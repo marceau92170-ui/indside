@@ -8,6 +8,11 @@ import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/site";
 
+// La landing se régénère au moins toutes les 5 min (ISR) pour prendre en compte
+// les nouveaux avis publiés. La validation d'un avis force aussi un rafraîchissement
+// immédiat (revalidatePath dans /api/admin/reviews).
+export const revalidate = 300;
+
 // Landing — conversion jeune ET parent. Direction artistique « Carton rouge ».
 
 const jsonLd = {
