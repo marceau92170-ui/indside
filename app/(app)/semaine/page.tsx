@@ -68,10 +68,10 @@ export default async function SemainePage() {
     totalCount === 0
       ? ""
       : doneCount === 0
-        ? "C'est parti — attaque ta première séance de la semaine. 💪"
+        ? "Attaque ta première séance de la semaine."
         : doneCount < totalCount
-          ? `Bien joué. Plus que ${totalCount - doneCount} séance${totalCount - doneCount > 1 ? "s" : ""} pour boucler ta semaine. 🔥`
-          : "Semaine bouclée, énorme ! Récup bien méritée. 🏆";
+          ? `Plus que ${totalCount - doneCount} séance${totalCount - doneCount > 1 ? "s" : ""} pour boucler ta semaine.`
+          : "Semaine bouclée. Récup bien méritée.";
 
   return (
     <div>
@@ -79,7 +79,7 @@ export default async function SemainePage() {
       <div className="mb-4">
         <h1 className="font-condensed text-3xl font-bold uppercase leading-none">Ma semaine</h1>
         <p className="mt-1 text-sm text-muted">
-          Salut {user.profile.firstName} 👊 <span className="text-line">·</span>{" "}
+          {user.profile.firstName} <span className="text-line">·</span>{" "}
           {positionLabel(user.profile.position)} <span className="text-line">·</span> {category}
         </p>
       </div>
@@ -99,18 +99,18 @@ export default async function SemainePage() {
           </p>
           {isMatchToday ? (
             <p className="text-sm">
-              ⚽ <span className="font-semibold">Jour de match.</span> Pas de séance : repose-toi et
-              donne tout sur le terrain. Bon match !
+              <span className="font-semibold">Jour de match.</span> Pas de séance : repose-toi et
+              donne tout sur le terrain.
             </p>
           ) : todaySession && todayDone ? (
             <p className="text-sm">
-              ✅ <span className="font-semibold">Séance du jour faite.</span> Énorme — hydrate-toi et
-              étire-toi, la récup fait partie du travail.
+              <span className="font-semibold">Séance du jour faite.</span> Hydrate-toi et étire-toi,
+              la récup fait partie du travail.
             </p>
           ) : todaySession ? (
             <>
               <p className="mb-2 text-sm">
-                🎯 <span className="font-semibold">Ta séance du jour :</span> {todaySession.title}{" "}
+                <span className="font-semibold">Ta séance du jour :</span> {todaySession.title}{" "}
                 <span className="text-muted">· {todaySession.durationMin} min</span>
               </p>
               <ButtonLink href={`/seance/${todaySession.id}`} size="sm">
@@ -119,13 +119,13 @@ export default async function SemainePage() {
             </>
           ) : isEveOfMatch ? (
             <p className="text-sm">
-              😴 <span className="font-semibold">Veille de match.</span> Repos ou récup légère
+              <span className="font-semibold">Veille de match.</span> Repos ou récup légère
               aujourd&apos;hui — sois frais demain.
             </p>
           ) : nextSession ? (
             <>
               <p className="mb-2 text-sm">
-                🌙 <span className="font-semibold">Repos aujourd&apos;hui.</span> Ta prochaine séance :{" "}
+                <span className="font-semibold">Repos aujourd&apos;hui.</span> Ta prochaine séance :{" "}
                 {nextSession.title}{" "}
                 <span className="text-muted">· {DAYS_FR[nextSession.dayOfWeek]}</span>
               </p>
@@ -135,7 +135,7 @@ export default async function SemainePage() {
             </>
           ) : (
             <p className="text-sm">
-              🌙 <span className="font-semibold">Repos aujourd&apos;hui.</span> Récupère bien — tu as
+              <span className="font-semibold">Repos aujourd&apos;hui.</span> Récupère bien — tu as
               tout donné cette semaine.
             </p>
           )}
@@ -180,8 +180,7 @@ export default async function SemainePage() {
       {showFull && (
         <>
           {program?.summary && (
-            <div className="mb-4 flex gap-2 rounded-card border-l-2 border-glow bg-surface/60 px-3 py-2.5">
-              <span aria-hidden="true">🎯</span>
+            <div className="mb-4 rounded-card border-l-2 border-glow bg-surface/60 px-3 py-2.5">
               <p className="text-xs leading-snug text-muted">{program.summary}</p>
             </div>
           )}
@@ -213,7 +212,6 @@ export default async function SemainePage() {
                             )}
                           </p>
                           <p className="mt-1 font-condensed text-xl font-bold leading-tight">
-                            {done ? "✅ " : ""}
                             {s.title}
                           </p>
                           <p className="mt-0.5 text-xs text-muted">
@@ -241,12 +239,9 @@ export default async function SemainePage() {
           </ul>
 
           {matchDay !== null && matchDay !== undefined && (
-            <p className="mt-4 flex items-start gap-2 rounded-card bg-surface/60 px-3 py-2 text-xs text-muted">
-              <span aria-hidden="true">⚽</span>
-              <span>
-                Match le {DAYS_FR[matchDay].toLowerCase()} — la veille, c&apos;est repos ou
-                récupération. Ton programme le sait.
-              </span>
+            <p className="mt-4 rounded-card border-l-2 border-line bg-surface/60 px-3 py-2 text-xs text-muted">
+              Match le {DAYS_FR[matchDay].toLowerCase()} — la veille, c&apos;est repos ou
+              récupération. Ton programme le sait.
             </p>
           )}
 
@@ -325,7 +320,7 @@ export default async function SemainePage() {
         <Card className="flex items-center justify-between gap-3 border-line hover:border-glow/50">
           <div className="min-w-0">
             <p className="font-condensed text-base font-bold uppercase leading-tight">
-              Invite ton équipe 🤝
+              Invite ton équipe
             </p>
             <p className="text-sm text-muted">
               3 potes inscrits = 1 semaine de Premium offerte.
