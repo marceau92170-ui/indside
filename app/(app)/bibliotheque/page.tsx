@@ -42,9 +42,15 @@ export default async function BibliothequePage() {
   return (
     <div>
       <h1 className="mb-1 font-condensed text-3xl font-bold uppercase">Bibliothèque</h1>
-      <p className="mb-4 text-sm text-muted">
+      <p className="mb-2 text-sm text-muted">
         {exercises.length} exercices validés, expliqués pas à pas.
         {!premium && " En gratuit, tu as accès à 10 exercices."}
+      </p>
+      <p className="mb-4 rounded-card border border-line bg-surface/60 px-3 py-2.5 text-xs text-muted">
+        💡 Ici tu <span className="font-semibold text-chalk">explores les exercices</span> et tu peux lancer une{" "}
+        <span className="font-semibold text-chalk">séance libre</span> quand tu veux. Ton{" "}
+        <span className="font-semibold text-chalk">programme de la semaine</span> (personnalisé, jour par jour)
+        est dans l&apos;onglet <span className="font-semibold text-chalk">Semaine</span>.
       </p>
       {!premium && (
         <div className="mb-4 rounded-card border border-glow/30 bg-surface p-4">

@@ -88,14 +88,14 @@ export function ExerciseLibrary({
         >
           <span>
             <span className="block font-condensed text-lg font-bold uppercase leading-tight">
-              ▶ Lancer la séance
+              ▶ Séance libre
             </span>
             <span className="block text-xs text-muted">
-              {sessionTitle} · {sessionExercises.length} exercices enchaînés
+              {sessionTitle} · {sessionExercises.length} exercices · en plus de ton programme, quand tu veux
             </span>
           </span>
-          <span className="shrink-0 rounded-full bg-glow px-3 py-1.5 font-condensed text-sm font-bold text-night">
-            C&apos;est parti
+          <span className="shrink-0 rounded-full bg-glow px-3 py-1.5 font-condensed text-sm font-bold text-white">
+            Lancer
           </span>
         </button>
       )}
