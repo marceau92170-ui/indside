@@ -86,6 +86,66 @@ export async function affiliateStats(aff: {
   };
 }
 
+// Un point de la série quotidienne (pour les courbes du dashboard partenaire).
+export type DailyPoint = {
+  date: string; // AAAA-MM-JJ (UTC)
+  clicks: number;
+  signups: number;
+  sales: number;
+  grossCents: number;
+  commissionCents: number;
+};
+
+// Série jour par jour sur les `days` derniers jours (aujourd'hui inclus), avec des
+// zéros pour les jours sans activité — pour tracer des courbes propres et comparer
+// chaque jour à la veille.
+export async function affiliateDailySeries(code: string, days = 30): Promise<DailyPoint[]> {
+  const since = new Date();
+  since.setUTCHours(0, 0, 0, 0);
+  since.setUTCDate(since.getUTCDate() - (days - 1));
+
+  const [clicks, signups, commissions] = await Promise.all([
+    prisma.linkClick.findMany({
+      where: { affiliateCode: code, createdAt: { gte: since } },
+      select: { createdAt: true },
+    }),
+    prisma.user.findMany({
+      where: { referredByCode: code, createdAt: { gte: since } },
+      select: { createdAt: true },
+    }),
+    prisma.commission.findMany({
+      where: { affiliateCode: code, refunded: false, createdAt: { gte: since } },
+      select: { createdAt: true, grossCents: true, commissionCents: true },
+    }),
+  ]);
+
+  const key = (d: Date) => d.toISOString().slice(0, 10);
+  const map = new Map<string, DailyPoint>();
+  for (let i = 0; i < days; i++) {
+    const d = new Date(since);
+    d.setUTCDate(since.getUTCDate() + i);
+    const k = key(d);
+    map.set(k, { date: k, clicks: 0, signups: 0, sales: 0, grossCents: 0, commissionCents: 0 });
+  }
+  for (const c of clicks) {
+    const p = map.get(key(c.createdAt));
+    if (p) p.clicks++;
+  }
+  for (const s of signups) {
+    const p = map.get(key(s.createdAt));
+    if (p) p.signups++;
+  }
+  for (const c of commissions) {
+    const p = map.get(key(c.createdAt));
+    if (p) {
+      p.sales++;
+      p.grossCents += c.grossCents;
+      p.commissionCents += c.commissionCents;
+    }
+  }
+  return [...map.values()];
+}
+
 export async function allAffiliateStats(): Promise<AffiliateStats[]> {
   const affs = await prisma.affiliate.findMany({ orderBy: { createdAt: "asc" } });
   const stats = await Promise.all(affs.map((a) => affiliateStats(a)));
