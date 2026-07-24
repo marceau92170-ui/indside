@@ -187,10 +187,11 @@ model PlayerProfile {
   firstName String
   birthYear Int
   position  String // GB | DC | LAT | MDF | MOF | AIL | ATT
-  levelType String // DISTRICT | REGIONAL | NATIONAL
-  division  String // ex: D3, R2, U17 National
-  region    String // clé de ligue (voir lib/constants)
-  district  String? // libellé libre du district
+  country   String @default("FR") // pays (francophonie) — FR garde le système FFF détaillé
+  levelType String // DISTRICT | REGIONAL | NATIONAL | GENERIC (hors France)
+  division  String // ex: D3, R2, U17 National, ou niveau générique hors France
+  region    String // clé de ligue FFF (France) ou clé pays (hors France)
+  district  String? // libellé libre du district (France) ou ville/région (hors France)
   heightCm  Int
   weightKg  Int
   clubTrainingsPerWeek Int

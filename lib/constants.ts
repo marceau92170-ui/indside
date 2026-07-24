@@ -17,6 +17,37 @@ export function positionLabel(key: string): string {
   return POSITIONS.find((p) => p.key === key)?.label ?? key;
 }
 
+// Pays de la francophonie couverts (les programmes sont identiques partout ;
+// seule l'inscription s'adapte). La France garde le système FFF détaillé ;
+// les autres pays utilisent un niveau générique + ville/région libre.
+export const COUNTRIES = [
+  { key: "FR", name: "France" },
+  { key: "BE", name: "Belgique" },
+  { key: "CH", name: "Suisse" },
+  { key: "LU", name: "Luxembourg" },
+  { key: "MA", name: "Maroc" },
+  { key: "DZ", name: "Algérie" },
+  { key: "TN", name: "Tunisie" },
+  { key: "SN", name: "Sénégal" },
+  { key: "CI", name: "Côte d'Ivoire" },
+  { key: "CM", name: "Cameroun" },
+  { key: "CA", name: "Canada (Québec)" },
+  { key: "OTHER", name: "Autre pays francophone" },
+] as const;
+
+export function countryName(key: string): string {
+  return COUNTRIES.find((c) => c.key === key)?.name ?? key;
+}
+
+// Niveaux génériques (hors France) — les systèmes de division diffèrent d'un
+// pays à l'autre, on reste simple et universel.
+export const GENERIC_LEVELS = [
+  { key: "LOISIR", label: "Loisir / débutant" },
+  { key: "LOCAL", label: "Local / départemental" },
+  { key: "REGIONAL", label: "Régional" },
+  { key: "ELITE", label: "National / élite" },
+] as const;
+
 // Les 13 ligues régionales métropolitaines de la FFF
 export const LEAGUES = [
   { key: "ara", name: "Auvergne-Rhône-Alpes" },

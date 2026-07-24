@@ -6,6 +6,8 @@ import { Button, Input } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 import { lockedTeasers } from "@/lib/teaser";
 import {
+  COUNTRIES,
+  GENERIC_LEVELS,
   EQUIPMENT,
   GOALS,
   LEAGUES,
@@ -21,6 +23,7 @@ type State = {
   firstName: string;
   birthYear: number | null;
   position: string;
+  country: string;
   levelType: string;
   division: string;
   region: string;
@@ -40,6 +43,7 @@ const INITIAL: State = {
   firstName: "",
   birthYear: null,
   position: "",
+  country: "FR",
   levelType: "",
   division: "",
   region: "",
@@ -69,7 +73,18 @@ function ageOf(birthYear: number): number {
 // Estimation de départ (déterministe, sans IA) pour l'écran de révélation.
 // Honnête : c'est une base, elle se précisera avec les vrais tests.
 function startingProfile(s: State): { rating: number; stats: { label: string; value: number }[] } {
-  const lvl = s.levelType === "NATIONAL" ? 8 : s.levelType === "REGIONAL" ? 4 : 1;
+  const lvl =
+    s.levelType === "NATIONAL"
+      ? 8
+      : s.levelType === "REGIONAL"
+        ? 4
+        : s.levelType === "GENERIC"
+          ? s.division.includes("élite") || s.division.includes("National")
+            ? 8
+            : s.division.includes("Régional")
+              ? 4
+              : 1
+          : 1;
   const boost = (keys: string[], base: number) => Math.min(90, base + lvl + (keys.includes(s.goal) ? 6 : 0));
   const stats = [
     { label: "Vitesse", value: boost(["vitesse", "polyvalent"], 66) },
@@ -154,7 +169,9 @@ export function OnboardingWizard({
       case 1:
         return Boolean(s.position);
       case 2:
-        return Boolean(s.levelType && s.division && s.region);
+        return s.country === "FR"
+          ? Boolean(s.levelType && s.division && s.region)
+          : Boolean(s.division);
       case 3: {
         const h = Number(s.heightCm);
         const w = Number(s.weightKg);
@@ -192,6 +209,7 @@ export function OnboardingWizard({
           firstName: s.firstName.trim(),
           birthYear: s.birthYear,
           position: s.position,
+          country: s.country,
           levelType: s.levelType,
           division: s.division,
           region: s.region,
@@ -289,60 +307,104 @@ export function OnboardingWizard({
       )}
 
       {step === 2 && (
-        <StepShell title="Ton niveau actuel ?">
-          <div className="space-y-2">
-            {LEVEL_TYPES.map((lt) => (
-              <Choice
-                key={lt.key}
-                active={s.levelType === lt.key}
-                onClick={() => set({ levelType: lt.key, division: "" })}
-                full
-              >
-                <span className="block">{lt.label}</span>
-                <span className="block text-xs font-normal text-muted">{lt.hint}</span>
-              </Choice>
+        <StepShell title="D'où tu joues ?">
+          <p className="mb-2 font-condensed text-lg font-bold uppercase">Ton pays ?</p>
+          <select
+            value={s.country}
+            onChange={(e) =>
+              set({ country: e.target.value, levelType: "", division: "", region: "", district: "" })
+            }
+            className="w-full rounded-lg border border-line bg-night px-4 py-3 text-chalk focus:border-glow focus:outline-none"
+          >
+            {COUNTRIES.map((c) => (
+              <option key={c.key} value={c.key}>
+                {c.name}
+              </option>
             ))}
-          </div>
-          {s.levelType && (
+          </select>
+
+          {s.country === "FR" ? (
             <>
-              <p className="mb-2 mt-5 font-condensed text-lg font-bold uppercase">Ta division ?</p>
-              <div className="flex flex-wrap gap-2">
-                {divisionsFor(
-                  s.levelType,
-                  s.birthYear !== null && ageOf(s.birthYear) >= 18
-                ).map((d) => (
-                  <Choice key={d} active={s.division === d} onClick={() => set({ division: d })}>
-                    {d}
+              <p className="mb-2 mt-5 font-condensed text-lg font-bold uppercase">Ton niveau actuel ?</p>
+              <div className="space-y-2">
+                {LEVEL_TYPES.map((lt) => (
+                  <Choice
+                    key={lt.key}
+                    active={s.levelType === lt.key}
+                    onClick={() => set({ levelType: lt.key, division: "" })}
+                    full
+                  >
+                    <span className="block">{lt.label}</span>
+                    <span className="block text-xs font-normal text-muted">{lt.hint}</span>
                   </Choice>
                 ))}
               </div>
-            </>
-          )}
-          {s.division && (
-            <>
-              <p className="mb-2 mt-5 font-condensed text-lg font-bold uppercase">Ta ligue ?</p>
-              <select
-                value={s.region}
-                onChange={(e) => set({ region: e.target.value })}
-                className="w-full rounded-lg border border-line bg-night px-4 py-3 text-chalk focus:border-glow focus:outline-none"
-              >
-                <option value="">Choisis ta ligue…</option>
-                {LEAGUES.map((l) => (
-                  <option key={l.key} value={l.key}>
-                    {l.name}
-                  </option>
-                ))}
-              </select>
-              {s.levelType === "DISTRICT" && (
-                <div className="mt-3">
-                  <Input
-                    placeholder="Ton district (ex : Hauts-de-Seine) — optionnel"
-                    value={s.district}
-                    onChange={(e) => set({ district: e.target.value })}
-                    maxLength={40}
-                  />
-                </div>
+              {s.levelType && (
+                <>
+                  <p className="mb-2 mt-5 font-condensed text-lg font-bold uppercase">Ta division ?</p>
+                  <div className="flex flex-wrap gap-2">
+                    {divisionsFor(
+                      s.levelType,
+                      s.birthYear !== null && ageOf(s.birthYear) >= 18
+                    ).map((d) => (
+                      <Choice key={d} active={s.division === d} onClick={() => set({ division: d })}>
+                        {d}
+                      </Choice>
+                    ))}
+                  </div>
+                </>
               )}
+              {s.division && (
+                <>
+                  <p className="mb-2 mt-5 font-condensed text-lg font-bold uppercase">Ta ligue ?</p>
+                  <select
+                    value={s.region}
+                    onChange={(e) => set({ region: e.target.value })}
+                    className="w-full rounded-lg border border-line bg-night px-4 py-3 text-chalk focus:border-glow focus:outline-none"
+                  >
+                    <option value="">Choisis ta ligue…</option>
+                    {LEAGUES.map((l) => (
+                      <option key={l.key} value={l.key}>
+                        {l.name}
+                      </option>
+                    ))}
+                  </select>
+                  {s.levelType === "DISTRICT" && (
+                    <div className="mt-3">
+                      <Input
+                        placeholder="Ton district (ex : Hauts-de-Seine) — optionnel"
+                        value={s.district}
+                        onChange={(e) => set({ district: e.target.value })}
+                        maxLength={40}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <p className="mb-2 mt-5 font-condensed text-lg font-bold uppercase">Ton niveau ?</p>
+              <div className="space-y-2">
+                {GENERIC_LEVELS.map((lv) => (
+                  <Choice
+                    key={lv.key}
+                    active={s.division === lv.label}
+                    onClick={() => set({ levelType: "GENERIC", division: lv.label, region: s.country })}
+                    full
+                  >
+                    {lv.label}
+                  </Choice>
+                ))}
+              </div>
+              <div className="mt-4">
+                <Input
+                  placeholder="Ta ville / région (ex : Bruxelles) — optionnel"
+                  value={s.district}
+                  onChange={(e) => set({ district: e.target.value })}
+                  maxLength={40}
+                />
+              </div>
             </>
           )}
         </StepShell>

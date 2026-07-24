@@ -6,7 +6,7 @@ import {
   categoryFromBirthYear,
   personaFromBirthYear,
 } from "@/lib/categories";
-import { DAYS_FR, goalLabel, leagueName, positionLabel } from "@/lib/constants";
+import { DAYS_FR, goalLabel, leagueName, countryName, positionLabel } from "@/lib/constants";
 
 // ---------- Schéma strict de sortie (validation Zod) ----------
 
@@ -136,7 +136,11 @@ function buildUserMessage(
 - Prénom : ${profile.firstName}
 - Âge : ${age} ans (catégorie ${category})
 - Poste : ${positionLabel(profile.position)}
-- Niveau : ${profile.division} (${profile.levelType.toLowerCase()}), ligue ${leagueName(profile.region)}${profile.district ? `, district ${profile.district}` : ""}
+- Niveau : ${profile.division}${
+      profile.levelType === "GENERIC" || (profile.country && profile.country !== "FR")
+        ? `${profile.district ? `, ${profile.district}` : ""} (${countryName(profile.country ?? profile.region)})`
+        : ` (${profile.levelType.toLowerCase()}), ligue ${leagueName(profile.region)}${profile.district ? `, district ${profile.district}` : ""}`
+    }
 - Gabarit : ${profile.heightCm} cm / ${profile.weightKg} kg
 - Rythme club : ${profile.clubTrainingsPerWeek} entraînement(s) club par semaine${
       profile.matchDay !== null && profile.matchDay !== undefined
