@@ -6,23 +6,28 @@ import { PRICING } from "@/lib/plan";
 
 export function CheckoutButtons({ hasUsedTrial = false }: { hasUsedTrial?: boolean }) {
   const [loading, setLoading] = useState<string | null>(null);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const canTrial = !hasUsedTrial;
 
   async function checkout(plan: "monthly" | "annual", trial: boolean) {
     const key = `${plan}:${trial ? "t" : "p"}`;
     setLoading(key);
-    setError(false);
-    const res = await fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan, trial }),
-    });
-    if (res.ok) {
-      const { url } = await res.json();
-      window.location.href = url;
-    } else {
-      setError(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan, trial }),
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+      setError(data?.message || data?.error || `Erreur ${res.status}`);
+      setLoading(null);
+    } catch {
+      setError("Connexion impossible. Vérifie ta connexion et réessaie.");
       setLoading(null);
     }
   }
@@ -79,9 +84,10 @@ export function CheckoutButtons({ hasUsedTrial = false }: { hasUsedTrial?: boole
           footer={`puis ${PRICING.monthly.amount}${PRICING.monthly.period}`}
         />
         {error && (
-          <p className="col-span-full text-center text-xs text-red-400">
-            Paiement indisponible pour le moment. Réessaie plus tard.
-          </p>
+          <div className="col-span-full rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-center">
+            <p className="text-xs font-semibold text-red-300">Paiement indisponible pour le moment.</p>
+            <p className="mt-1 break-words text-[11px] text-red-300/80">Détail : {error}</p>
+          </div>
         )}
       </div>
     </div>

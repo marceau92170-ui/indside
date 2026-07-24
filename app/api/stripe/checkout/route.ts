@@ -32,6 +32,7 @@ export async function POST(req: Request) {
       : process.env.STRIPE_PRICE_ANNUAL;
   if (!priceId) return NextResponse.json({ error: "prix non configuré" }, { status: 500 });
 
+  try {
   const s = stripe();
 
   let customerId = user.stripeCustomerId;
@@ -88,4 +89,11 @@ export async function POST(req: Request) {
   });
 
   return NextResponse.json({ url: session.url });
+  } catch (e) {
+    // On remonte la vraie raison (config Stripe, prix/coupon invalide, clé…)
+    // pour pouvoir diagnostiquer au lieu d'un message générique.
+    const msg = e instanceof Error ? e.message : "erreur inconnue";
+    console.error("[stripe/checkout] échec:", msg);
+    return NextResponse.json({ error: "stripe", message: msg }, { status: 500 });
+  }
 }
