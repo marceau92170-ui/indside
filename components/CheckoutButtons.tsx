@@ -4,17 +4,19 @@ import { useState } from "react";
 import { Button, Card } from "@/components/ui";
 import { PRICING } from "@/lib/plan";
 
-export function CheckoutButtons() {
+export function CheckoutButtons({ hasUsedTrial = false }: { hasUsedTrial?: boolean }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState(false);
+  const canTrial = !hasUsedTrial;
 
-  async function checkout(plan: "monthly" | "annual") {
-    setLoading(plan);
+  async function checkout(plan: "monthly" | "annual", trial: boolean) {
+    const key = `${plan}:${trial ? "t" : "p"}`;
+    setLoading(key);
     setError(false);
     const res = await fetch("/api/stripe/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan }),
+      body: JSON.stringify({ plan, trial }),
     });
     if (res.ok) {
       const { url } = await res.json();
@@ -25,43 +27,57 @@ export function CheckoutButtons() {
     }
   }
 
+  const busy = loading !== null;
+
   return (
     <div>
       <div className="mb-3 rounded-card border border-glow/40 bg-glow/10 px-4 py-3 text-center">
-        <p className="font-condensed text-lg font-bold uppercase text-glow">
-          7 jours gratuits
-        </p>
-        <p className="text-xs text-muted">
-          Débloque tout, sans payer maintenant. Aucun débit si tu résilies avant la fin — en 1 clic.
-        </p>
+        {canTrial ? (
+          <>
+            <p className="font-condensed text-lg font-bold uppercase text-glow">7 jours gratuits</p>
+            <p className="text-xs text-muted">
+              Débloque tout, sans payer maintenant. Aucun débit si tu résilies avant la fin — en 1 clic.
+              Tu peux aussi payer directement.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="font-condensed text-lg font-bold uppercase text-glow">Passe Premium</p>
+            <p className="text-xs text-muted">
+              Ton essai gratuit a déjà été utilisé sur ce compte. Abonne-toi quand tu veux, résiliable
+              en 1 clic.
+            </p>
+          </>
+        )}
       </div>
+
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Card className="relative flex flex-col items-center border-glow">
-          <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 animate-pulse rounded-full bg-glow px-3 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow">
-            ★ Meilleure offre
-          </span>
-          <p className="mb-1 mt-1 text-xs font-bold uppercase tracking-wide text-glow">Le plus choisi</p>
-          <p className="tnum font-condensed text-3xl font-bold">{PRICING.annual.amount}</p>
-          <p className="mb-3 text-xs text-muted">{PRICING.annual.period} · {PRICING.annual.saving}</p>
-          <Button onClick={() => checkout("annual")} disabled={loading !== null} className="w-full">
-            {loading === "annual" ? "Redirection…" : "Essayer 7 jours gratuits"}
-          </Button>
-          <p className="mt-1 text-[11px] text-muted">puis {PRICING.annual.amount}{PRICING.annual.period}</p>
-        </Card>
-        <Card className="flex flex-col items-center">
-          <p className="mb-1 text-xs font-bold uppercase tracking-wide text-muted">Souple</p>
-          <p className="tnum font-condensed text-3xl font-bold">{PRICING.monthly.amount}</p>
-          <p className="mb-3 text-xs text-muted">{PRICING.monthly.period}</p>
-          <Button
-            variant="ghost"
-            onClick={() => checkout("monthly")}
-            disabled={loading !== null}
-            className="w-full"
-          >
-            {loading === "monthly" ? "Redirection…" : "Essayer 7 jours gratuits"}
-          </Button>
-          <p className="mt-1 text-[11px] text-muted">puis {PRICING.monthly.amount}{PRICING.monthly.period}</p>
-        </Card>
+        <PlanCard
+          highlighted
+          badge="★ Meilleure offre"
+          tagline="Le plus choisi"
+          amount={PRICING.annual.amount}
+          sub={`${PRICING.annual.period} · ${PRICING.annual.saving}`}
+          canTrial={canTrial}
+          loading={loading}
+          plan="annual"
+          onTrial={() => checkout("annual", true)}
+          onPay={() => checkout("annual", false)}
+          busy={busy}
+          footer={`puis ${PRICING.annual.amount}${PRICING.annual.period}`}
+        />
+        <PlanCard
+          tagline="Souple"
+          amount={PRICING.monthly.amount}
+          sub={PRICING.monthly.period}
+          canTrial={canTrial}
+          loading={loading}
+          plan="monthly"
+          onTrial={() => checkout("monthly", true)}
+          onPay={() => checkout("monthly", false)}
+          busy={busy}
+          footer={`puis ${PRICING.monthly.amount}${PRICING.monthly.period}`}
+        />
         {error && (
           <p className="col-span-full text-center text-xs text-red-400">
             Paiement indisponible pour le moment. Réessaie plus tard.
@@ -69,6 +85,89 @@ export function CheckoutButtons() {
         )}
       </div>
     </div>
+  );
+}
+
+function PlanCard({
+  highlighted = false,
+  badge,
+  tagline,
+  amount,
+  sub,
+  canTrial,
+  loading,
+  plan,
+  onTrial,
+  onPay,
+  busy,
+  footer,
+}: {
+  highlighted?: boolean;
+  badge?: string;
+  tagline: string;
+  amount: string;
+  sub: string;
+  canTrial: boolean;
+  loading: string | null;
+  plan: "monthly" | "annual";
+  onTrial: () => void;
+  onPay: () => void;
+  busy: boolean;
+  footer: string;
+}) {
+  const trialKey = `${plan}:t`;
+  const payKey = `${plan}:p`;
+  return (
+    <Card className={`relative flex flex-col items-center ${highlighted ? "border-glow" : ""}`}>
+      {badge && (
+        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 animate-pulse rounded-full bg-glow px-3 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow">
+          {badge}
+        </span>
+      )}
+      <p
+        className={`mb-1 mt-1 text-xs font-bold uppercase tracking-wide ${
+          highlighted ? "text-glow" : "text-muted"
+        }`}
+      >
+        {tagline}
+      </p>
+      <p className="tnum font-condensed text-3xl font-bold">{amount}</p>
+      <p className="mb-3 text-xs text-muted">{sub}</p>
+
+      {canTrial ? (
+        <>
+          <Button
+            variant={highlighted ? "primary" : "ghost"}
+            onClick={onTrial}
+            disabled={busy}
+            className="w-full"
+          >
+            {loading === trialKey ? "Redirection…" : "Essayer 7 jours gratuits"}
+          </Button>
+          <button
+            type="button"
+            onClick={onPay}
+            disabled={busy}
+            className="mt-2 text-[11px] font-semibold text-muted underline underline-offset-2 hover:text-chalk disabled:opacity-50"
+          >
+            {loading === payKey ? "Redirection…" : "ou payer directement"}
+          </button>
+          <p className="mt-1 text-[11px] text-muted">{footer}</p>
+        </>
+      ) : (
+        <>
+          <Button
+            variant={highlighted ? "primary" : "ghost"}
+            onClick={onPay}
+            disabled={busy}
+            className="w-full"
+          >
+            {loading === payKey ? "Redirection…" : "S'abonner"}
+          </Button>
+          <p className="mt-1 text-[11px] text-muted">Débit immédiat · {amount}</p>
+        </>
+      )}
+    </Card>
   );
 }
 

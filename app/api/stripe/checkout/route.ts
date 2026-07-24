@@ -12,7 +12,12 @@ const TRIAL_DAYS = 7;
 
 export const dynamic = "force-dynamic";
 
-const BodySchema = z.object({ plan: z.enum(["monthly", "annual"]) });
+// `trial` : true → l'utilisateur demande l'essai 7 jours ; false → il paie
+// directement (débit immédiat). Par défaut true (rétro-compatible).
+const BodySchema = z.object({
+  plan: z.enum(["monthly", "annual"]),
+  trial: z.boolean().optional().default(true),
+});
 
 export async function POST(req: Request) {
   const user = await currentUser();
@@ -51,6 +56,19 @@ export async function POST(req: Request) {
 
   const adult = user.profile ? isAdult(user.profile.birthYear) : true;
 
+  // L'essai n'est accordé que s'il est demandé ET que ce compte ne l'a jamais
+  // consommé : un compte a droit à UN seul essai gratuit (anti re-farming).
+  // Payer directement reste toujours possible, sans limite.
+  const applyTrial = parsed.data.trial && !user.hasUsedTrial;
+
+  const message = applyTrial
+    ? adult
+      ? `Gratuit pendant ${TRIAL_DAYS} jours, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app — aucun débit si tu résilies avant la fin de l'essai.`
+      : `Gratuit pendant ${TRIAL_DAYS} jours. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app — aucun débit si résiliation avant la fin de l'essai.`
+    : adult
+      ? `Débit immédiat, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app.`
+      : `Débit immédiat. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app.`;
+
   const session = await s.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
@@ -59,21 +77,14 @@ export async function POST(req: Request) {
     success_url: `${base}/premium/merci`,
     cancel_url: `${base}/premium`,
     metadata: { userId: user.id },
-    // Essai gratuit de 7 jours : la carte est enregistrée mais rien n'est débité
-    // avant la fin de l'essai. Résiliation en 1 clic → aucun débit.
     payment_method_collection: "always",
     subscription_data: {
       metadata: { userId: user.id },
-      trial_period_days: TRIAL_DAYS,
+      // Essai 7 jours uniquement si accordé ; sinon débit immédiat.
+      ...(applyTrial ? { trial_period_days: TRIAL_DAYS } : {}),
     },
     // Mineurs : l'abonnement est souscrit par un parent ou tuteur légal.
-    custom_text: {
-      submit: {
-        message: adult
-          ? `Gratuit pendant ${TRIAL_DAYS} jours, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app — aucun débit si tu résilies avant la fin de l'essai.`
-          : `Gratuit pendant ${TRIAL_DAYS} jours. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app — aucun débit si résiliation avant la fin de l'essai.`,
-      },
-    },
+    custom_text: { submit: { message } },
   });
 
   return NextResponse.json({ url: session.url });

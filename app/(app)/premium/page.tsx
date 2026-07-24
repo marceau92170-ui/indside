@@ -115,7 +115,7 @@ export default async function PremiumPage() {
         et conseils du coach à chaque exercice.
       </p>
 
-      <CheckoutButtons />
+      <CheckoutButtons hasUsedTrial={Boolean(user?.hasUsedTrial)} />
 
       {adult ? (
         <Card className="mt-6 border-grass bg-grass/15">

@@ -78,7 +78,12 @@ async function upsertSubscription(sub: Stripe.Subscription) {
 
   await prisma.user.update({
     where: { id: userId },
-    data: { plan: ["active", "trialing"].includes(status) ? "premium" : "free" },
+    data: {
+      plan: ["active", "trialing"].includes(status) ? "premium" : "free",
+      // Dès qu'un essai gratuit démarre, on grave que ce compte l'a consommé :
+      // il n'y aura pas droit une seconde fois (anti re-farming, 1×/compte).
+      ...(trialEnd ? { hasUsedTrial: true } : {}),
+    },
   });
 }
 

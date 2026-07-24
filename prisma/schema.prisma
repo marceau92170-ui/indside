@@ -36,6 +36,7 @@ model User {
   plan             String    @default("free") // free | premium
   stripeCustomerId String?   @unique
   premiumUntil     DateTime? // Premium offert (parrainage), hors Stripe
+  hasUsedTrial     Boolean   @default(false) // a déjà consommé son essai gratuit 7 j (anti re-farming, 1×/compte)
 
   // Affiliation (créateurs externes)
   role            String  @default("user") // user | affiliate | admin
