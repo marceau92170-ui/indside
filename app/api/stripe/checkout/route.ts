@@ -51,7 +51,7 @@ export async function POST(req: Request) {
   // coupon est configuré, on l'applique automatiquement (aucun code à taper).
   // Le coupon doit être en durée « une seule fois » côté Stripe → il ne réduit
   // que le PREMIER paiement, jamais les renouvellements.
-  const coupon = process.env.STRIPE_COUPON_AFFILIATE;
+  const coupon = process.env.STRIPE_COUPON_AFFILIATE?.trim();
   const discounts =
     user.referredByCode && coupon ? [{ coupon }] : undefined;
 
@@ -70,23 +70,39 @@ export async function POST(req: Request) {
       ? `Débit immédiat, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app.`
       : `Débit immédiat. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app.`;
 
-  const session = await s.checkout.sessions.create({
-    mode: "subscription",
-    customer: customerId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    ...(discounts ? { discounts } : {}),
-    success_url: `${base}/premium/merci`,
-    cancel_url: `${base}/premium`,
-    metadata: { userId: user.id },
-    payment_method_collection: "always",
-    subscription_data: {
+  const makeSession = (withDiscount: boolean) =>
+    s.checkout.sessions.create({
+      mode: "subscription",
+      customer: customerId,
+      line_items: [{ price: priceId, quantity: 1 }],
+      ...(withDiscount && discounts ? { discounts } : {}),
+      success_url: `${base}/premium/merci`,
+      cancel_url: `${base}/premium`,
       metadata: { userId: user.id },
-      // Essai 7 jours uniquement si accordé ; sinon débit immédiat.
-      ...(applyTrial ? { trial_period_days: TRIAL_DAYS } : {}),
-    },
-    // Mineurs : l'abonnement est souscrit par un parent ou tuteur légal.
-    custom_text: { submit: { message } },
-  });
+      payment_method_collection: "always",
+      subscription_data: {
+        metadata: { userId: user.id },
+        // Essai 7 jours uniquement si accordé ; sinon débit immédiat.
+        ...(applyTrial ? { trial_period_days: TRIAL_DAYS } : {}),
+      },
+      // Mineurs : l'abonnement est souscrit par un parent ou tuteur légal.
+      custom_text: { submit: { message } },
+    });
+
+  // Un coupon mal configuré ne doit JAMAIS empêcher un paiement : si Stripe
+  // rejette la remise, on refait la session sans remise plutôt que de bloquer.
+  let session;
+  try {
+    session = await makeSession(true);
+  } catch (e) {
+    const m = e instanceof Error ? e.message : "";
+    if (discounts && /coupon/i.test(m)) {
+      console.error("[stripe/checkout] coupon invalide, paiement sans remise:", m);
+      session = await makeSession(false);
+    } else {
+      throw e;
+    }
+  }
 
   return NextResponse.json({ url: session.url });
   } catch (e) {
