@@ -19,6 +19,8 @@ type Totals = {
   pendingCents: number;
   paidCents: number;
   owedCents: number;
+  trialingCount: number;
+  pipelineCents: number;
 };
 
 type MetricKey = "commission" | "gross" | "sales" | "signups" | "clicks";
@@ -85,6 +87,28 @@ export function PartnerDashboard({
 
       {/* HERO : l'argent d'abord (sauf lien maison) */}
       {!isHouse && <PayoutHero totals={totals} />}
+
+      {/* PIPELINE : essais en cours → commissions en approche (tue la peur du 0 €) */}
+      {!isHouse && totals.trialingCount > 0 && (
+        <div className="mt-3 flex items-center gap-3 rounded-card border border-[#ECC53A]/30 bg-[#ECC53A]/10 p-4">
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+            style={{ background: "rgba(236,197,58,.16)", color: "#ECC53A" }}
+          >
+            <Icon name="timer" className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-condensed text-lg font-bold uppercase leading-tight">
+              {totals.trialingCount} essai{totals.trialingCount > 1 ? "s" : ""} en cours
+            </p>
+            <p className="text-xs text-muted">
+              Environ{" "}
+              <span className="font-bold" style={{ color: "#ECC53A" }}>{euros(totals.pipelineCents)}</span>{" "}
+              en approche — versés dès la fin de la semaine gratuite.
+            </p>
+          </div>
+        </div>
+      )}
 
       {isHouse && (
         <div className="mt-5 rounded-card border border-line bg-surface p-4 text-sm text-muted">
@@ -485,6 +509,8 @@ function Funnel({ clicks, signups, sales }: { clicks: number; signups: number; s
 
 function funnelInsight(t: Totals): string {
   if (t.clicks === 0) return "Partage ton lien pour lancer la machine : chaque clic est une chance de vente.";
+  if (t.sales === 0 && t.trialingCount > 0)
+    return `Tes ${t.trialingCount} essai${t.trialingCount > 1 ? "s" : ""} en cours deviennent des commissions dès la fin de la semaine gratuite. Continue à poster, ça arrive.`;
   if (t.sales === 0)
     return "Tu as des clics — maintenant transforme-les en abonnés : montre l'appli en action dans tes vidéos.";
   const rate = (t.sales / t.clicks) * 100;

@@ -1,5 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import { bonusEurosForRevenue, PAYOUT_HOLD_DAYS } from "@/lib/affiliate";
+import {
+  bonusEurosForRevenue,
+  commissionCents as calcCommission,
+  isWithinLaunchWindow,
+  PAYOUT_HOLD_DAYS,
+} from "@/lib/affiliate";
+
+// Prix catalogue (centimes) pour estimer la commission « en approche » d'un essai
+// en cours (le montant réel se fige au 1er paiement).
+const PRICE_MONTHLY_CENTS = 899;
+const PRICE_ANNUAL_CENTS = 5900;
 
 export type AffiliateStats = {
   code: string;
@@ -15,6 +25,8 @@ export type AffiliateStats = {
   pendingCents: number; // commissions pas encore validées (< 15 j) — en attente
   paidCents: number; // déjà versé
   owedCents: number; // à payer maintenant (validé − déjà versé)
+  trialingCount: number; // essais gratuits en cours attribués à cet affilié
+  pipelineCents: number; // commission estimée « en approche » de ces essais
 };
 
 // Calcule les stats d'un affilié. « Validé » = commission de plus de 15 jours
@@ -24,17 +36,41 @@ export async function affiliateStats(aff: {
   displayName: string;
   email: string;
   isHouse?: boolean;
+  promoStartsAt?: Date | null;
+  createdAt?: Date;
 }): Promise<AffiliateStats> {
   const code = aff.code;
   const isHouse = aff.isHouse ?? false;
   const holdDate = new Date(Date.now() - PAYOUT_HOLD_DAYS * 24 * 60 * 60 * 1000);
 
-  const [clicks, signups, commissions, payoutAgg] = await Promise.all([
+  const [clicks, signups, commissions, payoutAgg, trialing] = await Promise.all([
     prisma.linkClick.count({ where: { affiliateCode: code } }),
     prisma.user.count({ where: { referredByCode: code } }),
     prisma.commission.findMany({ where: { affiliateCode: code, refunded: false } }),
     prisma.payout.aggregate({ where: { affiliateCode: code }, _sum: { amountCents: true } }),
+    prisma.subscription.findMany({
+      where: { status: "trialing", user: { referredByCode: code } },
+      select: { priceId: true },
+    }),
   ]);
+
+  // Commission estimée des essais en cours (« en approche ») : se confirme au 1er paiement.
+  const promoStart = aff.promoStartsAt ?? aff.createdAt ?? new Date();
+  const withinLaunch = isWithinLaunchWindow(promoStart);
+  const trialingCount = trialing.length;
+  const pipelineCents = isHouse
+    ? 0
+    : trialing.reduce((sum, t) => {
+        const annual = t.priceId === process.env.STRIPE_PRICE_ANNUAL;
+        return (
+          sum +
+          calcCommission(
+            annual ? PRICE_ANNUAL_CENTS : PRICE_MONTHLY_CENTS,
+            annual ? "annual" : "monthly",
+            withinLaunch
+          )
+        );
+      }, 0);
 
   const grossCents = commissions.reduce((s, c) => s + c.grossCents, 0);
 
@@ -55,6 +91,8 @@ export async function affiliateStats(aff: {
       pendingCents: 0,
       paidCents: 0,
       owedCents: 0,
+      trialingCount,
+      pipelineCents: 0,
     };
   }
 
@@ -83,6 +121,8 @@ export async function affiliateStats(aff: {
     pendingCents,
     paidCents,
     owedCents,
+    trialingCount,
+    pipelineCents,
   };
 }
 

@@ -49,6 +49,8 @@ export default async function PartenairePage() {
         pendingCents: s.pendingCents,
         paidCents: s.paidCents,
         owedCents: s.owedCents,
+        trialingCount: s.trialingCount,
+        pipelineCents: s.pipelineCents,
       }}
       series={series}
       next={nextTier(s.grossCents)}
