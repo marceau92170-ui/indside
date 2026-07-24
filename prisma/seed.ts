@@ -36,8 +36,8 @@ async function seedStaff() {
     if (a.house) {
       await prisma.affiliate.upsert({
         where: { code },
-        create: { code, displayName: a.name, email, isHouse: true },
-        update: { displayName: a.name, isHouse: true },
+        create: { code, displayName: a.name, email, isHouse: true, couponId: a.couponId ?? null },
+        update: { displayName: a.name, isHouse: true, couponId: a.couponId ?? null },
       });
       continue;
     }
@@ -50,8 +50,8 @@ async function seedStaff() {
     const promoStartsAt = a.startDate ? new Date(`${a.startDate}T00:00:00Z`) : undefined;
     await prisma.affiliate.upsert({
       where: { code },
-      create: { code, displayName: a.name, email, userId: user.id, promoStartsAt },
-      update: { displayName: a.name, email, userId: user.id, isHouse: false, promoStartsAt },
+      create: { code, displayName: a.name, email, userId: user.id, promoStartsAt, couponId: a.couponId ?? null },
+      update: { displayName: a.name, email, userId: user.id, isHouse: false, promoStartsAt, couponId: a.couponId ?? null },
     });
   }
   console.log(

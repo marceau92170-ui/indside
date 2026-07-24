@@ -92,6 +92,7 @@ model Affiliate {
   email       String   @unique
   userId      String?  @unique // compte de connexion de l'affilié (pour son dashboard)
   isHouse     Boolean  @default(false) // lien "maison" (chaînes du créateur) : suivi sans commission
+  couponId    String?  // ID de coupon Stripe propre à cet affilié (remise -X% pour SES filleuls). Null = plein tarif.
   promoStartsAt DateTime? // début du mois de lancement (1ère vidéo) : annuel à 80% pendant 30 j, 40% après. Si null → createdAt
   createdAt   DateTime @default(now())
 

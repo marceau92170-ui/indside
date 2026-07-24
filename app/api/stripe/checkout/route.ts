@@ -47,13 +47,18 @@ export async function POST(req: Request) {
 
   const base = SITE_URL;
 
-  // Réduction affilié : si le joueur est venu par un lien de parrainage et qu'un
-  // coupon est configuré, on l'applique automatiquement (aucun code à taper).
-  // Le coupon doit être en durée « une seule fois » côté Stripe → il ne réduit
-  // que le PREMIER paiement, jamais les renouvellements.
-  const coupon = process.env.STRIPE_COUPON_AFFILIATE?.trim();
-  const discounts =
-    user.referredByCode && coupon ? [{ coupon }] : undefined;
+  // Réduction PAR AFFILIÉ : seul un affilié qui a un coupon configuré (ex: Sammy)
+  // fait bénéficier ses filleuls d'une remise. Les autres = plein tarif. Le coupon
+  // doit être en durée « une seule fois » côté Stripe (réduit seulement le 1er paiement).
+  let discounts: { coupon: string }[] | undefined;
+  if (user.referredByCode) {
+    const aff = await prisma.affiliate.findUnique({
+      where: { code: user.referredByCode },
+      select: { couponId: true },
+    });
+    const c = aff?.couponId?.trim();
+    if (c) discounts = [{ coupon: c }];
+  }
 
   const adult = user.profile ? isAdult(user.profile.birthYear) : true;
 

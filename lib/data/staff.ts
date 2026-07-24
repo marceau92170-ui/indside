@@ -33,6 +33,10 @@ export type AffiliateSeed = {
   email: string;
   house?: boolean;
   startDate?: string;
+  // ID d'un coupon Stripe (mode LIVE) pour offrir une remise aux filleuls de CET
+  // affilié uniquement (ex: Sammy). Laisser absent = plein tarif. À créer d'abord
+  // dans Stripe, puis renseigner ici.
+  couponId?: string;
 };
 
 export const AFFILIATES: AffiliateSeed[] = [
