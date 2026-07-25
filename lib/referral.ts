@@ -12,11 +12,6 @@ export const REFERRAL_MAX_DAYS = REFERRAL_MAX_WEEKS * REFERRAL_REWARD_DAYS; // 2
 // au premier vrai paiement du filleul.
 export const PAID_REFERRAL_REWARD_DAYS = 14;
 
-// Partage en story / réseaux : récompense UNIQUE par compte (on ne peut pas
-// vérifier le post → on limite à 1×, montant faible, pour que l'abus reste
-// négligeable tout en incitant au vrai partage).
-export const STORY_SHARE_REWARD_DAYS = 3;
-
 const DAY_MS = 24 * 60 * 60 * 1000;
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sans I/O/0/1 (lisible)
 
@@ -112,30 +107,6 @@ export async function grantPaidReferralReward(payerUserId: string): Promise<void
     where: { id: inviter.id },
     data: { premiumUntil: new Date(base + PAID_REFERRAL_REWARD_DAYS * DAY_MS) },
   });
-}
-
-// Récompense « partage en story » : +3 jours de Premium, UNE SEULE fois par
-// compte. Verrou atomique (updateMany sur le flag) → même si le joueur clique
-// deux fois vite, il n'est crédité qu'une fois. Renvoie true si crédité.
-export async function grantStoryShareReward(userId: string): Promise<boolean> {
-  const claim = await prisma.user.updateMany({
-    where: { id: userId, storyShareRewardGranted: false },
-    data: { storyShareRewardGranted: true },
-  });
-  if (claim.count === 0) return false; // déjà réclamé → rien à créditer
-
-  const u = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { premiumUntil: true },
-  });
-  const now = Date.now();
-  const base =
-    u?.premiumUntil && u.premiumUntil.getTime() > now ? u.premiumUntil.getTime() : now;
-  await prisma.user.update({
-    where: { id: userId },
-    data: { premiumUntil: new Date(base + STORY_SHARE_REWARD_DAYS * DAY_MS) },
-  });
-  return true;
 }
 
 // Nombre de filleuls d'un joueur (pour l'affichage « X potes rejoints »).

@@ -9,10 +9,8 @@ import {
   REFERRAL_FRIENDS_PER_WEEK,
   REFERRAL_MAX_WEEKS,
   PAID_REFERRAL_REWARD_DAYS,
-  STORY_SHARE_REWARD_DAYS,
 } from "@/lib/referral";
 import { InviteShare } from "@/components/InviteShare";
-import { StoryShareReward } from "@/components/StoryShareReward";
 import { Card } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 
@@ -22,13 +20,7 @@ export default async function ParrainagePage() {
   const user = await currentUser();
   if (!user) redirect("/connexion");
 
-  const [code, flags] = await Promise.all([
-    getOrCreateInviteCode(user.id),
-    prisma.user.findUnique({
-      where: { id: user.id },
-      select: { storyShareRewardGranted: true },
-    }),
-  ]);
+  const code = await getOrCreateInviteCode(user.id);
   const url = `${SITE_URL}/invite/${code}`;
   const referrals = await countReferrals(code);
   const weeksEarned = Math.min(Math.floor(referrals / REFERRAL_FRIENDS_PER_WEEK), REFERRAL_MAX_WEEKS);
@@ -72,9 +64,8 @@ export default async function ParrainagePage() {
         </Card>
       )}
 
-      {/* FAÇON 1 — Parrainage (le plus fort) */}
+      {/* Parrainage (la façon la plus forte de gagner du Premium) */}
       <Way
-        n="1"
         title="Parraine tes potes"
         reward={`${REFERRAL_FRIENDS_PER_WEEK} inscrits = 1 semaine`}
       >
@@ -92,20 +83,6 @@ export default async function ParrainagePage() {
           </p>
         </div>
         <InviteShare url={url} />
-      </Way>
-
-      {/* FAÇON 2 — Partage en story */}
-      <Way n="2" title="Partage en story" reward={`+${STORY_SHARE_REWARD_DAYS} jours`}>
-        <p className="mb-3 text-sm text-muted">
-          Montre Progressa en story et tag <span className="font-semibold text-chalk">@progressafoot</span> :{" "}
-          <span className="font-semibold text-chalk">+{STORY_SHARE_REWARD_DAYS} jours</span> de Premium,
-          une seule fois.
-        </p>
-        <StoryShareReward
-          shareUrl={url}
-          days={STORY_SHARE_REWARD_DAYS}
-          alreadyClaimed={Boolean(flags?.storyShareRewardGranted)}
-        />
       </Way>
 
       {/* Comment marche le parrainage */}
@@ -140,14 +117,12 @@ export default async function ParrainagePage() {
   );
 }
 
-// Une « façon de gagner du Premium » : numéro + titre + récompense en évidence.
+// Une « façon de gagner du Premium » : titre + récompense en évidence.
 function Way({
-  n,
   title,
   reward,
   children,
 }: {
-  n: string;
   title: string;
   reward: string;
   children: React.ReactNode;
@@ -155,8 +130,8 @@ function Way({
   return (
     <Card className="mb-4">
       <div className="mb-3 flex items-center gap-3">
-        <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-glow/15 font-condensed text-lg font-bold text-glow">
-          {n}
+        <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-glow/15 text-glow">
+          <Icon name="gift" className="h-4 w-4" />
         </span>
         <p className="flex-1 font-condensed text-lg font-bold uppercase leading-none">{title}</p>
         <span className="flex-none rounded-full bg-glow/15 px-2.5 py-1 text-xs font-bold text-glow">
