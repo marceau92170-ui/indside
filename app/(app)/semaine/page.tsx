@@ -318,13 +318,16 @@ export default async function SemainePage() {
 
       {/* Parrainage : moteur de croissance, visible pour tous */}
       <Link href="/parrainage" className="mt-6 block">
-        <Card className="flex items-center justify-between gap-3 border-line hover:border-glow/50">
-          <div className="min-w-0">
+        <Card className="flex items-center gap-3 border-glow/40 bg-glow/5 hover:border-glow">
+          <span className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-glow/15 text-glow">
+            <Icon name="gift" className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
             <p className="font-condensed text-base font-bold uppercase leading-tight">
-              Invite ton équipe
+              Gagne du Premium gratuit
             </p>
             <p className="text-sm text-muted">
-              3 potes inscrits = 1 semaine de Premium offerte.
+              3 potes inscrits = 1 semaine · un pote qui s&apos;abonne = 2 semaines offertes.
             </p>
           </div>
           <span className="flex-none text-glow" aria-hidden="true">→</span>

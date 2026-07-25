@@ -10,6 +10,7 @@ const NAV = [
   { href: "/semaine", label: "Semaine", icon: "calendar" as const },
   { href: "/bibliotheque", label: "Exos", icon: "dumbbell" as const },
   { href: "/tests", label: "Tests", icon: "chart" as const },
+  { href: "/parrainage", label: "Inviter", icon: "gift" as const },
   { href: "/profil", label: "Profil", icon: "player" as const },
   { href: "/reglages", label: "Réglages", icon: "settings" as const },
 ];
