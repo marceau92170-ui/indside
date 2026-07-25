@@ -30,15 +30,27 @@ async function seedStaff() {
     const email = a.email.trim().toLowerCase();
     const code = a.code.trim().toLowerCase();
 
-    // Lien "maison" (bio du créateur) : suivi seul, pas de compte/rôle à créer,
-    // pas de commission. On ne touche PAS l'utilisateur (l'email peut être celui
-    // de l'admin — on ne veut surtout pas écraser son rôle).
+    // Lien "maison" (bio du créateur) : suivi seul, pas de commission.
     if (a.house) {
       await prisma.affiliate.upsert({
         where: { code },
         create: { code, displayName: a.name, email, isHouse: true, couponId: a.couponId ?? null },
         update: { displayName: a.name, isHouse: true, couponId: a.couponId ?? null },
       });
+      // Un lien maison NON-admin (ex: Samy payé au fixe) a droit à son tableau de
+      // bord d'IMPACT (clics/inscrits/ventes/CA généré, sans commission) → on lui
+      // donne le rôle affilié et on relie son compte. On NE touche PAS un email
+      // admin : le lien "officiel" utilise l'email admin, on ne veut pas écraser
+      // son rôle admin.
+      const isAdminEmail = ADMIN_EMAILS.map((x) => x.trim().toLowerCase()).includes(email);
+      if (!isAdminEmail) {
+        const houseUser = await prisma.user.upsert({
+          where: { email },
+          create: { email, plan: "premium", role: "affiliate" },
+          update: { role: "affiliate" },
+        });
+        await prisma.affiliate.update({ where: { code }, data: { userId: houseUser.id } });
+      }
       continue;
     }
 

@@ -4,7 +4,6 @@ import { isAdult } from "@/lib/categories";
 import { Card } from "@/components/ui";
 import { CheckoutButtons, ManageSubscriptionButton } from "@/components/CheckoutButtons";
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
-import { Icon } from "@/components/Icon";
 
 export const dynamic = "force-dynamic";
 
@@ -33,8 +32,6 @@ export default async function PremiumPage() {
   const user = await currentUser();
   const premium = isPremium(user);
   const adult = user?.profile ? isAdult(user.profile.birthYear) : false;
-  // Réduction affilié active : le joueur est venu par un lien de parrainage.
-  const hasReferralDiscount = Boolean(user?.referredByCode && process.env.STRIPE_COUPON_AFFILIATE);
 
   if (premium) {
     return (
@@ -54,15 +51,6 @@ export default async function PremiumPage() {
       <p className="mb-5 text-sm text-muted">
         Ton préparateur perso, moins cher qu&apos;un seul cours particulier.
       </p>
-
-      {hasReferralDiscount && (
-        <div className="mb-5 flex items-center gap-2 rounded-card border border-glow bg-glow/10 px-4 py-3">
-          <Icon name="gift" className="h-5 w-5 shrink-0 text-glow" />
-          <p className="text-sm font-semibold">
-            -10 % appliqués automatiquement grâce à ton lien — la remise se voit au paiement.
-          </p>
-        </div>
-      )}
 
       <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted">
         Gratuit vs Premium

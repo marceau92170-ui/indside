@@ -69,7 +69,10 @@ export function PartnerDashboard({
 }) {
   const [metric, setMetric] = useState<MetricKey>(isHouse ? "clicks" : "commission");
   const active = METRICS.find((m) => m.key === metric)!;
-  const shownMetrics = isHouse ? METRICS.filter((m) => m.key !== "commission") : METRICS;
+  // Lien maison (payé au fixe) : on masque TOUT montant en euros (commission ET
+  // CA généré) pour ne montrer que l'impact — clics, inscrits, ventes. Ça évite
+  // qu'un créateur au fixe se compare au CA et renégocie.
+  const shownMetrics = isHouse ? METRICS.filter((m) => !m.money) : METRICS;
 
   const grossEuros = totals.grossCents / 100;
   const progressPct = next ? Math.min(100, Math.round((grossEuros / next.thresholdEuros) * 100)) : 100;
@@ -147,7 +150,7 @@ export function PartnerDashboard({
         <div className="mt-3 flex gap-2.5 rounded-lg border border-glow/25 bg-glow/10 p-3">
           <Icon name="trendingUp" className="mt-0.5 h-5 w-5 shrink-0 text-glow" />
           <p className="text-[12.5px] leading-relaxed">
-            {funnelInsight(totals)}
+            {funnelInsight(totals, isHouse)}
           </p>
         </div>
         {!isHouse && (
@@ -507,8 +510,15 @@ function Funnel({ clicks, signups, sales }: { clicks: number; signups: number; s
   );
 }
 
-function funnelInsight(t: Totals): string {
+function funnelInsight(t: Totals, isHouse = false): string {
   if (t.clicks === 0) return "Partage ton lien pour lancer la machine : chaque clic est une chance de vente.";
+  // Lien maison (payé au fixe) : on parle d'impact, jamais d'argent gagné.
+  if (isHouse) {
+    if (t.sales === 0)
+      return "Tu as des clics — maintenant transforme-les en abonnés : montre l'appli en action dans tes vidéos.";
+    const rateH = (t.sales / t.clicks) * 100;
+    return `Ton taux clic → vente : ${rateH.toFixed(1).replace(".", ",")}%. Tes vidéos font tourner la machine — continue sur ta lancée.`;
+  }
   if (t.sales === 0 && t.trialingCount > 0)
     return `Tes ${t.trialingCount} essai${t.trialingCount > 1 ? "s" : ""} en cours deviennent des commissions dès la fin de la semaine gratuite. Continue à poster, ça arrive.`;
   if (t.sales === 0)

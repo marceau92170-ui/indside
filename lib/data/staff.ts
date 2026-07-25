@@ -18,6 +18,9 @@ export const PREMIUM_EMAILS: string[] = [
   // Samy (water44) : testeur — partenariat à caler par téléphone. Accès gratuit
   // en attendant ; on lui créera un lien d'affilié si le partenariat se confirme.
   "samy.water44@gmail.com",
+  // Gabz : affilié potentiel — accès gratuit pour découvrir l'app. On lui créera
+  // un code d'affilié dès qu'il confirme le partenariat.
+  "gabz.contact.foot@gmail.com",
 ];
 
 // house = lien "maison" du créateur (ex: bio TikTok). On suit clics/inscriptions/ventes
@@ -55,10 +58,9 @@ export const AFFILIATES: AffiliateSeed[] = [
   { code: "edskow", name: "Edskow", email: "ed92pro@gmail.com" }, // @edskow — poste dès aujourd'hui
   { code: "robin", name: "Robin (Junior)", email: "robinlilian45@gmail.com" }, // affilié n°8
   { code: "apolline", name: "Apolline", email: "apolline92170@gmail.com" }, // sœur — test du flux paiement
+  { code: "kbe", name: "KBE", email: "bkakengni@gmail.com" }, // partenariat en discussion — accès + dashboard pour voir le potentiel
   // Samy (water44) : créateur payé au FIXE (150 €/mois) → 0 commission, 0 bonus.
   // "house" = on suit clics/inscrits/ventes/CA de son lien, sans rien lui devoir par vente.
   // Il garde son Premium gratuit (déjà dans PREMIUM_EMAILS) pour filmer l'app.
   { code: "sam", name: "Samy (water44)", email: "samy.water44@gmail.com", house: true },
-  // Affilié de TEST (à retirer après vérif du flux) — dashboard : marceau92170+test@gmail.com
-  { code: "test", name: "Test", email: "marceau92170+test@gmail.com" },
 ];
