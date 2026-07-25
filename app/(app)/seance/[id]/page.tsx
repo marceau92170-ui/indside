@@ -3,7 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { isPremium } from "@/lib/plan";
 import { SessionPlayer, type SessionBlock } from "@/components/SessionPlayer";
-import { DAYS_FR } from "@/lib/constants";
+import { DAYS_FR, positionLabel } from "@/lib/constants";
+import { categoryFromBirthYear } from "@/lib/categories";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,18 @@ export default async function SeancePage({ params }: { params: Promise<{ id: str
     where: { slug: { in: rawBlocks.map((b) => b.slug) } },
   });
   const bySlug = new Map(exercises.map((e) => [e.slug, e]));
+
+  // Personnalisation rendue visible : on montre au joueur POURQUOI cette séance
+  // est la sienne (poste, catégorie, jour de match).
+  const prof = user.profile;
+  const whyChips: string[] = [];
+  if (prof) {
+    whyChips.push(positionLabel(prof.position));
+    whyChips.push(categoryFromBirthYear(prof.birthYear));
+    if (prof.matchDay !== null && prof.matchDay !== undefined) {
+      whyChips.push(`Match ${DAYS_FR[prof.matchDay].toLowerCase()}`);
+    }
+  }
 
   const blocks: SessionBlock[] = rawBlocks
     .filter((b) => bySlug.has(b.slug))
@@ -75,6 +88,7 @@ export default async function SeancePage({ params }: { params: Promise<{ id: str
       }}
       blocks={blocks}
       premium={isPremium(user)}
+      whyChips={whyChips}
     />
   );
 }

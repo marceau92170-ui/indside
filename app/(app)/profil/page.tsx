@@ -123,8 +123,11 @@ export default async function ProfilPage() {
 
   return (
     <div>
-      <h1 className="mb-4 font-condensed text-3xl font-bold uppercase">Profil</h1>
+      <h1 className="mb-3 font-condensed text-3xl font-bold uppercase">Profil</h1>
 
+      <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-muted">
+        Ta carte joueur
+      </p>
       <DownloadableCard
         data={{
           firstName: p.firstName,
@@ -135,6 +138,10 @@ export default async function ProfilPage() {
           stats,
         }}
       />
+      <p className="mt-3 text-center text-xs text-muted">
+        Tes vraies stats, ta carte à toi. Poste-la en story et tag{" "}
+        <span className="font-semibold text-chalk">@progressafoot</span>.
+      </p>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
         <Card className="text-center">
@@ -178,6 +185,21 @@ export default async function ProfilPage() {
       <Card>
         <MonthlyActivity months={months} />
       </Card>
+
+      {progressionByType.length === 0 && (
+        <>
+          <h2 className="mb-2 mt-8 font-condensed text-xl font-bold uppercase">Progression</h2>
+          <Card className="border-dashed border-line text-center">
+            <p className="text-sm text-muted">
+              Ta courbe de progression se débloque dès ta 2ᵉ mesure. Fais un test, refais-le
+              plus tard, et regarde tes chiffres grimper.
+            </p>
+            <Link href="/tests" className="mt-2 inline-block text-sm font-semibold text-glow underline">
+              Ouvrir les tests →
+            </Link>
+          </Card>
+        </>
+      )}
 
       {progressionByType.length > 0 && (
         <>

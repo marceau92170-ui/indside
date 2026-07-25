@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Confetti } from "@/components/Confetti";
 
 // Bouton « J'ai fait cette séance » : marque une séance comme faite en 1 clic,
 // sans passer par le lecteur guidé (utile quand on l'a faite dehors / au city).
+// Récompense visible au clic : série mise à jour + confettis.
 export function QuickDoneButton({
   sessionId,
   done,
@@ -15,12 +17,21 @@ export function QuickDoneButton({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState(done);
+  const [streak, setStreak] = useState<number | null>(null);
+  const [justDone, setJustDone] = useState(false);
 
   if (ok) {
     return (
-      <span className="flex-none rounded-full border border-glow/40 px-3 py-1.5 text-xs font-bold text-glow">
-        Fait ✓
-      </span>
+      <>
+        {justDone && <Confetti />}
+        <span
+          className={`flex-none rounded-full border border-glow/40 bg-glow/10 px-3 py-1.5 text-xs font-bold text-glow ${
+            justDone ? "stat-pop" : ""
+          }`}
+        >
+          {streak != null ? `Validée · série ${streak}` : "Fait ✓"}
+        </span>
+      </>
     );
   }
 
@@ -34,6 +45,9 @@ export function QuickDoneButton({
         body: JSON.stringify({ sessionId, status: "done", difficulty: null }),
       });
       if (res.ok) {
+        const data = await res.json().catch(() => null);
+        if (data && typeof data.streak === "number") setStreak(data.streak);
+        setJustDone(true);
         setOk(true);
         router.refresh();
       } else {
