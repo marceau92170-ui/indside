@@ -47,7 +47,6 @@ model User {
   invitedByCode       String? // code du pote qui l'a invité (gravé une fois)
   inviteRewardGranted Boolean  @default(false) // récompense d'inscription déjà versée au parrain ?
   paidInviteRewardGranted Boolean @default(false) // récompense "filleul abonné" déjà versée (1x, au 1er paiement) ?
-  storyShareRewardGranted Boolean @default(false) // récompense "partage en story" déjà réclamée (1x/compte, anti-farm)
 
   createdAt DateTime @default(now())
 
