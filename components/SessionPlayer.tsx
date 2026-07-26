@@ -6,6 +6,7 @@ import { Button, Card } from "@/components/ui";
 import { ExerciseDetail, type ExerciseView } from "@/components/ExerciseDetail";
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
 import { Icon } from "@/components/Icon";
+import { Confetti } from "@/components/Confetti";
 import { badgeInfo } from "@/lib/constants";
 
 export type SessionBlock = {
@@ -41,10 +42,14 @@ export function SessionPlayer({
   session,
   blocks,
   premium = false,
+  whyChips = [],
 }: {
   session: SessionInfo;
   blocks: SessionBlock[];
   premium?: boolean;
+  // Facteurs de personnalisation à afficher ("Ailier", "U16", "Match samedi")
+  // → rend visible POURQUOI cette séance est la sienne.
+  whyChips?: string[];
 }) {
   const router = useRouter();
   const [doneBlocks, setDoneBlocks] = useState<Set<number>>(new Set());
@@ -126,6 +131,7 @@ export function SessionPlayer({
   if (phase === "done") {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
+        {result && <Confetti />}
         <div className="glow-flash mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-glow text-white">
           <Icon name="check" className="h-11 w-11" strokeWidth={2.4} />
         </div>
@@ -221,6 +227,24 @@ export function SessionPlayer({
       <p className="mb-4 text-sm text-muted">
         {session.durationMin} min · {session.objective}
       </p>
+
+      {whyChips.length > 0 && (
+        <div className="mb-4 rounded-card border border-line bg-surface p-3">
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted">
+            Pourquoi cette séance
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {whyChips.map((c) => (
+              <span
+                key={c}
+                className="rounded-full border border-glow/30 bg-glow/10 px-2.5 py-1 text-xs font-semibold text-glow"
+              >
+                {c}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {timer !== null && timer > 0 && (
         <div className="sticky top-2 z-30 mb-3 flex items-center justify-between rounded-card border border-glow bg-surface px-4 py-3">

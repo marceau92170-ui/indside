@@ -65,6 +65,12 @@ export default async function TestsPage() {
               </div>
               <p className="mb-3 text-xs text-muted">{t.protocol}</p>
 
+              {premium && values.length === 0 && (
+                <p className="mb-3 rounded-lg border border-dashed border-line px-3 py-2 text-xs text-muted">
+                  Pas encore de mesure. Fais ton 1er test ci-dessous — ta courbe se débloque à la 2ᵉ.
+                </p>
+              )}
+
               {values.length >= 2 && (
                 <div className="mb-3">
                   <ProgressChart values={values} lowerIsBetter={lowerIsBetter} />
