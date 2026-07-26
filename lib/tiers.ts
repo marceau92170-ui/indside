@@ -56,6 +56,7 @@ export function startingTierIndex(levelType: string): number {
 export type Rank = {
   tier: Tier;
   note: number;
+  subDiv: string; // sous-division dans le palier : "III" (bas) → "II" → "I" (haut)
   progressPct: number; // 0-100 vers la promotion
   nextTier: Tier | null;
   isMaxTier: boolean;
@@ -64,6 +65,15 @@ export type Rank = {
   realStartTier: Tier; // palier que Premium débloquerait selon le niveau déclaré
   xpEarned: number;
 };
+
+// Sous-division d'après la note dans le palier (65-85). Donne des paliers
+// intermédiaires (des petites victoires) sans changer le calcul de fond.
+function subDivFromNote(note: number): string {
+  const inTier = note - NOTE_MIN; // 0..20
+  if (inTier < 7) return "III";
+  if (inTier < 14) return "II";
+  return "I";
+}
 
 export function computeRank(opts: {
   levelType: string;
@@ -85,6 +95,7 @@ export function computeRank(opts: {
     return {
       tier: TIERS[0],
       note,
+      subDiv: subDivFromNote(note),
       progressPct: ready ? 100 : Math.round((100 * earned) / cost),
       nextTier: TIERS[1],
       isMaxTier: false,
@@ -113,6 +124,7 @@ export function computeRank(opts: {
   return {
     tier: TIERS[idx],
     note,
+    subDiv: subDivFromNote(note),
     progressPct: Math.min(100, Math.round((100 * remaining) / cost)),
     nextTier: isMax ? null : TIERS[idx + 1],
     isMaxTier: isMax,

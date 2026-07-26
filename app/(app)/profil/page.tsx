@@ -7,6 +7,7 @@ import { BADGES, positionLabel, TEST_TYPES } from "@/lib/constants";
 import { computeStreak, totalDoneSessions } from "@/lib/gamification";
 import { isPremium } from "@/lib/plan";
 import { computeRank, TIERS } from "@/lib/tiers";
+import { categoryRadar } from "@/lib/radar";
 import { DownloadableCard } from "@/components/DownloadableCard";
 import { RankCard } from "@/components/RankCard";
 import { MonthlyActivity } from "@/components/MonthlyActivity";
@@ -37,7 +38,7 @@ export default async function ProfilPage() {
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
   sixMonthsAgo.setDate(1);
 
-  const [results, badges, streak, total, recentLogs, goalsOpen, matchCount, painsOpen, rankRow] =
+  const [results, badges, streak, total, recentLogs, goalsOpen, matchCount, painsOpen, rankRow, radar] =
     await Promise.all([
       prisma.testResult.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
       prisma.badge.findMany({ where: { userId: user.id } }),
@@ -51,6 +52,7 @@ export default async function ProfilPage() {
       prisma.matchLog.count({ where: { userId: user.id } }),
       prisma.painLog.count({ where: { userId: user.id, resolved: false } }),
       prisma.user.findUnique({ where: { id: user.id }, select: { rankSeen: true } }),
+      categoryRadar(user.id),
     ]);
 
   // Rang / palier du joueur — calculé sur ses vraies données.
@@ -147,6 +149,7 @@ export default async function ProfilPage() {
         divisionLabel={divisionLabel(p)}
         rank={rank}
         tiers={TIERS}
+        radar={radar}
         justPromoted={justPromoted}
       />
 

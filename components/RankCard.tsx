@@ -4,7 +4,9 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { Confetti } from "@/components/Confetti";
 import { Icon } from "@/components/Icon";
+import { SkillRadar } from "@/components/SkillRadar";
 import type { Rank, Tier } from "@/lib/tiers";
+import type { RadarAxis } from "@/lib/radar";
 
 // Carte de rang évolutive : emblème métallique du palier, note globale, barre de
 // promotion, échelle des paliers. Confettis quand le joueur vient de monter de
@@ -16,6 +18,7 @@ export function RankCard({
   divisionLabel,
   rank,
   tiers,
+  radar,
   justPromoted,
 }: {
   firstName: string;
@@ -24,6 +27,7 @@ export function RankCard({
   divisionLabel: string;
   rank: Rank;
   tiers: Tier[];
+  radar: RadarAxis[];
   justPromoted: boolean;
 }) {
   const t = rank.tier;
@@ -96,41 +100,14 @@ export function RankCard({
                   {t.name}
                 </div>
                 <div className="mt-1 font-sans text-[10px] font-semibold tracking-widest text-muted">
-                  Palier {t.index + 1} / {tiers.length}
+                  Palier {t.index + 1}/{tiers.length} · Div {rank.subDiv}
                 </div>
               </div>
             </div>
 
-            {/* Emblème */}
-            <div className="my-1 flex justify-center">
-              <svg
-                viewBox="0 0 120 132"
-                className="h-[128px] w-[116px]"
-                style={{ filter: `drop-shadow(0 10px 22px ${t.color}66)` }}
-              >
-                <defs>
-                  <linearGradient id={`grad-${t.key}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor={t.light} />
-                    <stop offset="0.55" stopColor={t.color} />
-                    <stop offset="1" stopColor={t.dark} />
-                  </linearGradient>
-                </defs>
-                <path d="M60 3 L112 31 V85 L60 129 L8 85 V31 Z" fill={`url(#grad-${t.key})`} stroke={t.light} strokeWidth="2.5" />
-                <path d="M60 15 L100 37 V80 L60 116 L20 80 V37 Z" fill="none" stroke={t.light} strokeOpacity="0.5" strokeWidth="1.4" />
-                <text
-                  x="60"
-                  y="72"
-                  textAnchor="middle"
-                  fontFamily="Arial Narrow, sans-serif"
-                  fontWeight="700"
-                  fontSize="25"
-                  letterSpacing="1"
-                  fill="#0b0c0f"
-                  fillOpacity="0.85"
-                >
-                  {t.mono}
-                </text>
-              </svg>
+            {/* Toile d'araignée : chaque famille d'exercice est une branche */}
+            <div className="my-1">
+              <SkillRadar axes={radar} color={t.color} light={t.light} />
             </div>
 
             <p className="text-center font-condensed text-[30px] font-bold uppercase leading-none">{firstName}</p>
