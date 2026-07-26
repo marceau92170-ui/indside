@@ -48,6 +48,10 @@ model User {
   inviteRewardGranted Boolean  @default(false) // récompense d'inscription déjà versée au parrain ?
   paidInviteRewardGranted Boolean @default(false) // récompense "filleul abonné" déjà versée (1x, au 1er paiement) ?
 
+  // Paliers : dernier palier vu par le joueur (pour n'afficher les confettis de
+  // promotion qu'une seule fois quand il change de palier).
+  rankSeen Int @default(0)
+
   createdAt DateTime @default(now())
 
   accounts     Account[]
