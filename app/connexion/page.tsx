@@ -15,8 +15,8 @@ export default function ConnexionPage() {
       </Link>
       <SignIn
         routing="hash"
-        fallbackRedirectUrl="/semaine"
-        signUpFallbackRedirectUrl="/semaine"
+        fallbackRedirectUrl="/profil"
+        signUpFallbackRedirectUrl="/profil"
       />
       <p className="mt-6 max-w-xs text-center text-xs text-muted">
         Connexion en un geste, sans mot de passe. Gratuit, aucune carte demandée.
