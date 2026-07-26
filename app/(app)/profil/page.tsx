@@ -143,6 +143,24 @@ export default async function ProfilPage() {
         <span className="font-semibold text-chalk">@progressafoot</span>.
       </p>
 
+      {/* Cadeau / parrainage juste sous la carte joueur */}
+      <Link href="/parrainage" className="mt-5 block">
+        <Card className="flex items-center gap-3 border-glow/40 bg-glow/5 hover:border-glow">
+          <span className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-glow/15 text-glow">
+            <Icon name="gift" className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-condensed text-base font-bold uppercase leading-tight">
+              Gagne du Premium gratuit
+            </p>
+            <p className="text-sm text-muted">
+              3 potes inscrits = 1 semaine · un pote qui s&apos;abonne = 2 semaines offertes.
+            </p>
+          </div>
+          <span className="flex-none text-glow" aria-hidden="true">→</span>
+        </Card>
+      </Link>
+
       <div className="mt-6 grid grid-cols-2 gap-3">
         <Card className="text-center">
           <p className="tnum font-condensed text-3xl font-bold text-glow">{streak}</p>

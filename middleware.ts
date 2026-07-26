@@ -1,9 +1,17 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-// Clerk a besoin de ce middleware pour fournir le contexte d'authentification.
-// Il ne bloque AUCUNE route par défaut : la protection reste gérée dans le layout
-// (app) qui redirige vers /connexion si l'utilisateur n'est pas connecté.
-export default clerkMiddleware();
+// Clerk fournit le contexte d'authentification. Il ne bloque AUCUNE route : la
+// protection reste gérée dans le layout (app) qui redirige vers /connexion.
+// Seule règle ici : un utilisateur CONNECTÉ qui arrive sur la racine "/" est
+// envoyé directement sur son espace (onglet Profil) au lieu de la landing
+// marketing. Les visiteurs non connectés voient la landing normalement.
+export default clerkMiddleware(async (auth, req) => {
+  const { userId } = await auth();
+  if (userId && req.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/profil", req.url));
+  }
+});
 
 export const config = {
   matcher: [

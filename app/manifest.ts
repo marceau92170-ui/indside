@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "Progressa",
     description:
       "Programme d'entraînement foot personnalisé pour jeunes joueurs (13-17 ans). Généré pour ton poste, ton âge, ton niveau.",
-    start_url: "/semaine",
+    start_url: "/profil",
     scope: "/",
     lang: "fr",
     dir: "ltr",
