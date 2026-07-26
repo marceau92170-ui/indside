@@ -5,7 +5,10 @@ import { categoryFromBirthYear } from "@/lib/categories";
 import { divisionLabel } from "@/lib/profile";
 import { BADGES, positionLabel, TEST_TYPES } from "@/lib/constants";
 import { computeStreak, totalDoneSessions } from "@/lib/gamification";
+import { isPremium } from "@/lib/plan";
+import { computeRank, TIERS } from "@/lib/tiers";
 import { DownloadableCard } from "@/components/DownloadableCard";
+import { RankCard } from "@/components/RankCard";
 import { MonthlyActivity } from "@/components/MonthlyActivity";
 import { Card } from "@/components/ui";
 import { Icon, type IconName } from "@/components/Icon";
@@ -34,7 +37,7 @@ export default async function ProfilPage() {
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
   sixMonthsAgo.setDate(1);
 
-  const [results, badges, streak, total, recentLogs, goalsOpen, matchCount, painsOpen] =
+  const [results, badges, streak, total, recentLogs, goalsOpen, matchCount, painsOpen, rankRow] =
     await Promise.all([
       prisma.testResult.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
       prisma.badge.findMany({ where: { userId: user.id } }),
@@ -47,7 +50,18 @@ export default async function ProfilPage() {
       prisma.goal.count({ where: { userId: user.id, done: false } }),
       prisma.matchLog.count({ where: { userId: user.id } }),
       prisma.painLog.count({ where: { userId: user.id, resolved: false } }),
+      prisma.user.findUnique({ where: { id: user.id }, select: { rankSeen: true } }),
     ]);
+
+  // Rang / palier du joueur — calculé sur ses vraies données.
+  const premium = isPremium(user);
+  const rank = computeRank({
+    levelType: p.levelType,
+    sessionsDone: total,
+    testsCount: results.length,
+    isPremium: premium,
+  });
+  const justPromoted = !rank.locked && rank.tier.index > (rankRow?.rankSeen ?? 0);
 
   // Outils de progression (au-delà des séances) — avec un aperçu de ce qu'ils contiennent.
   const devLinks: { href: string; icon: IconName; label: string; desc: string; badge: string }[] = [
@@ -125,8 +139,19 @@ export default async function ProfilPage() {
     <div>
       <h1 className="mb-3 font-condensed text-3xl font-bold uppercase">Profil</h1>
 
-      <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-muted">
-        Ta carte joueur
+      {/* Carte de rang évolutive : note, palier, progression */}
+      <RankCard
+        firstName={p.firstName}
+        positionLabel={positionLabel(p.position)}
+        category={categoryFromBirthYear(p.birthYear)}
+        divisionLabel={divisionLabel(p)}
+        rank={rank}
+        tiers={TIERS}
+        justPromoted={justPromoted}
+      />
+
+      <p className="mb-3 mt-8 text-[11px] font-bold uppercase tracking-widest text-muted">
+        Ta carte à partager
       </p>
       <DownloadableCard
         data={{
