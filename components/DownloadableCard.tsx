@@ -7,7 +7,15 @@ import { Icon } from "@/components/Icon";
 
 // Rend la carte joueur en PNG et propose le partage natif (TikTok/Instagram/Snap) —
 // c'est le levier d'acquisition organique visé par le produit, la friction ici compte.
-export function DownloadableCard({ data }: { data: PlayerCardData }) {
+export function DownloadableCard({
+  data,
+  accent,
+  accentDark,
+}: {
+  data: PlayerCardData;
+  accent?: string;
+  accentDark?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [canNativeShare, setCanNativeShare] = useState(false);
@@ -86,7 +94,7 @@ export function DownloadableCard({ data }: { data: PlayerCardData }) {
   return (
     <div className="flex flex-col items-center">
       <div ref={ref}>
-        <PlayerCard data={data} />
+        <PlayerCard data={data} accent={accent} accentDark={accentDark} />
       </div>
       <Button variant="ghost" size="sm" className="mt-4 inline-flex items-center gap-2" onClick={shareOrDownload} disabled={busy}>
         {busy ? (
