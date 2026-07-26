@@ -165,8 +165,11 @@ export function RankCard({
                   boxShadow: current ? `0 0 0 4px ${tier.color}22` : "none",
                 }}
               >
-                {current || done ? "" : <Icon name="lock" className="h-3.5 w-3.5" />}
-                {(current || done) && tier.mono.slice(0, 1)}
+                {current || done || !rank.locked ? (
+                  tier.mono.slice(0, 1)
+                ) : (
+                  <Icon name="lock" className="h-3.5 w-3.5" />
+                )}
               </span>
               <span
                 className={`mt-1.5 text-[8.5px] uppercase leading-tight tracking-wide ${

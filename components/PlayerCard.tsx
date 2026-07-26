@@ -11,7 +11,17 @@ export type PlayerCardData = {
   stats: { label: string; value: string }[]; // 4 stats
 };
 
-export function PlayerCard({ data, width = 340 }: { data: PlayerCardData; width?: number }) {
+export function PlayerCard({
+  data,
+  width = 340,
+  accent = "#E12A3A",
+  accentDark = "#4a171d",
+}: {
+  data: PlayerCardData;
+  width?: number;
+  accent?: string; // couleur d'accent (teinte du palier) — rouge par défaut
+  accentDark?: string;
+}) {
   const height = (width * 480) / 340;
   const name = data.firstName.toUpperCase();
   // taille du flocage adaptée à la longueur du prénom
@@ -46,7 +56,7 @@ export function PlayerCard({ data, width = 340 }: { data: PlayerCardData; width?
       <text x="24" y="40" fill="#93938D" fontSize="13" fontWeight="700" letterSpacing="3" fontFamily="var(--font-condensed), 'Barlow Condensed', sans-serif">
         PROGRESSA
       </text>
-      <text x="316" y="40" fill="#E12A3A" fontSize="16" fontWeight="700" textAnchor="end" letterSpacing="2" fontFamily="var(--font-condensed), 'Barlow Condensed', sans-serif">
+      <text x="316" y="40" fill={accent} fontSize="16" fontWeight="700" textAnchor="end" letterSpacing="2" fontFamily="var(--font-condensed), 'Barlow Condensed', sans-serif">
         {data.category}
       </text>
       <line x1="24" y1="54" x2="316" y2="54" stroke="#2A2B2D" strokeWidth="1" />
@@ -65,7 +75,7 @@ export function PlayerCard({ data, width = 340 }: { data: PlayerCardData; width?
         {name}
       </text>
       {/* soulignement projecteur — seul accent */}
-      <rect x="120" y="168" width="100" height="4" rx="2" fill="#E12A3A" />
+      <rect x="120" y="168" width="100" height="4" rx="2" fill={accent} />
 
       {/* poste + division */}
       <text x="170" y="210" fill="#EDE9E0" fontSize="20" fontWeight="700" textAnchor="middle" letterSpacing="1.5" fontFamily="var(--font-condensed), 'Barlow Condensed', sans-serif">
@@ -87,7 +97,7 @@ export function PlayerCard({ data, width = 340 }: { data: PlayerCardData; width?
             <text
               x={x}
               y={y}
-              fill="#E12A3A"
+              fill={accent}
               fontSize="34"
               fontWeight="900"
               fontFamily="var(--font-condensed), 'Barlow Condensed', sans-serif"
@@ -106,7 +116,7 @@ export function PlayerCard({ data, width = 340 }: { data: PlayerCardData; width?
       <text x="24" y="456" fill="#93938D" fontSize="10" letterSpacing="2" fontFamily="Inter, sans-serif">
         SAISON {new Date().getFullYear()}–{(new Date().getFullYear() + 1).toString().slice(2)}
       </text>
-      <circle cx="308" cy="452" r="7" fill="none" stroke="#4a171d" strokeWidth="2.5" />
+      <circle cx="308" cy="452" r="7" fill="none" stroke={accentDark} strokeWidth="2.5" />
     </svg>
   );
 }

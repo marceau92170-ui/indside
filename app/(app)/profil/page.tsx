@@ -157,6 +157,8 @@ export default async function ProfilPage() {
         Ta carte à partager
       </p>
       <DownloadableCard
+        accent={rank.tier.color}
+        accentDark={rank.tier.dark}
         data={{
           firstName: p.firstName,
           position: p.position,
