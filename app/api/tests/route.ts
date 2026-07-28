@@ -9,7 +9,7 @@ import { TEST_COOLDOWN_DAYS } from "@/lib/constants";
 export const dynamic = "force-dynamic";
 
 const TestSchema = z.object({
-  testType: z.enum(["jonglage", "navette", "planche", "detente"]),
+  testType: z.enum(["jonglage", "navette", "planche", "sprint20m"]),
   value: z.number().positive().max(10000),
 });
 

@@ -53,7 +53,7 @@ export default async function MatchsPage() {
       {!premium && matches.length > 0 && (
         <p className="mb-5 rounded-card border-l-2 border-line bg-surface/60 px-3 py-2.5 text-xs text-muted">
           Ton carnet reste gratuit, pour toujours. Pour objectiver ta progression en chiffres (pas
-          seulement en souvenirs) : les tests jonglage, vitesse et détente sont dans{" "}
+          seulement en souvenirs) : les tests jonglage, vitesse et gainage sont dans{" "}
           <span className="font-semibold text-chalk">Premium</span>.{" "}
           <Link href="/premium?src=matchs_banner" className="font-semibold text-glow underline">
             Voir Premium

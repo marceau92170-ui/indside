@@ -291,7 +291,7 @@ model SessionLog {
 model TestResult {
   id        String   @id @default(cuid())
   userId    String
-  testType  String // jonglage | navette | planche | detente
+  testType  String // jonglage | navette | planche | sprint20m
   value     Float
   createdAt DateTime @default(now())
 

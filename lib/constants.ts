@@ -170,12 +170,13 @@ export const TEST_TYPES = [
       "Position planche sur les avant-bras, corps aligné. Chronomètre le temps total tenu sans casser l'alignement. 1 seul essai.",
   },
   {
-    key: "detente",
-    label: "Détente verticale",
-    unit: "cm",
-    emoji: "🦘",
+    key: "sprint20m",
+    label: "Sprint 20 m",
+    unit: "s",
+    emoji: "🏃",
     protocol:
-      "Face à un mur, bras tendu : marque la hauteur touchée à l'arrêt, puis saute et marque la hauteur max touchée. La différence en cm = ta détente. 3 essais, garde le meilleur.",
+      "20 m en ligne droite, départ arrêté. Chronomètre du 1er appui jusqu'à la ligne des 20 m. 2 essais, garde le meilleur temps (précision au dixième).",
+    lowerIsBetter: true,
   },
 ] as const;
 
