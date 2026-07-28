@@ -7,8 +7,12 @@ export const dynamic = "force-dynamic";
 // Usage : toi-même pour tester, ou tes affiliés (clubs, influenceurs) le temps
 // qu'ils tournent leurs vidéos / recommandent l'app.
 //
-//   Donner   : GET /api/admin/grant-premium?secret=ADMIN_SECRET&email=xxx@mail.com
+//   Donner   : GET /api/admin/grant-premium?secret=ADMIN_SECRET&email=xxx@mail.com&note=raison
 //   Retirer  : GET /api/admin/grant-premium?secret=ADMIN_SECRET&email=xxx@mail.com&revoke=1
+//
+// Chaque appel est journalisé (AdminActionLog) : sans ça, un compte "premium"
+// sans abonnement Stripe ni parrainage devient un mystère quelques mois plus
+// tard — impossible de savoir qui l'a accordé, quand, ni pourquoi.
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const secret = url.searchParams.get("secret");
@@ -23,6 +27,7 @@ export async function GET(req: Request) {
 
   const revoke = url.searchParams.get("revoke") === "1";
   const plan = revoke ? "free" : "premium";
+  const note = url.searchParams.get("note")?.trim().slice(0, 200) || null;
 
   // On crée le compte s'il n'existe pas encore : l'affilié pourra se connecter
   // ensuite avec ce même email et retrouvera son accès déjà actif.
@@ -30,6 +35,10 @@ export async function GET(req: Request) {
     where: { email },
     create: { email, plan },
     update: { plan },
+  });
+
+  await prisma.adminActionLog.create({
+    data: { action: revoke ? "revoke_premium" : "grant_premium", email, note },
   });
 
   return NextResponse.json({ ok: true, email: user.email, plan: user.plan });

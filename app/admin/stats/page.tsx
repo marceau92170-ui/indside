@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { mondayOfWeek } from "@/lib/categories";
 import { badgeInfo } from "@/lib/constants";
 import { MonthlyActivity } from "@/components/MonthlyActivity";
+import { premiumBreakdown } from "@/lib/premium-stats";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export default async function AdminStatsPage({
   const [
     totalUsers,
     usersWithProfile,
-    subsByStatus,
+    premium,
     sessionsThisWeek,
     sessionsAllTime,
     testsRecorded,
@@ -42,10 +43,11 @@ export default async function AdminStatsPage({
     goalsDone,
     wellnessCheckins,
     unresolvedPain,
+    recentGrants,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { profile: { isNot: null } } }),
-    prisma.subscription.groupBy({ by: ["status"], _count: { status: true } }),
+    premiumBreakdown(),
     prisma.sessionLog.count({ where: { status: "done", completedAt: { gte: currentWeek } } }),
     prisma.sessionLog.count({ where: { status: "done" } }),
     prisma.testResult.count(),
@@ -58,6 +60,7 @@ export default async function AdminStatsPage({
     prisma.goal.count({ where: { done: true } }),
     prisma.wellnessCheckin.count({ where: { date: { gte: currentWeek } } }),
     prisma.painLog.count({ where: { resolved: false } }),
+    prisma.adminActionLog.findMany({ orderBy: { createdAt: "desc" }, take: 15 }),
   ]);
 
   // Inscriptions par semaine (8 dernières)
@@ -71,17 +74,8 @@ export default async function AdminStatsPage({
     if (idx >= 0 && idx < weeks.length) weeks[idx].count++;
   }
 
-  // On distingue bien "payant réel" (facturé) de "en essai" (rien encaissé pour
-  // l'instant, peut résilier avant le 1er prélèvement) — jamais additionnés dans
-  // un même chiffre, pour ne pas confondre revenu réel et accès offert.
-  const statusCount = (s: string) => subsByStatus.find((r) => r.status === s)?._count.status ?? 0;
-  const paying = statusCount("active");
-  const trialing = statusCount("trialing");
-  const pastDue = statusCount("past_due");
-  const canceled = statusCount("canceled");
-
   const onboardingRate = totalUsers > 0 ? Math.round((usersWithProfile / totalUsers) * 100) : 0;
-  const payingRate = usersWithProfile > 0 ? Math.round((paying / usersWithProfile) * 100) : 0;
+  const payingRate = usersWithProfile > 0 ? Math.round((premium.paying / usersWithProfile) * 100) : 0;
 
   const badgeCounts = new Map(badgeGroups.map((b) => [b.key, b._count.key]));
 
@@ -95,10 +89,12 @@ export default async function AdminStatsPage({
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Comptes créés" value={totalUsers} />
         <Stat label="Profils complets" value={usersWithProfile} sub={`${onboardingRate}% des comptes`} />
-        <Stat label="Payants réels" value={paying} sub={`${payingRate}% des profils · facturés`} />
-        <Stat label="En essai gratuit" value={trialing} sub="pas encore facturés" />
-        <Stat label="Impayés" value={pastDue} sub="prélèvement en échec" />
-        <Stat label="Résiliés (total)" value={canceled} sub="depuis le début" />
+        <Stat label="Payants réels" value={premium.paying} sub={`${payingRate}% des profils · facturés`} />
+        <Stat label="En essai gratuit" value={premium.trialing} sub="pas encore facturés" />
+        <Stat label="Parrainage (gratuit)" value={premium.referralFree} sub="sans Stripe" />
+        <Stat label="Accordé à la main" value={premium.manualGrant} sub="sans Stripe ni parrainage" />
+        <Stat label="Impayés" value={premium.pastDue} sub="prélèvement en échec" />
+        <Stat label="Résiliés (total)" value={premium.canceled} sub="depuis le début" />
         <Stat label="Tests enregistrés" value={testsRecorded} />
         <Stat label="Séances cette semaine" value={sessionsThisWeek} />
         <Stat label="Séances (total)" value={sessionsAllTime} />
@@ -128,6 +124,43 @@ export default async function AdminStatsPage({
         })}
         {badgeCounts.size === 0 && <p className="text-sm text-muted">Aucun badge débloqué pour l&apos;instant.</p>}
       </ul>
+
+      <h2 className="mb-2 mt-8 font-condensed text-xl font-bold uppercase">
+        Accès Premium accordés à la main
+      </h2>
+      <p className="mb-3 text-xs text-muted">
+        Journal de /api/admin/grant-premium — le seul endroit où l&apos;accès Premium est changé sans
+        laisser de trace ailleurs (pas de Stripe, pas de parrainage).
+      </p>
+      {recentGrants.length === 0 ? (
+        <p className="rounded-card border border-line bg-surface p-4 text-sm text-muted">
+          Aucun accès accordé à la main pour l&apos;instant.
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {recentGrants.map((g) => (
+            <li
+              key={g.id}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-surface p-3 text-sm"
+            >
+              <div>
+                <span
+                  className={`mr-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                    g.action === "grant_premium" ? "bg-glow/15 text-glow" : "bg-line/60 text-muted"
+                  }`}
+                >
+                  {g.action === "grant_premium" ? "Accordé" : "Retiré"}
+                </span>
+                <span className="font-semibold">{g.email}</span>
+                {g.note && <span className="ml-2 text-xs text-muted">— {g.note}</span>}
+              </div>
+              <span className="text-[11px] text-muted">
+                {g.createdAt.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
