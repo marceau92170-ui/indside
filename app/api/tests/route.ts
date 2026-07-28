@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { isPremium } from "@/lib/plan";
 import { awardBadges } from "@/lib/gamification";
+import { TEST_COOLDOWN_DAYS } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,24 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: "invalid" }, { status: 400 });
 
   const { testType, value } = parsed.data;
+
+  // Anti-spam : un test ne rapporte de l'XP (via le palier) qu'une fois tous les
+  // TEST_COOLDOWN_DAYS jours — sinon on peut gonfler son palier en répétant le
+  // même test en boucle, sans avoir vraiment progressé.
+  const last = await prisma.testResult.findFirst({
+    where: { userId: user.id, testType },
+    orderBy: { createdAt: "desc" },
+    select: { createdAt: true },
+  });
+  if (last) {
+    const nextAvailableAt = new Date(last.createdAt.getTime() + TEST_COOLDOWN_DAYS * 24 * 60 * 60 * 1000);
+    if (nextAvailableAt > new Date()) {
+      return NextResponse.json(
+        { error: "cooldown", nextAvailableAt: nextAvailableAt.toISOString() },
+        { status: 429 }
+      );
+    }
+  }
 
   // Meilleure valeur PRÉCÉDENTE → pour fêter un record battu (« +X »).
   const lowerIsBetter = testType === "navette";

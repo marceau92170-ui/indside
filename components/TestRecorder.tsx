@@ -14,6 +14,7 @@ export function TestRecorder({
   locked,
   timed = false,
   inviteUrl,
+  nextAvailableAt,
 }: {
   testType: string;
   unit: string;
@@ -21,11 +22,15 @@ export function TestRecorder({
   locked: boolean;
   timed?: boolean;
   inviteUrl?: string;
+  nextAvailableAt?: string | null;
 }) {
   const router = useRouter();
   const [value, setValue] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+  const [cooldownUntil, setCooldownUntil] = useState<string | null>(
+    nextAvailableAt && new Date(nextAvailableAt) > new Date() ? nextAvailableAt : null
+  );
   const [celebration, setCelebration] = useState<null | { record: boolean; delta: number | null }>(null);
 
   // ---- Chronomètre guidé (tests en secondes) ----
@@ -94,6 +99,9 @@ export function TestRecorder({
         setCelebration({ record: false, delta: null });
       }
       router.refresh();
+    } else if (res.status === 429) {
+      const data: { nextAvailableAt?: string } = await res.json().catch(() => ({}));
+      if (data.nextAvailableAt) setCooldownUntil(data.nextAvailableAt);
     } else {
       setError(true);
     }
@@ -121,6 +129,17 @@ export function TestRecorder({
     return (
       <p className="flex items-center gap-1.5 text-xs text-muted">
         <Icon name="lock" className="h-3.5 w-3.5" /> Enregistrement réservé aux membres Premium.
+      </p>
+    );
+  }
+
+  if (cooldownUntil) {
+    const date = new Date(cooldownUntil).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+    return (
+      <p className="flex items-center gap-1.5 text-xs text-muted">
+        <Icon name="lock" className="h-3.5 w-3.5" /> Prochain test disponible le{" "}
+        <span className="font-semibold text-chalk">{date}</span> — laisse le temps à ta progression
+        de se voir.
       </p>
     );
   }

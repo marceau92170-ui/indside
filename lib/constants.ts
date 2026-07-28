@@ -139,6 +139,10 @@ export const DAYS_FR = [
   "Samedi",
 ] as const;
 
+// Un test ne peut être ré-enregistré qu'après ce délai (par type de test) : évite
+// de gonfler l'XP/le palier en spammant le même test plusieurs fois d'affilée.
+export const TEST_COOLDOWN_DAYS = 28;
+
 export const TEST_TYPES = [
   {
     key: "jonglage",
