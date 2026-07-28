@@ -35,7 +35,7 @@ export default async function TestsPage() {
           <p className="mb-2 text-sm">
             Les tests et le suivi de progression font partie de Premium.
           </p>
-          <ButtonLink href="/premium" size="sm">
+          <ButtonLink href="/premium?src=tests_banner" size="sm">
             Débloquer les tests
           </ButtonLink>
         </Card>

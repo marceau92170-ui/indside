@@ -75,7 +75,7 @@ export function PainLogTracker({ entries, premium }: { entries: PainEntry[]; pre
         <div className="mb-3 rounded-lg border border-line bg-night p-3 text-xs">
           Enregistré. En <span className="font-bold text-glow">Premium</span>, ton prochain
           programme aurait évité automatiquement cette zone — là, c&apos;est à toi d&apos;y penser.{" "}
-          <Link href="/premium" className="text-glow underline">
+          <Link href="/premium?src=pain_log_entry" className="text-glow underline">
             En savoir plus
           </Link>
         </div>
@@ -129,7 +129,7 @@ export function PainLogTracker({ entries, premium }: { entries: PainEntry[]; pre
         <div className="mb-3 rounded-lg border border-glow/40 bg-glow/5 p-3 text-xs">
           {unresolved.length} gêne{unresolved.length > 1 ? "s" : ""} active{unresolved.length > 1 ? "s" : ""}, pas
           encore prise{unresolved.length > 1 ? "s" : ""} en compte dans tes séances.{" "}
-          <Link href="/premium" className="font-bold text-glow underline">
+          <Link href="/premium?src=pain_log_banner" className="font-bold text-glow underline">
             Passer Premium
           </Link>{" "}
           pour que ton programme s&apos;adapte tout seul.

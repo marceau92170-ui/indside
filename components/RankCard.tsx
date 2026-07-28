@@ -199,7 +199,7 @@ export function RankCard({
             Ta promotion et ta nouvelle carte t&apos;attendent. Passe Premium pour grimper les paliers.
           </p>
           <Link
-            href="/premium"
+            href="/premium?src=rank_card_promotion"
             className="mt-3 block w-full rounded-xl bg-glow px-4 py-3 text-center font-condensed text-base font-bold uppercase tracking-wide text-white"
           >
             Réclamer ma promotion — 7 j gratuits

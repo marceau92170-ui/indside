@@ -81,7 +81,7 @@ export async function POST(req: Request) {
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       ...(withDiscount && discounts ? { discounts } : {}),
-      success_url: `${base}/premium/merci`,
+      success_url: `${base}/premium/merci?plan=${parsed.data.plan}&trial=${applyTrial}`,
       cancel_url: `${base}/premium`,
       metadata: { userId: user.id },
       payment_method_collection: "always",

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
+import { isPremium } from "@/lib/plan";
 import { MatchLogForm } from "@/components/MatchLogForm";
 import { Card } from "@/components/ui";
 
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function MatchsPage() {
   const user = await currentUser();
   if (!user) return null;
+  const premium = isPremium(user);
 
   const matches = await prisma.matchLog.findMany({
     where: { userId: user.id },
@@ -47,6 +49,17 @@ export default async function MatchsPage() {
           <p className="text-[10px] uppercase text-muted">Note moyenne</p>
         </Card>
       </div>
+
+      {!premium && matches.length > 0 && (
+        <p className="mb-5 rounded-card border-l-2 border-line bg-surface/60 px-3 py-2.5 text-xs text-muted">
+          Ton carnet reste gratuit, pour toujours. Pour objectiver ta progression en chiffres (pas
+          seulement en souvenirs) : les tests jonglage, vitesse et détente sont dans{" "}
+          <span className="font-semibold text-chalk">Premium</span>.{" "}
+          <Link href="/premium?src=matchs_banner" className="font-semibold text-glow underline">
+            Voir Premium
+          </Link>
+        </p>
+      )}
 
       <MatchLogForm />
 

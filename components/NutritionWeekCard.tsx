@@ -28,7 +28,7 @@ export function NutritionWeekCard({
             <Icon name="lock" className="h-4 w-4" /> Conseils nutrition inclus dans Premium
           </p>
           <Link
-            href="/premium"
+            href="/premium?src=nutrition_teaser"
             className="rounded-full bg-glow px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-white"
           >
             Débloquer

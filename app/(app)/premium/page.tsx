@@ -4,6 +4,7 @@ import { isAdult } from "@/lib/categories";
 import { Card } from "@/components/ui";
 import { CheckoutButtons, ManageSubscriptionButton } from "@/components/CheckoutButtons";
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
+import { TrackOnView } from "@/components/TrackOnView";
 
 export const dynamic = "force-dynamic";
 
@@ -28,14 +29,20 @@ function CompareCell({ value }: { value: string }) {
   return <span>{value}</span>;
 }
 
-export default async function PremiumPage() {
+export default async function PremiumPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ src?: string }>;
+}) {
   const user = await currentUser();
   const premium = isPremium(user);
   const adult = user?.profile ? isAdult(user.profile.birthYear) : false;
+  const { src } = await searchParams;
 
   if (premium) {
     return (
       <div>
+        <TrackOnView event="premium_page_viewed" properties={{ source: src ?? "direct", already_premium: true }} />
         <h1 className="mb-2 font-condensed text-3xl font-bold uppercase">Premium ✓</h1>
         <p className="mb-6 text-sm text-muted">
           Ton abonnement est actif. Gestion et résiliation en 1 clic ci-dessous.
@@ -47,6 +54,7 @@ export default async function PremiumPage() {
 
   return (
     <div>
+      <TrackOnView event="premium_page_viewed" properties={{ source: src ?? "direct", already_premium: false }} />
       <h1 className="mb-1 font-condensed text-3xl font-bold uppercase">Passe Premium</h1>
       <p className="mb-5 text-sm text-muted">
         Ton préparateur perso, moins cher qu&apos;un seul cours particulier.

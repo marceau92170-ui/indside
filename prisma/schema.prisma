@@ -17,7 +17,10 @@ model Feedback {
   page      String? // page depuis laquelle l'avis a été envoyé
   createdAt DateTime @default(now())
 
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([createdAt])
+  @@index([userId])
 }
 
 // ---------- Auth (NextAuth) ----------
@@ -71,6 +74,7 @@ model User {
   affiliateProfile  Affiliate? @relation("AffiliateUser")
   emailEvents       EmailEvent[]
   review            Review?
+  feedbacks         Feedback[]
 }
 
 // Journal des e-mails automatiques (bienvenue, relances nurture…).
@@ -424,6 +428,21 @@ model Goal {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// Journal des accès Premium accordés/retirés à la main (hors Stripe, hors
+// parrainage) — ex: un affilié testeur, une vidéo tournée avant paiement.
+// Sans ça, un compte "premium" sans abonnement Stripe ni parrainage est un
+// mystère 6 mois plus tard : personne ne sait qui l'a accordé, quand, ni pourquoi.
+model AdminActionLog {
+  id        String   @id @default(cuid())
+  action    String // grant_premium | revoke_premium
+  email     String
+  note      String? // ex: nom de l'affilié / raison
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
 }
 
 // ---------- Avis / témoignages (soumis par les utilisateurs, modérés) ----------

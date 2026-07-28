@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { allAffiliateStats } from "@/lib/affiliate-stats";
 import { formatEuros } from "@/lib/affiliate";
+import { premiumBreakdown } from "@/lib/premium-stats";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +18,10 @@ export default async function AdminAffiliationPage() {
     );
   }
 
-  const [stats, totalUsers, premiumActive, totalClicks] = await Promise.all([
+  const [stats, totalUsers, premium, totalClicks] = await Promise.all([
     allAffiliateStats(),
     prisma.user.count(),
-    prisma.user.count({ where: { plan: "premium" } }),
+    premiumBreakdown(),
     prisma.linkClick.count(),
   ]);
 
@@ -58,7 +59,8 @@ export default async function AdminAffiliationPage() {
       {/* Vue globale */}
       <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Utilisateurs" value={String(totalUsers)} />
-        <Stat label="Premium actifs" value={String(premiumActive)} />
+        <Stat label="Accès Premium (dont essais)" value={String(premium.totalWithAccess)} />
+        <Stat label="… dont payants réels" value={String(premium.paying)} />
         <Stat label="Clics affiliés" value={String(totalClicks)} />
         <Stat label="Inscrits via affiliés" value={String(t.signups)} />
         <Stat label="CA généré (affiliés)" value={formatEuros(t.gross)} />
