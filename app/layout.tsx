@@ -3,6 +3,7 @@ import { Archivo_Black, Barlow_Condensed, Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { frFR } from "@clerk/localizations";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -113,6 +114,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               Google, Instagram, direct…), sans cookie ni donnée perso (RGPD-friendly).
               Visible sur vercel.com → onglet Analytics. */}
           <Analytics />
+          {/* Speed Insights Vercel : vitesse réelle ressentie par les visiteurs
+              (Core Web Vitals), par page et par pays. Visible sur vercel.com →
+              onglet Speed Insights. */}
+          <SpeedInsights />
         </body>
       </html>
     </ClerkProvider>
