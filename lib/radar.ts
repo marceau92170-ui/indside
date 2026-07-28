@@ -16,7 +16,11 @@ const AXES: { key: string; label: string }[] = [
 ];
 
 // Nombre d'exercices dans une catégorie pour "maxer" une branche (100). Réglable.
-const TARGET = 22;
+// Volontairement élevé : avec un rythme régulier, une branche se remplissait en
+// ~2 semaines (bien avant même le 1er changement de palier), donnant l'impression
+// que la toile ne bouge qu'aux promotions. Calé pour progresser sur toute la
+// montée des paliers (jusqu'à Élite), pas seulement les premières semaines.
+const TARGET = 90;
 
 type Block = { slug?: string };
 

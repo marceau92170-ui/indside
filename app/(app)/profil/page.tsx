@@ -6,10 +6,11 @@ import { divisionLabel } from "@/lib/profile";
 import { BADGES, positionLabel, TEST_TYPES } from "@/lib/constants";
 import { computeStreak, totalDoneSessions } from "@/lib/gamification";
 import { isPremium } from "@/lib/plan";
-import { computeRank, TIERS } from "@/lib/tiers";
+import { computeRank, computeTierHistory, XP_PER_SESSION, XP_PER_TEST, TIERS } from "@/lib/tiers";
 import { categoryRadar } from "@/lib/radar";
 import { DownloadableCard } from "@/components/DownloadableCard";
 import { RankCard } from "@/components/RankCard";
+import { TierHistory } from "@/components/TierHistory";
 import { MonthlyActivity } from "@/components/MonthlyActivity";
 import { Card } from "@/components/ui";
 import { Icon, type IconName } from "@/components/Icon";
@@ -38,7 +39,7 @@ export default async function ProfilPage() {
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
   sixMonthsAgo.setDate(1);
 
-  const [results, badges, streak, total, recentLogs, goalsOpen, matchCount, painsOpen, rankRow, radar] =
+  const [results, badges, streak, total, recentLogs, goalsOpen, matchCount, painsOpen, rankRow, radar, allDoneLogs] =
     await Promise.all([
       prisma.testResult.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
       prisma.badge.findMany({ where: { userId: user.id } }),
@@ -53,6 +54,12 @@ export default async function ProfilPage() {
       prisma.painLog.count({ where: { userId: user.id, resolved: false } }),
       prisma.user.findUnique({ where: { id: user.id }, select: { rankSeen: true } }),
       categoryRadar(user.id),
+      // Tout l'historique (pas juste 6 mois) : nécessaire pour dater chaque
+      // palier déjà atteint ("Ton parcours"), pas seulement les séances récentes.
+      prisma.sessionLog.findMany({
+        where: { userId: user.id, status: "done" },
+        select: { completedAt: true },
+      }),
     ]);
 
   // Rang / palier du joueur — calculé sur ses vraies données.
@@ -64,6 +71,14 @@ export default async function ProfilPage() {
     isPremium: premium,
   });
   const justPromoted = !rank.locked && rank.tier.index > (rankRow?.rankSeen ?? 0);
+
+  // "Ton parcours" : date de chaque palier déjà atteint, reconstruite à partir
+  // des vrais événements (séances validées + tests), pas stockée à part.
+  const xpEvents = [
+    ...allDoneLogs.map((l) => ({ date: l.completedAt, xp: XP_PER_SESSION })),
+    ...results.map((r) => ({ date: r.createdAt, xp: XP_PER_TEST })),
+  ];
+  const tierMilestones = computeTierHistory({ levelType: p.levelType, isPremium: premium, xpEvents });
 
   // Outils de progression (au-delà des séances) — avec un aperçu de ce qu'ils contiennent.
   const devLinks: { href: string; icon: IconName; label: string; desc: string; badge: string }[] = [
@@ -152,6 +167,8 @@ export default async function ProfilPage() {
         radar={radar}
         justPromoted={justPromoted}
       />
+
+      <TierHistory milestones={tierMilestones} />
 
       <p className="mb-3 mt-8 text-[11px] font-bold uppercase tracking-widest text-muted">
         Ta carte à partager
