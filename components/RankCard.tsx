@@ -155,13 +155,16 @@ export function RankCard({
                   height: current ? 40 : 32,
                   marginTop: current ? -4 : 0,
                   fontSize: current ? 14 : 12,
-                  color: done || current ? "#fff" : "#8E8F89",
+                  // Palier pas encore atteint : on teinte quand même le rond avec sa
+                  // vraie couleur (juste très sourde) au lieu d'un gris neutre — pour
+                  // donner un aperçu de ce qui attend, plutôt qu'un mur plat.
+                  color: done || current ? "#fff" : `${tier.color}99`,
                   background: current
                     ? `linear-gradient(150deg, ${tier.color}, ${tier.dark})`
                     : done
                       ? `${tier.color}33`
-                      : "#15171b",
-                  border: `2px solid ${done || current ? tier.color : "#2A2B2D"}`,
+                      : `${tier.color}14`,
+                  border: `2px solid ${done || current ? tier.color : `${tier.color}40`}`,
                   boxShadow: current ? `0 0 0 4px ${tier.color}22` : "none",
                 }}
               >

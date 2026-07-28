@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { isPremium } from "@/lib/plan";
-import { TEST_TYPES } from "@/lib/constants";
+import { TEST_TYPES, TEST_COOLDOWN_DAYS } from "@/lib/constants";
 import { ProgressChart } from "@/components/ProgressChart";
 import { TestRecorder } from "@/components/TestRecorder";
 import { Card, ButtonLink } from "@/components/ui";
@@ -52,6 +52,10 @@ export default async function TestsPage() {
               : Math.max(...values)
             : null;
           const latest = values.length ? values[values.length - 1] : null;
+          const lastDate = history.length ? history[history.length - 1].createdAt : null;
+          const nextAvailableAt = lastDate
+            ? new Date(lastDate.getTime() + TEST_COOLDOWN_DAYS * 24 * 60 * 60 * 1000)
+            : null;
 
           return (
             <Card key={t.key}>
@@ -89,6 +93,7 @@ export default async function TestsPage() {
                 timed={t.unit === "s"}
                 inviteUrl={inviteUrl}
                 locked={!premium}
+                nextAvailableAt={nextAvailableAt?.toISOString() ?? null}
               />
             </Card>
           );

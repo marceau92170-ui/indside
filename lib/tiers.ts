@@ -34,7 +34,7 @@ export const TIERS: Tier[] = [
 export const TIER_COSTS = [90, 110, 150, 210, 300, 500];
 
 export const XP_PER_SESSION = 10; // une séance validée
-export const XP_PER_TEST = 15; // un test enregistré / amélioré
+export const XP_PER_TEST = 5; // un test enregistré / amélioré (plafonné à 1/mois par test, cf TEST_COOLDOWN_DAYS)
 
 const NOTE_MIN = 65;
 const NOTE_MAX = 85;
@@ -133,4 +133,49 @@ export function computeRank(opts: {
     realStartTier: realStart,
     xpEarned: earned,
   };
+}
+
+export type TierMilestone = { tier: Tier; reachedAt: Date | null };
+
+// Reconstruit QUAND chaque palier a été atteint, à partir des événements qui
+// rapportent de l'XP (séances validées, tests), datés. Permet de revoir sa
+// carte telle qu'elle était à un palier passé, même si seule la carte
+// actuelle est "active" (interactive, partageable).
+//
+// reachedAt = null pour les paliers déjà acquis dès le départ (niveau déclaré
+// à l'inscription, Premium) : il n'y a pas d'événement daté pour ceux-là.
+export function computeTierHistory(opts: {
+  levelType: string;
+  isPremium: boolean;
+  xpEvents: { date: Date; xp: number }[];
+}): TierMilestone[] {
+  const { levelType, isPremium, xpEvents } = opts;
+  const realStart = TIERS[startingTierIndex(levelType)];
+
+  if (!isPremium) {
+    // Gratuit : bloqué au palier 1, aucune vraie promotion à dater.
+    return [{ tier: TIERS[0], reachedAt: null }];
+  }
+
+  const milestones: TierMilestone[] = [];
+  for (let i = 0; i <= realStart.index; i++) {
+    milestones.push({ tier: TIERS[i], reachedAt: null });
+  }
+
+  const sorted = [...xpEvents].sort((a, b) => a.date.getTime() - b.date.getTime());
+  let cursor = 0;
+  for (let i = 0; i < realStart.index; i++) cursor += TIER_COSTS[i];
+  let idx = realStart.index;
+
+  for (const ev of sorted) {
+    if (idx >= TIERS.length - 1) break; // Élite : plus de palier après
+    cursor += ev.xp;
+    while (idx < TIERS.length - 1 && cursor >= TIER_COSTS[idx]) {
+      cursor -= TIER_COSTS[idx];
+      idx++;
+      milestones.push({ tier: TIERS[idx], reachedAt: ev.date });
+    }
+  }
+
+  return milestones;
 }

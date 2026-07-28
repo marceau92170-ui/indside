@@ -129,7 +129,7 @@ export default async function LandingPage() {
                     { label: "Jonglage", value: "61" },
                     { label: "Navette", value: "11.2" },
                     { label: "Planche", value: "95" },
-                    { label: "Détente", value: "43" },
+                    { label: "Sprint 20m", value: "3.2" },
                   ],
                 }}
               />
@@ -194,7 +194,7 @@ export default async function LandingPage() {
           <section className="mt-12">
             <h2 className="font-condensed text-2xl font-bold uppercase">La progression se mesure</h2>
             <p className="mt-2 text-sm text-muted">
-              Jonglage max, navette 5×10 m, planche, détente verticale : 4 tests auto-mesurés toutes
+              Jonglage max, navette 5×10 m, planche, sprint 20 m : 4 tests auto-mesurés toutes
               les 4 semaines, avec graphiques. Passer de 34 à 61 jonglages en 3 semaines, ça ne se
               discute pas.
             </p>

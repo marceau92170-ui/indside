@@ -41,7 +41,7 @@ const FAQ: QA[] = [
   },
   {
     q: "Comment fonctionne le suivi de la progression ?",
-    a: "Quatre tests auto-mesurés (jonglage max, navette 5×10 m, gainage planche, détente verticale) sont proposés toutes les 4 semaines, avec des graphiques d'évolution. Tu peux aussi tenir un carnet de match et un suivi de forme quotidien.",
+    a: "Quatre tests auto-mesurés (jonglage max, navette 5×10 m, gainage planche, sprint 20 m) sont proposés toutes les 4 semaines, avec des graphiques d'évolution. Tu peux aussi tenir un carnet de match et un suivi de forme quotidien.",
   },
   {
     q: "Puis-je résilier facilement ?",
