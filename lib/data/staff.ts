@@ -50,7 +50,7 @@ export const AFFILIATES: AffiliateSeed[] = [
   { code: "officiel", name: "TikTok officiel", email: "marceau92170@gmail.com", house: true },
   { code: "aaron", name: "Aaron", email: "nsuandaaron@gmail.com" }, // @aaroninh0o
   { code: "hemy", name: "Hemy", email: "lhymnlord@gmail.com" },
-  { code: "nymax", name: "Nymax", email: "tonyrmlg@icloud.com", startDate: "2026-07-24" }, // @nymax.foot — lancement vendredi 24/07
+  { code: "nymax", name: "Nymax", email: "tonyrmlg@icloud.com", startDate: "2026-07-29" }, // @nymax.foot — lien actif du 29/07 au 29/08
   { code: "haile", name: "Haïlé", email: "haile.beauroy@gmail.com" },
   { code: "sammy", name: "Sammy", email: "sammy.moutaouakkel@gmail.com" },
   { code: "theo", name: "Théo", email: "theofootoff@gmail.com" },
