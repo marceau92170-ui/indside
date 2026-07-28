@@ -1,3 +1,5 @@
+"use client";
+
 // Illustrations animées en boucle, dessinées à la main (SVG + SMIL) — jamais générées.
 // Un mouvement mal dessiné se corrige une fois pour toutes ; une vidéo IA mal générée
 // apprendrait un mauvais geste à chaque joueur qui la regarde. D'où ce choix.
@@ -9,6 +11,8 @@
 //     (maillot, peau, short, chaussures, cheveux, contour) — PremiumFigure.
 // Chaque exercice de la bibliothèque est mappé vers la famille la plus proche
 // visuellement — aucun exercice n'est laissé sans illustration.
+
+import { useEffect, useState } from "react";
 
 type BodyPart =
   | "head"
@@ -720,9 +724,24 @@ export function ExerciseIllustration({
   const key = ILLUSTRATION_MAP[slug] ?? CATEGORY_FALLBACK[category] ?? "squat";
   const archetype = ARCHETYPES[key];
   const cue = COACHING_CUES[key];
+
+  // Les animations SMIL peuvent se désynchroniser quand l'appli repasse en
+  // arrière-plan puis revient (fréquent sur mobile, surtout dans les
+  // navigateurs intégrés type TikTok/Instagram). On force un remount au
+  // retour au premier plan pour repartir propre — sans toucher au dessin
+  // des mouvements eux-mêmes.
+  const [renderKey, setRenderKey] = useState(0);
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState === "visible") setRenderKey((k) => k + 1);
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
+
   return (
     <div className="mx-auto max-w-[280px] overflow-hidden rounded-lg border border-line bg-night">
-      <div className="aspect-square w-full">
+      <div className="aspect-square w-full" key={renderKey}>
         {premium ? <PremiumFigure archetype={archetype} /> : <Stick archetype={archetype} />}
       </div>
       {showCue && cue && (
