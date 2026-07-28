@@ -15,9 +15,11 @@
 export const COMMISSION_RATE = 0.8; // mensuel (toujours)
 export const COMMISSION_RATE_ANNUAL = 0.4; // annuel, APRÈS le mois de lancement
 
-// Offre de lancement : pendant les 30 premiers jours de chaque affilié (à partir de
+// Offre de lancement : pendant les N premiers jours de chaque affilié (à partir de
 // sa 1ère vidéo / date de démarrage), l'annuel est AUSSI payé à 80%. Après, il passe
 // à 40%. Le mensuel, lui, reste à 80% en permanence.
+// Durée par défaut = 30 j. Un affilié peut avoir SA PROPRE durée (ex: deal négocié
+// à 6 mois pour un partenaire vidéo) via Affiliate.launchWindowDays.
 export const LAUNCH_WINDOW_DAYS = 30;
 
 // Fenêtre d'attribution : un clic reste valable 30 jours pour convertir en vente.
@@ -35,13 +37,15 @@ export const BONUS_TIERS: { thresholdEuros: number; bonusEuros: number }[] = [
 
 export type Plan = "monthly" | "annual";
 
-// La vente tombe-t-elle dans le mois de lancement de l'affilié ?
+// La vente tombe-t-elle dans la fenêtre de lancement de l'affilié ?
+// `windowDays` permet une durée sur-mesure par affilié (défaut : 30 j).
 export function isWithinLaunchWindow(
   promoStart: Date,
-  now: Date = new Date()
+  now: Date = new Date(),
+  windowDays: number = LAUNCH_WINDOW_DAYS
 ): boolean {
   const end = new Date(promoStart);
-  end.setDate(end.getDate() + LAUNCH_WINDOW_DAYS);
+  end.setDate(end.getDate() + windowDays);
   return now.getTime() <= end.getTime();
 }
 

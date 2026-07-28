@@ -60,10 +60,11 @@ async function seedStaff() {
       update: { plan: "premium", role: "affiliate" },
     });
     const promoStartsAt = a.startDate ? new Date(`${a.startDate}T00:00:00Z`) : undefined;
+    const launchWindowDays = a.launchWindowDays ?? null;
     await prisma.affiliate.upsert({
       where: { code },
-      create: { code, displayName: a.name, email, userId: user.id, promoStartsAt, couponId: a.couponId ?? null },
-      update: { displayName: a.name, email, userId: user.id, isHouse: false, promoStartsAt, couponId: a.couponId ?? null },
+      create: { code, displayName: a.name, email, userId: user.id, promoStartsAt, couponId: a.couponId ?? null, launchWindowDays },
+      update: { displayName: a.name, email, userId: user.id, isHouse: false, promoStartsAt, couponId: a.couponId ?? null, launchWindowDays },
     });
   }
   console.log(
