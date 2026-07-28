@@ -40,6 +40,9 @@ export type AffiliateSeed = {
   // affilié uniquement (ex: Sammy). Laisser absent = plein tarif. À créer d'abord
   // dans Stripe, puis renseigner ici.
   couponId?: string;
+  // Durée sur-mesure (en jours) de la fenêtre "80% sur l'annuel aussi" pour CET
+  // affilié (deal négocié, ex: 180 = 6 mois pour un partenaire vidéo). Absent = 30 j.
+  launchWindowDays?: number;
 };
 
 export const AFFILIATES: AffiliateSeed[] = [

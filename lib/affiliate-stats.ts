@@ -38,6 +38,7 @@ export async function affiliateStats(aff: {
   isHouse?: boolean;
   promoStartsAt?: Date | null;
   createdAt?: Date;
+  launchWindowDays?: number | null;
 }): Promise<AffiliateStats> {
   const code = aff.code;
   const isHouse = aff.isHouse ?? false;
@@ -56,7 +57,7 @@ export async function affiliateStats(aff: {
 
   // Commission estimée des essais en cours (« en approche ») : se confirme au 1er paiement.
   const promoStart = aff.promoStartsAt ?? aff.createdAt ?? new Date();
-  const withinLaunch = isWithinLaunchWindow(promoStart);
+  const withinLaunch = isWithinLaunchWindow(promoStart, new Date(), aff.launchWindowDays ?? undefined);
   const trialingCount = trialing.length;
   const pipelineCents = isHouse
     ? 0

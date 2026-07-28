@@ -31,9 +31,14 @@ async function recordSale(sub: Stripe.Subscription, grossCents: number) {
   const priceId = sub.items.data[0]?.price?.id;
   const plan = priceId === process.env.STRIPE_PRICE_ANNUAL ? "annual" : "monthly";
 
-  // Offre de lancement : annuel à 80% pendant les 30 premiers jours de l'affilié.
+  // Offre de lancement : annuel à 80% pendant la fenêtre de l'affilié (30 j par
+  // défaut, ou sa durée sur-mesure si négociée — ex: 6 mois pour un partenaire vidéo).
   const promoStart = affiliate.promoStartsAt ?? affiliate.createdAt;
-  const withinLaunch = isWithinLaunchWindow(promoStart);
+  const withinLaunch = isWithinLaunchWindow(
+    promoStart,
+    new Date(),
+    affiliate.launchWindowDays ?? undefined
+  );
 
   // Lien "maison" → 0 commission (le créateur est payé au fixe).
   const commission = affiliate.isHouse ? 0 : commissionCents(grossCents, plan, withinLaunch);
