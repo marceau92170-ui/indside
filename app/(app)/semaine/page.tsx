@@ -12,6 +12,7 @@ import { QuickDoneButton } from "@/components/QuickDoneButton";
 import { Icon } from "@/components/Icon";
 import { NutritionWeekCard } from "@/components/NutritionWeekCard";
 import { weeklyTip, matchTip } from "@/lib/data/nutrition";
+import { TrackOnView } from "@/components/TrackOnView";
 
 export const dynamic = "force-dynamic";
 
@@ -265,6 +266,7 @@ export default async function SemainePage() {
 
       {!premium && user.profile && (
         <div className="mt-6">
+          <TrackOnView event="premium_teaser_viewed" properties={{ location: "semaine" }} />
           <p className="mb-2 font-condensed text-lg font-bold uppercase">
             Ton programme complet t&apos;attend
           </p>
@@ -280,7 +282,7 @@ export default async function SemainePage() {
               matchDay: user.profile.matchDay,
             }).map((t, i) => (
               <li key={i}>
-                <Link href="/premium" className="block">
+                <Link href="/premium?src=semaine_locked_session" className="block">
                   <Card className="relative overflow-hidden border-line/60">
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0 blur-[3px] select-none">
@@ -309,7 +311,7 @@ export default async function SemainePage() {
               Débloque tout ton programme perso, adapté chaque semaine. Sans payer maintenant,
               résiliable en 1 clic.
             </p>
-            <ButtonLink href="/premium" size="sm">
+            <ButtonLink href="/premium?src=semaine_cta" size="sm">
               Débloquer mon programme complet
             </ButtonLink>
           </Card>

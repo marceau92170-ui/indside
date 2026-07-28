@@ -67,7 +67,7 @@ export default async function ReglagesPage() {
         {premium ? (
           <ManageSubscriptionButton />
         ) : (
-          <Link href="/premium" className="text-sm font-semibold text-glow underline">
+          <Link href="/premium?src=reglages" className="text-sm font-semibold text-glow underline">
             Passer Premium
           </Link>
         )}

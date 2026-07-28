@@ -55,7 +55,7 @@ export default async function MatchsPage() {
           Ton carnet reste gratuit, pour toujours. Pour objectiver ta progression en chiffres (pas
           seulement en souvenirs) : les tests jonglage, vitesse et détente sont dans{" "}
           <span className="font-semibold text-chalk">Premium</span>.{" "}
-          <Link href="/premium" className="font-semibold text-glow underline">
+          <Link href="/premium?src=matchs_banner" className="font-semibold text-glow underline">
             Voir Premium
           </Link>
         </p>

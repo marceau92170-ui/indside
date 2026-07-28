@@ -58,7 +58,7 @@ export default async function BibliothequePage() {
           <p className="mb-2 text-sm">
             Débloque les {exercises.length} exercices + ton programme personnalisé.
           </p>
-          <ButtonLink href="/premium" size="sm">
+          <ButtonLink href="/premium?src=bibliotheque_banner" size="sm">
             Voir Premium
           </ButtonLink>
         </div>
