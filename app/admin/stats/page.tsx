@@ -29,7 +29,7 @@ export default async function AdminStatsPage({
   const [
     totalUsers,
     usersWithProfile,
-    premiumActive,
+    subsByStatus,
     sessionsThisWeek,
     sessionsAllTime,
     testsRecorded,
@@ -45,7 +45,7 @@ export default async function AdminStatsPage({
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { profile: { isNot: null } } }),
-    prisma.subscription.count({ where: { status: { in: ["active", "trialing"] } } }),
+    prisma.subscription.groupBy({ by: ["status"], _count: { status: true } }),
     prisma.sessionLog.count({ where: { status: "done", completedAt: { gte: currentWeek } } }),
     prisma.sessionLog.count({ where: { status: "done" } }),
     prisma.testResult.count(),
@@ -71,8 +71,17 @@ export default async function AdminStatsPage({
     if (idx >= 0 && idx < weeks.length) weeks[idx].count++;
   }
 
+  // On distingue bien "payant réel" (facturé) de "en essai" (rien encaissé pour
+  // l'instant, peut résilier avant le 1er prélèvement) — jamais additionnés dans
+  // un même chiffre, pour ne pas confondre revenu réel et accès offert.
+  const statusCount = (s: string) => subsByStatus.find((r) => r.status === s)?._count.status ?? 0;
+  const paying = statusCount("active");
+  const trialing = statusCount("trialing");
+  const pastDue = statusCount("past_due");
+  const canceled = statusCount("canceled");
+
   const onboardingRate = totalUsers > 0 ? Math.round((usersWithProfile / totalUsers) * 100) : 0;
-  const premiumRate = usersWithProfile > 0 ? Math.round((premiumActive / usersWithProfile) * 100) : 0;
+  const payingRate = usersWithProfile > 0 ? Math.round((paying / usersWithProfile) * 100) : 0;
 
   const badgeCounts = new Map(badgeGroups.map((b) => [b.key, b._count.key]));
 
@@ -86,7 +95,10 @@ export default async function AdminStatsPage({
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Comptes créés" value={totalUsers} />
         <Stat label="Profils complets" value={usersWithProfile} sub={`${onboardingRate}% des comptes`} />
-        <Stat label="Premium actifs" value={premiumActive} sub={`${premiumRate}% des profils`} />
+        <Stat label="Payants réels" value={paying} sub={`${payingRate}% des profils · facturés`} />
+        <Stat label="En essai gratuit" value={trialing} sub="pas encore facturés" />
+        <Stat label="Impayés" value={pastDue} sub="prélèvement en échec" />
+        <Stat label="Résiliés (total)" value={canceled} sub="depuis le début" />
         <Stat label="Tests enregistrés" value={testsRecorded} />
         <Stat label="Séances cette semaine" value={sessionsThisWeek} />
         <Stat label="Séances (total)" value={sessionsAllTime} />
