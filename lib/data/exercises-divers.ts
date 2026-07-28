@@ -9,6 +9,8 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
     emoji: "🫁",
     description:
       "Course continue avec variations d'allure libres : le cardio « à la suédoise », moins monotone qu'un footing et plus proche des efforts du match.",
+    matchBenefit:
+      "Un moteur qui tient tout le match, avec des variations d'allure proches des efforts réels.",
     steps: [
       "Échauffement : 3 minutes de course très facile.",
       "Pendant 10 minutes, alterne librement : 1 min allure moyenne, 30 s allure rapide, 1 min facile…",
@@ -33,6 +35,8 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
     emoji: "🫁",
     description:
       "30 secondes de course rapide, 30 secondes de récupération en marchant ou trottinant. Le format de référence pour développer le moteur aérobie des footballeurs.",
+    matchBenefit:
+      "Le format qui développe exactement l'endurance dont tu as besoin pour répéter les efforts en match.",
     steps: [
       "Échauffement 5 minutes (course facile + gammes légères).",
       "Cours 30 secondes à allure rapide mais régulière (~85-90 % de ton max, pas un sprint).",
@@ -58,6 +62,8 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
     emoji: "🫁",
     description:
       "Allers-retours en conduite de balle entre deux plots. Le cardio utile : tu améliores ton moteur ET ta technique sous fatigue en même temps.",
+    matchBenefit:
+      "Ton moteur ET ta technique progressent ensemble — utile pour garder le ballon même fatigué.",
     steps: [
       "Place deux plots espacés de 15-20 m.",
       "Conduis le ballon d'un plot à l'autre à allure soutenue, demi-tour serré autour du plot.",
@@ -82,6 +88,8 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
     emoji: "🫁",
     description:
       "Courses de 40-60 m en accélération progressive : tu montes de 60 % à 100 % de ta vitesse sur la distance. Le pont parfait entre endurance et vitesse.",
+    matchBenefit:
+      "Le pont entre endurance et vitesse : tu montes en régime sans te blesser à froid.",
     steps: [
       "Sur 40 à 60 m, démarre à 60 % de ta vitesse.",
       "Accélère progressivement : 80 % à mi-distance, ~100 % sur les 10 derniers mètres.",
@@ -106,6 +114,8 @@ export const CARDIO_EXERCISES: ExerciseSeed[] = [
     emoji: "🫁",
     description:
       "Intermittent en pyramide : les efforts s'allongent puis raccourcissent. Apprend à gérer des efforts de durées différentes, comme en match.",
+    matchBenefit:
+      "Apprends à gérer des efforts de durées différentes, exactement comme les phases d'un match.",
     steps: [
       "Échauffement 5 minutes.",
       "Cours à allure soutenue : 30 s, puis 45 s, puis 60 s, puis 45 s, puis 30 s.",
@@ -134,6 +144,8 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
     emoji: "🛡️",
     description:
       "Tenir sur une jambe en conditions de plus en plus instables. La proprioception qui évite les entorses de cheville — la blessure n°1 chez les jeunes joueurs.",
+    matchBenefit:
+      "Réduit le risque d'entorse de cheville — la blessure n°1 chez les jeunes joueurs.",
     steps: [
       "Debout sur une jambe, genou légèrement fléchi, l'autre pied décollé.",
       "Tiens 30 secondes stable, sans poser le pied ni t'accrocher.",
@@ -158,6 +170,8 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
     emoji: "🛡️",
     description:
       "Équilibre sur une jambe sans les yeux : le système nerveux apprend à stabiliser cheville et genou tout seul, comme lors d'une réception de saut en match.",
+    matchBenefit:
+      "Ton corps stabilise cheville et genou tout seul à la réception d'un saut, comme en match.",
     steps: [
       "Debout sur une jambe, trouve d'abord ta stabilité yeux ouverts.",
       "Ferme les yeux et tiens 15 à 20 secondes.",
@@ -181,6 +195,8 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
     emoji: "🛡️",
     description:
       "Descente contrôlée du buste vers l'avant, genoux bloqués au sol, freinée par les ischio-jambiers. L'exercice qui a fait chuter les claquages dans le foot pro. Version assistée, 15 ans et plus.",
+    matchBenefit:
+      "L'exercice qui a fait chuter les claquages des ischio-jambiers chez les pros.",
     steps: [
       "À genoux sur une surface moelleuse (herbe, tapis), cale tes chevilles sous un support solide (banc, meuble bas… ou demande à quelqu'un).",
       "Corps aligné des genoux à la tête, bras devant la poitrine.",
@@ -206,6 +222,8 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
     emoji: "🛡️",
     description:
       "Flexions de cheville contre un mur. Des chevilles mobiles = des appuis plus sûrs, de meilleurs squats et moins de compensations au genou.",
+    matchBenefit:
+      "Des appuis plus sûrs et moins de compensations douloureuses au genou.",
     steps: [
       "Face à un mur, pied droit à ~10 cm du mur.",
       "Avance le genou droit vers le mur sans décoller le talon.",
@@ -229,6 +247,8 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
     emoji: "🛡️",
     description:
       "Routine de mobilité des hanches : rotations en position 90/90 et grandes fentes avec ouverture. Des hanches libres pour frapper plus fort et se blesser moins.",
+    matchBenefit:
+      "Des hanches plus libres pour frapper plus fort, sans te blesser à l'aine.",
     steps: [
       "Assis au sol en 90/90 : jambe avant pliée à 90°, jambe arrière pliée à 90° sur le côté.",
       "Bascule les deux genoux d'un côté à l'autre sans les mains, 10 passages lents.",
@@ -253,6 +273,8 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
     emoji: "🛡️",
     description:
       "Montée sur deux pieds, descente lente sur un seul. Protège le tendon d'Achille, très sollicité par les surfaces dures des city-stades.",
+    matchBenefit:
+      "Protège ton tendon d'Achille, très sollicité sur les surfaces dures des city-stades.",
     steps: [
       "Sur une marche, avant-pieds au bord, monte sur les pointes avec les DEUX pieds.",
       "Enlève un pied, et descends sur UNE jambe en 4-5 secondes, talon sous le niveau de la marche.",
@@ -277,6 +299,8 @@ export const PREVENTION_EXERCISES: ExerciseSeed[] = [
     emoji: "🛡️",
     description:
       "Routine douce de 5 minutes après l'effort : quadriceps, ischios, adducteurs, mollets, fessiers. Pas pour la performance immédiate — pour la souplesse à long terme et le rituel de récupération.",
+    matchBenefit:
+      "Moins de courbatures et de raideur pour enchaîner tes séances sans t'user.",
     steps: [
       "Quadriceps : debout, talon vers la fesse, genoux collés. 30 s par jambe.",
       "Ischios : assis, une jambe tendue, penche-toi vers le pied dos droit. 30 s par jambe.",
@@ -306,6 +330,8 @@ export const GARDIEN_EXERCISES: ExerciseSeed[] = [
     emoji: "🧤",
     description:
       "Enchaînement d'appuis rapides puis plongeon latéral au sol sur herbe ou tapis. La mécanique du plongeon sans appréhension et sans se faire mal.",
+    matchBenefit:
+      "Plonge sans hésitation ni appréhension le jour où le vrai tir arrive.",
     steps: [
       "Sur une surface souple (herbe, tapis), enchaîne 3 secondes d'appuis rapides sur place.",
       "Plonge latéralement au sol : d'abord le genou côté plongeon, puis la hanche, puis l'épaule (jamais le coude en premier).",
@@ -329,6 +355,8 @@ export const GARDIEN_EXERCISES: ExerciseSeed[] = [
     emoji: "🧤",
     description:
       "Pas chassés en position de gardien entre deux repères, avec arrêts en position parée. Le jeu de jambes qui met sur la trajectoire avant même l'arrêt.",
+    matchBenefit:
+      "Te met sur la trajectoire du tir avant même de plonger — l'anticipation qui sauve un but.",
     steps: [
       "Deux repères espacés de 3-4 m (largeur de but imaginaire).",
       "En position de base (genoux fléchis, mains devant, poids sur l'avant des pieds), pas chassés d'un repère à l'autre.",
@@ -352,6 +380,8 @@ export const GARDIEN_EXERCISES: ExerciseSeed[] = [
     emoji: "🧤",
     description:
       "Contrôles et relances des deux pieds contre un mur. Le gardien moderne est le premier relanceur : ton jeu au pied vaut de l'or pour ton équipe.",
+    matchBenefit:
+      "Le gardien moderne relance au pied : ton jeu au pied vaut de l'or pour ton équipe.",
     steps: [
       "À 5-6 m d'un mur, passe appuyée du pied droit, contrôle du retour, relance du gauche.",
       "Varie les surfaces : intérieur, cou-de-pied, et première touche orientée.",
@@ -375,6 +405,8 @@ export const GARDIEN_EXERCISES: ExerciseSeed[] = [
     emoji: "🧤",
     description:
       "Frappes contre un mur et captation propre à chaque retour. Mains en W, coudes souples : la base de la sécurité d'un gardien.",
+    matchBenefit:
+      "Une captation propre qui évite les rebonds et les buts encaissés sur un ballon mal maîtrisé.",
     steps: [
       "À 3-4 m du mur, envoie le ballon des mains ou du pied à hauteurs variées.",
       "Capte le retour : mains en W (pouces qui se touchent) pour les ballons hauts, en cuillère pour les bas.",
@@ -398,6 +430,8 @@ export const GARDIEN_EXERCISES: ExerciseSeed[] = [
     emoji: "🧤",
     description:
       "Sauts verticaux avec extension des bras comme pour capter un centre. Version adaptée à l'âge : hauteur de saut contrôlée avant 15 ans, puissance maximale après.",
+    matchBenefit:
+      "Plus de hauteur pour capter les centres et les frappes qui passent au-dessus de la surface.",
     steps: [
       "Position de base gardien, genoux fléchis.",
       "Saute verticalement en montant un genou (protection en match) et tends les bras au plus haut, mains en W.",
@@ -421,6 +455,8 @@ export const GARDIEN_EXERCISES: ExerciseSeed[] = [
     emoji: "🧤",
     description:
       "Lancers rapprochés contre un mur avec captation immédiate. Le temps de réaction se travaille : chaque dixième gagné, c'est un arrêt de plus.",
+    matchBenefit:
+      "Chaque dixième de seconde gagné en réaction, c'est un arrêt de plus en match.",
     steps: [
       "À 2-3 m d'un mur, lance le ballon fort à une main contre le mur.",
       "Capte le retour le plus vite possible, à deux mains.",

@@ -11,6 +11,7 @@ export type ExerciseView = {
   category: string;
   emoji: string;
   description: string;
+  matchBenefit: string;
   steps: string[];
   mistakes: string;
   breathing?: string | null;
@@ -68,7 +69,22 @@ export function ExerciseDetail({
           </p>
         </div>
 
-        <p className="mb-4 text-sm text-muted">{exercise.description}</p>
+        <p className="mb-3 text-sm text-muted">{exercise.description}</p>
+
+        <div
+          className="mb-4 flex gap-2.5 rounded-lg border-l-2 px-3 py-2.5"
+          style={{ borderColor: categoryColor(exercise.category), background: `${categoryColor(exercise.category)}12` }}
+        >
+          <span className="mt-0.5 shrink-0" style={{ color: categoryColor(exercise.category) }}>
+            <Icon name="target" className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: categoryColor(exercise.category) }}>
+              Ça t&apos;apporte quoi en match
+            </p>
+            <p className="mt-0.5 text-sm text-chalk">{exercise.matchBenefit}</p>
+          </div>
+        </div>
 
         <Section title="Exécution">
           <ol className="list-decimal space-y-1.5 pl-5 text-sm">

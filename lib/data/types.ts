@@ -37,6 +37,7 @@ export type ExerciseSeed = {
   category: ExerciseCategory;
   emoji: string;
   description: string;
+  matchBenefit: string; // ce que l'exercice apporte concrètement EN MATCH — phrase courte, distincte de la description
   steps: string[];
   mistakes: string;
   breathing?: string;

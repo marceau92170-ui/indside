@@ -62,6 +62,7 @@ export default async function SeancePage({ params }: { params: Promise<{ id: str
           category: ex.category,
           emoji: ex.emoji,
           description: ex.description,
+          matchBenefit: ex.matchBenefit,
           steps: ex.steps,
           mistakes: ex.mistakes,
           breathing: ex.breathing,

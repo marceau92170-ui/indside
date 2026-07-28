@@ -19,6 +19,7 @@ export async function GET(req: Request) {
       category: ex.category,
       emoji: ex.emoji,
       description: ex.description,
+      matchBenefit: ex.matchBenefit,
       steps: ex.steps,
       mistakes: ex.mistakes,
       breathing: ex.breathing ?? null,
