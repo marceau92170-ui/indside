@@ -9,6 +9,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "La base du gainage : corps aligné sur les avant-bras et les pointes de pieds. Un tronc solide, c'est plus de puissance dans les frappes, les duels et les sprints.",
+    matchBenefit:
+      "Un tronc solide qui encaisse les chocs en duel sans perdre l'équilibre ni la balle.",
     steps: [
       "Avant-bras au sol, coudes sous les épaules, pointes de pieds au sol.",
       "Aligne tête-épaules-bassin-talons : une seule ligne droite.",
@@ -34,6 +36,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Gainage sur le côté, appui sur un avant-bras. Renforce les obliques, essentiels pour résister aux charges épaule contre épaule.",
+    matchBenefit:
+      "Résiste aux contacts épaule contre épaule sans te faire déséquilibrer facilement.",
     steps: [
       "Allonge-toi sur le côté, avant-bras au sol, coude sous l'épaule.",
       "Décolle le bassin : le corps forme une ligne droite des pieds à la tête.",
@@ -58,6 +62,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Passage alterné de la planche sur avant-bras à la planche sur mains. Gainage sous mouvement : exactement ce que ton tronc vit en match.",
+    matchBenefit:
+      "Le gainage qui tient sous mouvement — exactement ce que ton corps vit pendant 90 minutes.",
     steps: [
       "Départ en planche sur les avant-bras.",
       "Pose la main droite au sol et pousse pour monter sur la main, puis la gauche : te voilà en planche haute.",
@@ -82,6 +88,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "La flexion de jambes complète, mouvement roi pour la force des cuisses et des fessiers. Zéro charge : la technique parfaite d'abord.",
+    matchBenefit:
+      "Plus de puissance dans les duels, les frappes et les premiers appuis au sprint.",
     steps: [
       "Pieds largeur d'épaules, pointes légèrement ouvertes.",
       "Descends comme pour t'asseoir sur une chaise invisible : hanches en arrière, genoux dans l'axe des pointes de pieds.",
@@ -107,6 +115,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Un pas en avant (ou en arrière), flexion, retour. Le mouvement unilatéral de base : le foot se joue une jambe après l'autre.",
+    matchBenefit:
+      "Le foot se joue une jambe après l'autre — plus de force sur chaque appui isolé.",
     steps: [
       "Debout, fais un grand pas en avant avec le pied droit.",
       "Fléchis les deux genoux : le genou arrière descend vers le sol sans le toucher, le genou avant reste au-dessus de la cheville.",
@@ -131,6 +141,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Fente sur le côté, jambe opposée tendue. Renforce l'intérieur des cuisses et prépare les changements d'appuis latéraux — le pain quotidien d'un défenseur.",
+    matchBenefit:
+      "Des changements d'appuis latéraux plus solides pour suivre un adversaire qui déborde.",
     steps: [
       "Debout, fais un grand pas sur le côté droit.",
       "Fléchis la jambe droite en poussant les hanches en arrière, jambe gauche tendue, les deux pieds à plat.",
@@ -155,6 +167,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Élévation du bassin allongé sur le dos. Les fessiers sont le moteur du sprint : c'est l'exercice le plus rentable pour la vitesse.",
+    matchBenefit:
+      "Les fessiers sont le moteur du sprint : plus de vitesse sur les courses en profondeur.",
     steps: [
       "Allongé sur le dos, genoux fléchis, pieds à plat proches des fesses, bras le long du corps.",
       "Pousse dans les talons pour décoller le bassin jusqu'à l'alignement épaules-bassin-genoux.",
@@ -180,6 +194,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "La version unilatérale du pont fessier. Corrige les déséquilibres droite-gauche et se rapproche du geste de course.",
+    matchBenefit:
+      "Corrige un déséquilibre droite-gauche qui te ralentit ou te fragilise à la course.",
     steps: [
       "Position du pont fessier, mais une jambe tendue en l'air ou genou vers la poitrine.",
       "Pousse dans le talon au sol pour monter le bassin, sans le laisser basculer d'un côté.",
@@ -204,6 +220,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Le haut du corps compte aussi : protéger son ballon, résister aux charges, se relever vite. Progression en trois niveaux.",
+    matchBenefit:
+      "Protège ton ballon des contacts et te relève plus vite après un tacle ou une chute.",
     steps: [
       "Niveau 1 : pompes sur les genoux, mains largeur d'épaules, corps aligné des genoux à la tête.",
       "Niveau 2 : pompes classiques, corps aligné des pieds à la tête, poitrine qui frôle le sol.",
@@ -228,6 +246,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "En position de planche haute, montées de genoux alternées rapides. Gainage + cardio + coordination dans un seul exercice.",
+    matchBenefit:
+      "Gainage et explosivité pour repartir vite après un effort intense en match.",
     steps: [
       "Position de pompe, bras tendus, mains sous les épaules.",
       "Ramène le genou droit vers la poitrine, puis change de jambe d'un mouvement dynamique.",
@@ -252,6 +272,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Allongé sur le ventre, tu décolles bras et jambes. Renforce toute la chaîne postérieure et équilibre le travail des abdos.",
+    matchBenefit:
+      "Équilibre le dos face aux abdos pour une posture de course plus efficace, moins de douleurs lombaires.",
     steps: [
       "Allongé sur le ventre, bras tendus devant toi, jambes tendues.",
       "Décolle en même temps bras, poitrine et cuisses à quelques centimètres du sol.",
@@ -276,6 +298,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Position assise dos au mur, sans chaise. Endurance de force des quadriceps, mental de compétiteur en bonus.",
+    matchBenefit:
+      "L'endurance de force dans les cuisses qui tient sur la durée d'un match, pas juste 10 minutes.",
     steps: [
       "Dos plaqué contre un mur, descends jusqu'à ce que tes cuisses soient parallèles au sol.",
       "Genoux à 90°, au-dessus des chevilles. Mains sur les cuisses interdites : bras le long du mur ou croisés.",
@@ -300,6 +324,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Extensions de chevilles sur le bord d'une marche. Des mollets forts = des appuis vifs et des chevilles protégées.",
+    matchBenefit:
+      "Des appuis plus vifs et des chevilles moins fragiles sur les surfaces dures du city.",
     steps: [
       "Avant-pieds sur le bord d'une marche, talons dans le vide, une main en appui pour l'équilibre.",
       "Descends lentement les talons sous le niveau de la marche (étirement).",
@@ -324,6 +350,8 @@ export const RENFORCEMENT_EXERCISES: ExerciseSeed[] = [
     emoji: "💪",
     description:
       "Gainage latéral avec la jambe du dessus posée sur un support. Un exercice largement utilisé dans les clubs pour renforcer les adducteurs ; des études montrent une réduction du risque de douleur à l'aine chez les joueurs qui le pratiquent régulièrement. Réservé aux 15 ans et plus.",
+    matchBenefit:
+      "Réduit le risque de douleur à l'aine — la blessure qui traîne le plus chez les joueurs sans prévention.",
     steps: [
       "Allongé sur le côté, avant-bras au sol, pose le genou de la jambe du dessus sur un banc ou une chaise (version courte).",
       "Décolle le bassin : ton corps est soutenu par l'avant-bras et le genou du dessus.",
@@ -352,6 +380,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "Squat suivi d'un saut vertical maximal. Pliométrie de base pour la détente et la puissance des premiers appuis. 15 ans et plus.",
+    matchBenefit:
+      "Plus de détente pour gagner les duels aériens et les premiers mètres d'un sprint.",
     steps: [
       "Descends en squat contrôlé jusqu'aux cuisses parallèles.",
       "Explose vers le haut en poussant au maximum, bras qui accompagnent.",
@@ -376,6 +406,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "Changement de jambe en l'air à partir de la position de fente. Puissance unilatérale : celle qui fait gagner les duels de vitesse. 15 ans et plus.",
+    matchBenefit:
+      "La puissance unilatérale qui te fait gagner les duels de vitesse sur une seule jambe d'appui.",
     steps: [
       "Départ en fente avant, genou arrière proche du sol.",
       "Saute verticalement et change de jambe en l'air.",
@@ -400,6 +432,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "Bonds latéraux d'une jambe sur l'autre, comme un patineur. Explosivité latérale et stabilité de cheville-genou : parfait pour les défenseurs et les gardiens. 15 ans et plus.",
+    matchBenefit:
+      "Stabilité latérale genou-cheville pour changer de direction sans te faire mal en défense ou au but.",
     steps: [
       "En appui sur la jambe droite, pousse latéralement pour bondir vers la gauche.",
       "Atterris sur la jambe gauche seule, en amortissant genou fléchi, et stabilise 1 seconde.",
@@ -424,6 +458,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "Sprints maximaux sur distances de match. 90 % des sprints en foot font moins de 20 mètres : entraîne exactement ça.",
+    matchBenefit:
+      "90 % des sprints en match font moins de 20 m — tu t'entraînes exactement sur cette distance.",
     steps: [
       "Échauffe-toi sérieusement avant (gammes + accélérations progressives).",
       "Marque 10 m puis 20 m avec des repères.",
@@ -448,6 +484,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "Sprints de 10 m depuis des positions inhabituelles : assis, allongé, dos à la course. Travaille la réaction et la capacité à se relever vite — comme après un duel.",
+    matchBenefit:
+      "Te relever et repartir vite après un duel ou une chute, comme en vrai match.",
     steps: [
       "Marque une distance de 10 m.",
       "Départ 1 : assis au sol, jambes devant. Lève-toi et sprinte.",
@@ -473,6 +511,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "La gamme athlétique de base : genoux montés à l'horizontale en fréquence. Améliore la posture de course et la vitesse d'appuis.",
+    matchBenefit:
+      "Une meilleure posture de course qui te fait gagner en fréquence d'appuis, donc en vitesse.",
     steps: [
       "Sur 15-20 m, cours en montant les genoux à hauteur de hanche.",
       "Reste grand : buste droit, regard loin devant.",
@@ -498,6 +538,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "Gamme athlétique : les talons viennent toucher les fesses en fréquence rapide. Prépare les ischio-jambiers au sprint et améliore le cycle de jambe.",
+    matchBenefit:
+      "Prépare les ischio-jambiers au sprint et réduit le risque de claquage en accélération.",
     steps: [
       "Sur 15-20 m, ramène alternativement chaque talon vers la fesse.",
       "Le genou reste pointé vers le sol, la cuisse ne monte pas.",
@@ -522,6 +564,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "L'enchaînement d'école d'athlétisme : cloche-pied, pas chassés, foulées bondissantes contrôlées, griffés. À faire avant chaque travail de vitesse.",
+    matchBenefit:
+      "L'échauffement qui prépare vraiment le corps avant un effort de vitesse, moins de blessures.",
     steps: [
       "Sur 15 m par exercice, aller en travail / retour en marchant.",
       "1. Cheville : petits rebonds pieds tendus, jambes presque droites.",
@@ -547,6 +591,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "Bonds vers l'avant pieds joints ou alternés, en cherchant la distance. Transfert direct vers la puissance de course. 15 ans et plus.",
+    matchBenefit:
+      "Transfert direct vers la puissance de course — utile sur les premiers appuis d'un sprint.",
     steps: [
       "Départ pieds joints, genoux fléchis, bras en arrière.",
       "Bondis vers l'avant le plus loin possible, bras qui accompagnent.",
@@ -571,6 +617,8 @@ export const EXPLOSIVITE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚡",
     description:
       "Fréquence d'appuis maximale sur place ou entre deux lignes. La vivacité des pieds sans aucun matériel.",
+    matchBenefit:
+      "La vivacité des pieds qui fait la différence dans un duel rapproché ou un pressing.",
     steps: [
       "Trace ou imagine deux lignes espacées de 30 cm.",
       "Sur l'avant des pieds, tape le sol le plus vite possible en alternant droite-gauche.",

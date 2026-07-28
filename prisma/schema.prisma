@@ -221,6 +221,7 @@ model Exercise {
   category    String // technique | renforcement | explosivite | cardio | prevention | gardien
   emoji       String
   description String   @db.Text
+  matchBenefit String  @default("") @db.Text // ce que l'exercice apporte concrètement EN MATCH
   steps       String[] // étapes d'exécution
   mistakes    String   @db.Text // erreurs fréquentes
   breathing   String? // consigne de respiration

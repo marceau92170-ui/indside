@@ -9,6 +9,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Touches rapides du dessous du pied sur le ballon immobile, en alternant pied droit et pied gauche. La base du travail d'appuis et de la relation pied-ballon.",
+    matchBenefit:
+      "Des touches de balle plus rapides et plus sûres dans les petits espaces, sous pression d'un adversaire.",
     steps: [
       "Ballon immobile devant toi, bras légèrement écartés pour l'équilibre.",
       "Pose la semelle du pied droit sur le sommet du ballon, puis remplace-la immédiatement par la semelle gauche.",
@@ -33,6 +35,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Déplacements latéraux du ballon avec la semelle, d'un pied à l'autre. Développe le contrôle sous pression et la mobilité des hanches.",
+    matchBenefit:
+      "Protège le ballon quand un adversaire arrive dans ton dos — tu changes d'appui sans le perdre.",
     steps: [
       "Ballon entre tes deux pieds, jambes légèrement fléchies.",
       "Avec la semelle du pied droit, roule le ballon vers la gauche.",
@@ -56,6 +60,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Le ballon rebondit entre les deux intérieurs de pied, au ras du sol. L'exercice de base de tous les centres de formation pour le toucher de balle.",
+    matchBenefit:
+      "Le socle du toucher de balle : plus tu le travailles, moins tu perds le ballon en contrôle serré.",
     steps: [
       "Ballon entre les pieds, jambes fléchies, sur la pointe des pieds.",
       "Pousse le ballon avec l'intérieur du pied droit vers ton pied gauche.",
@@ -80,6 +86,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Conduite de balle en dessinant un « 8 » autour de deux plots espacés de 3 à 5 mètres. Travaille les deux pieds, les changements de direction et la protection de balle.",
+    matchBenefit:
+      "Élimine un adversaire en conduite en changeant de direction sans ralentir ni regarder tes pieds.",
     steps: [
       "Place 2 plots (ou des chaussures) espacés de 3 à 5 m.",
       "Conduis le ballon en dessinant un 8 : contourne le premier plot par la droite, le second par la gauche.",
@@ -104,6 +112,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Conduite du ballon vers l'avant en le roulant sous la semelle. Indispensable au futsal et dans les petits espaces du city.",
+    matchBenefit:
+      "Utile en futsal ou au city où l'espace manque : tu gardes le ballon collé même acculé.",
     steps: [
       "Pose la semelle sur le ballon et roule-le vers l'avant en marchant.",
       "Alterne : trois roulettes du pied droit, trois du pied gauche.",
@@ -127,6 +137,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Enchaînement intérieur puis extérieur du même pied en avançant. Le geste de dribble le plus utilisé en match pour éliminer dans la course.",
+    matchBenefit:
+      "Le geste le plus utilisé en match pour éliminer un adversaire lancé dans sa course.",
     steps: [
       "En conduite lente, pousse le ballon vers l'intérieur avec l'intérieur du pied droit.",
       "Sur le contact suivant, repousse-le vers l'extérieur avec l'extérieur du même pied.",
@@ -150,6 +162,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Jonglage au pied dominant. Le thermomètre de ton toucher de balle : c'est aussi l'un des 4 tests mesurés dans l'app.",
+    matchBenefit:
+      "Un meilleur toucher de balle général — moins de contrôles ratés, plus de solutions rapides.",
     steps: [
       "Lève le ballon au pied (semelle en arrière puis pointe dessous) ou lâche-le des mains.",
       "Frappe le ballon avec le plat du cou-de-pied, cheville verrouillée, pointe légèrement relevée.",
@@ -174,6 +188,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Jonglage exclusivement du pied faible. Le raccourci le plus efficace pour un pied gauche (ou droit) qui ne te trahit plus en match.",
+    matchBenefit:
+      "Ton pied faible ne te trahit plus : plus d'options de passe et de contrôle des deux côtés.",
     steps: [
       "Même technique que le pied fort : plat du cou-de-pied, cheville verrouillée.",
       "Accepte de perdre le ballon souvent au début : c'est normal, c'est le prix de la progression.",
@@ -197,6 +213,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Circuits de jonglage imposés : pied-pied-cuisse, pied-cuisse-tête… Développe la maîtrise totale du ballon dans toutes les surfaces de contact.",
+    matchBenefit:
+      "Tu gères n'importe quel ballon qui arrive (au sol, à mi-hauteur, aérien) sans paniquer.",
     steps: [
       "Commence par le circuit simple : pied droit, pied gauche, cuisse droite, cuisse gauche.",
       "Pour la cuisse : ballon frappé à plat au milieu de la cuisse, genou monté à l'horizontale.",
@@ -220,6 +238,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Contrôle puis passe contre un mur. Le partenaire d'entraînement le plus fiable du monde : il te renvoie toujours le ballon.",
+    matchBenefit:
+      "Des passes plus précises et un contrôle orienté qui te fait gagner une seconde sur l'adversaire.",
     steps: [
       "Place-toi à 3-5 m d'un mur, une ligne imaginaire au sol comme cible.",
       "Passe de l'intérieur du pied contre le mur, ni trop fort ni trop mou.",
@@ -245,6 +265,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Redoublement de passes en une touche contre le mur. Vitesse d'exécution, ajustement des appuis, qualité du premier contact : tout y passe.",
+    matchBenefit:
+      "Le jeu en une touche qui accélère le jeu de ton équipe et déborde la défense adverse.",
     steps: [
       "À 3-4 m du mur, renvoie le ballon en une touche de l'intérieur du pied.",
       "Ajuste tes appuis entre chaque passe avec des petits pas rapides.",
@@ -268,6 +290,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Frappe contre le mur puis contrôle orienté à 90° pour enchaîner vers une nouvelle direction. Le geste qui fait gagner une seconde sur chaque prise de balle en match.",
+    matchBenefit:
+      "Tu ne subis plus la première touche : tu ressors déjà orienté vers l'espace libre.",
     steps: [
       "Frappe le ballon contre le mur à hauteur moyenne.",
       "Au retour, oriente ton premier contact vers ta droite (intérieur ou extérieur du pied) au lieu de bloquer le ballon.",
@@ -291,6 +315,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Tu tires le ballon en arrière avec la semelle puis tu le pousses en diagonale avec l'intérieur du pied, en dessinant un V. Protège le ballon et élimine un défenseur qui se jette.",
+    matchBenefit:
+      "Élimine un défenseur qui plonge dans le tacle en protégeant le ballon loin de lui.",
     steps: [
       "Ballon devant toi, tire-le vers toi avec la semelle du pied droit.",
       "Dans le même mouvement, pousse-le en diagonale avant-droite avec l'intérieur du même pied.",
@@ -314,6 +340,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Aller-retour du ballon sous la semelle : tu le tires vers toi puis le repousses vers l'avant du même pied. Contrôle du tempo et jeu dans les espaces courts.",
+    matchBenefit:
+      "Casse le rythme d'un adversaire collé à toi pour gagner l'espace d'une passe ou d'un centre.",
     steps: [
       "Tire le ballon vers toi avec la semelle du pied droit.",
       "Repousse-le immédiatement vers l'avant avec le bout de la semelle ou l'intérieur.",
@@ -337,6 +365,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Le passement de jambe par-dessus le ballon pour déséquilibrer le défenseur. Travaillé d'abord à l'arrêt, puis en mouvement.",
+    matchBenefit:
+      "Déséquilibre un défenseur en 1 contre 1, surtout sur le côté pour centrer ou percuter.",
     steps: [
       "Ballon immobile : passe le pied droit par-dessus le ballon, de l'intérieur vers l'extérieur.",
       "Repose le pied à côté du ballon et pousse le ballon dans l'autre direction avec l'extérieur du pied gauche.",
@@ -360,6 +390,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Changement de direction sec avec l'intérieur du pied, ballon collé. Le geste défensif ET offensif le plus rentable dans les petits espaces.",
+    matchBenefit:
+      "Ressors propre d'un pressing adverse dans les petits espaces, aussi utile pour défendre.",
     steps: [
       "En conduite, coupe la trajectoire du ballon avec l'intérieur du pied droit vers ta gauche (angle de 90°).",
       "Baisse le centre de gravité au moment du crochet : c'est la flexion qui rend le geste sec.",
@@ -383,6 +415,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "La feinte de frappe qui devient passement du ballon derrière la jambe d'appui. Un classique pour se retourner dos au but ou éliminer sur un centre annoncé.",
+    matchBenefit:
+      "Te retourne dos au but sous pression, ou surprend sur un centre annoncé à l'adversaire.",
     steps: [
       "En conduite lente, fais mine d'armer une frappe ou un centre du pied droit.",
       "Au lieu de frapper, passe l'intérieur du pied droit derrière ta jambe d'appui pour pousser le ballon dans ton dos.",
@@ -406,6 +440,8 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     emoji: "⚽",
     description:
       "Conduite de balle libre en levant les yeux à chaque touche pour « scanner » l'espace. La compétence invisible qui sépare les joueurs qui subissent de ceux qui décident.",
+    matchBenefit:
+      "La différence entre subir le jeu et le lire : tu vois la passe avant qu'elle soit possible.",
     steps: [
       "Délimite un carré de 10 m × 10 m (plots, chaussures, lignes du city).",
       "Conduis librement dans le carré : une touche = un regard levé.",
