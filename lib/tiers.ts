@@ -34,7 +34,7 @@ export const TIERS: Tier[] = [
 export const TIER_COSTS = [90, 110, 150, 210, 300, 500];
 
 export const XP_PER_SESSION = 10; // une séance validée
-export const XP_PER_TEST = 15; // un test enregistré / amélioré
+export const XP_PER_TEST = 5; // un test enregistré / amélioré (plafonné à 1/mois par test, cf TEST_COOLDOWN_DAYS)
 
 const NOTE_MIN = 65;
 const NOTE_MAX = 85;
