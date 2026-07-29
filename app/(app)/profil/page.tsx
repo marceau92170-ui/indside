@@ -6,8 +6,8 @@ import { divisionLabel } from "@/lib/profile";
 import { BADGES, positionLabel, TEST_TYPES } from "@/lib/constants";
 import { computeStreak, totalDoneSessions } from "@/lib/gamification";
 import { isPremium } from "@/lib/plan";
-import { computeRank, computeTierHistory, XP_PER_SESSION, XP_PER_TEST, TIERS } from "@/lib/tiers";
-import { categoryRadar } from "@/lib/radar";
+import { computeRank, computeTierHistory, XP_PER_SESSION, XP_PER_TEST, TIERS, type Rank } from "@/lib/tiers";
+import { categoryRadar, AXES as RADAR_AXES } from "@/lib/radar";
 import { DownloadableCard } from "@/components/DownloadableCard";
 import { RankCard } from "@/components/RankCard";
 import { TierHistory } from "@/components/TierHistory";
@@ -30,10 +30,20 @@ const MONTH_LABELS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août
 
 export const dynamic = "force-dynamic";
 
-export default async function ProfilPage() {
+export default async function ProfilPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ preview?: string }>;
+}) {
   const user = await currentUser();
   if (!user || !user.profile) return null;
   const p = user.profile;
+
+  // Aperçu "palier max" réservé à l'admin (toi) : ?preview=max sur cette page.
+  // Ne touche à AUCUNE donnée réelle (séances, tests, rankSeen) — juste l'affichage,
+  // pour voir/montrer à quoi ressemble chaque palier une fois débloqué.
+  const { preview } = await searchParams;
+  const previewMax = user.role === "admin" && preview === "max";
 
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
@@ -64,13 +74,29 @@ export default async function ProfilPage() {
 
   // Rang / palier du joueur — calculé sur ses vraies données.
   const premium = isPremium(user);
-  const rank = computeRank({
-    levelType: p.levelType,
-    sessionsDone: total,
-    testsCount: results.length,
-    isPremium: premium,
-  });
-  const justPromoted = !rank.locked && rank.tier.index > (rankRow?.rankSeen ?? 0);
+  const elite = TIERS[TIERS.length - 1];
+  const rank: Rank = previewMax
+    ? {
+        tier: elite,
+        note: 99,
+        subDiv: "I",
+        progressPct: 100,
+        nextTier: null,
+        isMaxTier: true,
+        locked: false,
+        readyToPromote: false,
+        realStartTier: elite,
+        xpEarned: 0,
+      }
+    : computeRank({
+        levelType: p.levelType,
+        sessionsDone: total,
+        testsCount: results.length,
+        isPremium: premium,
+      });
+  // En aperçu, on ne touche jamais à rankSeen (pas de confettis, pas d'appel à
+  // /api/rank/seen) : ça gâcherait la VRAIE promotion le jour où elle arrive.
+  const justPromoted = previewMax ? false : !rank.locked && rank.tier.index > (rankRow?.rankSeen ?? 0);
 
   // "Ton parcours" : date de chaque palier déjà atteint, reconstruite à partir
   // des vrais événements (séances validées + tests), pas stockée à part.
@@ -78,7 +104,12 @@ export default async function ProfilPage() {
     ...allDoneLogs.map((l) => ({ date: l.completedAt, xp: XP_PER_SESSION })),
     ...results.map((r) => ({ date: r.createdAt, xp: XP_PER_TEST })),
   ];
-  const tierMilestones = computeTierHistory({ levelType: p.levelType, isPremium: premium, xpEvents });
+  const tierMilestones = previewMax
+    ? TIERS.map((t) => ({ tier: t, reachedAt: null }))
+    : computeTierHistory({ levelType: p.levelType, isPremium: premium, xpEvents });
+
+  // Toile d'araignée maxée aussi en aperçu (les vraies valeurs restent en base).
+  const displayedRadar = previewMax ? RADAR_AXES.map((a) => ({ ...a, value: 100 })) : radar;
 
   // Outils de progression (au-delà des séances) — avec un aperçu de ce qu'ils contiennent.
   const devLinks: { href: string; icon: IconName; label: string; desc: string; badge: string }[] = [
@@ -156,6 +187,12 @@ export default async function ProfilPage() {
     <div>
       <h1 className="mb-3 font-condensed text-3xl font-bold uppercase">Profil</h1>
 
+      {previewMax && (
+        <p className="mb-3 rounded-full border border-glow/40 bg-glow/10 px-3 py-1.5 text-center text-[11px] font-bold uppercase tracking-wide text-glow">
+          Aperçu palier max — ta vraie progression n&apos;a pas bougé
+        </p>
+      )}
+
       {/* Carte de rang évolutive : note, palier, progression */}
       <RankCard
         firstName={p.firstName}
@@ -164,7 +201,7 @@ export default async function ProfilPage() {
         divisionLabel={divisionLabel(p)}
         rank={rank}
         tiers={TIERS}
-        radar={radar}
+        radar={displayedRadar}
         justPromoted={justPromoted}
       />
 
