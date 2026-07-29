@@ -247,6 +247,9 @@ const ARCHETYPES: Record<string, Archetype> = {
   // passe / frappe contre un mur
   "wall-pass": {
     segments: [
+      // ballon qui fait l'aller-retour joueur <-> mur (l'exercice entier tourne
+      // autour de ce ballon — il manquait complètement avant).
+      { type: "circle", r: 7, fill: "#E12A3A", part: "ball", base: { cy: "197" }, keys: { cx: loop("108", "168") } },
       { type: "circle", r: 10, part: "head", base: { cx: "90", cy: "65" } },
       { type: "line", part: "torso", base: { x1: "90", y1: "75", x2: "95", y2: "118" } },
       { type: "line", part: "thigh", base: { x1: "95", y1: "118", x2: "90", y2: "165" } }, // jambe d'appui
@@ -329,6 +332,97 @@ const ARCHETYPES: Record<string, Archetype> = {
     ],
     dur: "1.4s",
   },
+  // chaise contre un mur : position statique, dos au mur (le mur manquait —
+  // sans lui, l'exercice ressemblait à un squat animé au milieu de nulle part).
+  "wall-sit": {
+    segments: [
+      { type: "line", part: "prop", base: { x1: "68", y1: "18", x2: "68", y2: "214" } }, // mur
+      { type: "circle", r: 10, part: "head", base: { cx: "96", cy: "100" } },
+      { type: "line", part: "torso", base: { x1: "96", y1: "145", x2: "96", y2: "108" } },
+      { type: "line", part: "thigh", base: { x1: "96", y1: "145", x2: "128", y2: "148" } }, // cuisse ~horizontale
+      { type: "line", part: "shin", base: { x1: "128", y1: "148", x2: "128", y2: "205" } }, // tibia vertical
+      { type: "line", part: "foot", base: { x1: "116", y1: "205", x2: "144", y2: "205" } },
+      { type: "line", part: "arm", base: { x1: "96", y1: "118", x2: "70", y2: "128" } },
+    ],
+  },
+  // pas chassés gardien, position basse, jamais de grand écart (remplace le
+  // détournement de "lunge-lateral", qui montrait une fente géante figée).
+  "lateral-shuffle": {
+    segments: [
+      { type: "circle", r: 10, part: "head", keys: { cx: loop("70", "130") }, base: { cy: "78" } },
+      { type: "line", part: "torso", keys: { x1: loop("70", "130"), x2: loop("70", "130") }, base: { y1: "140", y2: "90" } },
+      { type: "line", part: "thigh", keys: { x1: loop("70", "130"), y1: "140", x2: loop("56", "116"), y2: "172" } },
+      { type: "line", part: "shin", keys: { x1: loop("56", "116"), y1: "172", x2: loop("60", "120"), y2: "205" } },
+      { type: "line", part: "foot", keys: { x1: loop("48", "108"), y1: "205", x2: loop("72", "132"), y2: "205" } },
+      { type: "line", part: "thigh", keys: { x1: loop("70", "130"), y1: "140", x2: loop("84", "144"), y2: "172" } },
+      { type: "line", part: "shin", keys: { x1: loop("84", "144"), y1: "172", x2: loop("80", "140"), y2: "205" } },
+      { type: "line", part: "foot", keys: { x1: loop("68", "128"), y1: "205", x2: loop("92", "152"), y2: "205" } },
+      { type: "line", part: "arm", keys: { x1: loop("70", "130"), y1: "100", x2: loop("48", "108"), y2: "126" } },
+      { type: "line", part: "arm", keys: { x1: loop("70", "130"), y1: "100", x2: loop("92", "152"), y2: "126" } },
+    ],
+    dur: "0.9s",
+  },
+  // bond latéral d'un appui à l'autre, jambe libre qui traîne derrière façon
+  // patineur (remplace le même détournement de "lunge-lateral").
+  "skater-bound": {
+    segments: [
+      { type: "circle", r: 10, part: "head", keys: { cx: loop("68", "132") }, base: { cy: "64" } },
+      { type: "line", part: "torso", keys: { x1: loop("68", "132"), x2: loop("68", "132") }, base: { y1: "128", y2: "76" } },
+      { type: "line", part: "thigh", keys: { x1: loop("68", "132"), y1: "128", x2: loop("68", "132"), y2: "168" } },
+      { type: "line", part: "shin", keys: { x1: loop("68", "132"), y1: "168", x2: loop("68", "132"), y2: "205" } },
+      { type: "line", part: "foot", keys: { x1: loop("56", "120"), y1: "205", x2: loop("80", "144"), y2: "205" } },
+      { type: "line", part: "leg", keys: { x1: loop("68", "132"), y1: "128", x2: loop("110", "90"), y2: "160" } }, // jambe libre
+      { type: "line", part: "shin", keys: { x1: loop("110", "90"), y1: "160", x2: loop("95", "105"), y2: "188" } },
+      { type: "line", part: "arm", keys: { x1: loop("68", "132"), y1: "95", x2: loop("110", "90"), y2: loop("70", "118") } },
+    ],
+    dur: "0.85s",
+  },
+  // prise de balle debout (remplace le détournement de "dive" : un plongeon
+  // complet n'a rien à voir avec une captation debout contre un mur).
+  "catch-stance": {
+    segments: [
+      { type: "circle", r: 7, fill: "#E12A3A", part: "ball", base: { cx: "100" }, keys: { cy: loop("28", "50") } },
+      { type: "circle", r: 10, part: "head", base: { cx: "100", cy: "64" } },
+      { type: "line", part: "torso", base: { x1: "100", y1: "75", x2: "100", y2: "120" } },
+      { type: "line", part: "thigh", base: { x1: "100", y1: "120", x2: "85", y2: "160" } },
+      { type: "line", part: "shin", base: { x1: "85", y1: "160", x2: "88", y2: "205" } },
+      { type: "line", part: "foot", base: { x1: "76", y1: "205", x2: "100", y2: "205" } },
+      { type: "line", part: "thigh", base: { x1: "100", y1: "120", x2: "115", y2: "160" } },
+      { type: "line", part: "shin", base: { x1: "115", y1: "160", x2: "112", y2: "205" } },
+      { type: "line", part: "foot", base: { x1: "100", y1: "205", x2: "124", y2: "205" } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: "90", x2: loop("75", "78"), y2: loop("115", "55") } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: "90", x2: loop("125", "122"), y2: loop("115", "55") } },
+    ],
+    dur: "1.1s",
+  },
+  // fente sautée : changement de jambe en l'air (remplace "squat", qui est un
+  // mouvement au sol et faisait perdre tout le caractère explosif de l'exercice).
+  "lunge-jump": {
+    segments: [
+      { type: "circle", r: 10, part: "head", base: { cx: "100" }, keys: { cy: loop("95", "50") } },
+      { type: "line", part: "torso", keys: { x1: "100", y1: loop("145", "105"), x2: "100", y2: loop("105", "58") } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: loop("115", "68"), x2: loop("124", "128"), y2: loop("135", "35") } },
+      { type: "line", part: "arm", keys: { x1: "100", y1: loop("115", "68"), x2: loop("76", "72"), y2: loop("135", "35") } },
+      { type: "line", part: "thigh", keys: { x1: "100", y1: loop("145", "105"), x2: loop("116", "100"), y2: loop("175", "140") } },
+      { type: "line", part: "shin", keys: { x1: loop("116", "100"), y1: loop("175", "140"), x2: loop("112", "96"), y2: loop("205", "172") } },
+      { type: "line", part: "thigh", keys: { x1: "100", y1: loop("145", "105"), x2: loop("86", "104"), y2: loop("178", "145") } },
+      { type: "line", part: "shin", keys: { x1: loop("86", "104"), y1: loop("178", "145"), x2: loop("78", "112"), y2: loop("205", "178") } },
+    ],
+    dur: "1.5s",
+  },
+  // bondissement horizontal : le corps voyage vers l'avant (remplace "jump",
+  // qui ne montre qu'une élévation verticale sur place).
+  "broad-jump": {
+    segments: [
+      { type: "circle", r: 10, part: "head", keys: { cx: loop("70", "130"), cy: loop("88", "58") } },
+      { type: "line", part: "torso", keys: { x1: loop("70", "130"), y1: loop("140", "108"), x2: loop("78", "138"), y2: loop("95", "63") } },
+      { type: "line", part: "arm", keys: { x1: loop("70", "130"), y1: loop("102", "70"), x2: loop("46", "150"), y2: loop("128", "50") } },
+      { type: "line", part: "thigh", keys: { x1: loop("70", "130"), y1: loop("140", "108"), x2: loop("86", "148"), y2: loop("176", "148") } },
+      { type: "line", part: "shin", keys: { x1: loop("86", "148"), y1: loop("176", "148"), x2: loop("82", "144"), y2: loop("205", "178") } },
+      { type: "line", part: "foot", keys: { x1: loop("70", "132"), y1: loop("205", "178"), x2: loop("94", "156"), y2: loop("205", "178") } },
+    ],
+    dur: "1.5s",
+  },
 };
 
 // ---------- mapping exercice → famille (couverture des 60 exercices) ----------
@@ -365,19 +459,19 @@ export const ILLUSTRATION_MAP: Record<string, keyof typeof ARCHETYPES> = {
   "pompes-progression": "pushup",
   "mountain-climbers": "mountain-climber",
   superman: "superman",
-  chaise: "squat",
+  chaise: "wall-sit",
   "mollets-marche": "calf-raise",
   "copenhagen-plank": "plank",
   // explosivité
   "squat-jumps": "jump",
-  "fentes-sautees": "squat",
-  "skater-jumps": "lunge-lateral",
+  "fentes-sautees": "lunge-jump",
+  "skater-jumps": "skater-bound",
   "sprints-courts": "sprint",
   "departs-varies": "sprint",
   "montees-genoux": "high-knees",
   "talons-fesses": "heel-flicks",
   "gammes-athletiques": "sprint",
-  "bondissements-horizontaux": "jump",
+  "bondissements-horizontaux": "broad-jump",
   "appuis-rapides": "sprint",
   // cardio
   "fartlek-15": "sprint",
@@ -395,11 +489,11 @@ export const ILLUSTRATION_MAP: Record<string, keyof typeof ARCHETYPES> = {
   "etirements-fin-seance": "mobility",
   // gardien
   "appuis-plongeons-souple": "dive",
-  "deplacements-lateraux-gardien": "lunge-lateral",
+  "deplacements-lateraux-gardien": "lateral-shuffle",
   "jeu-au-pied-mur": "wall-pass",
-  "prises-de-balle-mur": "dive",
+  "prises-de-balle-mur": "catch-stance",
   "detente-verticale-gardien": "jump",
-  "reflexes-balle-mur": "dive",
+  "reflexes-balle-mur": "catch-stance",
 };
 
 const CATEGORY_FALLBACK: Record<string, keyof typeof ARCHETYPES> = {
@@ -435,6 +529,12 @@ const COACHING_CUES: Record<keyof typeof ARCHETYPES, string> = {
   nordic: "Descends le plus lentement possible, corps aligné.",
   superman: "Regarde le sol (nuque neutre), ne force pas sur les lombaires.",
   "calf-raise": "Monte haut sur les pointes, descente lente et contrôlée.",
+  "wall-sit": "Dos entièrement collé au mur, genoux à 90°, mains libres.",
+  "lateral-shuffle": "Reste bas, ne croise jamais les appuis, buste droit.",
+  "skater-bound": "Atterris sur une seule jambe, genou fléchi, stabilise avant de repartir.",
+  "catch-stance": "Mains en W, amortis avec les coudes, ramène contre la poitrine.",
+  "lunge-jump": "Change de jambe en l'air, atterris directement en fente stable.",
+  "broad-jump": "Bras qui accompagnent l'élan, atterris genoux fléchis et stabilise.",
 };
 
 // Position d'arrivée d'un mouvement animé (2ᵉ image-clé de "a;b;a") — sert à
@@ -554,7 +654,9 @@ const PART_STYLE: Record<BodyPart, { stroke: string; width: number }> = {
   thigh: { stroke: SHORTS, width: 17 },
   shin: { stroke: SKIN, width: 13 },
   leg: { stroke: SKIN, width: 15 },
-  arm: { stroke: SKIN, width: 13 },
+  // Bras en rouge (couleur du maillot, comme une manche) : avec la peau, un bras et
+  // une jambe qui se croisent devenaient indissociables (retour terrain répété).
+  arm: { stroke: JERSEY, width: 13 },
   forearm: { stroke: SKIN, width: 12 },
   foot: { stroke: SHOE, width: 11 },
   ball: { stroke: JERSEY, width: 0 }, // géré à part
