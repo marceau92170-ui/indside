@@ -30,20 +30,15 @@ const MONTH_LABELS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août
 
 export const dynamic = "force-dynamic";
 
-export default async function ProfilPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ preview?: string }>;
-}) {
+export default async function ProfilPage() {
   const user = await currentUser();
   if (!user || !user.profile) return null;
   const p = user.profile;
 
-  // Aperçu "palier max" réservé à l'admin (toi) : ?preview=max sur cette page.
-  // Ne touche à AUCUNE donnée réelle (séances, tests, rankSeen) — juste l'affichage,
-  // pour voir/montrer à quoi ressemble chaque palier une fois débloqué.
-  const { preview } = await searchParams;
-  const previewMax = user.role === "admin" && preview === "max";
+  // Aperçu "palier max" toujours affiché pour le compte admin (toi). Ne touche
+  // à AUCUNE donnée réelle (séances, tests, rankSeen) — juste l'affichage, pour
+  // voir à quoi ressemble chaque palier une fois débloqué.
+  const previewMax = user.role === "admin";
 
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
