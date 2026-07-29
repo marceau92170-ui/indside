@@ -216,9 +216,7 @@ export default async function SemainePage() {
                           <p className="mt-1 font-condensed text-xl font-bold leading-tight">
                             {s.title}
                           </p>
-                          <p className="mt-0.5 text-xs text-muted">
-                            {s.durationMin} min · {s.objective}
-                          </p>
+                          <p className="mt-0.5 text-xs text-muted">{s.durationMin} min</p>
                         </div>
                         <span className="shrink-0 rounded-full bg-line/50 px-2.5 py-1 text-sm text-chalk">
                           →
