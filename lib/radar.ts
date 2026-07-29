@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 export type RadarAxis = { key: string; label: string; value: number }; // value 0..100
 
 // 5 branches (le gardien est à part, non affiché ici).
-const AXES: { key: string; label: string }[] = [
+export const AXES: { key: string; label: string }[] = [
   { key: "technique", label: "Technique" },
   { key: "renforcement", label: "Physique" },
   { key: "explosivite", label: "Explosivité" },
