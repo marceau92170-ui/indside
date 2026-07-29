@@ -78,12 +78,33 @@ export function PartnerDashboard({
   const progressPct = next ? Math.min(100, Math.round((grossEuros / next.thresholdEuros) * 100)) : 100;
   const remainingCents = next ? next.thresholdEuros * 100 - totals.grossCents : 0;
 
+  // Dernier point de la série = aujourd'hui (affiliateDailySeries va jusqu'à
+  // aujourd'hui inclus) — pour répondre direct à "combien aujourd'hui ?" sans
+  // avoir à survoler la courbe.
+  const today = series[series.length - 1];
+
   return (
     <div>
       <h1 className="mb-1 font-condensed text-3xl font-bold uppercase leading-none">Espace partenaire</h1>
       <p className="mb-4 text-sm text-muted">
         Salut {displayName}. Voici tes résultats en direct.
       </p>
+
+      {today && (
+        <p className="mb-4 rounded-card border-l-2 border-glow bg-surface/60 px-3 py-2.5 text-sm">
+          <span className="font-bold uppercase tracking-widest text-glow">Aujourd&apos;hui</span> ·{" "}
+          <span className="tnum font-semibold text-chalk">{today.signups}</span> inscrit
+          {today.signups > 1 ? "s" : ""} · <span className="tnum font-semibold text-chalk">{today.clicks}</span> clic
+          {today.clicks > 1 ? "s" : ""}
+          {today.sales > 0 && (
+            <>
+              {" "}
+              · <span className="tnum font-semibold text-chalk">{today.sales}</span> vente
+              {today.sales > 1 ? "s" : ""}
+            </>
+          )}
+        </p>
+      )}
 
       <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted">Ton lien de parrainage</p>
       <CopyLink url={link} />
