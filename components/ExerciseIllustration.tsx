@@ -239,8 +239,12 @@ const ARCHETYPES: Record<string, Archetype> = {
       { type: "line", part: "thigh", base: { x1: "100", y1: "120", x2: "88", y2: "160" } }, // cuisse d'appui
       { type: "line", part: "shin", base: { x1: "88", y1: "160", x2: "84", y2: "205" } }, // tibia d'appui
       { type: "line", part: "foot", base: { x1: "72", y1: "205", x2: "96", y2: "205" } }, // pied posé
-      { type: "line", part: "thigh", keys: { x1: "100", y1: "120", x2: loop("112", "104"), y2: loop("158", "162") } }, // cuisse avant
-      { type: "line", part: "shin", keys: { x1: loop("112", "104"), y1: loop("158", "162"), x2: loop("120", "100"), y2: "200" } }, // tibia qui pousse
+      { type: "line", part: "thigh", keys: { x1: "100", y1: "120", x2: loop("114", "102"), y2: loop("155", "162") } }, // cuisse avant
+      { type: "line", part: "shin", keys: { x1: loop("114", "102"), y1: loop("155", "162"), x2: loop("120", "98"), y2: loop("188", "195") } }, // tibia avant
+      // FIX : le pied avant n'existait pas (le tibia s'arrêtait en pointe droit
+      // sur le ballon, comme si la jambe l'embrochait) — ajouté pour qu'un vrai
+      // pied touche le ballon, comme le pied d'appui.
+      { type: "line", part: "foot", keys: { x1: loop("108", "86"), y1: "205", x2: loop("132", "110"), y2: "205" } },
     ],
     dur: "1.3s",
   },
