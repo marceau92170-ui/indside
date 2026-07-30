@@ -25,6 +25,19 @@ const nextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // Un visiteur qui atterrit sur l'URL brute de déploiement Vercel (indside-xxx.vercel.app,
+  // ex: un lien mal copié ou un bot) voit Clerk planter en 400 : Clerk n'autorise que le
+  // vrai domaine. On renvoie systématiquement vers le domaine officiel.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "^.*\\.vercel\\.app$" }],
+        destination: "https://www.progressafoot.fr/:path*",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
