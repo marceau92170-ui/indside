@@ -62,7 +62,18 @@ export default async function ReglagesPage() {
       <Card className="mb-4">
         <h2 className="mb-2 font-condensed text-lg font-bold uppercase">Abonnement</h2>
         <p className="mb-3 text-sm text-muted">
-          {premium ? "Premium actif. Résiliation en 1 clic via le portail." : "Plan gratuit."}
+          {premium
+            ? user.subscription?.status === "trialing"
+              ? `Essai gratuit en cours${
+                  user.subscription.trialEnd
+                    ? ` jusqu'au ${user.subscription.trialEnd.toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "long",
+                      })}`
+                    : ""
+                }. Résilie avant cette date depuis le bouton ci-dessous : 0 € débité.`
+              : "Premium actif. Résiliation en 1 clic via le portail."
+            : "Plan gratuit."}
         </p>
         {premium ? (
           <ManageSubscriptionButton />
