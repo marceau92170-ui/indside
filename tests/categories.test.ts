@@ -37,22 +37,24 @@ describe("categories", () => {
     assert.equal(personaFromBirthYear(2009, REF), "senior"); // 17 ans
   });
 
-  test("eligibleBirthYears couvre U14 à U18 pour la saison en cours", () => {
+  test("eligibleBirthYears couvre U12 à U18 pour la saison en cours", () => {
     const years = eligibleBirthYears(REF);
-    assert.equal(years.length, 5);
-    assert.deepEqual(years, [2013, 2012, 2011, 2010, 2009]);
+    assert.equal(years.length, 7);
+    assert.deepEqual(years, [2015, 2014, 2013, 2012, 2011, 2010, 2009]);
   });
 
-  test("isEligibleBirthYear accepte les jeunes U14-U18 ET les adultes 18+", () => {
+  test("isEligibleBirthYear accepte les jeunes U12-U18 ET les adultes 18+", () => {
     // jeunes ciblés
     assert.equal(isEligibleBirthYear(2010, REF), true); // U17
     assert.equal(isEligibleBirthYear(2013, REF), true); // U14
+    assert.equal(isEligibleBirthYear(2014, REF), true); // U13
+    assert.equal(isEligibleBirthYear(2015, REF), true); // U12
     // adulte (option « 18 ans et + ») — c'était le bug : refusé côté serveur
     assert.equal(isEligibleBirthYear(2006, REF), true); // 20 ans
     assert.equal(isEligibleBirthYear(2008, REF), true); // 18 ans
     assert.equal(isEligibleBirthYear(1996, REF), true); // 30 ans
-    // hors cible : trop jeune (moins de 13 ans) ou absurde
-    assert.equal(isEligibleBirthYear(2015, REF), false); // 11 ans
+    // hors cible : trop jeune (moins de 11 ans) ou absurde
+    assert.equal(isEligibleBirthYear(2016, REF), false); // 10 ans
     assert.equal(isEligibleBirthYear(1950, REF), false); // 76 ans
   });
 
