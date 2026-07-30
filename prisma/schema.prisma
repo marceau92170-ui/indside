@@ -77,6 +77,22 @@ model User {
   feedbacks         Feedback[]
 }
 
+// Funnel onboarding, mesuré AVANT qu'un compte existe (l'onboarding tourne en
+// localStorage, le compte n'est créé qu'à la toute fin). anonId = identifiant
+// aléatoire généré côté client au premier écran, sans lien avec un vrai compte.
+// Une ligne par (anonId, step) : revisiter le même écran ne compte pas deux fois.
+// Sert à construire le funnel "où les gens abandonnent" en 100% first-party,
+// sans dépendre d'un outil tiers pour cette vue admin.
+model OnboardingFunnelEvent {
+  id        String   @id @default(cuid())
+  anonId    String
+  step      Int
+  createdAt DateTime @default(now())
+
+  @@unique([anonId, step])
+  @@index([step])
+}
+
 // Journal des e-mails automatiques (bienvenue, relances nurture…).
 // Garantit qu'on n'envoie jamais deux fois le même e-mail à un joueur.
 model EmailEvent {

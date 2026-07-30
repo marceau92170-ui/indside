@@ -103,6 +103,27 @@ const ADULT_BIRTH_YEAR = new Date().getFullYear() - 20;
 // Un ado interrompu (appel, notif, batterie) ne doit pas repartir de zéro.
 const STORAGE_KEY = "progressa-onboarding-v1";
 
+// Identifiant anonyme (aucun lien avec un vrai compte, qui n'existe pas encore à
+// ce stade) — sert uniquement à compter, côté serveur, combien de visiteurs
+// distincts atteignent chaque écran (funnel d'abandon en 100% first-party).
+const ANON_ID_KEY = "progressa-onboarding-anon-id";
+
+// Valeur sentinelle du funnel : "compte réellement créé" (au-delà de tout numéro
+// d'écran réel, pour ne jamais entrer en collision avec un step normal).
+const ACCOUNT_CREATED_STEP = 99;
+
+function getAnonId(): string {
+  try {
+    const existing = localStorage.getItem(ANON_ID_KEY);
+    if (existing) return existing;
+    const id = crypto.randomUUID();
+    localStorage.setItem(ANON_ID_KEY, id);
+    return id;
+  } catch {
+    return crypto.randomUUID();
+  }
+}
+
 export function OnboardingWizard({
   birthYears,
   authed = false,
@@ -154,6 +175,14 @@ export function OnboardingWizard({
   useEffect(() => {
     if (!hydrated) return;
     track("onboarding_step_viewed", { step, totalSteps });
+    // Funnel first-party (visible dans /admin), en plus de PostHog.
+    fetch("/api/onboarding/funnel", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ anonId: getAnonId(), step }),
+    }).catch(() => {
+      // non bloquant : un funnel imprécis vaut mieux qu'un onboarding cassé
+    });
   }, [step, totalSteps, hydrated]);
 
   const set = (patch: Partial<State>) => setS((prev) => ({ ...prev, ...patch }));
@@ -235,6 +264,13 @@ export function OnboardingWizard({
       });
       if (!res.ok) throw new Error(await res.text());
       track("onboarding_completed", { totalSteps });
+      // Étape sentinelle du funnel : "compte réellement créé" (même anonId que
+      // les écrans précédents), pour clore le funnel /admin sur un vrai résultat.
+      fetch("/api/onboarding/funnel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ anonId: getAnonId(), step: ACCOUNT_CREATED_STEP }),
+      }).catch(() => {});
       try {
         localStorage.removeItem(STORAGE_KEY);
       } catch {
