@@ -34,12 +34,10 @@ function prescription(ex: ExerciseView): { sets: number; reps: string; restSec: 
 export function QuickSessionPlayer({
   title,
   exercises,
-  premium = false,
   onClose,
 }: {
   title: string;
   exercises: ExerciseView[];
-  premium?: boolean;
   onClose: () => void;
 }) {
   const [index, setIndex] = useState(0);
@@ -139,7 +137,10 @@ export function QuickSessionPlayer({
       </p>
 
       <div className="mb-4">
-        <ExerciseIllustration slug={ex.slug} category={ex.category} premium={premium} />
+        {/* Illustration colorée pour tout le monde (gratuit inclus) : la version
+            "bâton" faisait mauvaise impression pile sur la toute première séance
+            vue par un nouvel inscrit. */}
+        <ExerciseIllustration slug={ex.slug} category={ex.category} premium />
       </div>
 
       <p className="mb-3 text-sm text-muted">{ex.description}</p>

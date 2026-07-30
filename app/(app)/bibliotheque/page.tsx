@@ -66,7 +66,6 @@ export default async function BibliothequePage() {
       <ExerciseLibrary
         exercises={visible}
         categories={Object.entries(CATEGORY_INFO).map(([key, v]) => ({ key, ...v }))}
-        premium={premium}
       />
     </div>
   );
