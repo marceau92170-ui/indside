@@ -88,7 +88,10 @@ FORMAT DE SORTIE : uniquement du JSON valide, sans texte autour, sans balises ma
 // ---------- Catalogue compact envoyé au modèle ----------
 
 function catalogFor(profile: PlayerProfile, exercises: Exercise[]): Exercise[] {
-  const age = ageFromBirthYear(profile.birthYear);
+  // Aucun exercice de la bibliothèque n'est calibré en dessous de 13 ans : un joueur
+  // U12/U13 (11-12 ans, ouvert à l'inscription) utilise le plancher 13 ans pour le
+  // choix des exercices, sinon le catalogue serait vide et le programme cassé.
+  const age = Math.max(ageFromBirthYear(profile.birthYear), 13);
   const equipment = new Set(profile.equipment);
   // le mur est quasi universel ; "aucun" toujours dispo
   return exercises.filter((ex) => {

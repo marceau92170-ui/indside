@@ -32,12 +32,12 @@ export function personaFromBirthYear(birthYear: number, now = new Date()): "juni
   return ageFromBirthYear(birthYear, now) < 15 ? "junior" : "senior";
 }
 
-// Années de naissance proposées à l'onboarding (cible U14 → U18)
+// Années de naissance proposées à l'onboarding (cible U12 → U18)
 export function eligibleBirthYears(now = new Date()): number[] {
   const end = seasonEndYear(now);
-  // U14 à U18 → naissance entre end-18 et end-13
+  // U12 à U18 → naissance entre end-18 et end-12
   const years: number[] = [];
-  for (let u = 14; u <= 18; u++) years.push(end - u);
+  for (let u = 12; u <= 18; u++) years.push(end - u);
   return years.sort((a, b) => b - a);
 }
 

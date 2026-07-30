@@ -77,7 +77,9 @@ export function buildFallbackProgram(
   exercises: Exercise[]
 ): GeneratedProgram {
   const persona = personaFromBirthYear(profile.birthYear);
-  const age = ageFromBirthYear(profile.birthYear);
+  // Plancher 13 ans pour le choix des exercices (aucun exercice calibré en dessous) —
+  // voir la même remarque dans lib/ai/generateProgram.ts.
+  const age = Math.max(ageFromBirthYear(profile.birthYear), 13);
   const days = freeDays(profile);
   const isGK = profile.position === "GB";
   const junior = persona === "junior";
