@@ -29,11 +29,9 @@ export type ExerciseView = {
 export function ExerciseDetail({
   exercise,
   onClose,
-  premium = false,
 }: {
   exercise: ExerciseView;
   onClose: () => void;
-  premium?: boolean;
 }) {
   return (
     <div
@@ -57,15 +55,15 @@ export function ExerciseDetail({
         </div>
 
         <div className="mb-4">
+          {/* Version colorée pour tout le monde (gratuit inclus) — la version
+              "bâton" faisait mauvaise impression sur la 1ère séance vue. */}
           <ExerciseIllustration
             slug={exercise.slug}
             category={exercise.category}
-            premium={premium}
+            premium
           />
           <p className="mt-1.5 text-center text-[11px] text-muted">
-            {premium
-              ? "Animation premium — le mouvement est toujours correct."
-              : "Illustration animée — pas une vidéo, le mouvement est toujours correct."}
+            Illustration animée — pas une vidéo, le mouvement est toujours correct.
           </p>
         </div>
 

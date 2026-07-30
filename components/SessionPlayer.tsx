@@ -273,11 +273,13 @@ export function SessionPlayer({
                   </span>
                 </div>
 
-                {/* Démonstration animée du mouvement, directement dans la séance */}
+                {/* Démonstration animée du mouvement, directement dans la séance.
+                    Version colorée pour tout le monde (gratuit inclus) — la version
+                    "bâton" faisait mauvaise impression sur la 1ère séance vue. */}
                 <ExerciseIllustration
                   slug={b.exercise.slug}
                   category={b.exercise.category}
-                  premium={premium}
+                  premium
                 />
 
                 <p className="mb-1 mt-3 text-sm">{b.instruction}</p>
@@ -328,9 +330,7 @@ export function SessionPlayer({
         </button>
       </div>
 
-      {detail && (
-        <ExerciseDetail exercise={detail} onClose={() => setDetail(null)} premium={premium} />
-      )}
+      {detail && <ExerciseDetail exercise={detail} onClose={() => setDetail(null)} />}
     </div>
   );
 }
