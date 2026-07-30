@@ -25,11 +25,30 @@ export async function GET(req: Request) {
   let generated = 0;
   let failed = 0;
 
+  // Comptes jamais activés au-delà de la fenêtre d'activation : le programme est
+  // quand même généré (logique produit normale), mais on arrête de les notifier par
+  // e-mail chaque semaine — ils ne reviendront probablement pas, et ça consomme le
+  // quota d'envoi pour rien.
+  const ACTIVATION_WINDOW_MS = 10 * 24 * 60 * 60 * 1000;
+  const activeUserIds = new Set(
+    (
+      await prisma.sessionLog.findMany({
+        where: { userId: { in: users.map((u) => u.id) } },
+        select: { userId: true },
+        distinct: ["userId"],
+      })
+    ).map((l) => l.userId)
+  );
+
   for (const user of users) {
     try {
       const feedback = await feedbackForWeek(user.id, endedWeek);
       await createWeeklyProgram(user, { weekStart, feedback });
       generated++;
+
+      const neverActivated =
+        !activeUserIds.has(user.id) && Date.now() - user.createdAt.getTime() > ACTIVATION_WINDOW_MS;
+      if (neverActivated) continue;
 
       try {
         await sendEmail({

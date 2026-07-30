@@ -75,10 +75,28 @@ export async function GET(req: Request) {
     include: { program: { include: { user: { include: { profile: true } } } } },
   });
 
+  // Comptes jamais activés (aucune séance loguée depuis l'inscription) au-delà de la
+  // fenêtre d'activation : on arrête de les relancer chaque jour, indéfiniment — ça
+  // consomme le quota d'e-mails pour des comptes tests/dormants qui ne reviendront pas.
+  const ACTIVATION_WINDOW_MS = 10 * 24 * 60 * 60 * 1000;
+  const candidateIds = sessions.map((s) => s.program.user.id);
+  const activeUserIds = new Set(
+    (
+      await prisma.sessionLog.findMany({
+        where: { userId: { in: candidateIds } },
+        select: { userId: true },
+        distinct: ["userId"],
+      })
+    ).map((l) => l.userId)
+  );
+
   let emailSent = 0;
   let pushSent = 0;
   for (const s of sessions) {
     const user = s.program.user;
+    const neverActivated =
+      !activeUserIds.has(user.id) && Date.now() - user.createdAt.getTime() > ACTIVATION_WINDOW_MS;
+    if (neverActivated) continue;
     try {
       await sendEmail({
         to: user.email,
