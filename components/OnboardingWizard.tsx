@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button, Input } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 import { lockedTeasers } from "@/lib/teaser";
+import { track } from "@/lib/analytics";
 import {
   COUNTRIES,
   GENERIC_LEVELS,
@@ -148,6 +149,13 @@ export function OnboardingWizard({
   // 8 questions + consentement parental éventuel + carte finale
   const totalSteps = 8 + (isMinor15 ? 1 : 0);
 
+  // Onboarding en une seule page (pas d'URL par écran) : sans ceci, impossible de
+  // savoir à quel écran les gens abandonnent — un seul pageview pour les 8 étapes.
+  useEffect(() => {
+    if (!hydrated) return;
+    track("onboarding_step_viewed", { step, totalSteps });
+  }, [step, totalSteps, hydrated]);
+
   const set = (patch: Partial<State>) => setS((prev) => ({ ...prev, ...patch }));
 
   // À l'arrivée sur l'écran final : joue l'animation d'analyse (~2,6 s) puis révèle.
@@ -226,6 +234,7 @@ export function OnboardingWizard({
         }),
       });
       if (!res.ok) throw new Error(await res.text());
+      track("onboarding_completed", { totalSteps });
       try {
         localStorage.removeItem(STORAGE_KEY);
       } catch {
