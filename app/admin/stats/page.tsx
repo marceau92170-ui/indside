@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { mondayOfWeek } from "@/lib/categories";
 import { badgeInfo } from "@/lib/constants";
@@ -107,9 +108,15 @@ export default async function AdminStatsPage({
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 text-chalk">
       <h1 className="mb-1 font-condensed text-3xl font-bold uppercase">Stats internes</h1>
-      <p className="mb-6 text-sm text-muted">
+      <p className="mb-3 text-sm text-muted">
         Premier tenant — aucune donnée n&apos;est envoyée à un service tiers.
       </p>
+      <Link
+        href={`/admin/onboarding?secret=${secret}`}
+        className="mb-6 inline-block text-xs font-semibold text-glow underline"
+      >
+        Voir le funnel onboarding →
+      </Link>
 
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Comptes créés" value={totalUsers} />
