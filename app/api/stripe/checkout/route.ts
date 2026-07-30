@@ -69,8 +69,8 @@ export async function POST(req: Request) {
 
   const message = applyTrial
     ? adult
-      ? `Gratuit pendant ${TRIAL_DAYS} jours, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app — aucun débit si tu résilies avant la fin de l'essai.`
-      : `Gratuit pendant ${TRIAL_DAYS} jours. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app — aucun débit si résiliation avant la fin de l'essai.`
+      ? `0 € aujourd'hui — gratuit pendant ${TRIAL_DAYS} jours, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app — aucun débit si tu résilies avant la fin de l'essai.`
+      : `0 € aujourd'hui — gratuit pendant ${TRIAL_DAYS} jours. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app — aucun débit si résiliation avant la fin de l'essai.`
     : adult
       ? `Débit immédiat, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app.`
       : `Débit immédiat. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app.`;
