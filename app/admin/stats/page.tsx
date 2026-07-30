@@ -45,6 +45,7 @@ export default async function AdminStatsPage({
     unresolvedPain,
     recentGrants,
     trialingSubs,
+    referralFreeUsers,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { profile: { isNot: null } } }),
@@ -67,6 +68,11 @@ export default async function AdminStatsPage({
       include: { user: { include: { profile: true } } },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.user.findMany({
+      where: { premiumUntil: { gt: new Date() }, subscription: null },
+      include: { profile: true },
+      orderBy: { premiumUntil: "desc" },
+    }),
   ]);
 
   // Inscriptions par semaine (8 dernières)
@@ -84,6 +90,19 @@ export default async function AdminStatsPage({
   const payingRate = usersWithProfile > 0 ? Math.round((premium.paying / usersWithProfile) * 100) : 0;
 
   const badgeCounts = new Map(badgeGroups.map((b) => [b.key, b._count.key]));
+
+  // Nombre de filleuls confirmés par parrain (pour afficher "X potes" à côté de
+  // chaque compte en semaine offerte par parrainage).
+  const inviteCodes = referralFreeUsers.map((u) => u.inviteCode).filter((c): c is string => !!c);
+  const referralCounts = new Map(
+    (
+      await prisma.user.groupBy({
+        by: ["invitedByCode"],
+        where: { invitedByCode: { in: inviteCodes }, inviteRewardGranted: true },
+        _count: { invitedByCode: true },
+      })
+    ).map((g) => [g.invitedByCode as string, g._count.invitedByCode])
+  );
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 text-chalk">
@@ -158,6 +177,43 @@ export default async function AdminStatsPage({
               <span className="text-[11px] text-muted">
                 {sub.trialEnd
                   ? `fin d'essai le ${sub.trialEnd.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}`
+                  : "—"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h2 className="mb-2 mt-8 font-condensed text-xl font-bold uppercase">
+        Parrainage gratuit ({referralFreeUsers.length})
+      </h2>
+      <p className="mb-3 text-xs text-muted">
+        Semaine(s) de Premium offerte(s) via le parrainage entre joueurs (3 potes inscrits = 1
+        semaine, cumulable jusqu&apos;à 4) — sans aucun abonnement Stripe.
+      </p>
+      {referralFreeUsers.length === 0 ? (
+        <p className="rounded-card border border-line bg-surface p-4 text-sm text-muted">
+          Personne en Premium par parrainage pour l&apos;instant.
+        </p>
+      ) : (
+        <ul className="mb-8 space-y-2">
+          {referralFreeUsers.map((u) => (
+            <li
+              key={u.id}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-surface p-3 text-sm"
+            >
+              <div>
+                <span className="font-semibold">{u.profile?.firstName ?? u.name ?? u.email}</span>
+                <span className="ml-2 text-xs text-muted">{u.email}</span>
+                {u.inviteCode && (
+                  <span className="ml-2 rounded-full bg-glow/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-glow">
+                    {referralCounts.get(u.inviteCode) ?? 0} pote{(referralCounts.get(u.inviteCode) ?? 0) > 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+              <span className="text-[11px] text-muted">
+                {u.premiumUntil
+                  ? `jusqu'au ${u.premiumUntil.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}`
                   : "—"}
               </span>
             </li>
