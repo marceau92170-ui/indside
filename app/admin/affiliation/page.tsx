@@ -104,14 +104,14 @@ export default async function AdminAffiliationPage() {
               {stats.map((s) => (
                 <tr key={s.code} className="border-t border-line">
                   <td className="px-3 py-2">
-                    <div className="flex items-center gap-1.5 font-semibold">
+                    <Link href={`/admin/affiliation/${s.code}`} className="flex items-center gap-1.5 font-semibold hover:text-glow">
                       {s.displayName}
                       {s.isHouse && (
                         <span className="rounded-full border border-line px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-muted">
                           maison
                         </span>
                       )}
-                    </div>
+                    </Link>
                     <div className="text-[11px] text-muted">/r/{s.code}</div>
                   </td>
                   <td className="px-3 py-2 tnum">{s.clicks}</td>
