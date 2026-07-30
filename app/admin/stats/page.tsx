@@ -44,6 +44,7 @@ export default async function AdminStatsPage({
     wellnessCheckins,
     unresolvedPain,
     recentGrants,
+    trialingSubs,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { profile: { isNot: null } } }),
@@ -61,6 +62,11 @@ export default async function AdminStatsPage({
     prisma.wellnessCheckin.count({ where: { date: { gte: currentWeek } } }),
     prisma.painLog.count({ where: { resolved: false } }),
     prisma.adminActionLog.findMany({ orderBy: { createdAt: "desc" }, take: 15 }),
+    prisma.subscription.findMany({
+      where: { status: "trialing" },
+      include: { user: { include: { profile: true } } },
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
 
   // Inscriptions par semaine (8 dernières)
@@ -126,6 +132,40 @@ export default async function AdminStatsPage({
       </ul>
 
       <h2 className="mb-2 mt-8 font-condensed text-xl font-bold uppercase">
+        En essai gratuit ({trialingSubs.length})
+      </h2>
+      <p className="mb-3 text-xs text-muted">Essai Stripe 7 j en cours, rien encaissé pour l&apos;instant.</p>
+      {trialingSubs.length === 0 ? (
+        <p className="rounded-card border border-line bg-surface p-4 text-sm text-muted">
+          Personne en essai gratuit pour l&apos;instant.
+        </p>
+      ) : (
+        <ul className="mb-8 space-y-2">
+          {trialingSubs.map((sub) => (
+            <li
+              key={sub.id}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-surface p-3 text-sm"
+            >
+              <div>
+                <span className="font-semibold">{sub.user.profile?.firstName ?? sub.user.name ?? sub.user.email}</span>
+                <span className="ml-2 text-xs text-muted">{sub.user.email}</span>
+                {sub.user.referredByCode && (
+                  <span className="ml-2 rounded-full bg-glow/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-glow">
+                    r/{sub.user.referredByCode}
+                  </span>
+                )}
+              </div>
+              <span className="text-[11px] text-muted">
+                {sub.trialEnd
+                  ? `fin d'essai le ${sub.trialEnd.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}`
+                  : "—"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h2 className="mb-2 font-condensed text-xl font-bold uppercase">
         Accès Premium accordés à la main
       </h2>
       <p className="mb-3 text-xs text-muted">
