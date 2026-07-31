@@ -111,12 +111,20 @@ export default async function AdminStatsPage({
       <p className="mb-3 text-sm text-muted">
         Premier tenant — aucune donnée n&apos;est envoyée à un service tiers.
       </p>
-      <Link
-        href={`/admin/onboarding?secret=${secret}`}
-        className="mb-6 inline-block text-xs font-semibold text-glow underline"
-      >
-        Voir le funnel onboarding →
-      </Link>
+      <div className="mb-6 flex flex-wrap gap-4">
+        <Link
+          href={`/admin/onboarding?secret=${secret}`}
+          className="inline-block text-xs font-semibold text-glow underline"
+        >
+          Voir le funnel onboarding →
+        </Link>
+        <Link
+          href={`/admin/usage?secret=${secret}`}
+          className="inline-block text-xs font-semibold text-glow underline"
+        >
+          Voir l&apos;usage des pages →
+        </Link>
+      </div>
 
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Comptes créés" value={totalUsers} />

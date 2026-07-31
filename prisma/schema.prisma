@@ -75,6 +75,7 @@ model User {
   emailEvents       EmailEvent[]
   review            Review?
   feedbacks         Feedback[]
+  pageViews         PageView[]
 }
 
 // Funnel onboarding, mesuré AVANT qu'un compte existe (l'onboarding tourne en
@@ -91,6 +92,24 @@ model OnboardingFunnelEvent {
 
   @@unique([anonId, step])
   @@index([step])
+}
+
+// Usage quotidien DANS l'app (une fois le compte créé) : quelle page a été
+// visitée, par qui, quand. Sert à voir quelles fonctionnalités sont utilisées
+// ou au contraire ignorées, en 100% first-party (pas besoin d'aller sur
+// PostHog pour cette vue). Volontairement simple : juste le chemin visité,
+// pas le détail de chaque clic.
+model PageView {
+  id        String   @id @default(cuid())
+  userId    String
+  path      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([path])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 // Journal des e-mails automatiques (bienvenue, relances nurture…).
