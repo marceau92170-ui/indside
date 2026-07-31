@@ -61,10 +61,10 @@ export const AFFILIATES: AffiliateSeed[] = [
   { code: "edskow", name: "Edskow", email: "ed92pro@gmail.com" }, // @edskow — poste dès aujourd'hui
   { code: "robin", name: "Robin (Junior)", email: "robinlilian45@gmail.com" }, // affilié n°8
   { code: "apolline", name: "Apolline", email: "apolline92170@gmail.com" }, // sœur — test du flux paiement
-  // KBE : filme les 60 vidéos d'exercices (payé 60€ par le créateur) → en échange,
-  // 80% de commission sur mensuel ET annuel pendant 6 mois (deal négocié, au lieu
-  // des 30 j standard).
-  { code: "kbe", name: "KBE", email: "bkakengni@gmail.com", launchWindowDays: 180, startDate: "2026-07-28" },
+  // KBE : deal vidéos annulé (blessé au poignet, indisponible ~3 mois, ne
+  // tournera pas les 60 vidéos) → retour aux conditions standards (30 j),
+  // plus de fenêtre 80% sur 6 mois. Les vidéos sont confiées à Junior à la place.
+  { code: "kbe", name: "KBE", email: "bkakengni@gmail.com" },
   { code: "calvin", name: "Coach Calvin", email: "calvin.disasi@gmail.com" },
   // Samy (water44) : créateur payé au FIXE (150 €/mois) → 0 commission, 0 bonus.
   // "house" = on suit clics/inscrits/ventes/CA de son lien, sans rien lui devoir par vente.
