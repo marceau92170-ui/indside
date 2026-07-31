@@ -569,8 +569,8 @@ export function OnboardingWizard({
 
       {step === 8 && isMinor15 && (
         <StepShell
-          title="Accord parental"
-          subtitle="Tu as moins de 15 ans : la loi française demande l'accord d'un parent pour créer ton profil."
+          title="Presque fini !"
+          subtitle="Tu as moins de 15 ans : la loi demande l'accord d'un parent. 10 secondes, juste son e-mail — ça protège tes données, rien d'autre ne change."
         >
           <Input
             type="email"
@@ -578,6 +578,9 @@ export function OnboardingWizard({
             value={s.parentEmail}
             onChange={(e) => set({ parentEmail: e.target.value })}
           />
+          <p className="mt-2 text-xs text-muted">
+            Il recevra juste un e-mail de bienvenue — jamais de pub, jamais revendu.
+          </p>
           <label className="mt-4 flex cursor-pointer items-start gap-3 text-sm">
             <input
               type="checkbox"
