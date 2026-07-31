@@ -77,6 +77,23 @@ export default async function SemainePage() {
 
   return (
     <div>
+      {/* Essai gratuit : tout premier élément vu par un compte gratuit, avant même
+          l'en-tête — plus de chance qu'il le remarque que noyé en bas de page. */}
+      {!premium && user.profile && (
+        <Card className="mb-5 border-glow/40 bg-glow/5">
+          <p className="mb-1 font-condensed text-base font-bold uppercase text-glow">
+            7 jours gratuits
+          </p>
+          <p className="mb-3 text-sm text-muted">
+            Débloque tout ton programme perso, adapté chaque semaine. Sans payer maintenant,
+            résiliable en 1 clic.
+          </p>
+          <ButtonLink href="/premium?src=semaine_cta" size="sm">
+            Débloquer mon programme complet
+          </ButtonLink>
+        </Card>
+      )}
+
       {/* En-tête + identité joueur */}
       <div className="mb-4">
         <h1 className="font-condensed text-3xl font-bold uppercase leading-none">Ma semaine</h1>
@@ -300,19 +317,6 @@ export default async function SemainePage() {
               </li>
             ))}
           </ul>
-
-          <Card className="mt-3 border-glow/40 bg-glow/5">
-            <p className="mb-1 font-condensed text-base font-bold uppercase text-glow">
-              7 jours gratuits
-            </p>
-            <p className="mb-3 text-sm text-muted">
-              Débloque tout ton programme perso, adapté chaque semaine. Sans payer maintenant,
-              résiliable en 1 clic.
-            </p>
-            <ButtonLink href="/premium?src=semaine_cta" size="sm">
-              Débloquer mon programme complet
-            </ButtonLink>
-          </Card>
         </div>
       )}
 
