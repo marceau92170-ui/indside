@@ -28,6 +28,15 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Masque la scrollbar du sélecteur "roulette" (onboarding), sans bloquer le scroll */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Marquage terrain : rond central + lignes, unique motif de fond, très discret */
 .pitch-bg {
   position: relative;

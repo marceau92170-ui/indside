@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "@/components/ui";
 import { Icon } from "@/components/Icon";
+import { WheelPicker } from "@/components/WheelPicker";
 import { lockedTeasers } from "@/lib/teaser";
 import { track } from "@/lib/analytics";
 import {
@@ -99,6 +100,24 @@ function startingProfile(s: State): { rating: number; stats: { label: string; va
 
 // Année de naissance représentative pour l'option « 18 ans et + » (amateurs, seniors, vétérans).
 const ADULT_BIRTH_YEAR = new Date().getFullYear() - 20;
+
+// Points faibles proposés à cocher (plutôt que du texte libre non exploitable
+// de façon fiable) — le champ reste une liste jointe par virgule pour rester
+// compatible avec le reste du flux (prompt IA, stockage).
+const WEAKNESS_OPTIONS = [
+  "Pied faible",
+  "Vitesse",
+  "Duels",
+  "Endurance",
+  "Technique / contrôle",
+  "Finition / tir",
+  "Explosivité",
+  "Mental / confiance",
+];
+
+function weaknessList(raw: string): string[] {
+  return raw.split(",").map((w) => w.trim()).filter(Boolean);
+}
 
 // Un ado interrompu (appel, notif, batterie) ne doit pas repartir de zéro.
 const STORAGE_KEY = "progressa-onboarding-v1";
@@ -314,14 +333,12 @@ export function OnboardingWizard({
             maxLength={20}
           />
           <p className="mb-2 mt-6 font-condensed text-lg font-bold uppercase">Ton année de naissance ?</p>
-          <div className="grid grid-cols-3 gap-2">
-            {birthYears.map((y) => (
-              <Choice key={y} active={s.birthYear === y} onClick={() => set({ birthYear: y })}>
-                {y}
-              </Choice>
-            ))}
-          </div>
-          <div className="mt-2">
+          <WheelPicker
+            options={birthYears}
+            value={s.birthYear !== ADULT_BIRTH_YEAR ? s.birthYear : null}
+            onChange={(y) => set({ birthYear: y })}
+          />
+          <div className="mt-3">
             <Choice
               active={s.birthYear === ADULT_BIRTH_YEAR}
               onClick={() => set({ birthYear: ADULT_BIRTH_YEAR })}
@@ -556,14 +573,26 @@ export function OnboardingWizard({
       {step === 7 && (
         <StepShell
           title="Ton point faible ?"
-          subtitle="Dis-le avec tes mots : « mon pied gauche », « je perds mes duels »… Ton programme l'attaquera chaque semaine."
+          subtitle="Choisis ce qui te freine le plus. Ton programme l'attaquera chaque semaine."
         >
-          <Input
-            placeholder="Ex : mon pied gauche"
-            value={s.weakness}
-            onChange={(e) => set({ weakness: e.target.value })}
-            maxLength={120}
-          />
+          <div className="grid grid-cols-2 gap-2">
+            {WEAKNESS_OPTIONS.map((w) => {
+              const active = weaknessList(s.weakness).includes(w);
+              return (
+                <Choice
+                  key={w}
+                  active={active}
+                  onClick={() => {
+                    const cur = weaknessList(s.weakness);
+                    const next = active ? cur.filter((x) => x !== w) : [...cur, w];
+                    set({ weakness: next.join(", ") });
+                  }}
+                >
+                  {w}
+                </Choice>
+              );
+            })}
+          </div>
         </StepShell>
       )}
 
