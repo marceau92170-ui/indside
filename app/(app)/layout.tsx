@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { AppNav } from "@/components/AppNav";
 import { IdentifyUser } from "@/components/IdentifyUser";
+import { PageViewTracker } from "@/components/PageViewTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-lg flex-col">
       <IdentifyUser id={user.id} />
+      <PageViewTracker />
       <header className="flex items-center justify-between px-4 pb-2 pt-4">
         <Link href="/semaine" className="font-display text-xl tracking-wider text-chalk">
           PROGRESSA
