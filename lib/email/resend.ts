@@ -15,7 +15,15 @@ export async function sendEmail(opts: { to: string; subject: string; html: strin
     console.log(`[email non envoyé — RESEND_API_KEY absent] → ${opts.to} : ${opts.subject}`);
     return;
   }
-  await resend.emails.send({ from: FROM, to: opts.to, subject: opts.subject, html: opts.html });
+  // Le SDK Resend ne lève JAMAIS d'exception sur une erreur API (quota dépassé,
+  // domaine invalide...) : il renvoie { data: null, error }. Sans cette
+  // vérification, tous les appelants (qui marquent "envoyé" après un simple
+  // await sans erreur) croyaient l'e-mail parti alors qu'il ne l'était jamais —
+  // notamment quand le quota Resend est dépassé (gros pic d'inscriptions).
+  const { error } = await resend.emails.send({ from: FROM, to: opts.to, subject: opts.subject, html: opts.html });
+  if (error) {
+    throw new Error(`Resend (${error.name}): ${error.message}`);
+  }
 }
 
 export function magicLinkEmail(url: string): string {
