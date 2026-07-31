@@ -23,6 +23,18 @@ export function WheelPicker({
   const ref = useRef<HTMLDivElement>(null);
   const scrollTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  // Refs "miroir" des props les plus récentes, pour que le listener wheel
+  // natif (enregistré une seule fois) lise toujours la valeur à jour sans
+  // avoir à le ré-attacher à chaque render.
+  const valueRef = useRef(value);
+  const optionsRef = useRef(options);
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    valueRef.current = value;
+    optionsRef.current = options;
+    onChangeRef.current = onChange;
+  });
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -58,6 +70,33 @@ export function WheelPicker({
     const v = options[idx];
     if (v !== undefined) onChange(v);
   }
+
+  // Molette de souris : un cran de molette envoie souvent un deltaY de
+  // ~100px, soit plusieurs lignes d'un coup (44px chacune) — l'accroche CSS
+  // seule laissait alors la roulette sauter 2-3 années par cran. On reprend
+  // la main : chaque cran ne déplace que d'une année, jamais plus.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let locked = false;
+    function onWheel(e: WheelEvent) {
+      e.preventDefault();
+      if (locked) return;
+      locked = true;
+      const opts = optionsRef.current;
+      const curIdx = valueRef.current !== null ? opts.indexOf(valueRef.current) : 0;
+      const dir = e.deltaY > 0 ? 1 : -1;
+      const nextIdx = Math.min(Math.max(curIdx + dir, 0), opts.length - 1);
+      el!.scrollTo({ top: nextIdx * ITEM_H, behavior: "smooth" });
+      const v = opts[nextIdx];
+      if (v !== undefined) onChangeRef.current(v);
+      setTimeout(() => {
+        locked = false;
+      }, 200);
+    }
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
 
   return (
     <div className="relative mx-auto w-full max-w-[220px]">
