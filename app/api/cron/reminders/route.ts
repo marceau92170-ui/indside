@@ -5,52 +5,11 @@ import { sendEmail } from "@/lib/email/resend";
 import { sendPushToUser } from "@/lib/push";
 import { SITE_URL } from "@/lib/site";
 
-// Rappel « ton essai gratuit se termine dans 2 jours » : envoyé une seule fois,
-// ~2 jours avant la fin de l'essai. Réduit les surprises de débit (et donc les
-// remboursements / litiges), tout en laissant l'inertie faire son travail.
-async function sendTrialEndingReminders(): Promise<number> {
-  const now = new Date();
-  const soon = new Date(now.getTime() + 2.5 * 24 * 60 * 60 * 1000);
-
-  const subs = await prisma.subscription.findMany({
-    where: {
-      status: "trialing",
-      trialReminderSent: false,
-      trialEnd: { gte: now, lte: soon },
-    },
-    include: { user: { include: { profile: true } } },
-  });
-
-  let sent = 0;
-  for (const sub of subs) {
-    const user = sub.user;
-    const to = user.parentEmail ?? user.email;
-    const end = sub.trialEnd
-      ? sub.trialEnd.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })
-      : "bientôt";
-    try {
-      await sendEmail({
-        to,
-        subject: "Ton essai Premium se termine dans 2 jours",
-        html: `<div style="background:#0C0D0F;padding:32px;font-family:Arial,sans-serif;border-radius:12px;color:#EDE9E0">
-          <p style="font-size:22px;font-weight:900;letter-spacing:1px;margin:0 0 16px">PROGRESSA</p>
-          <p>${user.profile?.firstName ?? "Salut"}, ton essai gratuit se termine le <strong>${end}</strong>.</p>
-          <p style="color:#93938D">Si tu continues, ton abonnement démarre automatiquement (8,99€/mois). Tu peux résilier en 1 clic depuis l'app, sans aucun débit, tant que l'essai n'est pas terminé.</p>
-          <a href="${SITE_URL}/semaine" style="display:inline-block;background:#E12A3A;color:#fff;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;margin-top:12px">Continuer ma progression</a>
-          <p style="color:#93938D;font-size:13px;margin-top:16px">Pour gérer ou résilier ton abonnement : Réglages → Gérer mon abonnement.</p>
-        </div>`,
-      });
-      await prisma.subscription.update({
-        where: { id: sub.id },
-        data: { trialReminderSent: true },
-      });
-      sent++;
-    } catch {
-      // non bloquant
-    }
-  }
-  return sent;
-}
+// Le rappel "essai qui se termine dans 2 jours" a été déplacé dans son propre cron
+// (/api/cron/trial-reminders, programmé plus tôt le matin) : c'est le seul e-mail
+// automatique qui ne doit JAMAIS être sacrifié si le quota d'envoi du jour est
+// serré (surprise de débit sinon). Celui-ci ne gère plus que les rappels de
+// séance, moins critiques.
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -125,7 +84,5 @@ export async function GET(req: Request) {
     }
   }
 
-  const trialReminders = await sendTrialEndingReminders();
-
-  return NextResponse.json({ emailSent, pushSent, trialReminders });
+  return NextResponse.json({ emailSent, pushSent });
 }
