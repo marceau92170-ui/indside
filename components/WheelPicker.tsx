@@ -49,6 +49,16 @@ export function WheelPicker({
     }, 120);
   }
 
+  // Tap direct sur une année visible (même non centrée) : on la centre et on
+  // sélectionne tout de suite, sans dépendre du seul geste de scroll (qui
+  // pouvait, avec l'accroche rapide, sauter une année sur deux).
+  function selectIndex(idx: number) {
+    const el = ref.current;
+    if (el) el.scrollTo({ top: idx * ITEM_H, behavior: "smooth" });
+    const v = options[idx];
+    if (v !== undefined) onChange(v);
+  }
+
   return (
     <div className="relative mx-auto w-full max-w-[220px]">
       <div
@@ -62,11 +72,12 @@ export function WheelPicker({
           paddingBottom: ITEM_H,
         }}
       >
-        {options.map((y) => (
+        {options.map((y, idx) => (
           <div
             key={y}
-            style={{ height: ITEM_H, scrollSnapAlign: "center" }}
-            className={`flex items-center justify-center font-condensed text-lg font-bold transition-colors ${
+            onClick={() => selectIndex(idx)}
+            style={{ height: ITEM_H, scrollSnapAlign: "center", scrollSnapStop: "always" }}
+            className={`flex cursor-pointer items-center justify-center font-condensed text-lg font-bold transition-colors ${
               value === y ? "text-chalk" : "text-muted/40"
             }`}
           >
