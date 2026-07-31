@@ -53,7 +53,7 @@ export const AFFILIATES: AffiliateSeed[] = [
   { code: "nymax", name: "Nymax", email: "tonyrmlg@icloud.com", startDate: "2026-07-29" }, // @nymax.foot — lien actif du 29/07 au 29/08
   { code: "haile", name: "Haïlé", email: "haile.beauroy@gmail.com", startDate: "2026-07-29" }, // lien actif du 29/07 au 29/08
   { code: "sammy", name: "Sammy", email: "sammy.moutaouakkel@gmail.com" },
-  { code: "theo", name: "Théo", email: "theofootoff@gmail.com" },
+  // Théo : a dit ne plus vouloir continuer — retiré (0 clic/inscrit/vente, rien à perdre).
   { code: "remi", name: "Rémi", email: "remi.tesor@outlook.fr" },
   { code: "asko", name: "Asko", email: "aouahrani@icloud.com" },
   { code: "gamby", name: "SportxGamby", email: "mazine.namane1@gmail.com" },
