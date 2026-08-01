@@ -43,9 +43,9 @@ export async function GET(req: Request) {
         html: `<div style="background:#0C0D0F;padding:32px;font-family:Arial,sans-serif;border-radius:12px;color:#EDE9E0">
           <p style="font-size:22px;font-weight:900;letter-spacing:1px;margin:0 0 16px">PROGRESSA</p>
           <p>${user.profile?.firstName ?? "Salut"}, ton essai gratuit se termine le <strong>${end}</strong>.</p>
-          <p style="color:#93938D">Si tu continues, ton abonnement démarre automatiquement (8,99€/mois). Tu peux résilier en 1 clic depuis l'app, sans aucun débit, tant que l'essai n'est pas terminé.</p>
-          <a href="${SITE_URL}/semaine" style="display:inline-block;background:#E12A3A;color:#fff;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;margin-top:12px">Continuer ma progression</a>
-          <p style="color:#93938D;font-size:13px;margin-top:16px">Pour gérer ou résilier ton abonnement : Réglages → Gérer mon abonnement.</p>
+          <p style="color:#93938D">Si tu n'as pas ajouté de moyen de paiement, rien ne sera débité automatiquement — l'abonnement s'arrêtera simplement à la fin de l'essai. Pour continuer, ajoute une carte depuis l'app avant cette date.</p>
+          <a href="${SITE_URL}/reglages" style="display:inline-block;background:#E12A3A;color:#fff;font-weight:bold;padding:12px 24px;border-radius:8px;text-decoration:none;margin-top:12px">Gérer mon abonnement</a>
+          <p style="color:#93938D;font-size:13px;margin-top:16px">Déjà une carte enregistrée ? Aucune action requise, ton abonnement continue normalement (8,99€/mois), résiliable à tout moment.</p>
         </div>`,
       });
       await prisma.subscription.update({

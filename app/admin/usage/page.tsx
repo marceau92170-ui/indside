@@ -7,6 +7,10 @@ export const dynamic = "force-dynamic";
 // Instrumenté au fil de l'eau — tous les boutons ne sont pas encore suivis.
 const CLICK_LABELS: Record<string, string> = {
   program_regenerate: "Régénérer le programme",
+  checkout_annual_trial: "Checkout · Annuel, essai gratuit",
+  checkout_annual_pay: "Checkout · Annuel, paiement direct",
+  checkout_monthly_trial: "Checkout · Mensuel, essai gratuit",
+  checkout_monthly_pay: "Checkout · Mensuel, paiement direct",
 };
 
 // Libellé lisible par section de l'app (1er segment du chemin — voir app/(app)/*).
