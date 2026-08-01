@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button, Card } from "@/components/ui";
 import { PRICING } from "@/lib/plan";
 import { track } from "@/lib/analytics";
+import { trackClick } from "@/lib/click-track";
 
 export function CheckoutButtons({ hasUsedTrial = false }: { hasUsedTrial?: boolean }) {
   const [loading, setLoading] = useState<string | null>(null);
@@ -15,6 +16,7 @@ export function CheckoutButtons({ hasUsedTrial = false }: { hasUsedTrial?: boole
     setLoading(key);
     setError(null);
     track("premium_checkout_started", { plan, trial });
+    trackClick(`checkout_${plan}_${trial ? "trial" : "pay"}`);
     try {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
