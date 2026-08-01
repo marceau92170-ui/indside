@@ -80,6 +80,7 @@ model User {
   review            Review?
   feedbacks         Feedback[]
   pageViews         PageView[]
+  appClickEvents    AppClickEvent[]
 }
 
 // Funnel onboarding, mesuré AVANT qu'un compte existe (l'onboarding tourne en
@@ -112,6 +113,23 @@ model PageView {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([path])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Clics sur les boutons/actions jugés importants (pas exhaustif — instrumenté
+// bouton par bouton au fil de l'eau). Complète PageView pour voir non
+// seulement où les gens vont, mais ce qu'ils y font vraiment.
+model AppClickEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  label     String // identifiant du bouton/action, ex: "seance_commencer"
+  path      String // page où le clic a eu lieu
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([label])
   @@index([userId])
   @@index([createdAt])
 }

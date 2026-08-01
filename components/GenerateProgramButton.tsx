@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
+import { trackClick } from "@/lib/click-track";
 
 export function GenerateProgramButton({
   label,
@@ -16,6 +17,7 @@ export function GenerateProgramButton({
   const [error, setError] = useState<string | null>(null);
 
   async function generate() {
+    trackClick("program_regenerate");
     setLoading(true);
     setError(null);
     const res = await fetch("/api/program/generate", { method: "POST" });
