@@ -17,6 +17,10 @@ model Feedback {
   page      String? // page depuis laquelle l'avis a été envoyé
   createdAt DateTime @default(now())
 
+  // Réponse envoyée par e-mail depuis /admin/feedback (si un email était fourni).
+  replyMessage String?   @db.Text
+  repliedAt    DateTime?
+
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])

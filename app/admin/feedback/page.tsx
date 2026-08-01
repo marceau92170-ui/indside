@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
+import { FeedbackReplyForm } from "@/components/FeedbackReplyForm";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +59,13 @@ export default async function AdminFeedbackPage() {
                 )}
                 {f.page && <span>· {f.page}</span>}
               </div>
+              {f.email ? (
+                <FeedbackReplyForm feedbackId={f.id} alreadyReplied={f.replyMessage} />
+              ) : (
+                <p className="mt-3 border-t border-line pt-3 text-xs text-muted">
+                  Pas d&apos;e-mail laissé — impossible de répondre directement.
+                </p>
+              )}
             </li>
           ))}
         </ul>
