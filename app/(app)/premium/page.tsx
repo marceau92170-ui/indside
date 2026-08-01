@@ -58,7 +58,36 @@ export default async function PremiumPage({
         Ton préparateur perso, moins cher qu&apos;un seul cours particulier.
       </p>
 
-      <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted">
+      {adult ? (
+        <Card className="mb-6 border-grass bg-grass/15">
+          <p className="mb-1 font-condensed text-base font-bold uppercase">Bon à savoir</p>
+          <ul className="space-y-1.5 text-sm text-muted">
+            <li>• Un coach individuel coûte 30 à 50 € la séance. Ici : 59 € pour l&apos;année entière.</li>
+            <li>• Programme calé sur ton niveau, ton calendrier et ta prévention blessure.</li>
+            <li>• Si tu signales une douleur, le programme s&apos;adapte tout seul pour ne pas aggraver la zone.</li>
+            <li>• Résiliable à tout moment, en 1 clic, depuis l&apos;app.</li>
+            <li>• Données minimales, aucun tracking publicitaire. <a href="/confidentialite" className="underline">Confidentialité</a></li>
+          </ul>
+        </Card>
+      ) : (
+        <Card className="mb-6 border-grass bg-grass/15">
+          <p className="mb-1 font-condensed text-base font-bold uppercase">Pour les parents</p>
+          <ul className="space-y-1.5 text-sm text-muted">
+            <li>• Un coach individuel coûte 30 à 50 € la séance. Ici : 59 € pour l&apos;année entière.</li>
+            <li>• Séances conçues selon les standards de préparation des jeunes : poids du corps uniquement avant 15 ans, charge calée autour du club, prévention des blessures intégrée.</li>
+            <li>• Si ton enfant signale une douleur (genou, cheville...), le programme Premium s&apos;adapte tout seul pour ne pas aggraver la zone — pas besoin d&apos;y penser.</li>
+            <li>• Résiliable à tout moment, en 1 clic, depuis l&apos;app.</li>
+            <li>• Données minimales, aucun tracking publicitaire. <a href="/confidentialite" className="underline">Confidentialité</a></li>
+          </ul>
+          <p className="mt-3 text-xs text-muted">
+            Abonnement à souscrire par un parent ou tuteur légal.
+          </p>
+        </Card>
+      )}
+
+      <CheckoutButtons hasUsedTrial={Boolean(user?.hasUsedTrial)} />
+
+      <p className="mb-2 mt-8 text-[11px] font-bold uppercase tracking-widest text-muted">
         Gratuit vs Premium
       </p>
       <div className="mb-5 overflow-hidden rounded-card border border-line">
@@ -85,35 +114,6 @@ export default async function PremiumPage({
           </tbody>
         </table>
       </div>
-
-      <CheckoutButtons hasUsedTrial={Boolean(user?.hasUsedTrial)} />
-
-      {adult ? (
-        <Card className="mt-6 border-grass bg-grass/15">
-          <p className="mb-1 font-condensed text-base font-bold uppercase">Bon à savoir</p>
-          <ul className="space-y-1.5 text-sm text-muted">
-            <li>• Un coach individuel coûte 30 à 50 € la séance. Ici : 59 € pour l&apos;année entière.</li>
-            <li>• Programme calé sur ton niveau, ton calendrier et ta prévention blessure.</li>
-            <li>• Si tu signales une douleur, le programme s&apos;adapte tout seul pour ne pas aggraver la zone.</li>
-            <li>• Résiliable à tout moment, en 1 clic, depuis l&apos;app.</li>
-            <li>• Données minimales, aucun tracking publicitaire. <a href="/confidentialite" className="underline">Confidentialité</a></li>
-          </ul>
-        </Card>
-      ) : (
-        <Card className="mt-6 border-grass bg-grass/15">
-          <p className="mb-1 font-condensed text-base font-bold uppercase">Pour les parents</p>
-          <ul className="space-y-1.5 text-sm text-muted">
-            <li>• Un coach individuel coûte 30 à 50 € la séance. Ici : 59 € pour l&apos;année entière.</li>
-            <li>• Séances conçues selon les standards de préparation des jeunes : poids du corps uniquement avant 15 ans, charge calée autour du club, prévention des blessures intégrée.</li>
-            <li>• Si ton enfant signale une douleur (genou, cheville...), le programme Premium s&apos;adapte tout seul pour ne pas aggraver la zone — pas besoin d&apos;y penser.</li>
-            <li>• Résiliable à tout moment, en 1 clic, depuis l&apos;app.</li>
-            <li>• Données minimales, aucun tracking publicitaire. <a href="/confidentialite" className="underline">Confidentialité</a></li>
-          </ul>
-          <p className="mt-3 text-xs text-muted">
-            Abonnement à souscrire par un parent ou tuteur légal.
-          </p>
-        </Card>
-      )}
     </div>
   );
 }
