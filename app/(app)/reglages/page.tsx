@@ -71,7 +71,7 @@ export default async function ReglagesPage() {
                         month: "long",
                       })}`
                     : ""
-                }. Résilie avant cette date depuis le bouton ci-dessous : 0 € débité.`
+                }. Si tu n'as pas ajouté de carte, rien n'est débité automatiquement à la fin — ajoute un moyen de paiement ci-dessous pour continuer, ou ne fais rien pour arrêter simplement.`
               : "Premium actif. Résiliation en 1 clic via le portail."
             : "Plan gratuit."}
         </p>

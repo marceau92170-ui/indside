@@ -69,8 +69,8 @@ export async function POST(req: Request) {
 
   const message = applyTrial
     ? adult
-      ? `0 € aujourd'hui — gratuit pendant ${TRIAL_DAYS} jours, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app — aucun débit si tu résilies avant la fin de l'essai.`
-      : `0 € aujourd'hui — gratuit pendant ${TRIAL_DAYS} jours. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app — aucun débit si résiliation avant la fin de l'essai.`
+      ? `0 € aujourd'hui, aucune carte requise — gratuit pendant ${TRIAL_DAYS} jours. Si tu veux continuer après l'essai, ajoute un moyen de paiement depuis l'app. Résiliable à tout moment.`
+      : `0 € aujourd'hui, aucune carte requise — gratuit pendant ${TRIAL_DAYS} jours. Abonnement à souscrire par un parent ou tuteur légal pour continuer après l'essai. Résiliable à tout moment.`
     : adult
       ? `Débit immédiat, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app.`
       : `Débit immédiat. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app.`;
@@ -84,7 +84,13 @@ export async function POST(req: Request) {
       success_url: `${base}/premium/merci?plan=${parsed.data.plan}&trial=${applyTrial}`,
       cancel_url: `${base}/premium`,
       metadata: { userId: user.id },
-      payment_method_collection: "always",
+      // Essai gratuit : pas de carte demandée à l'inscription (moins de friction,
+      // aucun risque de débit surprise). Paiement direct : carte obligatoire,
+      // comme avant. Si l'essai se termine sans carte enregistrée, Stripe ne
+      // peut pas prélever : l'abonnement passe en échec de paiement et
+      // isPremium() (lib/plan.ts) fait automatiquement retomber le compte en
+      // gratuit — aucun abus possible au-delà de la période d'essai.
+      payment_method_collection: applyTrial ? "if_required" : "always",
       subscription_data: {
         metadata: { userId: user.id },
         // Essai 7 jours uniquement si accordé ; sinon débit immédiat.
