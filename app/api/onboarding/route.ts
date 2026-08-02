@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { createWeeklyProgram } from "@/lib/program/create";
-import { ageFromBirthYear, isEligibleBirthYear } from "@/lib/categories";
+import { isEligibleBirthYear } from "@/lib/categories";
 import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/email/resend";
 import { welcomeEmail } from "@/lib/email/nurture";
@@ -28,8 +28,6 @@ const OnboardingSchema = z.object({
   equipment: z.array(z.enum(["ballon", "plots", "mur", "city", "elastiques"])),
   goal: z.enum(["vitesse", "technique", "physique", "endurance", "frappe", "polyvalent"]),
   weakness: z.string().max(120).nullable(),
-  parentEmail: z.string().email().nullable(),
-  parentConsent: z.boolean(),
 });
 
 export async function POST(req: Request) {
@@ -47,11 +45,6 @@ export async function POST(req: Request) {
   // « 18 ans et + » ouverte pour les affiliés).
   if (!isEligibleBirthYear(data.birthYear)) {
     return NextResponse.json({ error: "birthYear hors cible" }, { status: 400 });
-  }
-
-  // Obligation légale française : consentement parental sous 15 ans
-  if (ageFromBirthYear(data.birthYear) < 15 && (!data.parentConsent || !data.parentEmail)) {
-    return NextResponse.json({ error: "consentement parental requis" }, { status: 400 });
   }
 
   const profileData = {
@@ -80,11 +73,7 @@ export async function POST(req: Request) {
     }),
     prisma.user.update({
       where: { id: user.id },
-      data: {
-        name: data.firstName,
-        parentEmail: data.parentEmail,
-        parentConsentAt: data.parentConsent ? new Date() : null,
-      },
+      data: { name: data.firstName },
     }),
   ]);
 

@@ -37,8 +37,6 @@ type State = {
   equipment: string[];
   goal: string;
   weakness: string;
-  parentEmail: string;
-  parentConsent: boolean;
 };
 
 const INITIAL: State = {
@@ -57,8 +55,6 @@ const INITIAL: State = {
   equipment: ["ballon"],
   goal: "",
   weakness: "",
-  parentEmail: "",
-  parentConsent: false,
 };
 
 function categoryOf(birthYear: number): string {
@@ -184,10 +180,10 @@ export function OnboardingWizard({
     }
   }, [s, step, hydrated]);
 
-  const isMinor15 = s.birthYear !== null && ageOf(s.birthYear) < 15;
-
-  // 8 questions + consentement parental éventuel + carte finale
-  const totalSteps = 8 + (isMinor15 ? 1 : 0);
+  // 8 questions + carte finale. Le consentement parental n'est plus une étape
+  // bloquante à l'inscription (trop d'abandon) : le compte se crée librement,
+  // l'accord d'un parent n'est demandé qu'au moment de payer (voir /premium).
+  const totalSteps = 8;
 
   // Onboarding en une seule page (pas d'URL par écran) : sans ceci, impossible de
   // savoir à quel écran les gens abandonnent — un seul pageview pour les 8 étapes.
@@ -241,12 +237,10 @@ export function OnboardingWizard({
         return Boolean(s.goal);
       case 7:
         return true; // point faible optionnel
-      case 8:
-        return !isMinor15 || (s.parentConsent && /.+@.+\..+/.test(s.parentEmail));
       default:
         return true;
     }
-  }, [step, s, isMinor15]);
+  }, [step, s]);
 
   async function finish() {
     // Pas encore de compte : les réponses sont déjà gardées (localStorage).
@@ -277,8 +271,6 @@ export function OnboardingWizard({
           equipment: s.equipment,
           goal: s.goal,
           weakness: s.weakness.trim() || null,
-          parentEmail: isMinor15 ? s.parentEmail.trim() : null,
-          parentConsent: isMinor15 ? s.parentConsent : false,
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -596,39 +588,6 @@ export function OnboardingWizard({
         </StepShell>
       )}
 
-      {step === 8 && isMinor15 && (
-        <StepShell
-          title="Presque fini !"
-          subtitle="Tu as moins de 15 ans : la loi demande l'accord d'un parent. 10 secondes, juste son e-mail — ça protège tes données, rien d'autre ne change."
-        >
-          <Input
-            type="email"
-            placeholder="E-mail d'un parent"
-            value={s.parentEmail}
-            onChange={(e) => set({ parentEmail: e.target.value })}
-          />
-          <p className="mt-2 text-xs text-muted">
-            Il recevra juste un e-mail de bienvenue — jamais de pub, jamais revendu.
-          </p>
-          <label className="mt-4 flex cursor-pointer items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              checked={s.parentConsent}
-              onChange={(e) => set({ parentConsent: e.target.checked })}
-              className="mt-0.5 h-5 w-5 accent-[#E12A3A]"
-            />
-            <span>
-              Mon parent (ou tuteur légal) est d&apos;accord pour que j&apos;utilise Progressa et
-              pour le traitement de mes données selon la{" "}
-              <a href="/confidentialite" target="_blank" className="text-glow underline">
-                politique de confidentialité
-              </a>
-              .
-            </span>
-          </label>
-        </StepShell>
-      )}
-
       {step === totalSteps && s.birthYear && reveal === "analyze" && (
         <AnalyzeScreen state={s} />
       )}
@@ -816,6 +775,13 @@ function RevealScreen({
           ))}
         </ul>
       </div>
+
+      {s.birthYear !== null && ageOf(s.birthYear) < 15 && (
+        <p className="mt-4 text-center text-xs text-muted">
+          Tu as moins de 15 ans : ton compte est gratuit et se crée tout de suite. Si tu veux passer
+          Premium plus tard, il faudra qu&apos;un parent ou tuteur légal s&apos;occupe du paiement.
+        </p>
+      )}
 
       {error && <p className="mt-3 text-center text-sm text-red-400">{error}</p>}
 
