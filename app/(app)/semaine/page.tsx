@@ -13,15 +13,22 @@ import { Icon } from "@/components/Icon";
 import { NutritionWeekCard } from "@/components/NutritionWeekCard";
 import { weeklyTip, matchTip } from "@/lib/data/nutrition";
 import { TrackOnView } from "@/components/TrackOnView";
+import { WellnessForm } from "@/components/WellnessForm";
+import { MatchLogForm } from "@/components/MatchLogForm";
 
 export const dynamic = "force-dynamic";
+
+function today(): Date {
+  const d = new Date();
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+}
 
 export default async function SemainePage() {
   const user = await currentUser();
   if (!user || !user.profile) return null; // le layout redirige déjà
 
   const weekStart = mondayOfWeek();
-  const [program, streak, allTimeDone] = await Promise.all([
+  const [program, streak, allTimeDone, checkin, lastMatch] = await Promise.all([
     prisma.program.findFirst({
       where: { userId: user.id, weekStart },
       include: {
@@ -30,6 +37,8 @@ export default async function SemainePage() {
     }),
     computeStreak(user.id),
     totalDoneSessions(user.id),
+    prisma.wellnessCheckin.findUnique({ where: { userId_date: { userId: user.id, date: today() } } }),
+    prisma.matchLog.findFirst({ where: { userId: user.id }, orderBy: { date: "desc" } }),
   ]);
 
   const todayDow = new Date().getDay();
@@ -157,6 +166,43 @@ export default async function SemainePage() {
               <span className="font-semibold">Repos aujourd&apos;hui.</span> Récupère bien — tu as
               tout donné cette semaine.
             </p>
+          )}
+
+          {/* Jour de match : le carnet est là, pas besoin de changer de page pour le remplir. */}
+          {isMatchToday && (
+            <div className="mt-3 border-t border-line/60 pt-3">
+              <MatchLogForm />
+            </div>
+          )}
+
+          {/* Jour sans séance : autre chose à faire que rien — check-in + dernière perf. */}
+          {!isMatchToday && !todaySession && (
+            <div className="mt-3 space-y-3 border-t border-line/60 pt-3">
+              {lastMatch && (
+                <p className="text-xs text-muted">
+                  <span className="font-semibold text-chalk">Ta dernière perf :</span>{" "}
+                  {lastMatch.rating !== null ? `${lastMatch.rating}/10 · ` : ""}
+                  {lastMatch.goals} but{lastMatch.goals > 1 ? "s" : ""}, {lastMatch.assists} passe
+                  {lastMatch.assists > 1 ? "s" : ""} D.{" "}
+                  <span className="text-muted">
+                    · {lastMatch.date.toLocaleDateString("fr-FR")}
+                  </span>
+                </p>
+              )}
+              <WellnessForm
+                today={
+                  checkin
+                    ? {
+                        sleepHours: checkin.sleepHours,
+                        sleepQuality: checkin.sleepQuality,
+                        energy: checkin.energy,
+                        soreness: checkin.soreness,
+                        mood: checkin.mood,
+                      }
+                    : null
+                }
+              />
+            </div>
           )}
         </Card>
       )}
