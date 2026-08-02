@@ -13,8 +13,7 @@ const STEP_LABELS: Record<number, string> = {
   5: "Matériel",
   6: "Objectif",
   7: "Point faible",
-  8: "Consentement parental / écran final",
-  9: "Écran final (mineur)",
+  8: "Écran final",
 };
 
 // Sentinelle "compte réellement créé" — voir OnboardingWizard.tsx / api/onboarding/funnel.
