@@ -2,8 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Palette en triplets RGB (pas des hex) : c'est le format qu'attend Tailwind
+   pour pouvoir appliquer les modificateurs d'opacité (bg-glow/10, etc.) à des
+   couleurs pilotées par variable CSS. Le thème clair (réglages → apparence)
+   redéfinit juste ces variables sur le conteneur de l'app connectée — la
+   landing page, elle, ne les redéfinit jamais et reste sombre. */
 :root {
   color-scheme: dark;
+  --color-night: 21 23 28;
+  --color-surface: 31 34 40;
+  --color-chalk: 237 233 224;
+  --color-glow: 225 42 58;
+  --color-grass: 42 20 23;
+  --color-muted: 147 147 141;
+  --color-line: 42 43 45;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --color-night: 255 255 255;
+  --color-surface: 255 255 255;
+  --color-chalk: 20 20 20;
+  --color-glow: 225 42 58;
+  /* Réutilise le rouge de marque : bg-grass/15 devient un rose pâle cohérent
+     plutôt qu'un ember sombre invisible sur fond blanc. */
+  --color-grass: 225 42 58;
+  --color-muted: 111 111 111;
+  --color-line: 230 230 230;
 }
 
 body {

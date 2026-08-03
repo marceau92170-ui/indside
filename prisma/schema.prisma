@@ -59,6 +59,10 @@ model User {
   // promotion qu'une seule fois quand il change de palier).
   rankSeen Int @default(0)
 
+  // Apparence de l'app connectée (réglages) : "dark" | "light". La landing
+  // page n'est pas concernée, elle reste toujours sombre.
+  theme String @default("dark")
+
   createdAt DateTime @default(now())
 
   accounts     Account[]
