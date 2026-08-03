@@ -8,6 +8,7 @@ import { Card } from "@/components/ui";
 import { ManageSubscriptionButton } from "@/components/CheckoutButtons";
 import { SignOutButton, DeleteAccountButton } from "@/components/AccountButtons";
 import { PushToggle } from "@/components/PushToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -82,6 +83,14 @@ export default async function ReglagesPage() {
             Passer Premium
           </Link>
         )}
+      </Card>
+
+      <Card className="mb-4">
+        <h2 className="mb-2 font-condensed text-lg font-bold uppercase">Apparence</h2>
+        <p className="mb-3 text-sm text-muted">
+          Sombre par défaut. Passe en clair si tu préfères — ça ne change que l&apos;app, pas le site.
+        </p>
+        <ThemeToggle initial={user.theme === "light" ? "light" : "dark"} />
       </Card>
 
       <Card className="mb-4">

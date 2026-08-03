@@ -34,7 +34,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const isAffiliate = user.role === "affiliate" || user.role === "admin";
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-lg flex-col">
+    <div
+      id="app-root"
+      data-theme={user.theme === "light" ? "light" : "dark"}
+      className="mx-auto flex min-h-screen w-full max-w-lg flex-col bg-night text-chalk"
+    >
       <IdentifyUser id={user.id} />
       <PageViewTracker />
       <header className="flex items-center justify-between px-4 pb-2 pt-4">

@@ -8,14 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Direction artistique "Carton rouge" — asphalte + rouge, un seul accent
-        night: "#15171C", // charbon adouci (moins dur que le noir pur)
-        surface: "#1F2228", // surface carte (garde le contraste avec le fond)
-        chalk: "#EDE9E0", // blanc chaud (texte)
-        glow: "#E12A3A", // rouge carton — CTA / actif uniquement
-        grass: "#2A1417", // panel ember sombre — touche secondaire (boîtes de mise en avant)
-        muted: "#93938D", // texte secondaire dérivé du fond
-        line: "#2A2B2D", // séparateurs / bordures
+        // Direction artistique "Carton rouge" — asphalte + rouge, un seul accent.
+        // Valeurs pilotées par variable CSS (voir globals.css) pour supporter le
+        // thème clair optionnel (réglages) tout en gardant les modificateurs
+        // d'opacité Tailwind (bg-glow/10, etc.) fonctionnels.
+        night: "rgb(var(--color-night) / <alpha-value>)",
+        surface: "rgb(var(--color-surface) / <alpha-value>)",
+        chalk: "rgb(var(--color-chalk) / <alpha-value>)",
+        glow: "rgb(var(--color-glow) / <alpha-value>)",
+        grass: "rgb(var(--color-grass) / <alpha-value>)",
+        muted: "rgb(var(--color-muted) / <alpha-value>)",
+        line: "rgb(var(--color-line) / <alpha-value>)",
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],
