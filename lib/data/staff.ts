@@ -13,8 +13,6 @@ export const PREMIUM_EMAILS: string[] = [
   // Hemy : 2e orthographe possible de son email (i/l ambigu) — l'affilié "hemy"
   // porte la variante avec "l" ; celle-ci couvre la variante avec "i".
   "ihymnlord@gmail.com",
-  // Nymax : idem, variante avec "i" (l'affilié "nymax" porte celle avec "l").
-  "tonyrmig@icloud.com",
   // Samy (water44) : testeur — partenariat à caler par téléphone. Accès gratuit
   // en attendant ; on lui créera un lien d'affilié si le partenariat se confirme.
   "samy.water44@gmail.com",
@@ -50,7 +48,7 @@ export const AFFILIATES: AffiliateSeed[] = [
   { code: "officiel", name: "TikTok officiel", email: "marceau92170@gmail.com", house: true },
   { code: "aaron", name: "Aaron", email: "nsuandaaron@gmail.com" }, // @aaroninh0o
   { code: "hemy", name: "Hemy", email: "lhymnlord@gmail.com" },
-  { code: "nymax", name: "Nymax", email: "tonyrmlg@icloud.com", startDate: "2026-07-29" }, // @nymax.foot — lien actif du 29/07 au 29/08
+  // Nymax : compte et lien supprimés à la demande.
   { code: "haile", name: "Haïlé", email: "haile.beauroy@gmail.com", startDate: "2026-07-29" }, // lien actif du 29/07 au 29/08
   { code: "sammy", name: "Sammy", email: "sammy.moutaouakkel@gmail.com" },
   // Théo : a dit ne plus vouloir continuer — retiré (0 clic/inscrit/vente, rien à perdre).
