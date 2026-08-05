@@ -235,7 +235,7 @@ export default async function ExercicePage({
             </div>
             <p className="mt-4 text-sm">
               <Link href="/exercices" className="font-semibold text-glow underline">
-                ← Voir les 60 exercices
+                ← Voir les 63 exercices
               </Link>
             </p>
           </section>

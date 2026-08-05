@@ -13,7 +13,7 @@ const COMPARE: { label: string; free: string; premium: string }[] = [
   { label: "100 % personnalisé (poste, âge, niveau, matériel, calendrier club)", free: "no", premium: "yes" },
   { label: "S'adapte chaque semaine à tes retours (IA)", free: "no", premium: "yes" },
   { label: "Évite tout seul tes zones de douleur (IA)", free: "no", premium: "yes" },
-  { label: "Exercices de la bibliothèque", free: "10", premium: "60" },
+  { label: "Exercices de la bibliothèque", free: "10", premium: "63" },
   { label: "Conseils du coach à chaque exercice", free: "no", premium: "yes" },
   { label: "Tests d'évaluation + graphiques de progression", free: "no", premium: "yes" },
   { label: "Conseils nutrition & hydratation calés sur tes matchs", free: "no", premium: "yes" },

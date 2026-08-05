@@ -144,7 +144,7 @@ export default async function ProgrammePostePage({
           <p className="mt-3 text-xs text-muted">
             Voir aussi la{" "}
             <Link href="/exercices" className="underline hover:text-glow">
-              bibliothèque des 60 exercices
+              bibliothèque des 63 exercices
             </Link>
           </p>
         </div>

@@ -5,8 +5,8 @@ import { ILLUSTRATION_MAP } from "../components/ExerciseIllustration";
 import { assertSlugsInCatalog, ProgramSchema } from "../lib/ai/generateProgram";
 
 describe("bibliothèque d'exercices", () => {
-  test("contient exactement 60 exercices", () => {
-    assert.equal(ALL_EXERCISES.length, 60);
+  test("contient exactement 63 exercices", () => {
+    assert.equal(ALL_EXERCISES.length, 63);
   });
 
   test("aucun slug dupliqué", () => {

@@ -6,7 +6,7 @@ import type { ExerciseSeed } from "./types";
 export type { ExerciseSeed } from "./types";
 export { CATEGORY_INFO } from "./types";
 
-// Bibliothèque complète : 60 exercices validés.
+// Bibliothèque complète : 63 exercices validés.
 // L'IA compose les séances UNIQUEMENT à partir de cette liste — elle n'invente jamais un exercice.
 export const ALL_EXERCISES: ExerciseSeed[] = [
   ...TECHNIQUE_EXERCISES,

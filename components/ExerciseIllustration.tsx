@@ -429,7 +429,7 @@ const ARCHETYPES: Record<string, Archetype> = {
   },
 };
 
-// ---------- mapping exercice → famille (couverture des 60 exercices) ----------
+// ---------- mapping exercice → famille (couverture des 63 exercices) ----------
 
 export const ILLUSTRATION_MAP: Record<string, keyof typeof ARCHETYPES> = {
   // technique / conduite
@@ -451,6 +451,9 @@ export const ILLUSTRATION_MAP: Record<string, keyof typeof ARCHETYPES> = {
   "crochet-court": "dribble",
   "cruyff-turn": "dribble",
   "conduite-tete-levee": "dribble",
+  "frappe-puissance-mur": "wall-pass",
+  "frappe-precision-cibles": "wall-pass",
+  "frappe-mouvement": "wall-pass",
   // renforcement
   planche: "plank",
   "planche-laterale": "plank",

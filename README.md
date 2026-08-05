@@ -1,7 +1,7 @@
 # Progressa ⚽ — Ton préparateur perso
 
 App web d'entraînement foot personnalisé pour jeunes joueurs amateurs (13-17 ans, U14→U18).
-Programme hebdomadaire individuel généré par IA à partir d'une **bibliothèque de 60 exercices
+Programme hebdomadaire individuel généré par IA à partir d'une **bibliothèque de 63 exercices
 validés** (l'IA n'invente jamais un exercice), calé autour des entraînements club et du jour de
 match, avec adaptation chaque semaine selon les retours du joueur.
 
@@ -39,7 +39,7 @@ d'exercice inventé, toujours le catalogue validé.
 npm install
 cp .env.example .env   # remplir DATABASE_URL, NEXTAUTH_SECRET, ANTHROPIC_API_KEY…
 npx prisma db push     # crée les tables
-npm run db:seed        # seed des 60 exercices
+npm run db:seed        # seed des 63 exercices
 npm run dev
 ```
 
@@ -57,16 +57,16 @@ npm test
 ```
 
 Tests unitaires (Node test runner, zéro dépendance ajoutée) : calcul de catégorie/âge/persona,
-intégrité de la bibliothèque de 60 exercices (pas de doublon, couverture illustrations à 100%),
+intégrité de la bibliothèque de 63 exercices (pas de doublon, couverture illustrations à 100%),
 et la garantie "les séances sont vraies" (rejet d'un slug halluciné hors catalogue).
 
 ## Structure
 
-- `lib/data/` — les 60 exercices (technique, renforcement, explosivité, cardio, prévention, gardien)
+- `lib/data/` — les 63 exercices (technique, renforcement, explosivité, cardio, prévention, gardien)
 - `lib/ai/generateProgram.ts` — prompt système strict (interdits 13-14 ans, calendrier club) + validation Zod + contrôle "slug dans le catalogue" (`assertSlugsInCatalog`, testé)
 - `lib/program/templates.ts` — séance gratuite générique + fallback premium sans IA
 - `lib/program/create.ts` — régénération d'un programme **sans jamais écraser une séance déjà validée** par le joueur
-- `components/ExerciseIllustration.tsx` — 17 familles de mouvement animées, mappées sur les 60 exercices
+- `components/ExerciseIllustration.tsx` — 17 familles de mouvement animées, mappées sur les 63 exercices
 - `app/onboarding` — questionnaire 8 écrans (catégorie U14-U18 auto, 13 ligues FFF, consentement parental < 15 ans), état persisté en localStorage (résiste à une fermeture d'onglet)
 - `app/(app)/` — semaine, séance (timer + difficulté), historique des semaines passées, bibliothèque, tests, profil (carte joueur PNG + progression 6 mois + delta par test), réglages (dont notifications push)
 - `app/(app)/objectifs`, `/matchs`, `/sante`, `/ressources` — développement du joueur au-delà des séances : objectifs, carnet de match, check-in de forme + croissance + douleurs, contenu éducatif (filière pro, nutrition, mental)

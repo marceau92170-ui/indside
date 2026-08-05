@@ -1,6 +1,6 @@
 import type { ExerciseSeed } from "./types";
 
-// 18 exercices — Technique & conduite de balle (ballon seul ou mur/plots)
+// 21 exercices — Technique & conduite de balle (ballon seul ou mur/plots)
 export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
   {
     slug: "toe-taps",
@@ -457,5 +457,82 @@ export const TECHNIQUE_EXERCISES: ExerciseSeed[] = [
     variantEasy: "Un regard toutes les 3 touches au lieu de chaque touche.",
     variantHard: "Ajoute un exercice mental : additionne des chiffres imaginaires affichés autour de toi, ou conduis uniquement du pied faible.",
     durationMin: 5,
+  },
+  {
+    slug: "frappe-puissance-mur",
+    name: "Frappe en puissance contre un mur",
+    category: "technique",
+    emoji: "⚽",
+    description:
+      "Frappe du cou-de-pied contre un mur, en cherchant la puissance sans sacrifier la propreté du geste. La base du tir qu'on ne travaille jamais assez seul.",
+    matchBenefit:
+      "Un tir plus puissant et mieux cadré dans les derniers mètres — celui qui transforme une occasion en but.",
+    steps: [
+      "Place-toi à 5-6 m du mur, ballon posé devant toi.",
+      "Pose ton pied d'appui à côté du ballon, pointé vers ta cible, genou légèrement fléchi.",
+      "Frappe avec le cou-de-pied (le dessus du pied), cheville verrouillée comme une planche.",
+      "Regarde le ballon jusqu'au contact, puis termine ton geste en laissant la jambe continuer vers l'avant.",
+      "Contrôle le rebond avant de repartir sur la frappe suivante.",
+    ],
+    mistakes:
+      "Cheville molle au contact (le ballon part sans puissance) ; se pencher en arrière ; regarder le mur au lieu du ballon ; frapper de la pointe du pied.",
+    equipment: ["ballon", "mur"],
+    smallSpaceFriendly: true,
+    minAge: 13,
+    positions: [],
+    variantEasy: "Frappe à 70% de la puissance max, uniquement concentré sur la cheville verrouillée.",
+    variantHard: "Enchaîne un contrôle orienté puis une frappe en une touche, pied fort puis pied faible.",
+    durationMin: 6,
+  },
+  {
+    slug: "frappe-precision-cibles",
+    name: "Frappe de précision sur cibles",
+    category: "technique",
+    emoji: "⚽",
+    description:
+      "Deux plots posés au sol comme cibles : la frappe cherche la précision dans les coins plutôt que la puissance pure.",
+    matchBenefit:
+      "Cadre ses tirs dans les coins, là où le gardien ne peut rien faire — la différence entre une frappe captée et un but.",
+    steps: [
+      "Place deux plots au sol, espacés d'environ 1 m, à 6-8 m de toi (ils représentent les coins du but).",
+      "Ballon posé devant toi, pied d'appui pointé vers ta cible.",
+      "Frappe en cherchant à faire passer le ballon juste à côté d'un des deux plots, pas au milieu.",
+      "Alterne les cibles à chaque frappe, puis alterne pied fort et pied faible.",
+      "Compte tes frappes cadrées sur 10 tentatives et essaie de battre ton score.",
+    ],
+    mistakes:
+      "Toujours viser la même cible (trop prévisible en match) ; regarder la cible au moment du contact au lieu du ballon ; précipiter la frappe sans placer le pied d'appui.",
+    equipment: ["ballon", "plots"],
+    smallSpaceFriendly: true,
+    minAge: 13,
+    positions: [],
+    variantEasy: "Rapproche les plots à 4-5 m et vise sans contrainte de puissance.",
+    variantHard: "Ajoute un contrôle orienté avant chaque frappe, ou recule à 10-12 m.",
+    durationMin: 6,
+  },
+  {
+    slug: "frappe-mouvement",
+    name: "Frappe en mouvement après conduite courte",
+    category: "technique",
+    emoji: "⚽",
+    description:
+      "Quelques touches de conduite puis frappe contre un mur, sans temps d'arrêt — le geste tel qu'il arrive vraiment en match, rarement à l'arrêt.",
+    matchBenefit:
+      "La plupart des buts se marquent en mouvement, pas ballon à l'arrêt : ce geste rapproche l'entraînement du vrai jeu.",
+    steps: [
+      "Place-toi à 10-12 m du mur, ballon au pied.",
+      "Conduis le ballon vers le mur en 3-4 touches, en accélérant progressivement.",
+      "Sur la dernière touche, prépare ton pied d'appui sans ralentir complètement.",
+      "Frappe dans la foulée, cheville verrouillée, puis contrôle le rebond pour repartir.",
+    ],
+    mistakes:
+      "S'arrêter complètement avant de frapper (perd tout l'intérêt de l'exercice) ; regarder le mur trop tôt et perdre le contrôle du ballon ; toujours démarrer du même pied.",
+    equipment: ["ballon", "mur"],
+    smallSpaceFriendly: true,
+    minAge: 13,
+    positions: ["AIL", "MOF", "ATT", "LAT"],
+    variantEasy: "2 touches de conduite au lieu de 3-4, à vitesse modérée.",
+    variantHard: "Ajoute un adversaire imaginaire à éviter d'un crochet avant la frappe finale.",
+    durationMin: 6,
   },
 ];
