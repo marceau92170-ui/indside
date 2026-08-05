@@ -17,6 +17,13 @@ if (typeof window !== "undefined" && KEY) {
     api_host: HOST,
     capture_pageview: false, // géré manuellement (navigation App Router)
     person_profiles: "identified_only",
+    // Relecture de session (revoir exactement ce qu'un joueur a fait, clic par
+    // clic, scroll par scroll) — le détail fin que le suivi first-party
+    // (/admin/live, /admin/usage) ne fait pas. Masque tout champ texte par
+    // défaut (mots de passe, etc. — même si l'app n'en a pas côté joueur).
+    session_recording: {
+      maskAllInputs: true,
+    },
   });
 }
 

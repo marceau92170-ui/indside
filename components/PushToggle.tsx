@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
+import { trackClick } from "@/lib/click-track";
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -40,6 +41,7 @@ export function PushToggle({ vapidPublicKey }: { vapidPublicKey: string | null }
 
   async function enable() {
     if (!vapidPublicKey) return;
+    trackClick("push_enable");
     setBusy(true);
     setError(null);
     try {
@@ -69,6 +71,7 @@ export function PushToggle({ vapidPublicKey }: { vapidPublicKey: string | null }
   }
 
   async function disable() {
+    trackClick("push_disable");
     setBusy(true);
     setError(null);
     try {

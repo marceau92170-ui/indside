@@ -32,8 +32,14 @@ const btnSizes = {
   lg: "px-7 py-4 text-lg",
 } as const;
 
-type BtnVariant = keyof typeof btnVariants;
-type BtnSize = keyof typeof btnSizes;
+export type BtnVariant = keyof typeof btnVariants;
+export type BtnSize = keyof typeof btnSizes;
+
+// Exposé pour les composants qui ont besoin du même style bouton sur un
+// élément qui n'est ni <Button/> ni <ButtonLink/> (ex: TrackedLink).
+export function btnClassName(variant: BtnVariant = "primary", size: BtnSize = "md", className = "") {
+  return `${btnBase} ${btnVariants[variant]} ${btnSizes[size]} ${className}`;
+}
 
 export function Button({
   children,

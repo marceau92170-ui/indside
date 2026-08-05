@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui";
+import { trackClick } from "@/lib/click-track";
 
 // Partage du lien d'invitation : partage natif (mobile) + copie (fallback).
 export function InviteShare({ url }: { url: string }) {
@@ -10,6 +11,7 @@ export function InviteShare({ url }: { url: string }) {
   const message = `Rejoins-moi sur Progressa 🔥 ton programme d'entraînement de foot perso, gratuit pour commencer : ${url}`;
 
   async function share() {
+    trackClick("referral_share");
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({ title: "Progressa", text: message, url });

@@ -185,6 +185,7 @@ export function ManageSubscriptionButton() {
   const [loading, setLoading] = useState(false);
 
   async function portal() {
+    trackClick("manage_subscription");
     setLoading(true);
     const res = await fetch("/api/stripe/portal", { method: "POST" });
     if (res.ok) {

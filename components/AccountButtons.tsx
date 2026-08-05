@@ -3,11 +3,19 @@
 import { useState } from "react";
 import { useClerk } from "@clerk/nextjs";
 import { Button } from "@/components/ui";
+import { trackClick } from "@/lib/click-track";
 
 export function SignOutButton() {
   const { signOut } = useClerk();
   return (
-    <Button variant="ghost" size="sm" onClick={() => signOut({ redirectUrl: "/" })}>
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => {
+        trackClick("account_signout");
+        signOut({ redirectUrl: "/" });
+      }}
+    >
       Me déconnecter
     </Button>
   );
@@ -19,6 +27,7 @@ export function DeleteAccountButton() {
   const [loading, setLoading] = useState(false);
 
   async function deleteAccount() {
+    trackClick("account_delete_confirm");
     setLoading(true);
     const res = await fetch("/api/account/delete", { method: "POST" });
     if (res.ok) {

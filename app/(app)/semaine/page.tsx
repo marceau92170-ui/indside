@@ -7,6 +7,7 @@ import { computeStreak, totalDoneSessions } from "@/lib/gamification";
 import { DAYS_FR, positionLabel } from "@/lib/constants";
 import { lockedTeasers } from "@/lib/teaser";
 import { Card, ButtonLink } from "@/components/ui";
+import { TrackedLink, TrackedTextLink } from "@/components/TrackedLink";
 import { GenerateProgramButton } from "@/components/GenerateProgramButton";
 import { QuickDoneButton } from "@/components/QuickDoneButton";
 import { Icon } from "@/components/Icon";
@@ -97,9 +98,9 @@ export default async function SemainePage() {
             Débloque tout ton programme perso, adapté chaque semaine. Sans payer maintenant,
             résiliable en 1 clic.
           </p>
-          <ButtonLink href="/premium?src=semaine_cta" size="sm">
+          <TrackedLink href="/premium?src=semaine_cta" label="semaine_trial_banner" size="sm">
             Débloquer mon programme complet
-          </ButtonLink>
+          </TrackedLink>
         </Card>
       )}
 
@@ -141,9 +142,9 @@ export default async function SemainePage() {
                 <span className="font-semibold">Ta séance du jour :</span> {todaySession.title}{" "}
                 <span className="text-muted">· {todaySession.durationMin} min</span>
               </p>
-              <ButtonLink href={`/seance/${todaySession.id}`} size="sm">
+              <TrackedLink href={`/seance/${todaySession.id}`} label="semaine_commencer_seance" size="sm">
                 Commencer ma séance →
-              </ButtonLink>
+              </TrackedLink>
             </>
           ) : isEveOfMatch ? (
             <p className="text-sm">
@@ -287,12 +288,13 @@ export default async function SemainePage() {
                       </div>
                     </Link>
                     <div className="mt-3 flex items-center justify-between gap-3 border-t border-line/60 pt-3">
-                      <Link
+                      <TrackedTextLink
                         href={`/seance/${s.id}`}
+                        label="semaine_lancer_guidee"
                         className="text-xs font-semibold text-muted underline-offset-2 hover:text-chalk hover:underline"
                       >
                         Lancer la séance guidée
-                      </Link>
+                      </TrackedTextLink>
                       <QuickDoneButton sessionId={s.id} done={done} />
                     </div>
                   </Card>
