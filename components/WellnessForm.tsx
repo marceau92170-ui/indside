@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Input } from "@/components/ui";
+import { trackClick } from "@/lib/click-track";
 
 type Checkin = {
   sleepHours: number | null;
@@ -32,6 +33,7 @@ export function WellnessForm({ today }: { today: Checkin }) {
   const [saved, setSaved] = useState(false);
 
   async function submit() {
+    trackClick("wellness_checkin_save");
     setSaving(true);
     const res = await fetch("/api/wellness", {
       method: "POST",

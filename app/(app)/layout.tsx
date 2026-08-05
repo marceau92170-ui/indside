@@ -7,6 +7,7 @@ import { FeedbackWidget } from "@/components/FeedbackWidget";
 import { AppNav } from "@/components/AppNav";
 import { IdentifyUser } from "@/components/IdentifyUser";
 import { PageViewTracker } from "@/components/PageViewTracker";
+import { TrackedTextLink } from "@/components/TrackedLink";
 
 export const dynamic = "force-dynamic";
 
@@ -62,12 +63,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               Partenaire
             </Link>
           )}
-          <Link
+          <TrackedTextLink
             href="/premium?src=nav"
+            label="nav_premium"
             className="rounded-full border border-line px-3 py-1 text-xs font-semibold text-muted hover:border-glow hover:text-glow"
           >
             {user.plan === "premium" || user.subscription?.status === "active" ? "Premium ✓" : "Passer Premium"}
-          </Link>
+          </TrackedTextLink>
         </div>
       </header>
 

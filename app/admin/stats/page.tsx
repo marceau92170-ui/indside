@@ -124,6 +124,12 @@ export default async function AdminStatsPage({
         >
           Voir l&apos;usage des pages →
         </Link>
+        <Link
+          href={`/admin/live?secret=${secret}`}
+          className="inline-block text-xs font-semibold text-glow underline"
+        >
+          Voir qui est en direct →
+        </Link>
       </div>
 
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Confetti } from "@/components/Confetti";
+import { trackClick } from "@/lib/click-track";
 
 // Bouton « J'ai fait cette séance » : marque une séance comme faite en 1 clic,
 // sans passer par le lecteur guidé (utile quand on l'a faite dehors / au city).
@@ -37,6 +38,7 @@ export function QuickDoneButton({
 
   async function mark() {
     if (loading) return;
+    trackClick("session_quick_done");
     setLoading(true);
     try {
       const res = await fetch("/api/session/log", {

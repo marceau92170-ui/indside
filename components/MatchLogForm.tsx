@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Input } from "@/components/ui";
+import { trackClick } from "@/lib/click-track";
 
 export function MatchLogForm() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export function MatchLogForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    trackClick("match_log_save");
     setSaving(true);
     setError(null);
     const res = await fetch("/api/matches", {

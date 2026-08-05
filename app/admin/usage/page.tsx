@@ -1,47 +1,14 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { CLICK_LABELS, ROUTE_LABELS, normalizePath } from "@/lib/admin-labels";
 
 export const dynamic = "force-dynamic";
-
-// Libellé lisible par bouton/action trackée (voir lib/click-track.ts, trackClick).
-// Instrumenté au fil de l'eau — tous les boutons ne sont pas encore suivis.
-const CLICK_LABELS: Record<string, string> = {
-  program_regenerate: "Régénérer le programme",
-  checkout_annual_trial: "Checkout · Annuel, essai gratuit",
-  checkout_annual_pay: "Checkout · Annuel, paiement direct",
-  checkout_monthly_trial: "Checkout · Mensuel, essai gratuit",
-  checkout_monthly_pay: "Checkout · Mensuel, paiement direct",
-};
-
-// Libellé lisible par section de l'app (1er segment du chemin — voir app/(app)/*).
-const ROUTE_LABELS: Record<string, string> = {
-  "/semaine": "Semaine (dashboard)",
-  "/seance": "Séance (détail)",
-  "/bibliotheque": "Bibliothèque d'exercices",
-  "/historique": "Historique des semaines",
-  "/matchs": "Carnet de match",
-  "/objectifs": "Objectifs personnels",
-  "/parrainage": "Parrainage",
-  "/partenaire": "Espace partenaire",
-  "/premium": "Premium / abonnement",
-  "/profil": "Carte joueur / profil",
-  "/reglages": "Réglages",
-  "/ressources": "Ressources",
-  "/sante": "Suivi santé",
-  "/tests": "Tests d'évaluation",
-  "/avis": "Avis",
-};
 
 const WINDOW_DAYS = 30;
 // Au-delà de ce délai d'inactivité, on considère qu'une nouvelle "session"
 // commence — sert à repérer la DERNIÈRE page vue avant que le joueur ne
 // quitte, session par session (pas juste la dernière page vue au global).
 const SESSION_GAP_MS = 20 * 60 * 1000;
-
-function normalizePath(path: string): string {
-  const seg = path.split("/").filter(Boolean)[0];
-  return seg ? `/${seg}` : "/";
-}
 
 // Usage quotidien dans l'app : quelles pages sont visitées, par combien de
 // joueurs distincts, et lesquelles sont largement ignorées — en 100%
@@ -136,9 +103,14 @@ export default async function AdminUsagePage({
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8 text-chalk">
-      <Link href="/admin/stats" className="mb-4 inline-block text-xs text-muted hover:text-glow">
-        ← Stats internes
-      </Link>
+      <div className="mb-4 flex items-center justify-between">
+        <Link href="/admin/stats" className="text-xs text-muted hover:text-glow">
+          ← Stats internes
+        </Link>
+        <Link href={`/admin/live?secret=${secret}`} className="text-xs font-semibold text-glow hover:underline">
+          Voir en direct →
+        </Link>
+      </div>
       <h1 className="mb-1 font-condensed text-3xl font-bold uppercase">Usage des pages</h1>
       <p className="mb-6 text-sm text-muted">
         Ce que les joueurs utilisent vraiment au quotidien, {WINDOW_DAYS} derniers jours — 100%
