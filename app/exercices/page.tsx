@@ -8,14 +8,14 @@ import { Icon, type IconName } from "@/components/Icon";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "60 exercices de football à faire seul, expliqués pas à pas",
+  title: "63 exercices de football à faire seul, expliqués pas à pas",
   description:
-    "Bibliothèque gratuite de 60 exercices de foot à faire seul : technique, renforcement, explosivité, cardio, prévention des blessures et spécifique gardien. Chaque exercice est détaillé étape par étape, avec un ballon et un mur.",
+    "Bibliothèque gratuite de 63 exercices de foot à faire seul : technique, renforcement, explosivité, cardio, prévention des blessures et spécifique gardien. Chaque exercice est détaillé étape par étape, avec un ballon et un mur.",
   alternates: { canonical: "/exercices" },
   openGraph: {
-    title: "60 exercices de football à faire seul — Progressa",
+    title: "63 exercices de football à faire seul — Progressa",
     description:
-      "Technique, renforcement, vitesse, prévention : 60 exercices de foot détaillés pas à pas, à faire seul entre les entraînements.",
+      "Technique, renforcement, vitesse, prévention : 63 exercices de foot détaillés pas à pas, à faire seul entre les entraînements.",
     url: `${SITE_URL}/exercices`,
     type: "website",
   },
@@ -42,7 +42,7 @@ export default function ExercicesHubPage() {
     "@type": "CollectionPage",
     name: "Exercices de football à faire seul",
     description:
-      "Bibliothèque de 60 exercices de football à faire seul, expliqués pas à pas.",
+      "Bibliothèque de 63 exercices de football à faire seul, expliqués pas à pas.",
     url: `${SITE_URL}/exercices`,
     hasPart: ALL_EXERCISES.map((e) => ({
       "@type": "HowTo",
@@ -78,7 +78,7 @@ export default function ExercicesHubPage() {
           Bibliothèque gratuite
         </p>
         <h1 className="mt-1 font-condensed text-4xl font-bold uppercase leading-tight">
-          60 exercices de foot à faire seul
+          63 exercices de foot à faire seul
         </h1>
         <p className="mt-3 max-w-xl text-sm text-muted">
           Technique, renforcement, vitesse, cardio, prévention des blessures et spécifique gardien.

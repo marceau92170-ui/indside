@@ -111,7 +111,7 @@ export default async function LandingPage() {
             <Reveal className="mt-8 lg:mt-0 lg:w-full lg:max-w-sm">
               <dl className="grid grid-cols-3 divide-x divide-line rounded-card border border-line bg-surface py-4">
                 {[
-                  ["60", "exercices validés"],
+                  ["63", "exercices validés"],
                   ["4", "tests mesurés"],
                   ["0", "gadget, 0 complément"],
                 ].map(([n, label]) => (

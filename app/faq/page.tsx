@@ -21,7 +21,7 @@ const FAQ: QA[] = [
   },
   {
     q: "Les exercices sont-ils fiables et sans danger ?",
-    a: "Oui. Tous les programmes sont composés uniquement à partir d'une bibliothèque de 60 exercices validés — l'application n'invente jamais un exercice. Chaque exercice est expliqué pas à pas, avec les erreurs à éviter et une illustration animée du mouvement. Les intensités sont adaptées à ta catégorie d'âge.",
+    a: "Oui. Tous les programmes sont composés uniquement à partir d'une bibliothèque de 63 exercices validés — l'application n'invente jamais un exercice. Chaque exercice est expliqué pas à pas, avec les erreurs à éviter et une illustration animée du mouvement. Les intensités sont adaptées à ta catégorie d'âge.",
   },
   {
     q: "Combien ça coûte ?",
