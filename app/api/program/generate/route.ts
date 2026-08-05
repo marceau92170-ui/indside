@@ -53,7 +53,11 @@ export async function POST() {
     where: { id: user.id },
     include: { profile: true, subscription: true },
   });
-  const program = await createWeeklyProgram(fresh, { feedback });
-
-  return NextResponse.json({ ok: true, programId: program.id });
+  try {
+    const program = await createWeeklyProgram(fresh, { feedback });
+    return NextResponse.json({ ok: true, programId: program.id });
+  } catch (err) {
+    console.error("[program/generate] génération échouée :", err);
+    return NextResponse.json({ error: "generation_failed" }, { status: 500 });
+  }
 }
