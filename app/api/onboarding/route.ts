@@ -77,12 +77,20 @@ export async function POST(req: Request) {
     }),
   ]);
 
-  // Génère le premier programme (IA si premium, sinon séance générique)
+  // Génère le premier programme (IA si premium, sinon séance générique). Le
+  // profil vient déjà d'être enregistré au-dessus : si la génération échoue
+  // (souci ponctuel, DB, etc.), on ne fait PAS échouer toute la création de
+  // compte pour autant — /semaine proposera "Générer ma semaine" à l'arrivée
+  // du joueur plutôt que de lui coller une inscription en échec.
   const fresh = await prisma.user.findUniqueOrThrow({
     where: { id: user.id },
     include: { profile: true, subscription: true },
   });
-  await createWeeklyProgram(fresh);
+  try {
+    await createWeeklyProgram(fresh);
+  } catch (err) {
+    console.error("[onboarding] génération du programme initial échouée :", err);
+  }
 
   // E-mail de bienvenue (une seule fois par joueur — garde-fou EmailEvent).
   try {
