@@ -7,6 +7,7 @@ import { ExerciseDetail, type ExerciseView } from "@/components/ExerciseDetail";
 import { ExerciseIllustration } from "@/components/ExerciseIllustration";
 import { Icon } from "@/components/Icon";
 import { Confetti } from "@/components/Confetti";
+import { SessionSurvey } from "@/components/SessionSurvey";
 import { badgeInfo } from "@/lib/constants";
 
 export type SessionBlock = {
@@ -43,6 +44,8 @@ export function SessionPlayer({
   blocks,
   premium = false,
   whyChips = [],
+  showAcquisitionSurvey = false,
+  showPremiumObjectionSurvey = false,
 }: {
   session: SessionInfo;
   blocks: SessionBlock[];
@@ -50,6 +53,10 @@ export function SessionPlayer({
   // Facteurs de personnalisation à afficher ("Ailier", "U16", "Match samedi")
   // → rend visible POURQUOI cette séance est la sienne.
   whyChips?: string[];
+  // Micro-sondages fin de séance (voir SessionSurvey.tsx) — calculé côté
+  // serveur (app/(app)/seance/[id]/page.tsx) : à qui et à quel moment.
+  showAcquisitionSurvey?: boolean;
+  showPremiumObjectionSurvey?: boolean;
 }) {
   const router = useRouter();
   const [doneBlocks, setDoneBlocks] = useState<Set<number>>(new Set());
@@ -161,7 +168,7 @@ export function SessionPlayer({
             là que le corps encaisse le travail.
           </p>
         </div>
-        {!premium && (
+        {!premium && !showPremiumObjectionSurvey && (
           <div className="mt-6 w-full max-w-xs rounded-card border border-glow/40 bg-glow/5 p-4 text-left">
             <p className="font-condensed text-base font-bold uppercase text-glow">
               Sur ta lancée ?
@@ -175,6 +182,8 @@ export function SessionPlayer({
             </Button>
           </div>
         )}
+        {showAcquisitionSurvey && <SessionSurvey kind="acquisition" />}
+        {showPremiumObjectionSurvey && <SessionSurvey kind="premium_objection" />}
         <Button
           variant={premium ? "primary" : "ghost"}
           className="mt-4"
