@@ -30,6 +30,8 @@ export async function StatsSection() {
     recentGrants,
     trialingSubs,
     referralFreeUsers,
+    acquisitionGroups,
+    objectionGroups,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { profile: { isNot: null } } }),
@@ -57,7 +59,26 @@ export async function StatsSection() {
       include: { profile: true },
       orderBy: { premiumUntil: "desc" },
     }),
+    prisma.user.groupBy({
+      by: ["acquisitionChannel"],
+      where: { acquisitionChannel: { not: null } },
+      _count: { _all: true },
+    }),
+    prisma.user.groupBy({
+      by: ["premiumObjection"],
+      where: { premiumObjection: { not: null } },
+      _count: { _all: true },
+    }),
   ]);
+
+  const acquisitionRanked = acquisitionGroups
+    .map((g) => ({ label: g.acquisitionChannel as string, count: g._count._all }))
+    .filter((g) => g.label !== "skipped")
+    .sort((a, b) => b.count - a.count);
+  const objectionRanked = objectionGroups
+    .map((g) => ({ label: g.premiumObjection as string, count: g._count._all }))
+    .filter((g) => g.label !== "skipped")
+    .sort((a, b) => b.count - a.count);
 
   // Inscriptions par semaine (8 dernières)
   const weeks: { label: string; count: number }[] = [];
@@ -237,6 +258,52 @@ export async function StatsSection() {
               <span className="text-[11px] text-muted">
                 {g.createdAt.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
               </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h3 className="mb-2 mt-8 font-condensed text-lg font-bold uppercase">
+        Comment ils nous ont connus
+      </h3>
+      <p className="mb-3 text-xs text-muted">
+        Répondu une fois à la 1ère séance terminée (voir SessionSurvey.tsx).
+      </p>
+      {acquisitionRanked.length === 0 ? (
+        <p className="rounded-card border border-line bg-surface p-4 text-sm text-muted">
+          Pas encore de réponse.
+        </p>
+      ) : (
+        <ul className="mb-8 flex flex-wrap gap-2">
+          {acquisitionRanked.map((r) => (
+            <li
+              key={r.label}
+              className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm"
+            >
+              {r.label} <span className="font-bold text-glow">{r.count}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h3 className="mb-2 font-condensed text-lg font-bold uppercase">
+        Pourquoi Premium ne les intéresse pas
+      </h3>
+      <p className="mb-3 text-xs text-muted">
+        Répondu une fois par les comptes gratuits, à leur 2e ou 3e séance.
+      </p>
+      {objectionRanked.length === 0 ? (
+        <p className="rounded-card border border-line bg-surface p-4 text-sm text-muted">
+          Pas encore de réponse.
+        </p>
+      ) : (
+        <ul className="flex flex-wrap gap-2">
+          {objectionRanked.map((r) => (
+            <li
+              key={r.label}
+              className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm"
+            >
+              {r.label} <span className="font-bold text-glow">{r.count}</span>
             </li>
           ))}
         </ul>

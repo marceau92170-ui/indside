@@ -5,6 +5,7 @@ import { isPremium } from "@/lib/plan";
 import { SessionPlayer, type SessionBlock } from "@/components/SessionPlayer";
 import { DAYS_FR, positionLabel } from "@/lib/constants";
 import { categoryFromBirthYear } from "@/lib/categories";
+import { totalDoneSessions } from "@/lib/gamification";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,17 @@ export default async function SeancePage({ params }: { params: Promise<{ id: str
       whyChips.push(`Match ${DAYS_FR[prof.matchDay].toLowerCase()}`);
     }
   }
+
+  // Micro-sondages fin de séance (voir SessionSurvey.tsx), posés une seule
+  // fois : "comment nous as-tu connus" à la 1ère séance (tout le monde),
+  // "pourquoi pas Premium" à la 2e/3e séance (gratuits seulement). sessionRank
+  // = nombre total de séances faites en comptant CELLE-CI.
+  const doneBefore = await totalDoneSessions(user.id);
+  const sessionRank = doneBefore + (session.logs.length > 0 ? 0 : 1);
+  const premium = isPremium(user);
+  const showAcquisitionSurvey = sessionRank === 1 && !user.acquisitionChannel;
+  const showPremiumObjectionSurvey =
+    !premium && sessionRank >= 2 && sessionRank <= 3 && !user.premiumObjection;
 
   const blocks: SessionBlock[] = rawBlocks
     .filter((b) => bySlug.has(b.slug))
@@ -88,8 +100,10 @@ export default async function SeancePage({ params }: { params: Promise<{ id: str
         alreadyLogged: session.logs.length > 0,
       }}
       blocks={blocks}
-      premium={isPremium(user)}
+      premium={premium}
       whyChips={whyChips}
+      showAcquisitionSurvey={showAcquisitionSurvey}
+      showPremiumObjectionSurvey={showPremiumObjectionSurvey}
     />
   );
 }

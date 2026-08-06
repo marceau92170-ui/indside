@@ -63,6 +63,12 @@ model User {
   // page n'est pas concernée, elle reste toujours sombre.
   theme String @default("dark")
 
+  // Micro-sondages posés une seule fois à l'écran fin de séance (voir
+  // SessionSurvey.tsx) — null tant que le joueur n'a pas répondu (ou "skipped"
+  // s'il a explicitement passé la question, pour ne plus jamais la reposer).
+  acquisitionChannel String? // "Comment as-tu connu Progressa ?" — tout le monde, à la 1ère séance
+  premiumObjection   String? // "Pourquoi Premium ne t'intéresse pas ?" — gratuits, à la 2e/3e séance
+
   createdAt DateTime @default(now())
 
   accounts     Account[]
