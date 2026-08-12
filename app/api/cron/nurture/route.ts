@@ -47,7 +47,7 @@ async function runStep(
   return sent;
 }
 
-// Cron quotidien : relances J+1 et J+3 vers l'essai gratuit.
+// Cron quotidien : relances J+1 et J+3 vers Premium.
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -68,7 +68,7 @@ export async function GET(req: Request) {
     new Date(now - 4 * DAY),
     new Date(now - 3 * DAY),
     nurtureDay3Email,
-    { title: "7 jours gratuits", body: "Débloque ton programme complet, sans payer maintenant.", url: "/premium" },
+    { title: "Passe Premium", body: "Débloque ton programme complet dès maintenant.", url: "/premium" },
   );
 
   return NextResponse.json({ day1, day3 });

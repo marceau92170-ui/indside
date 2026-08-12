@@ -6,22 +6,21 @@ import { PRICING } from "@/lib/plan";
 import { track } from "@/lib/analytics";
 import { trackClick } from "@/lib/click-track";
 
-export function CheckoutButtons({ hasUsedTrial = false }: { hasUsedTrial?: boolean }) {
+export function CheckoutButtons() {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const canTrial = !hasUsedTrial;
 
-  async function checkout(plan: "monthly" | "annual", trial: boolean) {
-    const key = `${plan}:${trial ? "t" : "p"}`;
+  async function checkout(plan: "monthly" | "annual") {
+    const key = plan;
     setLoading(key);
     setError(null);
-    track("premium_checkout_started", { plan, trial });
-    trackClick(`checkout_${plan}_${trial ? "trial" : "pay"}`);
+    track("premium_checkout_started", { plan });
+    trackClick(`checkout_${plan}_pay`);
     try {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, trial }),
+        body: JSON.stringify({ plan }),
       });
       const data = await res.json().catch(() => null);
       if (res.ok && data?.url) {
@@ -41,23 +40,10 @@ export function CheckoutButtons({ hasUsedTrial = false }: { hasUsedTrial?: boole
   return (
     <div>
       <div className="mb-3 rounded-card border border-glow/40 bg-glow/10 px-4 py-3 text-center">
-        {canTrial ? (
-          <>
-            <p className="font-condensed text-lg font-bold uppercase text-glow">7 jours gratuits</p>
-            <p className="text-xs text-muted">
-              Débloque tout, sans payer maintenant. Aucun débit si tu résilies avant la fin — en 1 clic.
-              Tu peux aussi payer directement.
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="font-condensed text-lg font-bold uppercase text-glow">Passe Premium</p>
-            <p className="text-xs text-muted">
-              Ton essai gratuit a déjà été utilisé sur ce compte. Abonne-toi quand tu veux, résiliable
-              en 1 clic.
-            </p>
-          </>
-        )}
+        <p className="font-condensed text-lg font-bold uppercase text-glow">Passe Premium</p>
+        <p className="text-xs text-muted">
+          Débit immédiat, puis renouvellement automatique. Résiliable à tout moment en 1 clic.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -67,25 +53,19 @@ export function CheckoutButtons({ hasUsedTrial = false }: { hasUsedTrial?: boole
           tagline="Le plus choisi"
           amount={PRICING.annual.amount}
           sub={`${PRICING.annual.period} · ${PRICING.annual.saving}`}
-          canTrial={canTrial}
           loading={loading}
           plan="annual"
-          onTrial={() => checkout("annual", true)}
-          onPay={() => checkout("annual", false)}
+          onPay={() => checkout("annual")}
           busy={busy}
-          footer={`puis ${PRICING.annual.amount}${PRICING.annual.period}`}
         />
         <PlanCard
           tagline="Souple"
           amount={PRICING.monthly.amount}
           sub={PRICING.monthly.period}
-          canTrial={canTrial}
           loading={loading}
           plan="monthly"
-          onTrial={() => checkout("monthly", true)}
-          onPay={() => checkout("monthly", false)}
+          onPay={() => checkout("monthly")}
           busy={busy}
-          footer={`puis ${PRICING.monthly.amount}${PRICING.monthly.period}`}
         />
         {error && (
           <div className="col-span-full rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-center">
@@ -104,29 +84,22 @@ function PlanCard({
   tagline,
   amount,
   sub,
-  canTrial,
   loading,
   plan,
-  onTrial,
   onPay,
   busy,
-  footer,
 }: {
   highlighted?: boolean;
   badge?: string;
   tagline: string;
   amount: string;
   sub: string;
-  canTrial: boolean;
   loading: string | null;
   plan: "monthly" | "annual";
-  onTrial: () => void;
   onPay: () => void;
   busy: boolean;
-  footer: string;
 }) {
-  const trialKey = `${plan}:t`;
-  const payKey = `${plan}:p`;
+  const payKey = plan;
   return (
     <Card className={`relative flex flex-col items-center ${highlighted ? "border-glow" : ""}`}>
       {badge && (
@@ -144,39 +117,15 @@ function PlanCard({
       <p className="tnum font-condensed text-3xl font-bold">{amount}</p>
       <p className="mb-3 text-xs text-muted">{sub}</p>
 
-      {canTrial ? (
-        <>
-          <Button
-            variant={highlighted ? "primary" : "ghost"}
-            onClick={onTrial}
-            disabled={busy}
-            className="w-full"
-          >
-            {loading === trialKey ? "Redirection…" : "Essayer 7 jours gratuits"}
-          </Button>
-          <button
-            type="button"
-            onClick={onPay}
-            disabled={busy}
-            className="mt-2 text-[11px] font-semibold text-muted underline underline-offset-2 hover:text-chalk disabled:opacity-50"
-          >
-            {loading === payKey ? "Redirection…" : "ou payer directement"}
-          </button>
-          <p className="mt-1 text-[11px] text-muted">{footer}</p>
-        </>
-      ) : (
-        <>
-          <Button
-            variant={highlighted ? "primary" : "ghost"}
-            onClick={onPay}
-            disabled={busy}
-            className="w-full"
-          >
-            {loading === payKey ? "Redirection…" : "S'abonner"}
-          </Button>
-          <p className="mt-1 text-[11px] text-muted">Débit immédiat · {amount}</p>
-        </>
-      )}
+      <Button
+        variant={highlighted ? "primary" : "ghost"}
+        onClick={onPay}
+        disabled={busy}
+        className="w-full"
+      >
+        {loading === payKey ? "Redirection…" : "S'abonner"}
+      </Button>
+      <p className="mt-1 text-[11px] text-muted">Débit immédiat · {amount}</p>
     </Card>
   );
 }

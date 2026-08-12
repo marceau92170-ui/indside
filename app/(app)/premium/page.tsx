@@ -85,7 +85,7 @@ export default async function PremiumPage({
         </Card>
       )}
 
-      <CheckoutButtons hasUsedTrial={Boolean(user?.hasUsedTrial)} />
+      <CheckoutButtons />
 
       <p className="mb-2 mt-8 text-[11px] font-bold uppercase tracking-widest text-muted">
         Gratuit vs Premium

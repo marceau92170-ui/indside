@@ -87,16 +87,15 @@ export default async function SemainePage() {
 
   return (
     <div>
-      {/* Essai gratuit : tout premier élément vu par un compte gratuit, avant même
+      {/* CTA Premium : tout premier élément vu par un compte gratuit, avant même
           l'en-tête — plus de chance qu'il le remarque que noyé en bas de page. */}
       {!premium && user.profile && (
         <Card className="mb-5 border-glow/40 bg-glow/5">
           <p className="mb-1 font-condensed text-base font-bold uppercase text-glow">
-            7 jours gratuits
+            Passe Premium
           </p>
           <p className="mb-3 text-sm text-muted">
-            Débloque tout ton programme perso, adapté chaque semaine. Sans payer maintenant,
-            résiliable en 1 clic.
+            Débloque tout ton programme perso, adapté chaque semaine, résiliable en 1 clic.
           </p>
           <TrackedLink href="/premium?src=semaine_cta" label="semaine_trial_banner" size="sm">
             Débloquer mon programme complet
