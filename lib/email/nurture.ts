@@ -38,15 +38,14 @@ export function nurtureDay1Email(firstName?: string | null): { subject: string; 
   };
 }
 
-// Jour 3 — offre claire : essai 7 jours.
+// Jour 3 — offre claire, débit immédiat.
 export function nurtureDay3Email(firstName?: string | null): { subject: string; html: string } {
   return {
-    subject: "Débloque ton programme complet — 7 jours gratuits",
+    subject: "Débloque ton programme complet",
     html: shell(`
       <p>${firstName ? firstName + "," : "Salut,"} passe au niveau au-dessus.</p>
-      <p style="color:#93938D">En Premium, tu as <strong>3 séances par semaine</strong> personnalisées (poste, objectif, calendrier de match), qui s'adaptent à tes retours. Un coach individuel coûte 30 à 50 € la séance — ici c'est 8,99 €/mois.</p>
-      <p style="color:#93938D">Teste <strong>7 jours gratuits</strong> : tu débloques tout, sans payer maintenant, résiliable en 1 clic.</p>
-      ${cta(`${SITE_URL}/premium`, "Essayer 7 jours gratuits")}
+      <p style="color:#93938D">En Premium, tu as <strong>3 séances par semaine</strong> personnalisées (poste, objectif, calendrier de match), qui s'adaptent à tes retours. Un coach individuel coûte 30 à 50 € la séance — ici c'est 8,99 €/mois, résiliable en 1 clic.</p>
+      ${cta(`${SITE_URL}/premium`, "Passer Premium")}
     `),
   };
 }

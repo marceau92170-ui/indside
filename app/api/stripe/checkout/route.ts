@@ -6,17 +6,13 @@ import { stripe } from "@/lib/stripe";
 import { isAdult } from "@/lib/categories";
 import { SITE_URL } from "@/lib/site";
 
-// Durée de l'essai gratuit (carte demandée, débit uniquement à la fin si non résilié).
-// NB : pas d'`export` — un fichier de route Next.js n'autorise que GET/POST/dynamic/etc.
-const TRIAL_DAYS = 7;
-
 export const dynamic = "force-dynamic";
 
-// `trial` : true → l'utilisateur demande l'essai 7 jours ; false → il paie
-// directement (débit immédiat). Par défaut true (rétro-compatible).
+// Essai gratuit supprimé (trop d'abus : carte ajoutée puis annulée/échec juste
+// après le prélèvement, sans jamais générer de revenu réel). Débit immédiat
+// pour tout le monde désormais.
 const BodySchema = z.object({
   plan: z.enum(["monthly", "annual"]),
-  trial: z.boolean().optional().default(true),
 });
 
 export async function POST(req: Request) {
@@ -62,18 +58,9 @@ export async function POST(req: Request) {
 
   const adult = user.profile ? isAdult(user.profile.birthYear) : true;
 
-  // L'essai n'est accordé que s'il est demandé ET que ce compte ne l'a jamais
-  // consommé : un compte a droit à UN seul essai gratuit (anti re-farming).
-  // Payer directement reste toujours possible, sans limite.
-  const applyTrial = parsed.data.trial && !user.hasUsedTrial;
-
-  const message = applyTrial
-    ? adult
-      ? `0 € aujourd'hui, aucune carte requise — gratuit pendant ${TRIAL_DAYS} jours. Si tu veux continuer après l'essai, ajoute un moyen de paiement depuis l'app. Résiliable à tout moment.`
-      : `0 € aujourd'hui, aucune carte requise — gratuit pendant ${TRIAL_DAYS} jours. Abonnement à souscrire par un parent ou tuteur légal pour continuer après l'essai. Résiliable à tout moment.`
-    : adult
-      ? `Débit immédiat, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app.`
-      : `Débit immédiat. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app.`;
+  const message = adult
+    ? `Débit immédiat, puis renouvellement automatique. Résiliable à tout moment en 1 clic depuis l'app.`
+    : `Débit immédiat. Abonnement à souscrire par un parent ou tuteur légal, résiliable à tout moment en 1 clic depuis l'app.`;
 
   const makeSession = (withDiscount: boolean) =>
     s.checkout.sessions.create({
@@ -81,21 +68,11 @@ export async function POST(req: Request) {
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       ...(withDiscount && discounts ? { discounts } : {}),
-      success_url: `${base}/premium/merci?plan=${parsed.data.plan}&trial=${applyTrial}`,
+      success_url: `${base}/premium/merci?plan=${parsed.data.plan}`,
       cancel_url: `${base}/premium`,
       metadata: { userId: user.id },
-      // Essai gratuit : pas de carte demandée à l'inscription (moins de friction,
-      // aucun risque de débit surprise). Paiement direct : carte obligatoire,
-      // comme avant. Si l'essai se termine sans carte enregistrée, Stripe ne
-      // peut pas prélever : l'abonnement passe en échec de paiement et
-      // isPremium() (lib/plan.ts) fait automatiquement retomber le compte en
-      // gratuit — aucun abus possible au-delà de la période d'essai.
-      payment_method_collection: applyTrial ? "if_required" : "always",
-      subscription_data: {
-        metadata: { userId: user.id },
-        // Essai 7 jours uniquement si accordé ; sinon débit immédiat.
-        ...(applyTrial ? { trial_period_days: TRIAL_DAYS } : {}),
-      },
+      payment_method_collection: "always",
+      subscription_data: { metadata: { userId: user.id } },
       // Mineurs : l'abonnement est souscrit par un parent ou tuteur légal.
       custom_text: { submit: { message } },
     });

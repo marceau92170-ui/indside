@@ -175,10 +175,10 @@ export function SessionPlayer({
             </p>
             <p className="mt-1 text-sm text-muted">
               Les joueurs Premium enchaînent <strong>3 séances</strong> cette semaine, calées sur ton
-              poste et ton match. Essaie 7 jours gratuits — sans payer maintenant.
+              poste et ton match.
             </p>
             <Button className="mt-3 w-full" onClick={() => router.push("/premium")}>
-              Débloquer la suite — 7 j gratuits
+              Débloquer la suite
             </Button>
           </div>
         )}
